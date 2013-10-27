@@ -145,7 +145,7 @@ So for our mobile_controller.rb, we simply have this:
 
 Let's look at the full request cycle for mounted engines for "/mobile/app":
 
-* A request for "/mobile/app" goes through our hosting application, no routes is found for "/mobile/app" for the hosting application routing file, so it looks at the engine. 
+* A request for "/mobile/app" goes through our hosting application, no routes are found for "/mobile/app" for the hosting application routing file, so it looks at the engine. 
 * The engine has a route, so it then begins looking in the hosting application for the mobile controller
 * If the hosting application has no mobile controller, it then begins looking at it's included engines for a mobile controller
 * The engine has a controller, so it uses that controller's action and goes to render the view.
@@ -222,6 +222,9 @@ This will package up all javascript files in the /assets/javascripts/mobile fold
 Now access them as usual
 
 	http://hostingapp.com/assets/mobile.js
+
+The big picture
+==============
 
 
 [RailsCasts]: http://railscasts.com/episodes/277-mountable-engines "RailsCasts - Mountable Engines"

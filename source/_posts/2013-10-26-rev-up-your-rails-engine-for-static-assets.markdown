@@ -13,7 +13,7 @@ Haven't heard of Rails Engines? Rails engines are essentially miniture rails app
 Why I started using Rails Engines
 ================
 
-For our needs, we had to display a mobile version of our application on our main website webserver. All of the code for the mobile application was hosted in another git repository and had different themes that needed to be applied. The big question was, how do we have this hosted on different web nodes and control our changes from the mobile repository?
+For our needs, we had to display a mobile version of our application on our main website webserver. All of the code for the mobile application was hosted in another git repository (Note: I love the [Git Gem]) and had different themes that needed to be applied. The big question was, how do we have this hosted on different web nodes and control our changes from the mobile repository?
 
 There are so many different ways to approach this problem, the method I chose was to try out a Rails Engine. The main reasons this was attractive was:
 
@@ -226,6 +226,14 @@ Now access them as usual
 The big picture
 ==============
 
+All in all, I've really enjoyed learning about Rails Engines and I can already see several uses for them:
+
+* Pulling all of our API calls to an engine so we can place that engine on any web nodes and keep API functionality in one place
+* Put together an error handling gem to handle incoming error requests to record and a page to see errors
+* Database models / access methods to be used by other projects
+
+I hope I've shed some light on Rails Engines and given a few tips/tricks that I've found along the way.
+
 
 [RailsCasts]: http://railscasts.com/episodes/277-mountable-engines "RailsCasts - Mountable Engines"
 [RailsGuides]: http://guides.rubyonrails.org/engines.html "Rails Guides - Getting Started with Engines"
@@ -234,3 +242,4 @@ The big picture
 [Rails Engine Code Comments]: https://github.com/rails/rails/blob/master/railties/lib/rails/engine.rb "Rails / Engine.rb Line 197"
 [Rails Asset Pipelines Guide]: http://guides.rubyonrails.org/index.html "Rails Asset Pipeline"
 [Stephen Balls Blog]: http://rakeroutes.com/blog/write-a-gem-for-the-rails-asset-pipeline/ "Write a Gem To Serve Static Assets On The Rails Asset Pipeline"
+[Git Gem]: https://github.com/schacon/ruby-git "Ruby Git Gem"

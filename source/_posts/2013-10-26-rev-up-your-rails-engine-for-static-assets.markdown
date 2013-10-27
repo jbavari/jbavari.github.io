@@ -195,15 +195,39 @@ One thing to note, when using an Engine, it sets up several helpers for you to u
 Precompiling any assets
 ----------------
 
-No difference here, place your asset pipeline 
+No difference here, place your assets in your normal locations. Works just like the [Rails Asset Pipelines Guide], and documented nicely for gems by [Stephen Balls Blog], but essentially still the same.
 
-Getting Started
----------
+My file structure for assets looks like this:
 
-Rails 3.2 gives you a set of generator tasks 
+	/mobile_engine
+		/vendor
+			/assets
+				/images
+				/javascripts
+					/mobile
+						jquery.js
+						angular.js
+						...many more...
+					mobile.js
+				/stylesheets
+
+Mobile.js is nothing special, and looks like this:
+
+	//= require ./mobile/
+
+This will package up all javascript files in the /assets/javascripts/mobile folder to be combined and accessed by the hosting application, just run the assets precompile:
+
+	rake assets:precompile
+
+Now access them as usual
+
+	http://hostingapp.com/assets/mobile.js
+
 
 [RailsCasts]: http://railscasts.com/episodes/277-mountable-engines "RailsCasts - Mountable Engines"
 [RailsGuides]: http://guides.rubyonrails.org/engines.html "Rails Guides - Getting Started with Engines"
 [StackOverflow]: http://stackoverflow.com/questions/6118905/rails-3-1-engine-vs-mountable-app "Stackoverflow Article on Full Engine vs Mountable Engine"
 [Adam St Johns Blog]: http://www.astjohn.ca/2011/08/06/rails-31-engines-mountable-or-full-part-1 "Rails 3.1 Engines – Mountable or Full? – Part 1"
 [Rails Engine Code Comments]: https://github.com/rails/rails/blob/master/railties/lib/rails/engine.rb "Rails / Engine.rb Line 197"
+[Rails Asset Pipelines Guide]: http://guides.rubyonrails.org/index.html "Rails Asset Pipeline"
+[Stephen Balls Blog]: http://rakeroutes.com/blog/write-a-gem-for-the-rails-asset-pipeline/ "Write a Gem To Serve Static Assets On The Rails Asset Pipeline"

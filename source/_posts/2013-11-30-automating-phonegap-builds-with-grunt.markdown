@@ -10,19 +10,19 @@ One big thorn in my side lately has been getting our Phonegap/Cordova builds out
 
 ### What usually happens
 
-"Hey can we please get a new build out to test with?" - Datachomp  
+"Hey can we please get a new build out to test with?" - DataChomp  
 "Yea, give me a few minutes to get the build out." - DevDweeb  
-"Ok, lemme know when" - Datachomp  
+"Ok, lemme know when" - DataChomp  
 --30 minutes later--  
-"Hows that build coming?" - Datachomp  
+"Hows that build coming?" - DataChomp  
 "Oh man.. not sure.. something messed up along the way. It'll be a bit more" - DevDweeb  
 --waits a bit more---  
-"Nevermind. I figured it out." - Datachomp  
+"Nevermind. I figured it out." - DataChomp  
 "Ok whew, cuz it will be a bit more" - DevDweeb  
 
 ### What I wish would happen
 
-"Hey can we please get a new build out to test with?" - Datachomp  
+"Hey can we please get a new build out to test with?" - DataChomp  
 "That was done an hour ago, sir" - Jenkins  
 
 ### What is the prob, bob

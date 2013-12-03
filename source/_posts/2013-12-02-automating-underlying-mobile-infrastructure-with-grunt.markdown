@@ -37,9 +37,7 @@ For our designer, I'd want 'grunt emulate'. For myself, I'd want 'grunt emulate 
 
 ### How to get there 
 
-To get some of the servers up and running, we need a grunt task that would invoke those processes and would continue running in the background while the other tasks continue running. For this, we'll need another Grunt plugin, called Grunt background shell.
-
-[Grunt bgShell](https://npmjs.org/package/grunt-bg-shell)
+To get some of the servers up and running, we need a grunt task that would invoke those processes and would continue running in the background while the other tasks continue running. For this, we'll need another Grunt plugin, called [Grunt bgShell](https://npmjs.org/package/grunt-bg-shell)
 
 First we'll define the background shell tasks in our grunt config file:
 
@@ -55,11 +53,7 @@ bgShell: {
 }
 ```
 
-That covers the servers. Now, for the xcode build and ios-simulator, we'll use the standard shell plugin to keep running in sync. To invoke the iOS simulator, we'll use the Node.js package from Phonegap called ios-sim.
-
-[Grunt Shell](https://github.com/sindresorhus/grunt-shell)
-
-[ios-sim](https://github.com/phonegap/ios-sim)
+That covers the servers. Now, for the xcode build and ios-simulator, we'll use the standard [grunt shell](https://github.com/sindresorhus/grunt-shell) plugin to keep running in sync. To invoke the iOS simulator, we'll use the Node.js package from Phonegap called [ios-sim](https://github.com/phonegap/ios-sim)
 
 Before we can use ios-sim, we must invoke the npm installer for it, passing the -g flag for it to be globally installed.
 

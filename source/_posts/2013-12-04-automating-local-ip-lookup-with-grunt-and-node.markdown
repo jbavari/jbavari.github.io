@@ -10,13 +10,13 @@ In the last few write-ups I've done lately (see [the servers post](/blog/2013/12
 
 Since I'm obsesed with automation, I'd rather be lazy and just have the IP Address look up be automatic.
 
-## You should be asking.. automate the IP?
+## Why am I writing this?
 
-About 9/10 times I really just want to boot the servers up to my current IP and have the mobile app point at that IP.
+I work in a dozen of different places. At any given time I may be at home, work, a coffee shop, etc. Most times my ip address will be different. I really just want to boot the servers up to my current IP and have the mobile app point at that IP. (The actual device can't understand localhost or a local 0.0.0.0 IP address over wifi)
 
 Have you guessed it yet? I want to automatically set that ip address / hostname to my local IP without having to go look it up every time.
 
-I found this post on [stackoverflow](http://stackoverflow.com/questions/3653065/get-local-ip-address-in-node-js) that pointed me at this [Node.js documentation](http://nodejs.org/api/os.html#os_os_networkinterfaces). This really lets us dig deeper with Grunt to get the IP Address, especially since grunt sits on Node.js.
+I found this post on [stackoverflow](http://stackoverflow.com/questions/3653065/get-local-ip-address-in-node-js) that pointed me at this [Node.js documentation](http://nodejs.org/api/os.html#os_os_networkinterfaces) to look up the network interfaces. This lets us dig deeper with Grunt to get the IP Address, especially since grunt sits on Node.js.
 
 ### Simple and (too) easy
 
@@ -34,7 +34,6 @@ My grunt config looks something like this:
 
 ``` javascript 
 module.exports = function(grunt) {
-	var uploadMessage = grunt.option('uploadMessage') || 'Shenzhen Default Upload Message';
 
 	var os=require('os');
 	var ifaces=os.networkInterfaces();
@@ -51,8 +50,10 @@ module.exports = function(grunt) {
 		});
 	}
 
-	//In this line - we're going to use the ip/host from command line over the ip addressed that was looked up
-	//if it was passed
+	//If an IP Address is passed
+	//we're going to use the ip/host from the param
+	//passed over the command line 
+	//over the ip addressed that was looked up
 	var ipAddress = grunt.option('host') || lookupIpAddress;
 
 	grunt.initConfig({
@@ -67,12 +68,21 @@ module.exports = function(grunt) {
 		}
 	});
 
+	//Load in the preprocess tasks
+	grunt.loadTasks('preprocess');
 	require('load-grunt-tasks')(grunt);
 
-	grunt.registerTask('servers', ['bgShell:weinre', 'bgShell:rails']);
+	//Tasks to have both servers at local ip and app at local ip
+	grunt.registerTask('servers', ['env:dev', 'preprocess:dev', 'bgShell:weinre', 'bgShell:rails']);
+
+	//Task to set up app files pointing at stage ip
+	//and setting up weinre at current local ip
+	grunt.registerTask('debug', [ 'env:stage', 'preprocess:stage', 'bgShell:weinre']);
 
 }
 ```
+
+Now we can just do 'grunt servers' to have both servers up at my current local ip or 'grunt debug' to get app accessing the stage server and having weinre run locally to debug the app.
 
 Not much to it - call networkInterfaces(), go through JSON, get ipAddress - assign it to the option unless one was passed in. You're done.
 

@@ -62,53 +62,62 @@ end open_developer_window
 
 After finding out how powerful AppleScript is, I began cranking out scripts for all my boring tasks. It became pretty nasty to manage having hundreds of lines into a single script. 
 
-The sad news is, it gets pretty sloppy trying to do the applescript 'load script' command, as it became pretty nasty pretty quick.
+The good news is, AppleScript has a way to import other scripts to use their methods, just by calling `load script <name>`.
+
+The bad news is, it gets pretty sloppy trying to do the applescript 'load script' command, as it became pretty nasty pretty quick.
 
 Thats where Grunt came in. I figured instead of having a few include scripts - make the applescript files have just the functionality I wanted
 
 ## Using Grunt Shell
 
+I chose to use the [Grunt shell](https://github.com/sindresorhus/grunt-shell) plugin to execute these scripts. You can easily do it over shell by executing `osascript <name_of_script>`. 
+
 What I did was create a nice layout for my applescript tasks as follows:
 
 ```
-Root applescripts folder
-+--Phone simulator tasks
-|  |
-|  +-- Reset simulator
-|  +-- Start simulator
+Applescripts
 |
-+--safari tasks
-|  |
-|  +-- Start developer console
-|  +-- Point simulator at spec runner file
-|
-+--xcode tasks
-|  |
-|  +-- Open mobile project
-|  +-- Launch project
++---+--iPhone simulator tasks
+	|  |
+	|  +-- reset_simulator.applescript
+	|
+	+--safari tasks
+	|  |
+	|  +-- start_safari_dev_console.applescript
+	|  +-- dev_console_test_runner.applescript
+	|
+	+--XCode tasks
+	   |
+	   +-- open_ios_project_file.applescript
+	   +-- run_simulator.applescript
+	   +-- select_simulator_6.applescript
 ```
 
 Then, I created Grunt tasks for each applescript task as I wanted, as such:
 
 ``` javascript
-start_safari_dev_console: {
-    command: ['osascript ./applescripts/safari_tasks/start_safari_dev_console.applescript'].join("&&")
-},
-dev_console_test_runner: {
-	command: ['osascript ./applescripts/safari_tasks/dev_console_test_runner.applescript'].join("&&")
-},
-open_ios_project_file: {
-	command: ['osascript ./applescripts/xcode_tasks/open_ios_project_file.applescript'].join("&&")
-},
-run_simulator: {
-	command: ['osascript ./applescripts/xcode_tasks/run_simulator.applescript'].join("&&")
-},
-simulator_6: {
-	command: ['osascript ./applescripts/xcode_tasks/simulator_6.applescript'].join("&&")
-},
-reset_simulator: {
-	command: ['osascript ./applescripts/simulator_tasks/reset_simulator.applescript'].join("&&")
-}
+grunt.initConfig({
+	shell: {
+		start_safari_dev_console: {
+		    command: ['osascript ./applescripts/safari_tasks/start_safari_dev_console.applescript'].join("&&")
+		},
+		dev_console_test_runner: {
+			command: ['osascript ./applescripts/safari_tasks/dev_console_test_runner.applescript'].join("&&")
+		},
+		open_ios_project_file: {
+			command: ['osascript ./applescripts/xcode_tasks/open_ios_project_file.applescript'].join("&&")
+		},
+		run_simulator: {
+			command: ['osascript ./applescripts/xcode_tasks/run_simulator.applescript'].join("&&")
+		},
+		simulator_6: {
+			command: ['osascript ./applescripts/xcode_tasks/simulator_6.applescript'].join("&&")
+		},
+		reset_simulator: {
+			command: ['osascript ./applescripts/simulator_tasks/reset_simulator.applescript'].join("&&")
+		}
+	}
+});
 ```
 
 Followed by a few set of tasks:

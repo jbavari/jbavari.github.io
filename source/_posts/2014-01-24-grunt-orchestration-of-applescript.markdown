@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "Organizing Applescript Actions with Grunt"
+title: "Grunt.js Orchestration & Organization of Applescript Actions"
 date: 2014-01-24 14:14
 comments: true
 categories: 

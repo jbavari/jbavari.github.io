@@ -28,17 +28,16 @@ Our surroundings for PhoneGap / Cordova are quite wide:
 * BlackBerry
 * Firefox OS
 
-That is a lot to adapt to. It may take a little 
+That is a lot to adapt to. It may take a little time to familiarize yourself with each platform. If you do though, your users will thank you.
 
 
-Some suggestions
+## Some suggestions
 
 * Put navigation items near the top in Android, for iOS put them near the bottom. Users are used to having their navigation in the same place.
 * In Android / Windows Phone - mind the Back button! Users use their phones natively, and if you try to change this, they will hate your app.
 * Dont use the same button styles for each platform! Buttons on iOS do not look like buttons on Android - if you try this though, your users will notice and find it odd. [See these great examples from Ratchet.js (look for the Base/iOS/Android buttons near the top)](http://goratchet.com/components/)
 * Use Native-like loading animations. iOS generally has a small circle - if you try using this instead of your own custom loading icon, users will most likely blame their phone over your app. [See this study by Facebook for loading animations](http://mercury.io/blog/the-psychology-of-waiting-loading-animations-and-facebook)
 * Test on actual devices. You cant get a native feel from clicking on a simulator.
-
 
 
 References:

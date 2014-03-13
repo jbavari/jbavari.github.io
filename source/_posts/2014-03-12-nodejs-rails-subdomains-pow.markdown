@@ -1,9 +1,9 @@
 ---
 layout: post
-title: "Nodejs Rails subdomains - POW!"
+title: "Nodejs Rails subdomains POW!"
 date: 2014-03-12 23:44
 comments: true
-categories: nodejs pow subdomains rails rack
+categories:
 ---
 
 I wanted to do a quick write up of how I use [Pow](http://pow.cx/) to run several rails/rack apps and provide subdomains for the rails / rack apps as well as node.js servers! I'll even throw in a Livereload plug in Rails/rack.

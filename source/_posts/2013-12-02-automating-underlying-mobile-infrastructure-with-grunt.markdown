@@ -3,7 +3,7 @@ layout: post
 title: "Automating Underlying Mobile Infrastructure With Grunt"
 date: 2013-12-02 19:15
 comments: true
-categories: 
+categories: gruntjs automation weinre xcode eclipse
 ---
 
 I'm obsessed with automating some of the tasks that I find myself repetitively doing. I don't know about you, but I hate doing the same thing over and over - it's boring and pointless

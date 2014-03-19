@@ -3,7 +3,7 @@ layout: post
 title: "Automating Phonegap Builds with Grunt"
 date: 2013-11-30 21:36
 comments: true
-categories: 
+categories: gruntjs phonegap cordova nodejs testflight automation
 ---
 
 One big thorn in my side lately has been getting our Phonegap/Cordova builds out to our team in a timely manner or just getting our mobile app environment set up. Currently our process involves changing a few files up, running some command line prompts, and then hitting a few different IDE's to crank out builds to manually upload to Testflight (www.testflightapp.com).

@@ -3,7 +3,7 @@ layout: post
 title: "Automating Jasmine Tests With Grunt Karma"
 date: 2013-12-03 09:22
 comments: true
-categories: 
+categories: gruntjs jasmine karma automation
 ---
 
 I find myself lately in falling in love unit testing in Javascript with the [Jasmine](http://pivotal.github.io/jasmine/) framework. It's really upped my trust levels that I've been writing lately. 

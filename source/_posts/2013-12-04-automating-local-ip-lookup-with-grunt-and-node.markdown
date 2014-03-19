@@ -3,7 +3,7 @@ layout: post
 title: "Automating Local IP Lookup With Grunt and Node"
 date: 2013-12-04 15:18
 comments: true
-categories: 
+categories: automation gruntjs nodejs iplookup
 ---
 
 In the last few write-ups I've done lately (see [the servers post](/blog/2013/12/02/automating-underlying-mobile-infrastructure-with-grunt) and the [phonegap builds post](/blog/2013/11/30/automating-phonegap-builds-with-grunt)), I've been requiring the user to pass in the IP or the host in the command line. That works and all, but I usually have to go look up that ip using the good ol 'ifconfig' command. 

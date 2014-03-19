@@ -3,7 +3,7 @@ layout: post
 title: "Its not the tools - its you"
 date: 2014-03-01 02:16
 comments: true
-categories:
+categories: development
 ---
 
 # Reminder - you write the code, not the tools

@@ -3,7 +3,7 @@ layout: post
 title: "Dont be a grunt"
 date: 2013-12-17 10:18
 comments: true
-categories: 
+categories: gruntjs speaking
 ---
 
 I've posted some slides I presented at the [OKC Javascript User Group](http://okcjs.com) over Grunt.js titled [Dont be a grunt, use grunt](http://jbavari.github.io/Dont-Be-a-Grunt-Use-Grunt-Slides/). 

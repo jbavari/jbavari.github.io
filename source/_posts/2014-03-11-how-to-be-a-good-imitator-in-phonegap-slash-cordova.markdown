@@ -3,7 +3,7 @@ layout: post
 title: "How to be a good imitator in PhoneGap/Cordova"
 date: 2014-03-11 01:02
 comments: true
-categories: 
+categories: phonegap cordova mobile ios android
 ---
 
 If you found your way here, then you're probably seeking knowlege about Phonegap/Cordova. I want to first remind you what the purpose of the PhoneGap / Cordova project is:

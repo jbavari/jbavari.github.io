@@ -3,7 +3,7 @@ layout: post
 title: "Making Rails and Postgres Arrays Play Nice"
 date: 2014-01-14 12:01
 comments: true
-categories: 
+categories: rails postgres
 ---
 
 Lately I've had a small need to store an array of string values in a Postgres array instead of making foreign tables and dealing with the fun ActiveRecord fancies there are to play with.

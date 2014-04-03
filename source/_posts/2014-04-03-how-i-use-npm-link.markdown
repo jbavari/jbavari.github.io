@@ -18,7 +18,7 @@ Recently, I came across [a small bug](https://groups.google.com/forum/#!topic/ph
 
 When I first started, I had to figure out how to get access to the verion pulled from the repo on Github to use my code instead of the globally installed cordova.
 
-# How I use npm-link
+## How I use npm-link
 
 * Uninstalled the currently used cordova cli, `npm uninstall -g cordova`
 * Forked the [cordova-cli repo from github](https://github.com/apache/cordova-cli)

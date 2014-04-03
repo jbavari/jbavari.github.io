@@ -10,13 +10,15 @@ Throughout the last few months, I've began helping out the [Cordova](http://cord
 
 Cordova is a host of different [components](https://issues.apache.org/jira/browse/CB/?selectedTab=com.atlassian.jira.jira-projects-plugin:components-panel), many of which rely on node.js modules from npm. 
 
-At first, I didnt know how to make changes to the cordova cli code to make changes, and I didnt want to just go modify the code in the global node_modules/cordova-cli folder. This post covers on how to get started modifying existing node modules you may use from npm.
+When I first started wantint go help, I didnt know how to make changes to the cordova code to use globally, and I didnt want to just go modify the code in the global node_modules/cordova-cli folder. This post covers on how to get started modifying existing node modules you may use from npm.
 
 ## Why?
 
 Recently, I came across [a small bug](https://groups.google.com/forum/#!topic/phonegap/ahzIwbUqr4A) in Cordova CLI 3.4. To begin to poke around the code to find a fix in the cordova-cli project.
 
-When I first started, I had to figure out how to get access to the verion pulled from the repo on Github to use my code instead of the globally installed cordova. Here's what I did:
+When I first started, I had to figure out how to get access to the verion pulled from the repo on Github to use my code instead of the globally installed cordova.
+
+# How I use npm-link
 
 * Uninstalled the currently used cordova cli, `npm uninstall -g cordova`
 * Forked the [cordova-cli repo from github](https://github.com/apache/cordova-cli)

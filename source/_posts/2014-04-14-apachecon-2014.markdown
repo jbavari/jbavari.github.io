@@ -1,0 +1,14 @@
+---
+layout: post
+title: "Apachecon 2014"
+date: 2014-04-14 20:58
+comments: true
+categories: 
+---
+
+This year I was fortunate enough to attend ApacheCon 2014 in Denver CO. It was a big adventure for me, partyly due to one of my main goals this year was to contribute more to open source. I've been actively contributing to the Apache Cordova project, so this was my opportunity to meet some of the Cordova contributors.
+
+The conference kicked off first with (@stevesgill)[https://twitter.com/stevesgill]'s talk on the Cordova CLI and the work flow with it. Steve is in charge of all the releases for Cordova, and we've worked together on the (cordova plugins registry)[http://plugins.cordova.io] since the beginning of this year.
+
+The next talk was by (@doncoleman)[https://twitter.com/doncoleman] over Bluetooth LE and how to use it with the Cordova platform. This presentation really opened my eyes to what phones are capable of, and much more so with Don's awesome (Cordova Plugin - RFDuino)(https://github.com/don/cordova-plugin-rfduino), as well as his (NFC Plugin)[https://github.com/don/phonegap-nfc]. Not only can you write your Bluetooth/NFC items once, but they can run cross platform. Way awesome.
+

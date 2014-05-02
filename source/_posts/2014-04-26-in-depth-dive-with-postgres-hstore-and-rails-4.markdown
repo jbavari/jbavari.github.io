@@ -7,7 +7,7 @@ categories:
 ---
 I had a unique little situation pop up that needed a little more flexibility when it came to storing data in the db. We use Postgres at RaiseMore because we respect ourselves, so naturally, I wanted to take a swing using some Hstore options for our ever changing data schema.
 
-My intention is not to cover the basics of getting started with Rails 4 and Postgres HStore, so [read at Honey Co](http://tastehoneyco.com/blog/postgresql-array-and-hstore-column-reference/?utm_source=rubyweekly&utm_medium=email/) or [here at inopinatus](http://inopinatus.org/2013/07/12/using-arrays-of-hstore-with-rails-4/) to get started.
+My intention is not to cover the basics of getting started with Rails 4 and [Postgres HStore](http://www.postgresql.org/docs/9.3/static/hstore.html), so [read at Honey Co](http://tastehoneyco.com/blog/postgresql-array-and-hstore-column-reference/?utm_source=rubyweekly&utm_medium=email/) or [here at inopinatus](http://inopinatus.org/2013/07/12/using-arrays-of-hstore-with-rails-4/) to get started.
 
 ## What I needed
 
@@ -91,7 +91,7 @@ What I did here was harness the awesome power of PostgreSQL's arrays and hstore.
 * I wanted a log of history with whatever pieces of data may or may not be there
 * Be able to quickly get the networks sent out per user
 
-Now my AR model is decorated with store_accessor to give me model attributes for the networks. It also stores the log of messages in an array naturally through the model, and accessed as a real HSTORE with array values (instead of json, yay).
+Now my AR model is decorated with [store_accessor](http://api.rubyonrails.org/classes/ActiveRecord/Store.html) to give me model attributes for the networks. It also stores the log of messages in an array naturally through the model, and accessed as a real HSTORE with array values (instead of json, yay).
 
 ```
 class CommunicationLogging < ActiveRecord::Base
@@ -156,3 +156,10 @@ In closing:
 * I will definitely use hstore more in the future. I like the freedom to just store whatever I want
 * I need to reach out to the Rails team and see what I can do about improving the array support in Active Record
 * I hope you try it out as well
+
+### Additional Resources
+
+* [Postgres Guide on HStore](http://postgresguide.com/sexy/hstore.html)
+* [Mike Countermash's guide to Hstore with Rails 4](http://mikecoutermarsh.com/using-hstore-with-rails-4/)
+* [Platform on Rails - Enabling PostgreSQL Hstore in Rails 4](http://platformonrails.wordpress.com/2013/03/17/enabling-postgresql-hstore-with-rails-4/)
+* [RemarkableLabs - A love affair with PostgreSQL [Rails 4 Countdown to 2013]](http://blog.remarkablelabs.com/2012/12/a-love-affair-with-postgresql-rails-4-countdown-to-2013)

@@ -77,7 +77,7 @@ NOTE: I changed the way I attacked the problem here partly because I was doing i
 This was my next stab, altering the table structure just a bit:
 
 ```
-CREATE TABLE comm_logs (
+CREATE TABLE communication_logs (
 	id serial NOT NULL,
 	user_id integer,
 	history hstore[]
@@ -123,6 +123,7 @@ class CommunicationLogging < ActiveRecord::Base
 		comm.save!
 	end
 end
+```
 
 So what happens when I to_json my fields now in PostgreSQL?
 

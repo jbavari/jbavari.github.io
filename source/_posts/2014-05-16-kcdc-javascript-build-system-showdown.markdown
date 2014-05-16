@@ -12,6 +12,6 @@ A few things about the slides:
 
 There is a Gruntfile.js that contains tasks that I talked about in the presentation. There is also a gulpfile.js that does the same tasks as the Gruntfile. It will show you the differences between the two systems.
 
-The slides are found [here](http://jbavari.github.io/JavascriptBuildSystemShowdown/#/)
+The slides are found [here](http://jbavari.github.io/JavascriptBuildSystemShowdown/#/), and the repo for the files [here](https://github.com/jbavari/JavascriptBuildSystemShowdown)
 
 Enjoy!

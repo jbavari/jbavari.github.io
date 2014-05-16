@@ -14,6 +14,6 @@ There is a Gruntfile.js that contains tasks that I talked about in the presentat
 
 The slides are found [here](http://jbavari.github.io/JavascriptBuildSystemShowdown/#/), and the repo for the files [here](https://github.com/jbavari/JavascriptBuildSystemShowdown).
 
-
-
+I hope this is helpful for some out there,
 Enjoy!
+

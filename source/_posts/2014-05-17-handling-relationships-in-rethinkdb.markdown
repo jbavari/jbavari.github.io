@@ -103,28 +103,46 @@ rescue
 end
 ```
 
-Some interesting things happen. First - I need a query that will get me all of my exercises by program ID - so thats similar to a type of inner join, or a SQL equivalent of `SELECT IN`. Luckily, RethinkDB has awesome documentation about [SQL-to-RQL](http://rethinkdb.com/docs/sql-to-reql/) and [data modeling](http://rethinkdb.com/docs/data-modeling/).
+Above you'll see I have a list of exercises, as they are inserted I add their ID's to an array. I then take that array and use that to store in `@joshs_program` so that I can set up a relationship with exercises.
 
-However, if you try this in ruby, you'll notice REALLY quick its not available in the ruby driver.
+## Retrieving data
 
-This led me to take a different path in RQL. I found out how to do a SELECT IN type query, and in Ruby it looks like this:
+Now that I have programs with an array of exercises, I need to get all the exercises by the program. First - I need a query that will get me all of my exercises by program ID - so thats similar to a type of inner join, or a SQL equivalent of `SELECT IN`. Luckily, RethinkDB has awesome documentation about [SQL-to-RQL](http://rethinkdb.com/docs/sql-to-reql/) and [data modeling](http://rethinkdb.com/docs/data-modeling/).
+
+From the documentation, they recommend doing the following:
+
+``` python
+r.table("users").filter(lambda doc:
+    r.expr(["Peter", "John"])
+        .contains(doc["name"])
+)
+```
+
+However, the example is in Python, so you'll need to do a little more work to get it in Ruby.
+
+This led me to take a different path in RQL. I found out how to do a `SELECT IN` type query, and in Ruby it looks like this with `inner_join`:
 
 ``` ruby
 @programId = params[:programId] || '37feebf9-54ce-45f5-ba76-d13fe634b035'
 exercises = r.table("Programs")
 		.filter({'id' => @programId})
 		.inner_join( r.table("Exercises")) { |p, e| 
-  			p['exercises'].contains( e['id'] ) 
-  		}
-  		.zip()
-  		.without('exercises', 'userId')
-  		.order_by(r.desc('created_at'))
-  		.run(@rdb_connection)
+			p['exercises'].contains( e['id'] ) 
+		}
+		.zip()
+		.without('exercises', 'userId')
+		.order_by(r.desc('created_at'))
+		.run(@rdb_connection)
 ```
 
 You'll see I'm using the RQL `inner_join`, and as part of my lamba I use the table attribute `p['exercises']` which contains my array of exercise ID's, then using the `contains` method on my exercise table `e['id']`. It works wonderfully. I'm not sure if it is the best way to handle this, and I'm still a RethinkDB newbie so this was a good workout for me.
 
+### The API code
+
 The rest of my API code relied heavily on the RethinkDB [sample app - Pastie](http://www.rethinkdb.com/docs/examples/sinatra-pastie/). The really interesting joins are found around line 77.
+
+
+I'm including my own version here to help give some ideas how I'm setting up my API:
 
 ``` ruby server.rb
 require 'sinatra'
@@ -227,3 +245,5 @@ get '/getuser/:patientId' do
 	user.first.to_json
 end
 ```
+
+That's all folks! Hope this helps some in understanding how to do foreign key references in RethinkDB!

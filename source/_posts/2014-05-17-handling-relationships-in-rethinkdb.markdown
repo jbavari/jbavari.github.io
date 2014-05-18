@@ -10,7 +10,7 @@ Lately I've been playing a lot with [RethinkDB](http://rethinkdb.com) and I'm in
 I'm writing this post to share some of the knowledge I've acquired along the way, and hopefully some will find it helpful.
 
 ## The problem
-I'm using a doc db because I'm still not sure of my database schema, and since its mostly a prototype, I need something flexible. The project is for physical therapy patients involving rehabilitation programs. Each program is comprised of several exercises, and a program is assigned to one user. A user can have multiple 
+I'm using a doc db because I'm still not sure of my database schema, and since its mostly a prototype, I need something flexible. The project is for physical therapy patients involving rehabilitation programs. Each program is comprised of several exercises, and a program is assigned to one user. A user can have multiple programs.
 
 Eat your ER heart out:
 

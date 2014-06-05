@@ -89,6 +89,11 @@ angular.module('myApp', ['ui.bootstrap']);
 function SettingsCtrl($scope, $http) {
   //..snip!..
    $scope.handlePopupAuthentication = function handlePopupAuthentication(network, account) {
+
+      //Note: using $scope.$apply wrapping
+      //the window popup will call this 
+      //and is unwatched func 
+      //so we need to wrap
       $scope.$apply(function(){
          $scope.applyNetwork(network, account);
       });
@@ -102,6 +107,8 @@ function SettingsCtrl($scope, $http) {
 }
 ```
 
+### Solving popup talking to AngularJS controller
+
 Once the OAuth pop up that is being opened via `window.open` is completed, it will come back to our server (http://my.dashboard.dev/session/create) in which I will render a view through Rails that will display a simple 'this window is closing' message. It will also pass in some information from the Rails controller and pass back its completed information back to our calling AngularJS controller. (Thats a lot of controllers, folks)
 
 ```
@@ -114,4 +121,6 @@ Once the OAuth pop up that is being opened via `window.open` is completed, it wi
 </script>
 ```
 
-That's pretty much it. That is how I handled my popups reporting back to its calling AngularJS controller through OAuth on Rails.
+### Conclusion
+
+That's pretty much it. That is how I handled my popups reporting back to its calling AngularJS controller through OAuth on Rails. Hope this helps others out there trying to solve problems like these.

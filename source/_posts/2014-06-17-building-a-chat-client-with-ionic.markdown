@@ -6,9 +6,7 @@ comments: true
 categories: ionic socket.io redis node.js javascript cordova phonegap
 ---
 
-I wanted to play around and get some more experience with some technology lately - mostly things on my list of things to get better at and try.
-
-I wanted a fun challenge to push myself and cross a few things off my ever so growing `I want to play with this` type of lists.
+I wanted a fun challenge to push myself and cross a few things off my ever so growing `I want to play with this` type of lists. I love learning, and there are so many awesome tools / utilities / libraries out there to evaluate its hard to justify incorporating them into every project at work without having some knowledge of the tools.
 
 DISCLAIMER: I may use some tools incorrectly, but the main purpose of this fun little project was to learn and have fun.
 

@@ -27,7 +27,7 @@ Users can join existing channels, or create their own. All users can see channel
 
 ## Tech details - using Redis / Node.js
 
-At first, I wanted to create messages some how and have them each have `expire` times. After failing miserably, I got the amazing change to pair up with [Michael Gorsuch](https://twitter.com/michaelgorsuch) to give me some alternative ideas. (Shameless plug - if you need to do some server monitoring, check out his project [Canary.io](http://canary.io/) )
+At first, I wanted to create messages some how and have them each have `expire` times. After failing miserably, I got the amazing chance to pair up with [Michael Gorsuch](https://twitter.com/michaelgorsuch) to give me some alternative ideas. (Shameless plug - if you need to do some server monitoring, check out his project [Canary.io](http://canary.io/), it's AWESOME).
 
 The concept is - instead of using separate keys with ezxpire times - use Redis' sorted sets with scores of the times in UNIX format and the member being a JSON encoded string. I had my channels keys in the format of `messages:ChannelName`.
 

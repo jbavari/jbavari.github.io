@@ -3,7 +3,7 @@ layout: post
 title: "How I use npm link"
 date: 2014-04-03 10:04
 comments: true
-categories: 
+categories: nodejs npm
 ---
 
 Throughout the last few months, I've began helping out the [Cordova](http://cordova.apache.orc) team with a few bug fixes that I come across and want to contribute back.

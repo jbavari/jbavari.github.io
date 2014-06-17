@@ -3,7 +3,7 @@ layout: post
 title: "In depth dive with Postgres Hstore and Rails 4"
 date: 2014-04-26 12:08
 comments: true
-categories: 
+categories: rails postgres hstore ruby
 ---
 I had a unique little situation pop up that needed a little more flexibility when it came to storing data in the db. We use Postgres at RaiseMore because we respect ourselves, so naturally, I wanted to take a swing using some Hstore options for our ever changing data schema.
 

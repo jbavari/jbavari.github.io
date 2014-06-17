@@ -3,7 +3,7 @@ layout: post
 title: "Unit Testing AngularJS Services"
 date: 2014-06-11 17:52
 comments: true
-categories: javascript angularjs localstorage jasmine karma
+categories: javascript angularjs localstorage jasmine karma nodejs
 ---
 
 I've been using AngularJS a lot lately. Since I do a lot of Javascript, that means I'm prone to make a lot of runtime script errors.

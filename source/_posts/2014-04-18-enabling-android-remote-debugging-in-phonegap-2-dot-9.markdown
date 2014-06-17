@@ -3,7 +3,7 @@ layout: post
 title: "Enabling Android Remote Debugging in Phonegap 2.9"
 date: 2014-04-18 10:13
 comments: true
-categories: 
+categories: cordova phonegap android
 ---
 
 Recently the Cordova (as well as Phonegap) team has introduced [the ability to remote debug Android 4.4+](http://www.raymondcamden.com/index.cfm/2014/1/2/Apache-Cordova-33-and-Remote-Debugging-for-Android) from [this issue](https://issues.apache.org/jira/browse/CB-5487).

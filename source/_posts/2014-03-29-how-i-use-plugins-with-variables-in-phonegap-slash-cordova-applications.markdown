@@ -3,7 +3,7 @@ layout: post
 title: "Properly using Plugins with variables in Phonegap / Cordova applications"
 date: 2014-03-29 02:14
 comments: true
-categories: 
+categories: phonegap cordova plugins
 ---
 
 In the past week I've been working on upgrading our mobile application from PhoneGap 2.9 to Cordova 3.4. (There is no real reason for going from PhoneGap to Cordova, just that I've been actively committing to the Cordova project).

@@ -3,7 +3,7 @@ layout: post
 title: "Pow and weird starting issues"
 date: 2014-05-07 14:56
 comments: true
-categories: 
+categories: pow rails sinatra
 ---
 
 Lately I've been getting this weird error from Pow in Rails 4:

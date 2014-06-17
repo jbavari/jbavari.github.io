@@ -3,7 +3,7 @@ layout: post
 title: "KCDC - Javascript Build System Showdown"
 date: 2014-05-16 10:44
 comments: true
-categories: kcdc speaking
+categories: kcdc speaking javascript gulp grunt
 ---
 
 I spoke about the different Javascript Build systems at KCDC. I wanted to make sure my slides are available to any who wanted to view them.

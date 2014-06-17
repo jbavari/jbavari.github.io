@@ -3,7 +3,7 @@ layout: post
 title: "Grunt.js Orchestration & Organization of Applescript Actions"
 date: 2014-01-24 14:14
 comments: true
-categories: gruntjs applescript
+categories: grunt applescript
 ---
 
 Lately I've learned a little about AppleScript. If you're not familiar, I suggest reading the [AppleScript Language Guide](https://developer.apple.com/library/mac/documentation/applescript/conceptual/applescriptlangguide/introduction/ASLR_intro.html#//apple_ref/doc/uid/TP40000983-CH208-SW1) to get a little more background information about it. In a nutshell, however, its basically a scripting language developed by Apple to do Inter-application communication using AppleEvents (yes, I used the language from the Wiki page).

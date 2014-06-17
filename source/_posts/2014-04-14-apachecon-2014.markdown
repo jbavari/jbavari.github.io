@@ -3,7 +3,7 @@ layout: post
 title: "Apachecon 2014"
 date: 2014-04-14 20:58
 comments: true
-categories: 
+categories: cordova apache community
 ---
 
 This year I was fortunate enough to attend ApacheCon 2014 in Denver CO. It was a big adventure for me, partyly due to one of my main goals this year was to contribute more to open source. I've been actively contributing to the Apache Cordova project, so this was my opportunity to meet some of the Cordova contributors.

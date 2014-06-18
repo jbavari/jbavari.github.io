@@ -377,3 +377,10 @@ AngularJS does a lot of the heavy lifting for you. However, it still gives you j
 With just some simple tests you can also avoid any silly run time errors you may encounter.
 
 Hope this gives ideas on how to openly test your services as well as models.
+
+
+### References
+
+* [Andy Shora's Blog post - Unit Testing Best Practices in AngularJS](http://andyshora.com/unit-testing-best-practices-angularjs.html)
+* [AngularJS Unit Testing Controllers](http://www.benlesh.com/2013/05/angularjs-unit-testing-controllers.html)
+* [AngularJS Unit Testing Services](http://www.benlesh.com/2013/06/angular-js-unit-testing-services.html)

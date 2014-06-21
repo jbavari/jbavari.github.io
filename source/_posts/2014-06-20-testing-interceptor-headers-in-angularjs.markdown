@@ -6,7 +6,7 @@ comments: true
 categories: angularjs javascript testing
 ---
 
-In AngularJS, you can set up HTTP Interceptors (middleware) to inject headers etc.
+In AngularJS, you can set up [HTTP Interceptors](https://docs.angularjs.org/api/ng/service/$http) (middleware) to inject headers etc.
 
 I had a service that I wanted to intercept every http request to our API service to attach a token that we consume to verify a user. This would only happen once a token is set. 
 
@@ -75,12 +75,13 @@ describe("Service Unit Tests", function() {
       httpProviderIt = $httpProvider;
     });
 
-    inject(function (_Auth_, _RequestService_, _Feed_) {
+    inject(function (_AuthService_, _RequestService_) {
       RequestService = _RequestService_;
+      AuthService = _AuthService_;
     })
   });
 
-  var RequestService;
+  var RequestService, AuthService;
   var $httpBackend;
   var token = 'someToken';
 

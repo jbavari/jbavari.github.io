@@ -3,7 +3,7 @@ layout: post
 title: "Building a chat client with Ionic / Socket.io / Redis / Node.js"
 date: 2014-06-17 00:09
 comments: true
-categories: ionic socket.io redis nodejs javascript cordova phonegap
+categories: ionic socket.io redis nodejs javascript cordova phonegap angularjs
 ---
 
 I wanted a fun challenge to push myself and cross a few things off my ever so growing `I want to play with this` type of lists. I love learning, and there are so many awesome tools / utilities / libraries out there to evaluate its hard to justify incorporating them into every project at work without having some knowledge of the tools.

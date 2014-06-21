@@ -18,7 +18,7 @@ The job processing server has all the Sidekiq worker models in it, as you'd expe
 
 Some use cases we have for it is to have all Push notifications sent from a single location, the job server. However, we need to trigger some of those from our API or analytical dashboard.
 
-## The problem
+## The problem and solution
 
 How do we get workers queued up from other servers without replicating the Worker class in other servers? Since Sidekiq uses [Redis](http://redis.io), we figure'd we'd make a simple `RedisJobPusher` class to push workers to list in Redis that Sidekiq watches. Using this class, we can now queue jobs from other servers.
 

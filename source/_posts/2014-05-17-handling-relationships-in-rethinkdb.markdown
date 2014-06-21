@@ -3,7 +3,7 @@ layout: post
 title: "Handling Relationships in RethinkDB"
 date: 2014-05-17 23:06
 comments: true
-categories: rethinkdb nosql docdb
+categories: rethinkdb nosql docdb sinatra ruby
 ---
 Lately I've been playing a lot with [RethinkDB](http://rethinkdb.com) and I'm in love with it. Such a sweet document database, amazingly beautiful web interface, and easy to use API's in three different languages. I started up a side project that involves some relational data, and ran into a few bumps along the road.
 

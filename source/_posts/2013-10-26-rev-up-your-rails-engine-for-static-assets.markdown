@@ -3,7 +3,7 @@ layout: post
 title: "Rev Up Your Rails Engine For Static Assets"
 date: 2013-10-26 19:32
 comments: true
-categories: rails
+categories: rails ruby
 ---
 
 Lately we've had the desire to move some of our rails services / middleware from our main web project to Rails Engines as gems to help us scale out and reuse that functionality across servers and sites.

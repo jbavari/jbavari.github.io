@@ -81,6 +81,6 @@ it('should have true returned for proper sendPost', function() {
 });
 ```
 
-Going forward, there should be no excuses as why my HTTP post requests fail due to parameters being passed or set incorrectly.
+Going forward, there should be no excuses as to why my HTTP post requests fail due to parameters being passed or set incorrectly.
 
 I hope this helps any others looking to test their post data parameters.

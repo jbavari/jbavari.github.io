@@ -19,13 +19,11 @@ I wrote a test to verify my post data was correct for the following function:
 ``` js
 var sendPost = function sendPost(post) {
 	var deferred = $q.defer();
-	var publishPostPath = basePath + 'api/v1/social/publish_post';
+	var publishPostPath = 'http://example.com/post';
 	var postData = { 
 		event_user_id: Auth.currentUser().id,
-		// lat: location == null ? null : location.coords.latitude,
-		lat: location == null ? null : 0,
-		// lon: location == null ? null : location.coords.longitude,
-		lon: location == null ? null : 0,
+		lat: location == null ? post.lat : 0,
+		lon: location == null ? post.lon : 0,
 		message: post.storyMessage,
 		post_fb: post.postToFB, 
 		post_twitter: post.postToTwitter,
@@ -64,7 +62,7 @@ A full test looks like this:
 ``` js
 it('should have true returned for proper sendPost', function() {
 	var post = {storyMessage: 'Hello', postToFB: true, postToTwitter: true, postToTeam: false};
-	$httpBackend.when('POST', 'http://raisemore.dev/api/v1/social/publish_post',
+	$httpBackend.when('POST', 'http://example.com/post',
 		function(postData) {
 			jsonData = JSON.parse(postData);
 			expect(jsonData.message).toBe(post.storyMessage);

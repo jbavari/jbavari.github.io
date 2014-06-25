@@ -19,7 +19,7 @@ My workflow is usually like this:
 * cordova platform add ios
 * cordova plugin add org.apache.cordova.camera
 * cordova plugin add org.apache.cordova.contacts
-* <insert more plugin statements for every plugin we want>
+* insert more plugin statements for every plugin we want
 * cordova run ios
 * cordova run android
 
@@ -36,7 +36,7 @@ Ideally, I want to just type `cordova setup` - have it look at my package.json f
 
 First, lets start by putting our platforms and plugins in our package.json like so:
 
-``` js
+``` json
 {
   "name": "SampleApp",
   "version": "0.0.0",

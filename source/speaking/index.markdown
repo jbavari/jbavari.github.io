@@ -8,10 +8,11 @@ footer: true
 ---
 
 ## Upcoming talks
-
-* [OKCjs](http://okcjs.com/) - [Javascript Build System Showdown](http://jbavari.github.io/JavascriptBuildSystemShowdown/#/)
+* [OKC Ruby - Using the Invoker gem for multiple processes and applications](http://jbavari.github.io/UsingTheInvokerGem)
+* [Boulder Ruby Group - Put this in your pipe and Invoke it](http://jbavari.github.io/PutInPipeAndInvoke)
 
 ## Speaking History
+* [OKCjs](http://okcjs.com/) - [Javascript Build System Showdown](http://jbavari.github.io/JavascriptBuildSystemShowdown/#/)
 * [OKCjs Lighting Talks](http://okcjs.com/blog/2014/05/20/may-lightningtalks/) - [Advanced Javascript Debugging Techniques](http://jbavari.github.io/blog/2014/05/20/okcjs-javascript-debugging-techniques/)
 * [KCDC](http://www.kcdc.info/sessions/52d04239ce659a02009dcf2c) - [Moving Forward with Phonegap/Cordova Plugins](http://jbavari.github.io/MovingForwardWithCordovaPlugins/#/)
 * [KCDC](http://www.kcdc.info/sessions/52d040e5ce659a02009dcf2a) - [Javascript Build System Showdown](http://jbavari.github.io/JavascriptBuildSystemShowdown/#/)

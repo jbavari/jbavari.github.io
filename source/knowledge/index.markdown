@@ -41,6 +41,7 @@ I love reading and learning. I'm putting this page together to keep track of all
 * [The Little Redis Book](http://openmymind.net/2012/1/23/The-Little-Redis-Book/) - Karl Seguin
 * [CouchDB - The Definitive Guide](http://guide.couchdb.org/index.html) - Chris Anderson, Jan Lehnardt, Noah Slater
 
+
 ### Financials
 
 * The Tao of Warren Buffet - 

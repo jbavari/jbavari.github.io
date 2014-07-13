@@ -35,8 +35,11 @@ I love reading and learning. I'm putting this page together to keep track of all
 
 ### Technical Books
 
-* Ruby on Rails 4.0 Guide - Stefan Wintermeyer
-* CSS3 Inside and out - Eric Mayer
+* [Ruby on Rails 4.0 Guide](http://www.amazon.com/Ruby-Rails-Guide-Stefan-Wintermeyer-ebook/dp/B00E25KVLW) - Stefan Wintermeyer
+* [You Dont Know JavaScript](https://github.com/getify/You-Dont-Know-JS) - Kyle Simpson
+* [CSS and Documents](http://shop.oreilly.com/product/0636920027607.do) - Eric Mayer
+* [The Little Redis Book](http://openmymind.net/2012/1/23/The-Little-Redis-Book/) - Karl Seguin
+* [CouchDB - The Definitive Guide](http://guide.couchdb.org/index.html) - Chris Anderson, Jan Lehnardt, Noah Slater
 
 ### Financials
 

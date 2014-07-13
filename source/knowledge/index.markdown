@@ -30,7 +30,7 @@ I love reading and learning. I'm putting this page together to keep track of all
 * A Whole New Mind - Daniel Pink
 * Atlas Shrugged - Ayn Rand
 * Failing Forward - John Maxwell
-* Man and His Symbols - (MARK)
+* Man and His Symbols - Carl Jung
 
 
 ### Technical Books

@@ -8,7 +8,7 @@ categories: docker
 
 I am not pretending to be an expert about what's in this post, but merely a talking point to learn upon.
 
-# Problem: I need to reassemble an old C++ project with some old libraries and files that may not be around (or have disappeared already).
+## Problem: I need to reassemble an old C++ project with some old libraries and files that may not be around (or have disappeared already).
 
 First theres a big chunk of files that are used strictly for rendering a video, ~560MB. Some of which had since gone missing.
 

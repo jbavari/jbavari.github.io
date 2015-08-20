@@ -10,7 +10,7 @@ Unit testing is something most of us dev's don't think much of. Until we encount
 
 JavaScript testing itself is hard with no clear cut path to take. Most times, you'll have to decide important things for yourself as far as which testing framework to use and the tools to do them.
 
-I enjoy Jasmine testing framework right now. For my node projects, I like to use the node package `jasmine-node`. However, Electron is basically a web browser with node conveniences, so we want to test browser related things.
+I enjoy Jasmine testing framework right now. For my node projects, I like to use the node package [jasmine-node](https://github.com/mhevery/jasmine-node). However, Electron is basically a web browser with node conveniences, so we want to test browser related things.
 
 Since Electron applications take a unique approach to combining elements from the browser with conveniences from node, such as `require`, `__dirname`, `global` and other keywords specific to node, testing gets a little more complicated.
 

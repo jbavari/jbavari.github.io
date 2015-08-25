@@ -132,6 +132,42 @@ IonicAppLib.__defineGetter__('semver', function () {
 
 ```
 
+
+### Testing
+
+I threw together a quick test to ensure that all of the modules were still correctly being accessible:
+
+``` js
+
+var index = require('../index');
+
+describe('index', function() {
+
+  it('should have index defined', function() {
+    expect(index).toBeDefined();
+  });
+
+  function testForProperty(input) {
+    it('should have ' + input + ' available', function() {
+      expect(index[input]).toBeDefined();
+    });
+  }
+
+  var objs = ['browser', 'configXml', 'cordova', 'events', 'hooks', 'info', 
+              'ioConfig', 'login', 'logging', 'multibar', 'opbeat', 'project', 
+              'share', 'semver', 'serve', 'settings', 'setup', 'start', 'state', 
+              'stats', 'upload', 'utils'];
+
+  // Doing it this way to give better failure messages. 
+  // Ensures all commands are available currently from
+  objs.forEach(function(obj) {
+    // expect(index[obj], obj).toBeDefined();
+    testForProperty(obj);
+  });
+
+});
+```
+
 ## Gotchas
 
 For one - you'll need to ensure your files adhere to some naming conventions. For our commands, we had some with hyphens (`-`) that we had to account for, as you can see above `if (file.indexOf('-') > 0)`.

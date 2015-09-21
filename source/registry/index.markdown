@@ -36,7 +36,7 @@ Currently I wanted a quick and easy interface to look up npm packages simple inf
     <div>
       <br>
       <p>Versions</p>
-      <div ng-repeat="(key, value) in npmInfo['versions']">
+      <div class="dist-tag" ng-repeat="(key, value) in npmInfo['versions']">
         {{key}}
       </div>
     </div>

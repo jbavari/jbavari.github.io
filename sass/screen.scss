@@ -8,3 +8,13 @@
 @import "partials";
 @import "plugins/**/*";
 @import "custom/styles";
+
+
+.dist-tag {
+  background-color: lightgray;
+  border: solid 1px gray;
+  color: black;
+  display: inline-block;
+  margin: 5px;
+  padding: 5px;
+}

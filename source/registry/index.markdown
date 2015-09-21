@@ -6,8 +6,8 @@ comments: true
 sharing: true
 footer: true
 ---
-<script type="text/javascript" src="javascripts/angular.min.js"></script>
-<script type="text/javascript" src="javascripts/registryctrl.js"></script>
+<script type="text/javascript" src="/javascripts/angular.min.js"></script>
+<script type="text/javascript" src="/javascripts/registryctrl.js"></script>
 
 Currently I wanted a quick and easy interface to look up npm packages simple information for tags, versions, and other info npm doesnt show.
 

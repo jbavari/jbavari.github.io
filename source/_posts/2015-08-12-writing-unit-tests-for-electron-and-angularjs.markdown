@@ -3,7 +3,7 @@ layout: post
 title: "Writing Unit Tests for Electron and AngularJS"
 date: 2015-08-12 19:53
 comments: true
-categories: 
+categories: electron testing angularjs
 ---
 
 Unit testing is something most of us dev's don't think much of. Until we encounter some simple to solve bugs or have regressions in code that drives us crazy.

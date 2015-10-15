@@ -3,10 +3,10 @@ layout: post
 title: "Releasing Electron for Windows"
 date: 2015-09-09 18:50
 comments: true
-categories: electron windows
+categories: electron windows release
 ---
 
-Releasing Electron applications on Windows can be a tricky issue. Especially if you mainly use a Mac (like me). And you have to think about that pesky [code signing](MSDN) thing you have to do to avoid the annoying 'SmartScreen' filter users may get. 
+Releasing Electron applications on Windows can be a tricky issue. Especially if you mainly use a Mac (like me). And you have to think about that pesky [code signing](https://msdn.microsoft.com/en-us/library/ms537361%28v=vs.85%29.aspx) thing you have to do to avoid the annoying 'SmartScreen' filter users may get. 
 
 Thankfully, there's a great tool called Squirrel made by [Paul Betts](https://twitter.com/paulcbetts) that does a ton of the heavy lifting for you. Codesigning and all.
 

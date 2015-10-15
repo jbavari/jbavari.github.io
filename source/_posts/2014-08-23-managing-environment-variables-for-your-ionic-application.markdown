@@ -3,7 +3,7 @@ layout: post
 title: "Managing Environment Variables for your Ionic Application"
 date: 2014-08-23 20:43
 comments: true
-categories:
+categories: ionic angularjs
 ---
 I've been lucky enough to be developing with the Ionic framework lately. One issue I keep running into is - how do I manage some environment variables (base api url, debug enabled, upload url, etc) across my code, both tests and application.
 

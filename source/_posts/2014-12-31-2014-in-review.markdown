@@ -3,7 +3,7 @@ layout: post
 title: "2014 in review"
 date: 2014-12-31 14:37
 comments: true
-categories:
+categories: life review
 ---
 
 2014 has been an interesting year and I'd like to spend a minute to review it for myself as a reminder.

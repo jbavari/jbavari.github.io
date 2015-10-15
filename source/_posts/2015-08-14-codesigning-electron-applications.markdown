@@ -3,7 +3,7 @@ layout: post
 title: "Codesigning Electron Applications"
 date: 2015-08-14 11:30
 comments: true
-categories: 
+categories: electron codesigning release
 ---
 
 Lately I've been busy at work creating and maintaining [Ionic Lab](http://lab.ionic.io). It's been a fun and challenging problem using HTML/CSS/JavaScript to create native OSX/Windows applications.

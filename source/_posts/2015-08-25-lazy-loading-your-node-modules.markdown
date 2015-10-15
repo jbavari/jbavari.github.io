@@ -3,7 +3,7 @@ layout: post
 title: "Lazy loading your node modules"
 date: 2015-08-25 15:29
 comments: true
-categories: 
+categories: node npm modules
 ---
 
 While working at [Ionic](http://ionicframework.com) I've been focused on the [Ionic CLI](http://npmjs.org/package/ionic). 

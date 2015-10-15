@@ -3,7 +3,7 @@ layout: post
 title: "Comparisons of nw.js and Electron"
 date: 2015-05-08 17:11
 comments: true
-categories: 
+categories: nwjs electron
 ---
 
 In the last few months, I've been playing around with two tools to help bridge the gap between the web and native desktop applications. There are two main tools that come to mind - nw.js (formerly known as Node Webkit) and Electron (formerly known as Atom Shell).

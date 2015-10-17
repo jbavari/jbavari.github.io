@@ -3,7 +3,7 @@ layout: post
 title: "Understanding Built Node Modules"
 date: 2015-10-15 08:32
 comments: true
-categories: 
+categories: node npm ionic
 ---
 
 I've found lately having to understand more how native node modules are used. What I'm referring to, is using [Node addons](https://nodejs.org/api/addons.html):

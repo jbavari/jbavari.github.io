@@ -3,7 +3,7 @@ layout: post
 title: "Using npm tags correctly"
 date: 2015-10-16 15:16
 comments: true
-categories: 
+categories: node npm registry
 ---
 
 If you do any kind of deployments to npm, you'll probably find learning more about npm tags very helpful.

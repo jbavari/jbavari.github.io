@@ -10,9 +10,23 @@ If you do any kind of deployments to npm, you'll probably find learning more abo
 
 Just as git tags mark commits in your repository history, npm tags mark a specific version in the npm registry of your published versions.
 
-If you didn't know, npm manages a tag 'latest' that points to the last version you put out with `npm publish`. 
+If you didn't know, npm manages a tag 'latest' that points to the last version you put out with `npm publish`.
 
 The syntax to publish a new version and tag that version with the name beta, use: `npm publish --tag beta`.
+
+## Installing from tags
+
+To have your users install your node module, they just type `npm install`. What that does is looks at npm's latest tag for your repository, and installs that version.
+
+They can also specify a version by passing it after the `@` character after the module name: `npm install module@1.7.3`.
+
+Lets say you have some beta users and always want them to grab the beta, without having to remember the latest version you've pushed.
+
+You just run `npm publish --tag beta`, then have them run `npm install module@beta`.
+
+At any time, they can still specify the beta version `npm install module@1.7.3-beta.1` if they want to hop down or up a version, for example.
+
+## Looking up npm tags
 
 You can look up the entire list of versions npm maintains at the url, [registry.npmjs.org/ionic](http://registry.npmjs.org/ionic).
 

@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "Using npm tags correctly"
+title: "Using npm tags"
 date: 2015-10-16 15:16
 comments: true
 categories: node npm registry

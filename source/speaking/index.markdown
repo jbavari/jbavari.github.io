@@ -9,9 +9,13 @@ footer: true
 
 ## Upcoming talks
 
+None planned as of now.
+
 ## Speaking History
 
-* [OKC ThunderPlains](http://thunderplainsconf.com/) - [Mobile Applications with JS and Ionic](http://jbavari.github.io/MobileApplicationsWithJsAndIonic/)
+* [Ng-vegas](http://www.ng-vegas.org/) - [Ionic - The Happy Path to Mobile Apps](http://jbavari.github.io/ionic-present/#/)
+* [Rocky Mountain AngularJS](http://www.meetup.com/RockyMountainAngularJS) - [Ionic Framework](http://www.meetup.com/RockyMountainAngularJS/events/218502072/)
+* [OKC ThunderPlains](http://thunderplainsconf.com/) - [Mobile Applications with JS and Ionic](http://jbavari.github.io/MobileApplicationsWithJsAndIonic/) ([video](https://www.youtube.com/watch?v=T97mEDEVUMk))
 * [OKC Ruby](http://www.okcruby.org/blog/2014/06/24/july-2014-meeting/) - [Using the Invoker gem for multiple processes and applications](http://jbavari.github.io/InvokerPresentation/#/)
 * [OKCjs](http://okcjs.com/) - [Javascript Build System Showdown](http://jbavari.github.io/JavascriptBuildSystemShowdown/#/)
 * [OKCjs Lighting Talks](http://okcjs.com/blog/2014/05/20/may-lightningtalks/) - [Advanced Javascript Debugging Techniques](http://jbavari.github.io/blog/2014/05/20/okcjs-javascript-debugging-techniques/)

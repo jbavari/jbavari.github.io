@@ -10,7 +10,7 @@ If you've recently change node versions and begun running into issues with some 
 
 Why: This has to do with some of your modules you may be using having native bindings to your current system runtime.
 
-This lead me having to understand more how native node modules are used. What I'm referring to, is using [Node addons](https://nodejs.org/api/addons.html):
+This then put me on a quest to understand more how native node modules are used. What I'm referring to, is using [Node addons](https://nodejs.org/api/addons.html):
 
 > Addons are dynamically linked shared objects. They can provide glue to C and C++ libraries. The API (at the moment) is rather complex, involving knowledge of several libraries
 

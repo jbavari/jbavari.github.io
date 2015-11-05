@@ -45,7 +45,7 @@ Edit: I've just learned on a new method to package bundle up node modules by usi
 
 By specifying `bundleDependencies` in your package.json, you are telling npm on its publishing process to include those modules listed in the tarball it creates and pushes up to the npm registry. For example, if you go to any npm repo and download the tarball in the url there, unzip it and open it, you'll see those exact node modules in them as you've got in your own `node_modules` folder. 
 
-This effectively locks down your version, at the cost of a larger tarball size the user will do
+This effectively locks down your modules versions, at the cost of a larger tarball size the user will download intially. Any modules that are not bundled, will then be downloaded and installed after the tarball is downloaded.
 
 ## Shrinkwrapping
 

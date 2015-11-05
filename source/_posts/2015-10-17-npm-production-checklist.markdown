@@ -2,11 +2,10 @@
 layout: post
 title: "npm Production Checklist"
 date: 2015-10-17 18:33
+updated: 2015-11-04 11:55
 comments: true
 categories: node npm release
 ---
-
-Updated Nov 4th, 2015.
 
 I recently read this post by RisingStack over the [Node.js Production Checklist](https://blog.risingstack.com/node-js-production-checklist). 
 

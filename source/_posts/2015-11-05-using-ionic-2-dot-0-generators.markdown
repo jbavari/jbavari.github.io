@@ -1,14 +1,14 @@
 ---
 layout: post
-title: "Using Ionic v2 Generators"
+title: "Using Ionic 2.0 Generators"
 date: 2015-11-05 21:49
 comments: true
 categories: javascript cli ionic typescript es6 node
 ---
 
-At the time of writing this, Ionic v2 is still in alpha. 
+At the time of writing this, Ionic 2.0 is still in alpha. 
 
-Ionic v2 builds on a ton of new technologies, and if you've never dabbled in these technologies, you can use the generators available in the [`ionic-framework`](http://npmjs.org/package/ionic-framework) module to get ramped up quickly!
+Ionic 2.0 builds on a ton of new technologies, and if you've never dabbled in these technologies, you can use the generators available in the [`ionic-framework`](http://npmjs.org/package/ionic-framework) module to get ramped up quickly!
 
 ## Getting started
 
@@ -78,7 +78,7 @@ Look in your browser, you should have an anchor available to click/tap that will
 
 Here's a GIF of what it looks like: 
 
-{% img [pic] /images/IonicV2Generators.gif [250] [250] [Ionic V2 - Page generator example] %}
+{% img [pic] /images/IonicV2Generators.gif [250] [250] [Ionic 2.0- Page generator example] %}
 
 ## Wiring up sass
 
@@ -86,7 +86,7 @@ If you want to use the custom sass styles on the about page, first wire in the `
 
 ## A quick note on naming conventions
 
-For Ionic v2, we've contributed to a [naming convention](https://en.wikipedia.org/wiki/Naming_convention_%28programming%29#Multiple-word_identifiers) of kabob-casing for file names (my-about-page.html) and css classes (.my-about-page), and using PascalCasing for JavaScript classes in ES6 / TypeScript (MyAboutPage).
+For Ionic 2.0, we've contributed to a [naming convention](https://en.wikipedia.org/wiki/Naming_convention_%28programming%29#Multiple-word_identifiers) of kabob-casing for file names (my-about-page.html) and css classes (.my-about-page), and using PascalCasing for JavaScript classes in ES6 / TypeScript (MyAboutPage).
 
 
 ## Other generators

@@ -8,7 +8,7 @@ categories: javascript cli ionic typescript es6 node
 
 At the time of writing this, Ionic 2.0 is still in alpha. 
 
-Ionic 2.0 builds on a ton of new technologies, and if you've never dabbled in these technologies, you can use the generators available in the [`ionic-framework`](http://npmjs.org/package/ionic-framework) module to get ramped up quickly!
+Ionic 2.0 builds on a ton of new technologies, and if you've never dabbled in these technologies, you can use the generators available in the [`ionic-cli`](http://npmjs.org/package/ionic) to get ramped up quickly!
 
 ## Getting started
 
@@ -18,7 +18,7 @@ Start an app with the tabs template: `ionic start MyIonic2App tabs --v2`.
 
 Change directories and serve the app in the browser: `cd MyIonic2App && ionic serve`.
 
-You'll see, we've got a basic tabs starter now avilable at `MyIonic2App` directory. Note: the `ionic-framework` module will be installed from the `ionic start` command. 
+You'll see, we've got a basic tabs starter now avilable at `MyIonic2App` directory.
 
 ## Generating a few pages
 

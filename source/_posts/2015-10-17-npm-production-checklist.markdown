@@ -11,17 +11,27 @@ I recently read this post by RisingStack over the [Node.js Production Checklist]
 
 Since this was aimed at releasing node.js applications for the most part, I wanted to touch base on a 'production checklist' on releasing a npm module.
 
-This post will mainly serve as a work in progress document, as I'm still learning best practices all the time.
+The [npm-developers guide](https://docs.npmjs.com/misc/developers) does a *great* job of explaining much you need to know about publishing your npm module.
+
+This post will mainly serve as a work in progress document to supplement the developers guide, as well as serving as a way to help me continue to keep learning best practices all the time.
 
 Some of the methods I use in my npm release schedule are as follows:
 
-1. Pruning
+1. Keeping files out of your package
 2. Locking versions
 3. Continuous integration (tests, install, etc)
 4. Alpha/beta pushes (user testing)
 5. [npm-check-updates](https://github.com/tjunnone/npm-check-updates)
 
-## Pruning
+## Keeping files out of your package
+
+We want our users to only have to download what they need to use your module. This may mean removing any files that are not beneficial for the user. Much like `.gitignore` for files being checked into git, npm has `.npmignore`.
+
+Straight from [npm docs](https://docs.npmjs.com/misc/developers#keeping-files-out-of-your-package):
+
+> Use a .npmignore file to keep stuff out of your package. If there's no .npmignore file, but there is a .gitignore file, then npm will ignore the stuff matched by the .gitignore file. If you want to include something that is excluded by your .gitignore file, you can create an empty .npmignore file to override it. Like git, npm looks for .npmignore and .gitignore files in all subdirectories of your package, not only the root directory.
+
+We can also use a command in the npm CLI called `prune`.
 
 Again, straight from the [npm documentation](https://docs.npmjs.com/cli/prune):
 

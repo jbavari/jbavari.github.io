@@ -22,7 +22,7 @@ You'll see, we've got a basic tabs starter now avilable at `MyIonic2App` directo
 
 ## Generating a few pages
 
-Let's say we want to link to a new page, 'About', from one of the tabs. First, let's generate our page with this command: `ionic g page About`.
+Let's say we want to link to a new page, 'About', from one of the tabs. First, let's generate our page with this command: `ionic generate page About`. NOTE: You can also use the generate alias, `ionic g`.
 
 You'll see a few files added:
 
@@ -37,13 +37,13 @@ You'll see a few files added:
 
 Let's add the link to the main tab page in `www/app/dash/dash.html`, via the `(click)` handler on an anchor, like so:
 
-```html
+```
 <ion-card>
   <ion-card-header>
     Go to about page
   </ion-card-header>
   <ion-card-content>
-    <a (click)="goToAboutPage()" href="#">About this</a>
+    <button (click)="goToAboutPage()">About this</button>
   </ion-card-content>
 </ion-card>
 ```
@@ -53,7 +53,7 @@ Let's add the link to the main tab page in `www/app/dash/dash.html`, via the `(c
 Modify the Dashboard TypeScript file (`www/app/dash/dash.ts`) to import our new about page, add the click event handler, and push the page on the nav controller, all like so:
 
 ```js
-import {Page, NavController, ViewController} from 'ionic/ionic';
+import {Page, NavController} from 'ionic/ionic';
 import {About} from '../about/about';
 
 @Page({
@@ -79,6 +79,8 @@ Look in your browser, you should have an anchor available to click/tap that will
 Here's a GIF of what it looks like: 
 
 {% img [pic] /images/IonicV2Generators.gif [250] [250] [Ionic 2.0- Page generator example] %}
+
+I'd like to also note, Ionic 2 is much smoother than a GIF would allow.
 
 ## Wiring up sass
 
@@ -110,3 +112,5 @@ Available generators:
 # Final words
 
 We hope you find the generators help you get started with ramping up quickly and building some awesome Ionic applications! Enjoy.
+
+We'd love your feedback, drop us a line at [Ionic v2 Github Issues](https://github.com/driftyco/ionic2/issues).

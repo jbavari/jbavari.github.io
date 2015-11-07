@@ -3,12 +3,12 @@ layout: post
 title: "Using Ionic 2.0 Generators"
 date: 2015-11-05 21:49
 comments: true
-categories: javascript cli ionic typescript es6 node
+categories: javascript cli ionic typescript es6 node generators
 ---
 
 At the time of writing this, Ionic 2.0 is still in alpha. 
 
-Ionic 2.0 builds on a ton of new technologies, and if you've never dabbled in these technologies, you can use the generators available in the [`ionic-cli`](http://npmjs.org/package/ionic) to get ramped up quickly!
+Ionic 2.0 builds on a ton of new technologies, such as Angular v2, TypeScript (with decorators), and ES6. If you've never dabbled in these technologies, you can use the generators available in the [`ionic-cli`](http://npmjs.org/package/ionic) to get ramped up quickly!
 
 ## Getting started
 

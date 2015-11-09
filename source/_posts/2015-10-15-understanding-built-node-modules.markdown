@@ -6,7 +6,9 @@ comments: true
 categories: node npm ionic
 ---
 
-If you've recently change node versions and begun running into issues with some of your modules, you might find an easy trick to help you out: `rm -rf node_modules && npm install`.
+If you've recently change node versions and begun running into issues with some of your modules, you might get a little help from understanding how native node modules work.
+
+TL;DR: If you upgraded node, run `npm rebuild` or `rm -rf node_modules && npm install`.
 
 Why: This has to do with some of your modules you may be using having native bindings to your current system runtime.
 

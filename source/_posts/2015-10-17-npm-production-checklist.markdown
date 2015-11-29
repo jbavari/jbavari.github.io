@@ -98,3 +98,8 @@ There's a nice module that looks at your `package.json` file and looks to see th
 It will give you some heads up if there are latest packages, so you can update if you have too many out of date packages.
 
 Hope this helps!
+
+
+References:
+
+* [Using npm as a build tool](http://blog.keithcirkel.co.uk/how-to-use-npm-as-a-build-tool/)

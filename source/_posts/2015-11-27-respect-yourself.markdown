@@ -78,7 +78,7 @@ Don't accept others views of myself unless I first believe them!
 
 Most importantly, respecting myself. I should always take the time to have a 1 on 1 with myself and really get a sense of where I'm at. If I need a break, use that vacation that we are so lucky to have!
 
-We tend to forget that if we dont build ourselves up, the world surely wont. (Unless you are lucky enough to have awesome friends that stick through it thick and thin)
+We tend to forget that if we dont build ourselves up, the world surely wont. (Unless you are lucky enough to have awesome friends that stick through it thick and thin). Burnout happens when you don't let your support structure help put out of the flame before you become a pile of ash.
 
 So please, take this time to evaluate yourself and your needs. Be honest with yourself. Focus on caring for yourself. Be compassionate to yourself. Let yourself make mistakes, but learn from them. 
 

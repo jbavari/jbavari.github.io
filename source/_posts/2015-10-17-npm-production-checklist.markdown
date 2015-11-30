@@ -103,3 +103,7 @@ Hope this helps!
 References:
 
 * [Using npm as a build tool](http://blog.keithcirkel.co.uk/how-to-use-npm-as-a-build-tool/)
+* [Using npm tags](http://jbavari.github.io/blog/2015/10/16/using-npm-tags)
+* [npm documentation](https://docs.npmjs.com/cli/shrinkwrap)
+* [npm-developers guide](https://docs.npmjs.com/misc/developers)
+* [Node.js Production Checklist](https://blog.risingstack.com/node-js-production-checklist)

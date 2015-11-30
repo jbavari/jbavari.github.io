@@ -10,9 +10,11 @@ I'm writing this post as a memoir for myself, a retrospect of sorts. I read [Set
 
 In the last 3 years, amazing events have unfolded. I helped create a start up, [RaiseMore](http://raisemore.com). I moved to Boulder, Colorado. I got a job at Ionic. I met a strong, amazing, beautiful woman who is my girlfriend.
 
-I'd like to think what drove that was always reading books, watching informational videos, TED talks, ignite talks, challenging and pushing myself, and helping others grow. I trained jiu-jitsu 4-5 times a week, I kept working on my strength, and trying to inspire others to do the same.
+I trained jiu-jitsu 4-5 times a week, I kept working on my strength, and trying to inspire others to do the same. I was striving to always read self-help books, watching informational videos, TED talks, ignite talks, challenging and pushing myself, and helping others grow. 
 
 All these new and exciting things kept happening to me. Many times before, I've asked myself, 'how did I get so lucky?'. Things just had a snowball effect and kept getting better and better!
+
+I'd like to think what attracted all these amazing things into my life was from these advancements.
 
 However, something happened during these last 4 months that really threw me in a rut. I developed a poor attitude. I started thinking I was a victim. I no longer work for the company that I had looked up to for so long.
 

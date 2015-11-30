@@ -64,9 +64,7 @@ This all was boiling down to the AngularConnect conference, where we planned to 
 
 All this was going down and other life issues arise, as they do. My older (15y old) dog was getting worse by the day. My girlfriend was not happy that I was putting her second to work. My friends stopped calling me. My shoulder got injured. I lost confidence in my work because I was burning out.
 
-Then in the final weeks, many of the members that had been core to Ionic 2 were unavailable weeks before the conference and it was double red alert to get things done.
-
-When all things are said and done, at the time, in the workshop, *I failed to complete my task for the Windows CLI users*.
+Then, a personal goal I had set didn't get delivered to a group of users I was really wanted to, the Windows Ionic CLI users.
 
 This hurt. Failure when placed heavy, can hurt. It hurt even more when I was putting work first, and myself last.
 

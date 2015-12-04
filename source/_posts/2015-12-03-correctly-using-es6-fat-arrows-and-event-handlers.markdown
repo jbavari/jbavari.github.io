@@ -4,6 +4,7 @@ title: "Correctly using ES6 fat arrows and event handlers"
 date: 2015-12-03 12:13
 comments: true
 categories: 
+published: false
 ---
 
 Compatability table:

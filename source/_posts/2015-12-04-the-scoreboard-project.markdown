@@ -6,7 +6,7 @@ comments: true
 categories: ruby sinatra javascript api cli
 ---
 
-Lately I've been wanting to dig more into some technologies I've been wanting to explore and gain more experience. Not only this, but I wanted to make sure my dev workflow was great, my tools were sharpened, and I was re-establishing the best practices as much as I could.
+Lately I've been wanting to dig more into some technologies I've been wanting to explore and gain more experience. Not only this, but I wanted to make sure my dev workflow was still improving, my tools were getting sharpened, and I was re-establishing the best practices as much as I could.
 
 Those specific technologies I wanted to dig into was:
 

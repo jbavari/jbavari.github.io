@@ -42,7 +42,7 @@ The idea for the CLI was to prompt the user for a home team and visitor team, th
 
 It would keep prompting for more scoring plays until the user gives a SIGTERM or hits CTRL+D.
 
-First I started by reading up on Thor, which was an absolute pleasure to work with. You can download it via `gem install scoreboard`. The main points were, creating the 
+First I started by reading up on Thor, which was an absolute pleasure to work with. You can download it via `gem install scoreboard`.
 
 To make it available via command line, I added this:
 

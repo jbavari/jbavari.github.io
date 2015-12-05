@@ -25,6 +25,8 @@ This blog post will go over the idea of making an API around scoreboards. There 
 
 With this post, i'll go over the individual pieces of the project, the interesting tidbits of each one, and finally go over a short retrospective over the entire project.
 
+In entire time, the project took about a day and a half. It was fun, and I really enjoyed the experience over all.
+
 ## The pieces
 
 * [Scoreboard CLI](https://github.com/jbavari/scoreboard-cli)

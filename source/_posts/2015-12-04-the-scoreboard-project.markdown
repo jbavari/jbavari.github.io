@@ -6,20 +6,20 @@ comments: true
 categories: ruby sinatra javascript api cli
 ---
 
-Lately, I've been wanting to get a feel for some technologies I've been wanting to explore and gain more experience. Not only this, but I wanted to make sure my dev workflow was great, my tools were sharpened, and I was re-establishing the best practices as much as I could.
+Lately, I've been wanting to get a better feel for some technologies I've been wanting to explore and gain more experience. Not only this, but I wanted to make sure my dev workflow was great, my tools were sharpened, and I was re-establishing the best practices as much as I could.
 
 Those specific technologies I wanted to dig into was:
 
 * Building a CLI in Ruby, using [Thor](https://github.com/erikhuda/thor)
 * A [Sinatra](http://sinatrarb.com) Modular API
-* [Sequel](https://github.com/jeremyevans/sequel) Models
-* [Dashing](https://github.com/Shopify/dashing) - Building a dashboard
-* [Rubocop](https://github.com/bbatsov/rubocop) - A Ruby static code analyzer, based on the community Ruby style guide.
-* [CodeClimate](http://codeclimate.com) - Automated Code Review
+* Solifying [Sequel](https://github.com/jeremyevans/sequel) Model usage and JSON serialization
+* Building a dashboard using [Dashing](https://github.com/Shopify/dashing)
+* Diving more into [Rubocop](https://github.com/bbatsov/rubocop) for Ruby static code analysis
+* Automated Code Review using [CodeClimate](http://codeclimate.com)
 
 I found a way to connect all the dots in what I'm calling the scoreboard project. I chose these technologies because it would let me shine up my ruby/sql skills without a framework carrying me the way. (Although they mostly did anyway!)
 
-This blog post will go over the idea of making an API around scoreboards. There will be a simple CLI tool to gather scores on 'games'. Those scores will be sent to the API, to store in Postgres. The dashboard project will then pull these values and display them in an easy to digest way.
+This blog post will go over the idea of making an API around scoreboards. There will be a simple CLI tool to gather scores on 'games'. Those scores will be sent to the API, to store in Postgres. The dashboard project will then pull these values from postgres and display them in an easy to view manner.
 
 ## This post
 

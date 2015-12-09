@@ -8,17 +8,17 @@ categories: elixir postgres phoenix
 
 In the last week or so, I've had a blast playing around with basic Postgres [geometric types](http://www.postgresql.org/docs/9.4/static/datatype-geometric.html) to do basic earth distance queries.
 
-From my favorite blog, [Datachomp shows how to use radius queries in postgres](http://datachomp.com/archives/radius-queries-in-postgres/) to find the closest place to get a burrito fix. Since I've been on an [Elixir](http://elixir-lang.org/) kick lately, I figured it was time to contribute back to the open source world by adding first class burrito, err, point type support.
+From my favorite blog, [Datachomp shows how to use radius queries in postgres](http://datachomp.com/archives/radius-queries-in-postgres/) to find the closest place to get a burrito fix. Since I've been on an [Elixir](http://elixir-lang.org/) kick lately, I figured it was time to contribute back to the open source world by adding first class burrito, err, geometric type support.
 
 ## Initial reaction
 
 I immediately made an Ecto model trying to use the point type in my model:
 
-```
+``` elixir
 defmodule MyApp.LocationPoint do
   use MyApp.Web, :model
 
-  schema "concerts" do
+  schema "location_point" do
     field :name, :string
     field :date, Ecto.DateTime
     field :location, :point
@@ -125,7 +125,7 @@ We will see the point type has an oid of 600, which is using a send specificatio
 
 Thus, we'll update the send types in postgrex, located in the `binary.ex` file:
 
-```
+``` elixir
 @senders ~w(boolsend bpcharsend textsend varcharsend byteasend
             int2send int4send int8send float4send float8send numeric_send
             uuid_send date_send time_send timetz_send timestamp_send
@@ -139,6 +139,14 @@ Boom, that gets us the oid to encode/decode off of!
 # Looking up postgres source code for data mapping
 
 I hopped into the Postgres source code and looked up the struct type for point, [found here](https://github.com/postgres/postgres/blob/master/src/include/utils/geo_decls.h#L58-L62). 
+
+``` c++
+typedef struct
+{
+  double    x,
+        y;
+} Point;
+```
 
 Great, its just two floats, no big deal. 
 

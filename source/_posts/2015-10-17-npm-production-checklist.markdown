@@ -106,4 +106,6 @@ References:
 * [Using npm tags](http://jbavari.github.io/blog/2015/10/16/using-npm-tags)
 * [npm documentation](https://docs.npmjs.com/cli/shrinkwrap)
 * [npm-developers guide](https://docs.npmjs.com/misc/developers)
+* [npm - Module best practices](https://www.npmjs.com/package/module-best-practices#naming-conventions)
 * [Node.js Production Checklist](https://blog.risingstack.com/node-js-production-checklist)
+* [Publish packages on npm - best practice](http://blog.nchaulet.fr/publish-package-on-npm-best-practice/)

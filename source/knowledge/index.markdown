@@ -35,6 +35,9 @@ I love reading and learning. I'm putting this page together to keep track of all
 
 ### Technical Books
 
+* [Programming Elixir](https://pragprog.com/book/elixir/programming-elixir)
+* [Programming Phoenix](https://pragprog.com/book/phoenix/programming-phoenix)
+* [Exercises for programmers](https://pragprog.com/book/bhwb/exercises-for-programmers)
 * [Ruby on Rails 4.0 Guide](http://www.amazon.com/Ruby-Rails-Guide-Stefan-Wintermeyer-ebook/dp/B00E25KVLW) - Stefan Wintermeyer
 * [You Dont Know JavaScript](https://github.com/getify/You-Dont-Know-JS) - Kyle Simpson
 * [CSS and Documents](http://shop.oreilly.com/product/0636920027607.do) - Eric Mayer
@@ -42,6 +45,7 @@ I love reading and learning. I'm putting this page together to keep track of all
 * [CouchDB - The Definitive Guide](http://guide.couchdb.org/index.html) - Chris Anderson, Jan Lehnardt, Noah Slater
 * [Practices of an Agile Developer](http://pragprog.com/book/pad/practices-of-an-agile-developer) - Venkat Subramaniam and Andy Hunt
 * [Ship It](http://pragprog.com/book/prj/ship-it) -  Jared Richardson, Will Gwaltney, Jr
+* [Red Book, Readings in Database Systems](http://www.redbook.io/)
 
 
 ### Financials
@@ -64,6 +68,8 @@ I read quite a bit, as well as watching screen or web casts, instructional video
 * [Code School](http://codeschool.com)
 * [Ruby5](http://ruby5.envylabs.com)
 * [Go By Example](https://gobyexample.com/)
+* [Codeschool](http://codeschool.com/)
+* [ElixirSchool](http://elixirschool.com/)
 
 ### TED Talks
 

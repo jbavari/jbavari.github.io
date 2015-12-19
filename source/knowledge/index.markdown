@@ -46,6 +46,7 @@ I love reading and learning. I'm putting this page together to keep track of all
 * [Practices of an Agile Developer](http://pragprog.com/book/pad/practices-of-an-agile-developer) - Venkat Subramaniam and Andy Hunt
 * [Ship It](http://pragprog.com/book/prj/ship-it) -  Jared Richardson, Will Gwaltney, Jr
 * [Red Book, Readings in Database Systems](http://www.redbook.io/)
+* [Distributed systems for fun and profit](http://book.mixu.net/distsys/intro.html)
 
 
 ### Financials

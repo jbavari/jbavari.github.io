@@ -26,6 +26,8 @@ We'll cover:
 * The differences between the two
 * Pros and Cons of each (in my eyes)
 
+All of the source code is available on my Github profile in the [scoreboard-form](https://github.com/jbavari/scoreboard-form) repository.
+
 # The Scoreboard Form
 
 A scoreboard is simple - you'll enter the two team names, then specify a touchdown or field goal for either team.
@@ -374,6 +376,13 @@ Dev docs talk about how to think in react - giving the why before the what, real
 Dev tooling is not straight forward - you have to decide yourself.
 Figuring how to plug in rendering steps between state changes. `this.setState({})` with some state information.
 
+# Differences between the two
+
+The main difference I can see if how Angular 2 specifies its `selector` to find out how it attaches to a DOM element you specify. 
+
+React just follows using JSX to specify the component, which you can pass in properties. 
+
+Angular 2 takes the approach of keeping state and doing stateful checks from its Virtual DOM diff'ing. However, the templating directives you can use, like `*ngIf` requires handling a template of some sort, where as React, you can just use JavaScript conditionals to render your DOM.
 
 # Conclusions
 
@@ -384,5 +393,7 @@ As far as intuition and ease of development goes, React was definitely easier. E
 To give Angular 2 a fair shot, it is still in Beta. However, if I were to start a project today, it would be in React, due to the huge community that is building, the tooling available, and being backed by Facebook, one of the utmost leaders in User inface design and performance.
 
 I hope this short write up helps! If you have any questions, please drop a comment and we'll clear things up!
+
+As a reminder, [here is all of the code](https://github.com/jbavari/scoreboard-form) is available on Github, feel free to open an issue.
 
 Cheers!

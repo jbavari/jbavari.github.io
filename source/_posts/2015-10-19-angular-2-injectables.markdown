@@ -22,7 +22,7 @@ The gist of it we need:
 A solid example, DataService marked as `@Injectable` that also needs `Http` to be injected for its use:
 
 ```js
-import {Injectable, bind} from 'angular2/angular2';
+import {Injectable, bind} from 'angular2/core';
 import {Http} from 'angular2/http';
 
 @Injectable() /* This is #1 */
@@ -68,7 +68,7 @@ Say you have the following:
 In `www/app/service/data.js`:
 
 ```js
-import {Injectable} from 'angular2/angular2';
+import {Injectable} from 'angular2/core';
 import {Http} from 'angular2/http';
 
 @Injectable()

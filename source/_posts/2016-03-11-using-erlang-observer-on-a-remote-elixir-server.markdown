@@ -1,9 +1,9 @@
 ---
 layout: post
 title: "Using Erlang Observer on a Remote Elixir Server"
-date: 2017-02-18 14:01
+date: 2016-03-11 14:01
 comments: true
-categories:
+categories: elixir erlang
 ---
 
 I’ve been using Elixir a ton at work and in some fun side projects and I’m absolutely in love with it.

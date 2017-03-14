@@ -9,7 +9,7 @@ footer: true
 
 I love reading and learning. I'm putting this page together to keep track of all my knowledge sources.
 
-## Books 
+## Books
 
 ### In Progress
 
@@ -17,7 +17,7 @@ I love reading and learning. I'm putting this page together to keep track of all
 
 ### Product Development
 
-* Built to Sell - John Warrillow
+* [Built to Sell: Creating a Business That Can Thrive Without You](https://www.amazon.com/Built-Sell-Creating-Business-Without/dp/1591845823) - John Warrillow
 
 ### Psychology / Human Nature
 
@@ -31,6 +31,17 @@ I love reading and learning. I'm putting this page together to keep track of all
 * Atlas Shrugged - Ayn Rand
 * Failing Forward - John Maxwell
 * Man and His Symbols - Carl Jung
+* [The Like Switch: An Ex-FBI Agent's Guide to Influencing, Attracting, and Winning People Over](http://www.audible.com/pd/Self-Development/The-Like-Switch-Audiobook/B00RKRDOM2)
+* [The Power of Habit: Why We Do What We Do in Life and Business](http://www.audible.com/pd/Science-Technology/The-Power-of-Habit-Audiobook/B007C64916)
+* [Outliers: The Story of Success](http://www.audible.com/pd/Nonfiction/Outliers-Audiobook/B002UZDRK8)
+* [Ego Is the Enemy](http://www.audible.com/pd/Self-Development/Ego-Is-the-Enemy-Audiobook/B01GSIZ5AC)
+* [Smarter Faster Better: The Secrets of Being Productive in Life and Business](http://www.audible.com/pd/Business/Smarter-Faster-Better-Audiobook/B017WRZO9U)
+* [The Way of the Superior Man: A Spiritual Guide to Mastering the Challenges of Women, Work, and Sexual Desire](https://www.amazon.com/gp/product/B004A8ZWM4/ref=oh_aui_d_detailpage_o02_?ie=UTF8&psc=1)
+* [You Are a Badass: How to Stop Doubting Your Greatness and Start Living an Awesome Life](https://www.amazon.com/gp/product/B00B3M3VWS/ref=oh_aui_d_detailpage_o00_?ie=UTF8&psc=1)
+* [The Art of War (Chiron Academic Press - The Original Authoritative Edition)](https://www.amazon.com/gp/product/B0199LTIKI/ref=oh_aui_d_detailpage_o02_?ie=UTF8&psc=1)
+* [Comedy Writing Secrets: The Best-Selling Guide to Writing Funny and Getting Paid for It](https://www.amazon.com/gp/product/B01AOH7B64/ref=oh_aui_d_detailpage_o03_?ie=UTF8&psc=1)
+* [The Six Pillars of Self-Esteem](https://www.amazon.com/gp/product/B007JK9BAY/ref=oh_aui_d_detailpage_o04_?ie=UTF8&psc=1)
+
 
 
 ### Technical Books
@@ -47,6 +58,12 @@ I love reading and learning. I'm putting this page together to keep track of all
 * [Ship It](http://pragprog.com/book/prj/ship-it) -  Jared Richardson, Will Gwaltney, Jr
 * [Red Book, Readings in Database Systems](http://www.redbook.io/)
 * [Distributed systems for fun and profit](http://book.mixu.net/distsys/intro.html)
+* [Instant Nginx Starter](https://www.packtpub.com/networking-and-servers/instant-nginx-starter)
+* [Nginx](http://shop.oreilly.com/product/0636920039426.do)
+* [Elixir Cookbook](https://www.packtpub.com/application-development/elixir-cookbook)
+* [Postgres 9 Administration Cookbook](https://www.packtpub.com/big-data-and-business-intelligence/postgresql-9-administration-cookbook-second-edition)
+* [Pro Puppet](http://www.apress.com/us/book/9781430260400)
+* [The Little Elixir & OTP Guidebook](https://www.manning.com/books/the-little-elixir-and-otp-guidebook)
 
 
 ### Financials

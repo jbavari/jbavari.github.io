@@ -22,6 +22,8 @@ I love reading and learning. I'm putting this page together to keep track of all
 * [The 5 Levels of Leadership: Proven Steps to Maximize Your Potential](https://www.amazon.com/Levels-Leadership-Proven-Maximize-Potential/dp/1599953633/ref=sr_1_2?ie=UTF8&qid=1524424883&sr=8-2&keywords=5+levels+of+leadership+john+maxwell)
 * [The Five Dysfunctions of a Team: A Leadership Fable](https://www.amazon.com/Five-Dysfunctions-Team-Leadership-Fable/dp/0787960756/ref=sr_1_3?ie=UTF8&qid=1524424912&sr=8-3&keywords=5+dysfunctions+of+a+team+book)
 * [Lead Your Tribe, Love Your Work: An Entrepreneur's Guide to Creating a Culture that Matters](https://www.amazon.com/gp/product/0998646504/ref=oh_aui_detailpage_o05_s00?ie=UTF8&psc=1)
+* [Managing Humans: Biting and Humorous Tales of a Software Engineering Manager](https://www.amazon.com/Managing-Humans-Humorous-Software-Engineering/dp/1430243147)
+
 
 ### Communication
 
@@ -30,6 +32,14 @@ I love reading and learning. I'm putting this page together to keep track of all
 ### Philosophy
 
 * [The Tao of Seneca: Practical Letters from a Stoic Master, Volume 1](https://www.audible.com/pd/Nonfiction/The-Tao-of-Seneca-Audiobook/B01AIXEJKU)
+
+### Programming / Computing
+
+* [Learning OpenCV3](https://www.amazon.com/Learning-OpenCV-Computer-Vision-Library/dp/1491937998)
+* [Linux Networking Cookbook](https://www.amazon.com/Linux-Networking-Cookbook-Easy-Use/dp/0596102488)
+* [Computer Networks 5th By Andrew S. Tanenbaum](https://www.amazon.com/Computer-Networks-Tanenbaum-International-Economy/dp/9332518742)
+* [SSH, The Secure Shell: The Definitive Guide, 2nd Edition](http://shop.oreilly.com/product/9780596008956.do)
+* [Practical Linux Security Cookbook](https://www.amazon.com/Practical-Linux-Security-Cookbook-Tajinder/dp/1785286420)
 
 ### Psychology
 
@@ -67,6 +77,14 @@ into this philosophy because it has influenced me so much in this last year.
 * [The Daily Stoic
 366 Meditations on Wisdom, Perseverance, and the Art of Living](https://www.audible.com/pd/Nonfiction/The-Daily-Stoic-Audiobook/B01M4IDLAG)
 
+### Programming / Computing
+
+* [Programming Pheonix](https://pragprog.com/book/phoenix14/programming-phoenix-1-4)
+* [Pro Puppet](https://www.amazon.com/Pro-Puppet-Spencer-Krum/dp/1430260408)
+* [Metaprogramming Elixir](https://pragprog.com/book/cmelixir/metaprogramming-elixir)
+* [The Little Elixir & OTP Guidebook](https://www.manning.com/books/the-little-elixir-and-otp-guidebook)
+* [Learn You Some Erlang For Great Good](http://learnyousomeerlang.com/) - Fred Hebert
+
 ### Psychology / Human Nature
 
 * [Tribes - We Need You To Lead Us](https://www.audible.com/pd/Nonfiction/Tribes-Audiobook/B002V59XXW)
@@ -85,6 +103,10 @@ into this philosophy because it has influenced me so much in this last year.
 * [The Like Switch: An Ex-FBI Agent's Guide to Influencing, Attracting, and Winning People Over](https://www.audible.com/pd/Self-Development/The-Like-Switch-Audiobook/B00RKRDOM2)
 * [Comedy Writing Secrets: The Best-Selling Guide to Writing Funny and Getting Paid for It](https://www.amazon.com/gp/product/B01AOH7B64/ref=oh_aui_d_detailpage_o03_?ie=UTF8&psc=1)
 
+### Programming / Computing
+
+* [Elixir in Action](https://www.manning.com/books/elixir-in-action)
+* [Erlang and OTP in Action](https://www.manning.com/books/erlang-and-otp-in-action)
 
 ### Self Development
 
@@ -129,6 +151,13 @@ into this philosophy because it has influenced me so much in this last year.
 * Atlas Shrugged - Ayn Rand
 * Failing Forward - John Maxwell
 * Man and His Symbols - Carl Jung
+
+
+### Programming / Computing
+
+* [Programming Elixir](https://pragprog.com/book/elixir16/programming-elixir-1-6)
+* [Programming Pheonix](https://pragprog.com/book/phoenix14/programming-phoenix-1-4)
+
 
 ### Psychology
 

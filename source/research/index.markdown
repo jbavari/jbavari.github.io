@@ -17,6 +17,7 @@ Here you can find a list of my personal readings regarding research papers, jour
 ## General Robotics
 
 * [Towards Fully Autonomous Driving: Systems and Algorithms](https://www.cs.cmu.edu/~zkolter/pubs/levinson-iv2011.pdf)
+* [State Estimation For Robotics](http://asrl.utias.utoronto.ca/~tdb/bib/barfoot_ser17.pdf)
 
 ## Perception
 

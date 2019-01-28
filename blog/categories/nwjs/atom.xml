@@ -1,0 +1,249 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: nwjs | Josh Bavari's Ramblings]]></title>
+  <link href="http://jbavari.github.io/blog/categories/nwjs/atom.xml" rel="self"/>
+  <link href="http://jbavari.github.io/"/>
+  <updated>2019-01-27T19:16:40-07:00</updated>
+  <id>http://jbavari.github.io/</id>
+  <author>
+    <name><![CDATA[Josh Bavari]]></name>
+    <email><![CDATA[jbavari@gmail.com]]></email>
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Comparisons of nw.js and Electron]]></title>
+    <link href="http://jbavari.github.io/blog/2015/05/08/comparisons-of-nw-dot-js-and-electron/"/>
+    <updated>2015-05-08T17:11:00-06:00</updated>
+    <id>http://jbavari.github.io/blog/2015/05/08/comparisons-of-nw-dot-js-and-electron</id>
+    <content type="html"><![CDATA[<p>In the last few months, I&rsquo;ve been playing around with two tools to help bridge the gap between the web and native desktop applications. There are two main tools that come to mind &ndash; nw.js (formerly known as Node Webkit) and Electron (formerly known as Atom Shell).</p>
+
+<p>This post focuses on using both, the differences between the two, and focusing on issues that I&rsquo;ve encountered.</p>
+
+<p>Outline:</p>
+
+<ul>
+<li>Getting started &ndash; package.json</li>
+<li>Native Menus (application menu)</li>
+<li>Shell execution (child processes)</li>
+<li>Packaging / run</li>
+<li>Icons</li>
+<li>Performance</li>
+</ul>
+
+
+<h1>Nw.js</h1>
+
+<h2>Getting started</h2>
+
+<p>Nw.js and Electron share a lot of the same steps for getting started. The only real difference between the two is how they are run, and how they handle the node process internally.</p>
+
+<p>With Nw.js, your app is bundled together. With Electron, the application is set up differently &ndash; with the main node process the handle running the browser process, and the rendering process, which handles all things from the browser (the event loop).</p>
+
+<p>To get running, <a href="">download the nw.js app</a> or the <a href="">electron app</a>. Both of these applications look at your <code>package.json</code> file to get running by looking at the <code>main</code> attribute.</p>
+
+<h2>Bootstrapping</h2>
+
+<p>For nw.js, the <code>main</code> attribute should specify which html file to start loading when your application launched. With Electron, your <code>main</code> attribute should specify a JavaScript file to be run.</p>
+
+<p>You also specify attributes about the nw.js window that runs via the <code>window</code> attribute, things like <code>toolbar</code>, <code>width</code>, and <code>height</code>, notably.</p>
+
+<p>With Electron, the JS file that you specify will launch the browser window and specify other attributes like width, height, and other window attributes.</p>
+
+<p>For convenience sake, I also created a node run script to execute the Nw.js app with my current folder. To run the node-webkit app, you simply type <code>npm run nwjs</code>. I also included a livereload script to watch my <code>www</code> folder to live reload my changes in the nw.js app.</p>
+
+<p>Here&rsquo;s a quick look at the <code>package.json</code> file used to bootstrap nw.js:</p>
+
+<p>```json
+{
+  &ldquo;name&rdquo;: &ldquo;nwjs-app&rdquo;,
+  &ldquo;version&rdquo;: &ldquo;1.0.0&rdquo;,
+  &ldquo;description&rdquo;: &ldquo;&rdquo;,
+  &ldquo;main&rdquo;: &ldquo;www/index.html&rdquo;,
+  &ldquo;scripts&rdquo;: {</p>
+
+<pre><code>"nwjs": "/Applications/nwjs.app/Contents/MacOS/nwjs . &amp; node livereload",
+"electron": "/Applications/Electron.app/Contents/MacOS/Electron . &amp; node livereload"
+</code></pre>
+
+<p>  },
+  &ldquo;window&rdquo;: {</p>
+
+<pre><code>"toolbar": true,
+"width": 800,
+"height": 500
+</code></pre>
+
+<p>  }
+}
+```</p>
+
+<p>Here&rsquo;s a quick look at the <code>package.json</code> file used to bootstrap Electron:</p>
+
+<p>```json
+{
+  &ldquo;name&rdquo;: &ldquo;nwjs-app&rdquo;,
+  &ldquo;version&rdquo;: &ldquo;1.0.0&rdquo;,
+  &ldquo;description&rdquo;: &ldquo;&rdquo;,
+  &ldquo;main&rdquo;: &ldquo;src/main.js&rdquo;,
+  &ldquo;scripts&rdquo;: {</p>
+
+<pre><code>"nwjs": "/Applications/nwjs.app/Contents/MacOS/nwjs . &amp; node livereload",
+"electron": "/Applications/Electron.app/Contents/MacOS/Electron . &amp; node livereload"
+</code></pre>
+
+<p>  },
+  &ldquo;window&rdquo;: {</p>
+
+<pre><code>"toolbar": true,
+"width": 800,
+"height": 500
+</code></pre>
+
+<p>  }
+}
+```</p>
+
+<p>Additionally for Electron, my <code>main.js</code> file looks like the following:</p>
+
+<p>```js
+var app = require(&lsquo;app&rsquo;);  // Module to control application life.
+var BrowserWindow = require(&lsquo;browser-window&rsquo;);  // Module to create native browser window.
+var Menu = require(&lsquo;menu&rsquo;);
+var ipc = require(&lsquo;ipc&rsquo;);</p>
+
+<p>// var menu = new Menu();
+// Report crashes to our server.
+// require(&lsquo;crash-reporter&rsquo;).start();</p>
+
+<p>// Keep a global reference of the window object, if you don&rsquo;t, the window will
+// be closed automatically when the javascript object is GCed.
+var mainWindow = null;
+var menu;</p>
+
+<p>var browserOptions = {
+  height: 600,
+  title: &lsquo;Electron App&rsquo;,
+  width: 800
+};</p>
+
+<p>// Quit when all windows are closed.
+app.on(&lsquo;window-all-closed&rsquo;, function() {
+  if (process.platform != &lsquo;darwin&rsquo;)</p>
+
+<pre><code>app.quit();
+</code></pre>
+
+<p>});</p>
+
+<p>// This method will be called when Electron has done everything
+// initialization and ready for creating browser windows.
+app.on(&lsquo;ready&rsquo;, function() {
+  // Create the browser window.
+  mainWindow = new BrowserWindow(browserOptions);</p>
+
+<p>  // and load the index.html of the app.
+  mainWindow.loadUrl(&lsquo;file://&rsquo; + __dirname + &lsquo;/www/index.html&rsquo;);</p>
+
+<p>  // Emitted when the window is closed.
+  mainWindow.on(&lsquo;closed&rsquo;, function() {</p>
+
+<pre><code>// Dereference the window object, usually you would store windows
+// in an array if your app supports multi windows, this is the time
+// when you should delete the corresponding element.
+mainWindow = null;
+</code></pre>
+
+<p>  });</p>
+
+<p>  ipc.on(&lsquo;update-application-menu&rsquo;, function(event, template, keystrokesByCommand) {</p>
+
+<pre><code>//Go through the templates, wrap their click events back to the browser
+console.log('update-application-menu - template');
+console.log(template);
+translateTemplate(template, keystrokesByCommand);
+menu = Menu
+Menu.setApplicationMenu(menu);
+</code></pre>
+
+<p>  });
+});
+```</p>
+
+<h2>Native Menus</h2>
+
+<h3>Electron</h3>
+
+<p>Due to the way electron is split up into two processes, the main process (that handles native menus) and the browser process (mainly your app), menus are mainly available to be set on the main process.</p>
+
+<p>If you want your app to change your application menus, you&rsquo;ll need to use the <a href="https://github.com/atom/electron/blob/master/docs/api/ipc-main-process.md"><code>ipc</code></a> module electron provides to get a message out to the main process to update the menus.</p>
+
+<p>Other than that, the menu system is super easy if you wish to use static menus.</p>
+
+<h3>Nw.js</h3>
+
+<p>It&rsquo;s dead simple. Since it&rsquo;s all one bundled process, just call the set menu, and you&rsquo;re good. It&rsquo;s easy to set short cuts and modify the menus.</p>
+
+<h2>Shell execution</h2>
+
+<p>In nw.js, you&rsquo;re good to go when it comes to making external shell calls.</p>
+
+<p>When it comes to electron, make sure you spawn your child processes with the <code>pipe</code> stdio option. Without that option, you may run into some errors (due to the fact electron doesnt have a stdout it manages easily).</p>
+
+<h2>Packaging / running</h2>
+
+<p>It&rsquo;s really easy on both platforms. Just set up your package.json/index.html/main.js file and run the appropriate command.</p>
+
+<p>I don&rsquo;t have a lot of experience with nw.js, so I cant speak to the packaging process.</p>
+
+<p>For electron, to run I like to use <a href="https://github.com/mafintosh/electron-prebuilt">electron-prebuilt</a> to run my <code>www</code> files as an app, using <a href="https://github.com/maxogden/electron-packager">electron-packager</a> to package into an <code>.app</code> file, and <a href="https://github.com/loopline-systems/electron-builder">electron-builder</a> to create installers (dmg/setup.exe).</p>
+
+<h2>Icons</h2>
+
+<p>To get custom icons for your app files for Mac, you need an <code>.icns</code> file that bundles up all your icons in all the formats/sizes for your dock icon, your cmd+tab icon, and your running icon.</p>
+
+<p>I used this as a <a href="http://stackoverflow.com/questions/12306223/how-to-manually-create-icns-files-using-iconutil">walkthrough</a>.</p>
+
+<p>I first started with a size of 1024x1024 pixels, then used the following commands:</p>
+
+<p>```</p>
+
+<h1>Enter app.iconset, drop in icon.png as a 1024 x 1024 image.</h1>
+
+<h1>Run the following commands:</h1>
+
+<p>sips -z 16 16     icon.png &mdash;out ./icon_16x16.png
+sips -z 32 32     icon.png &mdash;out ./<a href="&#109;&#97;&#x69;&#108;&#x74;&#x6f;&#x3a;&#x69;&#x63;&#111;&#x6e;&#x5f;&#x31;&#x36;&#120;&#49;&#54;&#x40;&#x32;&#120;&#46;&#112;&#x6e;&#103;">&#x69;&#x63;&#111;&#110;&#x5f;&#x31;&#x36;&#x78;&#x31;&#54;&#x40;&#50;&#x78;&#x2e;&#112;&#110;&#x67;</a>
+sips -z 32 32     icon.png &mdash;out ./icon_32x32.png
+sips -z 64 64     icon.png &mdash;out ./<a href="&#x6d;&#97;&#x69;&#x6c;&#116;&#x6f;&#x3a;&#x69;&#99;&#x6f;&#110;&#95;&#x33;&#50;&#x78;&#51;&#x32;&#64;&#50;&#120;&#x2e;&#x70;&#x6e;&#x67;">&#x69;&#x63;&#x6f;&#110;&#x5f;&#x33;&#x32;&#x78;&#x33;&#50;&#64;&#50;&#120;&#x2e;&#x70;&#110;&#103;</a>
+sips -z 128 128   icon.png &mdash;out ./icon_128x128.png
+sips -z 256 256   icon.png &mdash;out ./<a href="&#x6d;&#x61;&#x69;&#108;&#116;&#111;&#x3a;&#105;&#99;&#x6f;&#x6e;&#x5f;&#49;&#x32;&#56;&#x78;&#49;&#50;&#x38;&#x40;&#50;&#120;&#x2e;&#112;&#110;&#x67;">&#105;&#x63;&#111;&#x6e;&#x5f;&#49;&#50;&#x38;&#120;&#49;&#x32;&#x38;&#x40;&#x32;&#120;&#46;&#112;&#110;&#x67;</a>
+sips -z 256 256   icon.png &mdash;out ./icon_256x256.png
+sips -z 512 512   icon.png &mdash;out ./<a href="&#x6d;&#x61;&#x69;&#x6c;&#116;&#x6f;&#x3a;&#105;&#99;&#111;&#110;&#x5f;&#50;&#x35;&#x36;&#x78;&#x32;&#x35;&#x36;&#64;&#x32;&#120;&#x2e;&#112;&#x6e;&#103;">&#105;&#x63;&#111;&#110;&#x5f;&#x32;&#53;&#54;&#x78;&#50;&#x35;&#54;&#x40;&#x32;&#120;&#x2e;&#112;&#x6e;&#x67;</a>
+sips -z 512 512   icon.png &mdash;out ./icon_512x512.png
+cp icon.png <a href="&#109;&#97;&#105;&#x6c;&#116;&#111;&#x3a;&#105;&#x63;&#x6f;&#x6e;&#x5f;&#53;&#49;&#x32;&#120;&#x35;&#x31;&#50;&#64;&#50;&#x78;&#x2e;&#112;&#110;&#x67;">&#x69;&#x63;&#x6f;&#110;&#95;&#x35;&#49;&#50;&#x78;&#53;&#49;&#50;&#64;&#x32;&#x78;&#x2e;&#112;&#x6e;&#103;</a>
+```</p>
+
+<p>Then just run:</p>
+
+<p><code>
+iconutil -c icns app.iconset -o ./app-dir/YourAppName.app/Contents/Resources/app.icns
+</code></p>
+
+<p>You should now have your app with icons ready to go.</p>
+
+<h2>Performance</h2>
+
+<p>I didn&rsquo;t see a lot of major performance bumps from using either platform. It&rsquo;s JavaScript after all.</p>
+
+<h2>Closing words</h2>
+
+<p>Most of all, have fun with developing with these tools! They&rsquo;re open source and free, so when you get a chance, share some knowledge, post an issue, respond to an issue, or even submit a PR.</p>
+
+<p>We&rsquo;re all in this together.</p>
+]]></content>
+  </entry>
+  
+</feed>

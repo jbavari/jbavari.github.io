@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: sidekiq | Josh Bavari's Ramblings]]></title>
+  <link href="http://jbavari.github.io/blog/categories/sidekiq/atom.xml" rel="self"/>
+  <link href="http://jbavari.github.io/"/>
+  <updated>2019-01-27T19:16:40-07:00</updated>
+  <id>http://jbavari.github.io/</id>
+  <author>
+    <name><![CDATA[Josh Bavari]]></name>
+    <email><![CDATA[jbavari@gmail.com]]></email>
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Pushing Jobs to Sidekiq From Another Server]]></title>
+    <link href="http://jbavari.github.io/blog/2014/06/21/pushing-jobs-to-sidekiq-from-another-server/"/>
+    <updated>2014-06-21T00:35:00-06:00</updated>
+    <id>http://jbavari.github.io/blog/2014/06/21/pushing-jobs-to-sidekiq-from-another-server</id>
+    <content type="html"><![CDATA[<p>We use <a href="http://sidekiq.org/">Sidekiq</a> for our background job processing for videos, social integrations, and other tasks. It works great for what it does.</p>
+
+<p>Due to some of technical decisions at work, we have a few servers set up.</p>
+
+<ul>
+<li>An API server</li>
+<li>A job processing server</li>
+<li>An analytical dashboard Rails server</li>
+</ul>
+
+
+<p>The job processing server has all the Sidekiq worker models in it, as you&rsquo;d expect. We did this to keep all processing in one central location.</p>
+
+<p>Some use cases we have for it is to have all Push notifications sent from a single location, the job server. However, we need to trigger some of those from our API or analytical dashboard.</p>
+
+<h2>The problem and solution</h2>
+
+<p>How do we get workers queued up from other servers without replicating the Worker class in other servers? Since Sidekiq uses <a href="http://redis.io">Redis</a>, we figure&rsquo;d we&rsquo;d make a simple <code>RedisJobPusher</code> class to push workers to list in Redis that Sidekiq watches. Using this class, we can now queue jobs from other servers.</p>
+
+<p>The class has a core method, <code>push_to_queue</code>, that other methods (<code>push_leg_notification</code>, etc) call to push the worker name and parameters in redis. The above class assumes it is able to connect to redis.</p>
+
+<p>It looks like this:</p>
+
+<p>``` ruby
+require &lsquo;redis&rsquo;
+require &lsquo;json&rsquo;
+class RedisJobPusher</p>
+
+<pre><code>def self.push_leg_notification(user_id, event_id, message, title)
+    params = [user_id, event_id, 'leg', message, title, nil]
+    RedisJobPusher.push_to_queue('PushNotificationWorker', params)
+end
+
+def self.push_post_notification(user_id, event_id, message, title, event_user_social_id)
+    params = [user_id, event_id, 'post', message, title, event_user_social_id]
+    RedisJobPusher.push_to_queue('PushNotificationWorker', params)
+end
+
+def self.push_to_queue(worker_name, params)
+# using &lt;&lt;  rather than + because it cats instead of newing up string objects
+redisurl = 'redis://' &lt;&lt; CONFIG[:redis_server] &lt;&lt; ':6379' &lt;&lt; '/' &lt;&lt; CONFIG[:redis_db_num]
+
+    msg = { 'class' =&gt; worker_name, 'args' =&gt; params, 'retry' =&gt; true }
+    redis = Redis.new(:url =&gt; redisurl)
+    redis.lpush("raisemore_sidekiq:queue:JobWorker", JSON.dump(msg))
+end
+</code></pre>
+
+<p>end
+```</p>
+
+<p>As you can see, there isn&rsquo;t a lot going on here. Simple and easy. Just connect to redis, do a quick <code>lpush</code>, and go on your day.</p>
+]]></content>
+  </entry>
+  
+</feed>

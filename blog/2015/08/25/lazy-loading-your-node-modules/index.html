@@ -1,0 +1,564 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Lazy loading your node modules - Josh Bavari's Ramblings</title>
+  <meta name="author" content="Josh Bavari">
+
+  
+  <meta name="description" content="While working at Ionic I&rsquo;ve been focused on the Ionic CLI. My first big refactor of the CLI was pulling out most of the 21 commands it offers &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://jbavari.github.io/blog/2015/08/25/lazy-loading-your-node-modules">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="Josh Bavari's Ramblings" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">Josh Bavari's Ramblings</a></h1>
+  
+    <h2>tech babbles on Ruby, Javascript, Rails, Phonegap/Cordova, Grunt, and more</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:jbavari.github.io" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+  <li><a href="/about">About</a></li>
+  <li><a href="/speaking">Speaking</a></li>
+  <li><a href="/knowledge">Knowledge</a></li>
+  <li><a href="/about/resume">Resume</a></li>
+  <li><a href="/cv">C.V.</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Lazy Loading Your Node Modules</h1>
+    
+    
+      <p class="meta">
+        <span class="reading-time">about a 3 minute read</span>
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-08-25T15:29:00-06:00" pubdate data-updated="true">Aug 25<span>th</span>, 2015</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>While working at <a href="http://ionicframework.com">Ionic</a> I&rsquo;ve been focused on the <a href="http://npmjs.org/package/ionic">Ionic CLI</a>.</p>
+
+<p>My first big refactor of the CLI was pulling out most of the 21 commands it offers into an external library (<a href="http://github.com/driftyco/ionic-app-lib">ionic-app-lib</a>) that could be consumed by both the Ionic CLI and our GUI &ndash; <a href="http://lab.ionic.io">Ionic Lab</a>.</p>
+
+<p>The refactor went rather smoothly.</p>
+
+<p>However, one thing happened that was not expected &ndash; now that the ionic-app-lib bundled all the commands together, whenever you required the app-lib module, it was rather slower than expected.</p>
+
+<p>For example, whenever you ran: <code>var IonicAppLib = require('ionic-app-lib');</code> &ndash; it would take a wee bit longer.</p>
+
+<p>Here&rsquo;s the code for the included moduled <code>ionic-app-lib</code>:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">var</span> <span class="nx">browser</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;./lib/browser&#39;</span><span class="p">),</span>
+</span><span class='line'>    <span class="nx">configXml</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;./lib/config-xml&#39;</span><span class="p">),</span>
+</span><span class='line'>    <span class="nx">cordova</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;./lib/cordova&#39;</span><span class="p">),</span>
+</span><span class='line'>    <span class="nx">events</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;./lib/events&#39;</span><span class="p">),</span>
+</span><span class='line'>    <span class="nx">hooks</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;./lib/hooks&#39;</span><span class="p">),</span>
+</span><span class='line'>    <span class="nx">info</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;./lib/info&#39;</span><span class="p">),</span>
+</span><span class='line'>    <span class="nx">ioConfig</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;./lib/io-config&#39;</span><span class="p">),</span>
+</span><span class='line'>    <span class="nx">login</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;./lib/login&#39;</span><span class="p">),</span>
+</span><span class='line'>    <span class="nx">logging</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;./lib/logging&#39;</span><span class="p">),</span>
+</span><span class='line'>    <span class="nx">multibar</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;./lib/multibar&#39;</span><span class="p">),</span>
+</span><span class='line'>    <span class="nx">opbeat</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;./lib/opbeat&#39;</span><span class="p">),</span>
+</span><span class='line'>    <span class="nx">project</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;./lib/project&#39;</span><span class="p">),</span>
+</span><span class='line'>    <span class="nx">share</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;./lib/share&#39;</span><span class="p">),</span>
+</span><span class='line'>    <span class="nx">semver</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;semver&#39;</span><span class="p">),</span>
+</span><span class='line'>    <span class="nx">serve</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;./lib/serve&#39;</span><span class="p">),</span>
+</span><span class='line'>    <span class="nx">settings</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;./lib/settings&#39;</span><span class="p">),</span>
+</span><span class='line'>    <span class="nx">setup</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;./lib/setup&#39;</span><span class="p">),</span>
+</span><span class='line'>    <span class="nx">start</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;./lib/start&#39;</span><span class="p">),</span>
+</span><span class='line'>    <span class="nx">state</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;./lib/state&#39;</span><span class="p">),</span>
+</span><span class='line'>    <span class="nx">upload</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;./lib/upload&#39;</span><span class="p">),</span>
+</span><span class='line'>    <span class="nx">utils</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;./lib/utils&#39;</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="nx">module</span><span class="p">.</span><span class="nx">exports</span> <span class="o">=</span> <span class="p">{</span>
+</span><span class='line'>  <span class="nx">browser</span><span class="o">:</span> <span class="nx">browser</span><span class="p">,</span>
+</span><span class='line'>  <span class="nx">configXml</span><span class="o">:</span> <span class="nx">configXml</span><span class="p">,</span>
+</span><span class='line'>  <span class="nx">cordova</span><span class="o">:</span> <span class="nx">cordova</span><span class="p">,</span>
+</span><span class='line'>  <span class="nx">events</span><span class="o">:</span> <span class="nx">events</span><span class="p">,</span>
+</span><span class='line'>  <span class="nx">hooks</span><span class="o">:</span> <span class="nx">hooks</span><span class="p">,</span>
+</span><span class='line'>  <span class="nx">info</span><span class="o">:</span> <span class="nx">info</span><span class="p">,</span>
+</span><span class='line'>  <span class="nx">ioConfig</span><span class="o">:</span> <span class="nx">ioConfig</span><span class="p">,</span>
+</span><span class='line'>  <span class="nx">login</span><span class="o">:</span> <span class="nx">login</span><span class="p">,</span>
+</span><span class='line'>  <span class="nx">logging</span><span class="o">:</span> <span class="nx">logging</span><span class="p">,</span>
+</span><span class='line'>  <span class="nx">multibar</span><span class="o">:</span> <span class="nx">multibar</span><span class="p">,</span>
+</span><span class='line'>  <span class="nx">opbeat</span><span class="o">:</span> <span class="nx">opbeat</span><span class="p">,</span>
+</span><span class='line'>  <span class="nx">project</span><span class="o">:</span> <span class="nx">project</span><span class="p">,</span>
+</span><span class='line'>  <span class="nx">share</span><span class="o">:</span> <span class="nx">share</span><span class="p">,</span>
+</span><span class='line'>  <span class="nx">semver</span><span class="o">:</span> <span class="nx">semver</span><span class="p">,</span>
+</span><span class='line'>  <span class="nx">serve</span><span class="o">:</span> <span class="nx">serve</span><span class="p">,</span>
+</span><span class='line'>  <span class="nx">settings</span><span class="o">:</span> <span class="nx">settings</span><span class="p">,</span>
+</span><span class='line'>  <span class="nx">setup</span><span class="o">:</span> <span class="nx">setup</span><span class="p">,</span>
+</span><span class='line'>  <span class="nx">start</span><span class="o">:</span> <span class="nx">start</span><span class="p">,</span>
+</span><span class='line'>  <span class="nx">state</span><span class="o">:</span> <span class="nx">state</span><span class="p">,</span>
+</span><span class='line'>  <span class="nx">upload</span><span class="o">:</span> <span class="nx">upload</span><span class="p">,</span>
+</span><span class='line'>  <span class="nx">utils</span><span class="o">:</span> <span class="nx">utils</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>As you can see, whenever this module is <code>require</code>&rsquo;d in, it <code>require</code>&rsquo;s even more modules. This means, more file read requests and fulfilling those just to get this module working.</p>
+
+<p>Also to note &ndash; anytime a new command was added in, it must be exported by adding in another annoying <code>require</code> statement.</p>
+
+<h2>Lazy loading via JavaScript getters</h2>
+
+<p>While looking through other open source projects, I came across the idea of lazy loading your modules on demand.</p>
+
+<p>One way to do this is with JavaScript getters being defined. We wont <code>require</code> the module until it is requested.</p>
+
+<p>For example, the code snippet:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">var</span> <span class="nx">IonicAppLib</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;ionic-app-lib&#39;</span><span class="p">);</span>
+</span><span class='line'><span class="kd">var</span> <span class="nx">options</span> <span class="o">=</span> <span class="p">{</span> <span class="nx">port</span><span class="o">:</span> <span class="mi">8100</span><span class="p">,</span> <span class="nx">liveReloadPort</span><span class="o">:</span> <span class="mi">35729</span> <span class="p">};</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">//Do not load the serve command until it is requested as below:</span>
+</span><span class='line'><span class="nx">IonicAppLib</span><span class="p">.</span><span class="nx">serve</span><span class="p">.</span><span class="nx">start</span><span class="p">(</span><span class="nx">options</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>What&rsquo;s happening above &ndash; <code>require('ionic-app-lib')</code> is called, which sets up the <code>getters</code> for start, serve, run, etc. Then, when the command is called, the <code>require</code> for the module then happens, thereby getting the module loaded, and returning it to the caller.</p>
+
+<p>Here&rsquo;s that code to enforce the lazy loading of modules:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">var</span> <span class="nx">fs</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;fs&#39;</span><span class="p">),</span>
+</span><span class='line'>    <span class="nx">IonicAppLib</span> <span class="o">=</span> <span class="nx">module</span><span class="p">.</span><span class="nx">exports</span><span class="p">,</span>
+</span><span class='line'>    <span class="nx">path</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;path&#39;</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">var</span> <span class="nx">camelCase</span> <span class="o">=</span> <span class="kd">function</span> <span class="nx">camelCase</span><span class="p">(</span><span class="nx">input</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">return</span> <span class="nx">input</span><span class="p">.</span><span class="nx">toLowerCase</span><span class="p">().</span><span class="nx">replace</span><span class="p">(</span><span class="sr">/-(.)/g</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">match</span><span class="p">,</span> <span class="nx">group1</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>        <span class="k">return</span> <span class="nx">group1</span><span class="p">.</span><span class="nx">toUpperCase</span><span class="p">();</span>
+</span><span class='line'>    <span class="p">});</span>
+</span><span class='line'><span class="p">};</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">//</span>
+</span><span class='line'><span class="c1">// Setup all modules as lazy-loaded getters.</span>
+</span><span class='line'><span class="c1">//</span>
+</span><span class='line'><span class="nx">fs</span><span class="p">.</span><span class="nx">readdirSync</span><span class="p">(</span><span class="nx">path</span><span class="p">.</span><span class="nx">join</span><span class="p">(</span><span class="nx">__dirname</span><span class="p">,</span> <span class="s1">&#39;lib&#39;</span><span class="p">)).</span><span class="nx">forEach</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">file</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>  <span class="nx">file</span> <span class="o">=</span> <span class="nx">file</span><span class="p">.</span><span class="nx">replace</span><span class="p">(</span><span class="s1">&#39;.js&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">);</span>
+</span><span class='line'>  <span class="kd">var</span> <span class="nx">command</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">if</span> <span class="p">(</span><span class="nx">file</span><span class="p">.</span><span class="nx">indexOf</span><span class="p">(</span><span class="s1">&#39;-&#39;</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="c1">// console.log(&#39;file&#39;, file);</span>
+</span><span class='line'>    <span class="nx">command</span> <span class="o">=</span> <span class="nx">camelCase</span><span class="p">(</span><span class="nx">file</span><span class="p">);</span>
+</span><span class='line'>  <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span><span class='line'>    <span class="nx">command</span> <span class="o">=</span> <span class="nx">file</span><span class="p">;</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nx">IonicAppLib</span><span class="p">.</span><span class="nx">__defineGetter__</span><span class="p">(</span><span class="nx">command</span><span class="p">,</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">return</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;./lib/&#39;</span> <span class="o">+</span> <span class="nx">file</span><span class="p">);</span>
+</span><span class='line'>  <span class="p">});</span>
+</span><span class='line'><span class="p">});</span>
+</span><span class='line'>
+</span><span class='line'><span class="nx">IonicAppLib</span><span class="p">.</span><span class="nx">__defineGetter__</span><span class="p">(</span><span class="s1">&#39;semver&#39;</span><span class="p">,</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>  <span class="k">return</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;semver&#39;</span><span class="p">);</span>
+</span><span class='line'><span class="p">});</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Testing</h3>
+
+<p>I threw together a quick test to ensure that all of the modules were still correctly being accessible:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">var</span> <span class="nx">index</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;../index&#39;</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="nx">describe</span><span class="p">(</span><span class="s1">&#39;index&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nx">it</span><span class="p">(</span><span class="s1">&#39;should have index defined&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>    <span class="nx">expect</span><span class="p">(</span><span class="nx">index</span><span class="p">).</span><span class="nx">toBeDefined</span><span class="p">();</span>
+</span><span class='line'>  <span class="p">});</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="kd">function</span> <span class="nx">testForProperty</span><span class="p">(</span><span class="nx">input</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="nx">it</span><span class="p">(</span><span class="s1">&#39;should have &#39;</span> <span class="o">+</span> <span class="nx">input</span> <span class="o">+</span> <span class="s1">&#39; available&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>      <span class="nx">expect</span><span class="p">(</span><span class="nx">index</span><span class="p">[</span><span class="nx">input</span><span class="p">]).</span><span class="nx">toBeDefined</span><span class="p">();</span>
+</span><span class='line'>    <span class="p">});</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="kd">var</span> <span class="nx">objs</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;browser&#39;</span><span class="p">,</span> <span class="s1">&#39;configXml&#39;</span><span class="p">,</span> <span class="s1">&#39;cordova&#39;</span><span class="p">,</span> <span class="s1">&#39;events&#39;</span><span class="p">,</span> <span class="s1">&#39;hooks&#39;</span><span class="p">,</span> <span class="s1">&#39;info&#39;</span><span class="p">,</span>
+</span><span class='line'>              <span class="s1">&#39;ioConfig&#39;</span><span class="p">,</span> <span class="s1">&#39;login&#39;</span><span class="p">,</span> <span class="s1">&#39;logging&#39;</span><span class="p">,</span> <span class="s1">&#39;multibar&#39;</span><span class="p">,</span> <span class="s1">&#39;opbeat&#39;</span><span class="p">,</span> <span class="s1">&#39;project&#39;</span><span class="p">,</span>
+</span><span class='line'>              <span class="s1">&#39;share&#39;</span><span class="p">,</span> <span class="s1">&#39;semver&#39;</span><span class="p">,</span> <span class="s1">&#39;serve&#39;</span><span class="p">,</span> <span class="s1">&#39;settings&#39;</span><span class="p">,</span> <span class="s1">&#39;setup&#39;</span><span class="p">,</span> <span class="s1">&#39;start&#39;</span><span class="p">,</span> <span class="s1">&#39;state&#39;</span><span class="p">,</span>
+</span><span class='line'>              <span class="s1">&#39;stats&#39;</span><span class="p">,</span> <span class="s1">&#39;upload&#39;</span><span class="p">,</span> <span class="s1">&#39;utils&#39;</span><span class="p">];</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="c1">// Doing it this way to give better failure messages. </span>
+</span><span class='line'>  <span class="c1">// Ensures all commands are available currently from</span>
+</span><span class='line'>  <span class="nx">objs</span><span class="p">.</span><span class="nx">forEach</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">obj</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="c1">// expect(index[obj], obj).toBeDefined();</span>
+</span><span class='line'>    <span class="nx">testForProperty</span><span class="p">(</span><span class="nx">obj</span><span class="p">);</span>
+</span><span class='line'>  <span class="p">});</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">});</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>Gotchas</h2>
+
+<p>For one &ndash; you&rsquo;ll need to ensure your files adhere to some naming conventions. For our commands, we had some with hyphens (<code>-</code>) that we had to account for, as you can see above <code>if (file.indexOf('-') &gt; 0)</code>.</p>
+
+<p>Also &ndash; if you want to export other modules you can set up other getters, as I did with <code>semver</code> above.</p>
+
+<p>If you want to short circuit lazy loading, go ahead and just export them as normal.</p>
+
+<h2>Performance</h2>
+
+<p>We say about a 8x performance increase by lazy loading the modules.</p>
+
+<p>CLI run times:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="nx">Not</span> <span class="nx">lazy</span> <span class="nx">loading</span> <span class="nx">modules</span><span class="o">:</span>   <span class="mi">830</span><span class="nx">ms</span>
+</span><span class='line'><span class="nx">Lazy</span> <span class="nx">loading</span> <span class="nx">modules</span><span class="o">:</span>       <span class="mi">200</span><span class="nx">ms</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p></p>
+
+<p>Enjoy!</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Josh Bavari</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-08-25T15:29:00-06:00" pubdate data-updated="true">Aug 25<span>th</span>, 2015</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/modules/'>modules</a>, <a class='category' href='/blog/categories/node/'>node</a>, <a class='category' href='/blog/categories/npm/'>npm</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://jbavari.github.io/blog/2015/08/25/lazy-loading-your-node-modules/" data-via="jbavari" data-counturl="http://jbavari.github.io/blog/2015/08/25/lazy-loading-your-node-modules/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2015/08/14/codesigning-electron-applications/" title="Previous Post: Codesigning Electron Applications">&laquo; Codesigning Electron Applications</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2015/09/09/releasing-electron-for-windows/" title="Next Post: Releasing Electron for Windows">Releasing Electron for Windows &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2017/04/16/puppet-a-testing-handbook/">Puppet: A Testing Handbook</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2017/03/13/test-coverage-reports-in-elixir/">Test Coverage Reports in Elixir</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/12/29/multicast-service-discovery-in-electron/">Multicast Service Discovery in Electron</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/03/11/using-erlang-observer-on-a-remote-elixir-server/">Using Erlang Observer on a Remote Elixir Server</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/01/24/custom-json-encoding-in-phoenix/">Custom JSON Encoding in Phoenix</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/jbavari">@jbavari</a> on GitHub
+  
+  <script type="text/javascript">
+    $(document).ready(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'jbavari',
+            count: 0,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2019 - Josh Bavari -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+  <script src="//static.getclicky.com/js" type="text/javascript"></script>
+  <script type="text/javascript">try{ clicky.init(100896582); }catch(e){}</script>
+  <noscript><p><img alt="Clicky" width="1" height="1" src="//in.getclicky.com/100896582ns.gif" /></p></noscript>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'joshbavari';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://jbavari.github.io/blog/2015/08/25/lazy-loading-your-node-modules/';
+        var disqus_url = 'http://jbavari.github.io/blog/2015/08/25/lazy-loading-your-node-modules/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

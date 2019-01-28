@@ -1,0 +1,489 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Releasing Electron for Windows - Josh Bavari's Ramblings</title>
+  <meta name="author" content="Josh Bavari">
+
+  
+  <meta name="description" content="Releasing Electron applications on Windows can be a tricky issue. Especially if you mainly use a Mac (like me). And you have to think about that &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://jbavari.github.io/blog/2015/09/09/releasing-electron-for-windows">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="Josh Bavari's Ramblings" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">Josh Bavari's Ramblings</a></h1>
+  
+    <h2>tech babbles on Ruby, Javascript, Rails, Phonegap/Cordova, Grunt, and more</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:jbavari.github.io" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+  <li><a href="/about">About</a></li>
+  <li><a href="/speaking">Speaking</a></li>
+  <li><a href="/knowledge">Knowledge</a></li>
+  <li><a href="/about/resume">Resume</a></li>
+  <li><a href="/cv">C.V.</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Releasing Electron for Windows</h1>
+    
+    
+      <p class="meta">
+        <span class="reading-time">about a 3 minute read</span>
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-09-09T18:50:00-06:00" pubdate data-updated="true">Sep 9<span>th</span>, 2015</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>Releasing Electron applications on Windows can be a tricky issue. Especially if you mainly use a Mac (like me). And you have to think about that pesky <a href="https://msdn.microsoft.com/en-us/library/ms537361%28v=vs.85%29.aspx">code signing</a> thing you have to do to avoid the annoying &lsquo;SmartScreen&rsquo; filter users may get.</p>
+
+<p>Thankfully, there&rsquo;s a great tool called Squirrel made by <a href="https://twitter.com/paulcbetts">Paul Betts</a> that does a ton of the heavy lifting for you. Codesigning and all.</p>
+
+<p>I really got a ton of knowledge from the blog post, <a href="http://www.mylifeforthecode.com/creating-a-windows-distribution-of-an-electron-app-using-squirrel/">Creating a Windows Distribution of an Electron App using Squirrel</a> and <a href="http://www.mylifeforthecode.com/using-electron-packager-to-package-an-electron-app/">Using Electron Packager to Package an Electron App</a>.</p>
+
+<p>I wanted to curate a ton of knowledge in one place, so here we go.</p>
+
+<p>I use a few tools to get this done on my Mac:</p>
+
+<ul>
+<li><a href="https://github.com/maxogden/electron-packager">Electron Packager</a></li>
+<li><a href="https://www.winehq.org/">Wine</a></li>
+<li><a href="http://wiki.winehq.org/winetricks">Winetricks</a></li>
+<li><a href="http://www.nuget.org/nuget.exe">nuget cli</a></li>
+<li><a href="https://github.com/Squirrel/Squirrel.Windows/releases">Squirrel.Windows</a></li>
+</ul>
+
+
+<p>First, let&rsquo;s look at the project layout:</p>
+
+<h2>Project Layout</h2>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'>/build <span class="c"># Installers go here</span>
+</span><span class='line'>  /osx
+</span><span class='line'>  /resources <span class="c"># Icons, iconset, images, etc</span>
+</span><span class='line'>  /win <span class="c"># Binaries to build, Package.nuspec file to specify configurations</span>
+</span><span class='line'>  packager.json <span class="c"># File used by electron-builder to build OSX DMG file.</span>
+</span><span class='line'>/dist <span class="c"># Distributions go here (.app, .exe, .dmg)</span>
+</span><span class='line'>  /osx
+</span><span class='line'>  /win
+</span><span class='line'>/docs <span class="c"># Docs about project.</span>
+</span><span class='line'>/node_modules <span class="c"># Modules used for building/packaging/testing</span>
+</span><span class='line'>/scss <span class="c"># Sass for CSS compilation in www</span>
+</span><span class='line'>/spec <span class="c"># Tests</span>
+</span><span class='line'>  AppCtrl.spec.js
+</span><span class='line'>www <span class="c"># Source code for the application</span>
+</span><span class='line'>  /css
+</span><span class='line'>  /data
+</span><span class='line'>  /img
+</span><span class='line'>  /js
+</span><span class='line'>  /lib
+</span><span class='line'>  /node_modules <span class="c"># Modules here used by the application itself.</span>
+</span><span class='line'>  /templates
+</span><span class='line'>
+</span><span class='line'>karma.conf.js <span class="c"># Configuration for tests.</span>
+</span><span class='line'>livereload.js <span class="c"># Dev script to set up live reload in Electron</span>
+</span><span class='line'>package.json <span class="c"># Main package.json with scripts/dependencies to package/build.</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>Process</h2>
+
+<p>First we&rsquo;ll need to make the exe and associated files to a <code>dist</code> folder. From there, we take the win <code>dist</code> files and pack them into the <code>Setup.exe</code> file, where Squirrel will do the heavy lifting to pack all this into a one step process.</p>
+
+<h2>npm Scripts</h2>
+
+<p>We&rsquo;ll use the npm script <code>pack:win</code> task to put all our <code>www</code> files into a nice package (resources, exe, etc) and output to the <code>dist</code> folder.</p>
+
+<p><code>pack:win</code> step will just execute <code>electron-packager</code> with some relevant information. Please note the <code>asar=true</code>, this is recommended because sometimes <code>node_modules</code> can get nested a few times and the file paths will be too long for certain Windows platforms.</p>
+
+<p>Script:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="p">{</span>
+</span><span class='line'>  <span class="s2">&quot;scripts&quot;</span><span class="o">:</span> <span class="p">{</span>
+</span><span class='line'>    <span class="s2">&quot;pack:win&quot;</span><span class="o">:</span> <span class="s2">&quot;electron-packager ./www \&quot;Project\&quot; --out=dist/win --platform=win32 --arch=ia32 --version=0.29.1 --icon=build/resources/icon.ico --version-string.CompanyName=\&quot;My Company\&quot; --version-string.ProductName=\&quot;Project\&quot; --version-string.FileDescription=\&quot;Project\&quot; --asar=true&quot;</span>
+</span><span class='line'>  <span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>Electron Build script</h2>
+
+<p>I used a simple build script in node to assist in some of the heavy lifting. I recommend getting an Extended Validation certificate from <a href="http://blogs.msdn.com/b/ie/archive/2012/08/14/microsoft-smartscreen-amp-extended-validation-ev-code-signing-certificates.aspx">this blog post</a>.</p>
+
+<p>This will take the windows package in <code>dist/win</code> and create <code>dist/win/Setup.exe</code>.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="err">#</span><span class="o">!</span><span class="err">/usr/bin/env node</span>
+</span><span class='line'><span class="c1">// File is in root/build/win/build.js</span>
+</span><span class='line'><span class="c1">// First call nuget pack Package.nuspec</span>
+</span><span class='line'><span class="c1">// Then you&#39;ll have Project.&lt;version&gt;.nupkg</span>
+</span><span class='line'><span class="c1">// Run Squirrel.exe --releaseify Project.&lt;version&gt;.nupkg --icon iconPath --loadingGif loadingGifPath</span>
+</span><span class='line'><span class="c1">// resources in build/resources/</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">//Need to get around weird command line passes with windows paths</span>
+</span><span class='line'><span class="kd">function</span> <span class="nx">addWindowsPathFix</span><span class="p">(</span><span class="nx">path</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>  <span class="k">return</span> <span class="p">[</span><span class="s1">&#39;&quot;&#39;</span><span class="p">,</span> <span class="nx">path</span><span class="p">,</span> <span class="s1">&#39;&quot;&#39;</span><span class="p">].</span><span class="nx">join</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">var</span> <span class="nx">childProcess</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;child_process&#39;</span><span class="p">),</span>
+</span><span class='line'>  <span class="nx">path</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;path&#39;</span><span class="p">),</span>
+</span><span class='line'>  <span class="nx">packageJsonPath</span> <span class="o">=</span> <span class="nx">path</span><span class="p">.</span><span class="nx">join</span><span class="p">(</span><span class="nx">__dirname</span><span class="p">,</span> <span class="s1">&#39;..&#39;</span><span class="p">,</span> <span class="s1">&#39;..&#39;</span><span class="p">,</span> <span class="s1">&#39;package.json&#39;</span><span class="p">),</span>
+</span><span class='line'>  <span class="nx">packageJson</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="nx">packageJsonPath</span><span class="p">),</span>
+</span><span class='line'>  <span class="nx">loadingGifPath</span> <span class="o">=</span> <span class="nx">path</span><span class="p">.</span><span class="nx">join</span><span class="p">(</span><span class="nx">__dirname</span><span class="p">,</span> <span class="s1">&#39;..&#39;</span><span class="p">,</span> <span class="s1">&#39;resources&#39;</span><span class="p">,</span> <span class="s1">&#39;windows-loader.png&#39;</span><span class="p">),</span>
+</span><span class='line'>  <span class="nx">nugetPackageSpecPath</span> <span class="o">=</span> <span class="nx">path</span><span class="p">.</span><span class="nx">join</span><span class="p">(</span><span class="nx">__dirname</span><span class="p">,</span> <span class="s1">&#39;Package.nuspec&#39;</span><span class="p">),</span>
+</span><span class='line'>  <span class="nx">nugetPackageOutputPath</span> <span class="o">=</span> <span class="nx">path</span><span class="p">.</span><span class="nx">join</span><span class="p">(</span><span class="nx">__dirname</span><span class="p">),</span>
+</span><span class='line'>  <span class="nx">nugetPackageName</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Project&#39;</span><span class="p">,</span> <span class="s1">&#39;.1.0.0&#39;</span><span class="p">,</span> <span class="s1">&#39;.nupkg&#39;</span><span class="p">].</span><span class="nx">join</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">),</span>
+</span><span class='line'>  <span class="c1">// nugetPackageName = [&#39;Project&#39;, packageJson.version, &#39;.nupkg&#39;].join(&#39;&#39;),</span>
+</span><span class='line'>  <span class="nx">nugetPackagePath</span> <span class="o">=</span> <span class="nx">path</span><span class="p">.</span><span class="nx">join</span><span class="p">(</span><span class="nx">nugetPackageOutputPath</span><span class="p">,</span> <span class="nx">nugetPackageName</span><span class="p">),</span>
+</span><span class='line'>  <span class="nx">nugetExePath</span> <span class="o">=</span> <span class="nx">path</span><span class="p">.</span><span class="nx">join</span><span class="p">(</span><span class="nx">__dirname</span><span class="p">,</span> <span class="s1">&#39;nuget.exe&#39;</span><span class="p">),</span>
+</span><span class='line'>  <span class="nx">setupIconPath</span> <span class="o">=</span> <span class="nx">path</span><span class="p">.</span><span class="nx">join</span><span class="p">(</span><span class="nx">__dirname</span><span class="p">,</span> <span class="s1">&#39;..&#39;</span><span class="p">,</span> <span class="s1">&#39;resources&#39;</span><span class="p">,</span> <span class="s1">&#39;icon.ico&#39;</span><span class="p">),</span>
+</span><span class='line'>  <span class="nx">setupReleasePath</span> <span class="o">=</span> <span class="nx">path</span><span class="p">.</span><span class="nx">join</span><span class="p">(</span><span class="nx">__dirname</span><span class="p">,</span> <span class="s1">&#39;..&#39;</span><span class="p">,</span> <span class="s1">&#39;..&#39;</span><span class="p">,</span> <span class="s1">&#39;dist&#39;</span><span class="p">,</span> <span class="s1">&#39;win&#39;</span><span class="p">),</span>
+</span><span class='line'>  <span class="nx">signatureCertificatePath</span> <span class="o">=</span> <span class="nx">path</span><span class="p">.</span><span class="nx">join</span><span class="p">(</span><span class="nx">__dirname</span><span class="p">,</span> <span class="s1">&#39;Certificate.pfx&#39;</span><span class="p">),</span>
+</span><span class='line'>  <span class="nx">signParams</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;&quot;/a /f &quot;&#39;</span><span class="p">,</span> <span class="nx">addWindowsPathFix</span><span class="p">(</span><span class="nx">signatureCertificatePath</span><span class="p">),</span> <span class="s1">&#39;&quot; /p &#39;</span><span class="p">,</span> <span class="nx">process</span><span class="p">.</span><span class="nx">env</span><span class="p">.</span><span class="nx">PRIVATE_CERT_PASSWORD</span><span class="p">,</span> <span class="s1">&#39;&quot;&#39;</span><span class="p">].</span><span class="nx">join</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">),</span>
+</span><span class='line'>  <span class="nx">squirrelExePath</span> <span class="o">=</span> <span class="nx">path</span><span class="p">.</span><span class="nx">join</span><span class="p">(</span><span class="nx">__dirname</span><span class="p">,</span> <span class="s1">&#39;Squirrel.exe&#39;</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;sign params&#39;</span><span class="p">,</span> <span class="nx">signParams</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">var</span> <span class="nx">createNugetPackageCommand</span> <span class="o">=</span> <span class="p">[</span><span class="nx">addWindowsPathFix</span><span class="p">(</span><span class="nx">nugetExePath</span><span class="p">),</span> <span class="s1">&#39;pack&#39;</span><span class="p">,</span> <span class="nx">addWindowsPathFix</span><span class="p">(</span><span class="nx">nugetPackageSpecPath</span><span class="p">),</span> <span class="s1">&#39;-OutputDirectory&#39;</span><span class="p">,</span> <span class="nx">addWindowsPathFix</span><span class="p">(</span><span class="nx">nugetPackageOutputPath</span><span class="p">)].</span><span class="nx">join</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="p">);</span>
+</span><span class='line'><span class="kd">var</span> <span class="nx">createSetupCommand</span> <span class="o">=</span> <span class="p">[</span>
+</span><span class='line'>              <span class="nx">addWindowsPathFix</span><span class="p">(</span><span class="nx">squirrelExePath</span><span class="p">),</span>
+</span><span class='line'>              <span class="s1">&#39;--releasify&#39;</span><span class="p">,</span> <span class="nx">addWindowsPathFix</span><span class="p">(</span><span class="nx">nugetPackagePath</span><span class="p">),</span>
+</span><span class='line'>              <span class="s1">&#39;--loadingGif&#39;</span><span class="p">,</span> <span class="nx">addWindowsPathFix</span><span class="p">(</span><span class="nx">loadingGifPath</span><span class="p">),</span>
+</span><span class='line'>              <span class="s1">&#39;--icon&#39;</span><span class="p">,</span> <span class="nx">addWindowsPathFix</span><span class="p">(</span><span class="nx">setupIconPath</span><span class="p">),</span>
+</span><span class='line'>              <span class="s1">&#39;--releaseDir&#39;</span><span class="p">,</span> <span class="nx">addWindowsPathFix</span><span class="p">(</span><span class="nx">setupReleasePath</span><span class="p">),</span>
+</span><span class='line'>              <span class="s1">&#39;--signWithParams&#39;</span><span class="p">,</span> <span class="nx">signParams</span>
+</span><span class='line'>            <span class="p">].</span><span class="nx">join</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;Creating nuget package from nuget spec file:&#39;</span><span class="p">,</span> <span class="nx">nugetPackageSpecPath</span><span class="p">);</span>
+</span><span class='line'><span class="c1">// console.log(createNugetPackageCommand);</span>
+</span><span class='line'><span class="nx">childProcess</span><span class="p">.</span><span class="nx">execSync</span><span class="p">(</span><span class="nx">createNugetPackageCommand</span><span class="p">);</span>
+</span><span class='line'><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;Created nuget package&#39;</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;Building Setup.exe&#39;</span><span class="p">);</span>
+</span><span class='line'><span class="c1">// console.log(createSetupCommand);</span>
+</span><span class='line'><span class="nx">childProcess</span><span class="p">.</span><span class="nx">execSync</span><span class="p">(</span><span class="nx">createSetupCommand</span><span class="p">);</span>
+</span><span class='line'><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;Built Setup.exe&#39;</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Hope this helps!</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Josh Bavari</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-09-09T18:50:00-06:00" pubdate data-updated="true">Sep 9<span>th</span>, 2015</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/electron/'>electron</a>, <a class='category' href='/blog/categories/release/'>release</a>, <a class='category' href='/blog/categories/windows/'>windows</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://jbavari.github.io/blog/2015/09/09/releasing-electron-for-windows/" data-via="jbavari" data-counturl="http://jbavari.github.io/blog/2015/09/09/releasing-electron-for-windows/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2015/08/25/lazy-loading-your-node-modules/" title="Previous Post: Lazy loading your node modules">&laquo; Lazy loading your node modules</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2015/10/15/understanding-built-node-modules/" title="Next Post: Understanding Built Node Modules">Understanding Built Node Modules &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2017/04/16/puppet-a-testing-handbook/">Puppet: A Testing Handbook</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2017/03/13/test-coverage-reports-in-elixir/">Test Coverage Reports in Elixir</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/12/29/multicast-service-discovery-in-electron/">Multicast Service Discovery in Electron</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/03/11/using-erlang-observer-on-a-remote-elixir-server/">Using Erlang Observer on a Remote Elixir Server</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/01/24/custom-json-encoding-in-phoenix/">Custom JSON Encoding in Phoenix</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/jbavari">@jbavari</a> on GitHub
+  
+  <script type="text/javascript">
+    $(document).ready(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'jbavari',
+            count: 0,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2019 - Josh Bavari -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+  <script src="//static.getclicky.com/js" type="text/javascript"></script>
+  <script type="text/javascript">try{ clicky.init(100896582); }catch(e){}</script>
+  <noscript><p><img alt="Clicky" width="1" height="1" src="//in.getclicky.com/100896582ns.gif" /></p></noscript>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'joshbavari';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://jbavari.github.io/blog/2015/09/09/releasing-electron-for-windows/';
+        var disqus_url = 'http://jbavari.github.io/blog/2015/09/09/releasing-electron-for-windows/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

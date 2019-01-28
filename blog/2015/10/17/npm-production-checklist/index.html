@@ -1,0 +1,389 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>npm Production Checklist - Josh Bavari's Ramblings</title>
+  <meta name="author" content="Josh Bavari">
+
+  
+  <meta name="description" content="I recently read this post by RisingStack over the Node.js Production Checklist. Since this was aimed at releasing node.js applications for the most &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://jbavari.github.io/blog/2015/10/17/npm-production-checklist">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="Josh Bavari's Ramblings" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">Josh Bavari's Ramblings</a></h1>
+  
+    <h2>tech babbles on Ruby, Javascript, Rails, Phonegap/Cordova, Grunt, and more</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:jbavari.github.io" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+  <li><a href="/about">About</a></li>
+  <li><a href="/speaking">Speaking</a></li>
+  <li><a href="/knowledge">Knowledge</a></li>
+  <li><a href="/about/resume">Resume</a></li>
+  <li><a href="/cv">C.V.</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Npm Production Checklist</h1>
+    
+    
+      <p class="meta">
+        <span class="reading-time">about a 6 minute read</span>
+        
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+<time datetime="2015-10-17T18:33:00-06:00" pubdate data-updated="true">Oct 17<span>th</span>, 2015</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>I recently read this post by RisingStack over the <a href="https://blog.risingstack.com/node-js-production-checklist">Node.js Production Checklist</a>.</p>
+
+<p>Since this was aimed at releasing node.js applications for the most part, I wanted to touch base on a &lsquo;production checklist&rsquo; on releasing a npm module.</p>
+
+<p>The <a href="https://docs.npmjs.com/misc/developers">npm-developers guide</a> does a <em>great</em> job of explaining much you need to know about publishing your npm module.</p>
+
+<p>This post will mainly serve as a work in progress document to supplement the developers guide, as well as serving as a way to help me continue to keep learning best practices all the time.</p>
+
+<p>Some of the methods I use in my npm release schedule are as follows:</p>
+
+<ol>
+<li>Keeping files out of your package</li>
+<li>Locking versions</li>
+<li>Continuous integration (tests, install, etc)</li>
+<li>Alpha/beta pushes (user testing)</li>
+<li><a href="https://github.com/tjunnone/npm-check-updates">npm-check-updates</a></li>
+</ol>
+
+
+<h2>Keeping files out of your package</h2>
+
+<p>We want our users to only have to download what they need to use your module. This may mean removing any files that are not beneficial for the user. Much like <code>.gitignore</code> for files being checked into git, npm has <code>.npmignore</code>.</p>
+
+<p>Straight from <a href="https://docs.npmjs.com/misc/developers#keeping-files-out-of-your-package">npm docs</a>:</p>
+
+<blockquote><p>Use a .npmignore file to keep stuff out of your package. If there&rsquo;s no .npmignore file, but there is a .gitignore file, then npm will ignore the stuff matched by the .gitignore file. If you want to include something that is excluded by your .gitignore file, you can create an empty .npmignore file to override it. Like git, npm looks for .npmignore and .gitignore files in all subdirectories of your package, not only the root directory.</p></blockquote>
+
+<p>We can also use a command in the npm CLI called <code>prune</code>.</p>
+
+<p>Again, straight from the <a href="https://docs.npmjs.com/cli/prune">npm documentation</a>:</p>
+
+<blockquote><p>This command removes &ldquo;extraneous&rdquo; packages. If a package name is provided, then only packages matching one of the supplied names are removed.
+Extraneous packages are packages that are not listed on the parent package&rsquo;s dependencies list.
+If the &mdash;production flag is specified or the NODE_ENV environment variable is set to production, this command will remove the packages specified in your devDependencies. Setting &mdash;production=false will negate NODE_ENV being set to production.</p></blockquote>
+
+<p>This is a great way to ensure you dont have any extra packages you might have installed via <code>npm install</code> and either forgot to pass the <code>--save</code> flag or were just testing functionality.</p>
+
+<p>You can also use this command inline with the <code>--production</code> flag when installing node modules to avoid having the extra cruft of the <code>devDependencies</code>, which are mainly used for developing the modules (think testing, etc).</p>
+
+<h2>Locking versions</h2>
+
+<p>Theres a few methods to use with npm to lock down your versions. You can use the <code>npm shrinkwrap</code> command or specify node modules to bundle in your module with <code>bundleDependencies</code>.</p>
+
+<p>The strategy is, you can either pack those in with your tarball as they are in your <code>node_modules</code> folder, or you can lock down those exact versions by storing the exact tarball to download when the user <code>npm install</code>s your module.</p>
+
+<p>Edit: I&rsquo;ve just learned on a new method to package bundle up node modules by using the <code>bundledDependencies</code> attribute in your projects <code>package.json</code> file.</p>
+
+<h2>Bundling</h2>
+
+<p>By specifying <code>bundleDependencies</code> in your package.json, you are telling npm on its publishing process to include those modules listed in the tarball it creates and pushes up to the npm registry. For example, if you go to any npm repo and download the tarball in the url there, unzip it and open it, you&rsquo;ll see those exact node modules in them as you&rsquo;ve got in your own <code>node_modules</code> folder.</p>
+
+<p>This effectively locks down your modules versions, at the cost of a larger tarball size the user will download intially. Any modules that are not bundled, will then be downloaded and installed after the tarball is downloaded.</p>
+
+<h2>Shrinkwrapping</h2>
+
+<p>If you&rsquo;ve ever done any Rails, you&rsquo;ve probably seen the gemfile.lock. The equivalent in Node land is the <code>npm-shrinkwrap.json</code> file.</p>
+
+<p>What the <code>npm shrinkwrap</code> command does is looks at your <code>node_modules</code> folder and looks at the packages installed there and compares those to what is in your <code>package.json</code> file.</p>
+
+<p>Straight from <a href="https://docs.npmjs.com/cli/shrinkwrap">npm documentation</a>:</p>
+
+<blockquote><p>The shrinkwrap command has locked down the dependencies based on what&rsquo;s currently installed in node_modules. The installation behavior is changed to:</p>
+
+<p>The module tree described by the shrinkwrap is reproduced. This means reproducing the structure described in the file, using the specific files referenced in &ldquo;resolved&rdquo; if available, falling back to normal package resolution using &ldquo;version&rdquo; if one isn&rsquo;t.</p>
+
+<p>The tree is walked and any missing dependencies are installed in the usual fasion.</p></blockquote>
+
+<p>A huge misconception is that shrinkwrap locks down what versions are in your <code>package.json</code> file. This is incorrect. Just to reiterate, it will look in your <code>node_modules</code> and use that compared to your <code>package.json</code> file.</p>
+
+<p>Edit: Another thing to note, if you take a look in your npm-shrinkwrap.json, you&rsquo;ll see the exact URL for that versions tarball to download, which npm cli will use to grab without taking a peep at anything else. This may cause issues for some users, as stated by <a href="https://github.com/driftyco/ionic-cli/issues/636">Forrest on this Ionic CLI issue</a>:</p>
+
+<blockquote><p>Due to how shrinkwrap works, it ends up bypassing the npm cache and redownloading every package mentioned in the shrinkwrap each time npm install is run. If users have any issues with their network, or something gets sticky with npm&rsquo;s CDN, the whole install can fail, forcing them to start over again.</p></blockquote>
+
+<p>Heed this warning, friends.</p>
+
+<h2>Testing</h2>
+
+<p>Try to avoid the old addage, &lsquo;it worked on my machine&rsquo;, by having a CI server pull your package, run some tests, and even sometimes install the module to make sure it works on other machines besides your own.</p>
+
+<p>I really enjoy using <a href="https://circleci.com/">CircleCI</a>, as it is free for open source projects! You can normally specify a config file that says what version of node/npm to use and the rest is automated.</p>
+
+<h2>Alpha/beta pushes</h2>
+
+<p>I covered this in a <a href="http://jbavari.github.io/blog/2015/10/16/using-npm-tags">previous article about using npm tags</a>.</p>
+
+<p>The idea is, before publishing your version to npm, try doing a alpha/beta push first (to save the version in npm you&rsquo;re about to publish, since there can only be <em>one</em> version) to let users <code>npm install</code> the module to run some tests before commiting that to the <code>latest</code> tag for everyone to install.</p>
+
+<h2>npm Check Updates</h2>
+
+<p>There&rsquo;s a nice module that looks at your <code>package.json</code> file and looks to see the latest tags on the modules you specify in your dependencies.</p>
+
+<p>It will give you some heads up if there are latest packages, so you can update if you have too many out of date packages.</p>
+
+<p>Hope this helps!</p>
+
+<p>References:</p>
+
+<ul>
+<li><a href="http://blog.keithcirkel.co.uk/how-to-use-npm-as-a-build-tool/">Using npm as a build tool</a></li>
+<li><a href="http://jbavari.github.io/blog/2015/10/16/using-npm-tags">Using npm tags</a></li>
+<li><a href="https://docs.npmjs.com/cli/shrinkwrap">npm documentation</a></li>
+<li><a href="https://docs.npmjs.com/misc/developers">npm-developers guide</a></li>
+<li><a href="https://www.npmjs.com/package/module-best-practices#naming-conventions">npm &ndash; Module best practices</a></li>
+<li><a href="https://blog.risingstack.com/node-js-production-checklist">Node.js Production Checklist</a></li>
+<li><a href="http://blog.nchaulet.fr/publish-package-on-npm-best-practice/">Publish packages on npm &ndash; best practice</a></li>
+</ul>
+
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Josh Bavari</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+<time datetime="2015-11-04T11:55:00-07:00" class="updated">Updated Nov 4<span>th</span>, 2015</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/node/'>node</a>, <a class='category' href='/blog/categories/npm/'>npm</a>, <a class='category' href='/blog/categories/release/'>release</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://jbavari.github.io/blog/2015/10/17/npm-production-checklist/" data-via="jbavari" data-counturl="http://jbavari.github.io/blog/2015/10/17/npm-production-checklist/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2015/10/16/using-npm-tags/" title="Previous Post: Using npm tags">&laquo; Using npm tags</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2015/10/19/angular-2-injectables/" title="Next Post: Angular 2 Injectables">Angular 2 Injectables &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2017/04/16/puppet-a-testing-handbook/">Puppet: A Testing Handbook</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2017/03/13/test-coverage-reports-in-elixir/">Test Coverage Reports in Elixir</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/12/29/multicast-service-discovery-in-electron/">Multicast Service Discovery in Electron</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/03/11/using-erlang-observer-on-a-remote-elixir-server/">Using Erlang Observer on a Remote Elixir Server</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/01/24/custom-json-encoding-in-phoenix/">Custom JSON Encoding in Phoenix</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/jbavari">@jbavari</a> on GitHub
+  
+  <script type="text/javascript">
+    $(document).ready(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'jbavari',
+            count: 0,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2019 - Josh Bavari -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+  <script src="//static.getclicky.com/js" type="text/javascript"></script>
+  <script type="text/javascript">try{ clicky.init(100896582); }catch(e){}</script>
+  <noscript><p><img alt="Clicky" width="1" height="1" src="//in.getclicky.com/100896582ns.gif" /></p></noscript>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'joshbavari';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://jbavari.github.io/blog/2015/10/17/npm-production-checklist/';
+        var disqus_url = 'http://jbavari.github.io/blog/2015/10/17/npm-production-checklist/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

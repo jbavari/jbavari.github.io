@@ -1,0 +1,230 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: modules | Josh Bavari's Ramblings]]></title>
+  <link href="http://jbavari.github.io/blog/categories/modules/atom.xml" rel="self"/>
+  <link href="http://jbavari.github.io/"/>
+  <updated>2019-01-27T19:16:40-07:00</updated>
+  <id>http://jbavari.github.io/</id>
+  <author>
+    <name><![CDATA[Josh Bavari]]></name>
+    <email><![CDATA[jbavari@gmail.com]]></email>
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Lazy loading your node modules]]></title>
+    <link href="http://jbavari.github.io/blog/2015/08/25/lazy-loading-your-node-modules/"/>
+    <updated>2015-08-25T15:29:00-06:00</updated>
+    <id>http://jbavari.github.io/blog/2015/08/25/lazy-loading-your-node-modules</id>
+    <content type="html"><![CDATA[<p>While working at <a href="http://ionicframework.com">Ionic</a> I&rsquo;ve been focused on the <a href="http://npmjs.org/package/ionic">Ionic CLI</a>.</p>
+
+<p>My first big refactor of the CLI was pulling out most of the 21 commands it offers into an external library (<a href="http://github.com/driftyco/ionic-app-lib">ionic-app-lib</a>) that could be consumed by both the Ionic CLI and our GUI &ndash; <a href="http://lab.ionic.io">Ionic Lab</a>.</p>
+
+<p>The refactor went rather smoothly.</p>
+
+<p>However, one thing happened that was not expected &ndash; now that the ionic-app-lib bundled all the commands together, whenever you required the app-lib module, it was rather slower than expected.</p>
+
+<p>For example, whenever you ran: <code>var IonicAppLib = require('ionic-app-lib');</code> &ndash; it would take a wee bit longer.</p>
+
+<p>Here&rsquo;s the code for the included moduled <code>ionic-app-lib</code>:</p>
+
+<p>``` js</p>
+
+<p>var browser = require(&lsquo;./lib/browser&rsquo;),</p>
+
+<pre><code>configXml = require('./lib/config-xml'),
+cordova = require('./lib/cordova'),
+events = require('./lib/events'),
+hooks = require('./lib/hooks'),
+info = require('./lib/info'),
+ioConfig = require('./lib/io-config'),
+login = require('./lib/login'),
+logging = require('./lib/logging'),
+multibar = require('./lib/multibar'),
+opbeat = require('./lib/opbeat'),
+project = require('./lib/project'),
+share = require('./lib/share'),
+semver = require('semver'),
+serve = require('./lib/serve'),
+settings = require('./lib/settings'),
+setup = require('./lib/setup'),
+start = require('./lib/start'),
+state = require('./lib/state'),
+upload = require('./lib/upload'),
+utils = require('./lib/utils');
+</code></pre>
+
+<p>module.exports = {
+  browser: browser,
+  configXml: configXml,
+  cordova: cordova,
+  events: events,
+  hooks: hooks,
+  info: info,
+  ioConfig: ioConfig,
+  login: login,
+  logging: logging,
+  multibar: multibar,
+  opbeat: opbeat,
+  project: project,
+  share: share,
+  semver: semver,
+  serve: serve,
+  settings: settings,
+  setup: setup,
+  start: start,
+  state: state,
+  upload: upload,
+  utils: utils
+}</p>
+
+<p>```</p>
+
+<p>As you can see, whenever this module is <code>require</code>&rsquo;d in, it <code>require</code>&rsquo;s even more modules. This means, more file read requests and fulfilling those just to get this module working.</p>
+
+<p>Also to note &ndash; anytime a new command was added in, it must be exported by adding in another annoying <code>require</code> statement.</p>
+
+<h2>Lazy loading via JavaScript getters</h2>
+
+<p>While looking through other open source projects, I came across the idea of lazy loading your modules on demand.</p>
+
+<p>One way to do this is with JavaScript getters being defined. We wont <code>require</code> the module until it is requested.</p>
+
+<p>For example, the code snippet:</p>
+
+<p>``` js</p>
+
+<p>var IonicAppLib = require(&lsquo;ionic-app-lib&rsquo;);
+var options = { port: 8100, liveReloadPort: 35729 };</p>
+
+<p>//Do not load the serve command until it is requested as below:
+IonicAppLib.serve.start(options);</p>
+
+<p>```</p>
+
+<p>What&rsquo;s happening above &ndash; <code>require('ionic-app-lib')</code> is called, which sets up the <code>getters</code> for start, serve, run, etc. Then, when the command is called, the <code>require</code> for the module then happens, thereby getting the module loaded, and returning it to the caller.</p>
+
+<p>Here&rsquo;s that code to enforce the lazy loading of modules:</p>
+
+<p>``` js</p>
+
+<p>var fs = require(&lsquo;fs&rsquo;),</p>
+
+<pre><code>IonicAppLib = module.exports,
+path = require('path');
+</code></pre>
+
+<p>var camelCase = function camelCase(input) {</p>
+
+<pre><code>return input.toLowerCase().replace(/-(.)/g, function(match, group1) {
+    return group1.toUpperCase();
+});
+</code></pre>
+
+<p>};</p>
+
+<p>//
+// Setup all modules as lazy-loaded getters.
+//
+fs.readdirSync(path.join(__dirname, &lsquo;lib&rsquo;)).forEach(function (file) {
+  file = file.replace(&lsquo;.js&rsquo;, &lsquo;&rsquo;);
+  var command;</p>
+
+<p>  if (file.indexOf(&lsquo;&ndash;&rsquo;) > 0) {</p>
+
+<pre><code>// console.log('file', file);
+command = camelCase(file);
+</code></pre>
+
+<p>  } else {</p>
+
+<pre><code>command = file;
+</code></pre>
+
+<p>  }</p>
+
+<p>  IonicAppLib.<strong>defineGetter</strong>(command, function () {</p>
+
+<pre><code>return require('./lib/' + file);
+</code></pre>
+
+<p>  });
+});</p>
+
+<p>IonicAppLib.<strong>defineGetter</strong>(&lsquo;semver&rsquo;, function () {
+  return require(&lsquo;semver&rsquo;);
+});</p>
+
+<p>```</p>
+
+<h3>Testing</h3>
+
+<p>I threw together a quick test to ensure that all of the modules were still correctly being accessible:</p>
+
+<p>``` js</p>
+
+<p>var index = require(&lsquo;../index&rsquo;);</p>
+
+<p>describe(&lsquo;index&rsquo;, function() {</p>
+
+<p>  it(&lsquo;should have index defined&rsquo;, function() {</p>
+
+<pre><code>expect(index).toBeDefined();
+</code></pre>
+
+<p>  });</p>
+
+<p>  function testForProperty(input) {</p>
+
+<pre><code>it('should have ' + input + ' available', function() {
+  expect(index[input]).toBeDefined();
+});
+</code></pre>
+
+<p>  }</p>
+
+<p>  var objs = [&lsquo;browser&rsquo;, &lsquo;configXml&rsquo;, &lsquo;cordova&rsquo;, &lsquo;events&rsquo;, &lsquo;hooks&rsquo;, &lsquo;info&rsquo;,</p>
+
+<pre><code>          'ioConfig', 'login', 'logging', 'multibar', 'opbeat', 'project', 
+          'share', 'semver', 'serve', 'settings', 'setup', 'start', 'state', 
+          'stats', 'upload', 'utils'];
+</code></pre>
+
+<p>  // Doing it this way to give better failure messages.
+  // Ensures all commands are available currently from
+  objs.forEach(function(obj) {</p>
+
+<pre><code>// expect(index[obj], obj).toBeDefined();
+testForProperty(obj);
+</code></pre>
+
+<p>  });</p>
+
+<p>});
+```</p>
+
+<h2>Gotchas</h2>
+
+<p>For one &ndash; you&rsquo;ll need to ensure your files adhere to some naming conventions. For our commands, we had some with hyphens (<code>-</code>) that we had to account for, as you can see above <code>if (file.indexOf('-') &gt; 0)</code>.</p>
+
+<p>Also &ndash; if you want to export other modules you can set up other getters, as I did with <code>semver</code> above.</p>
+
+<p>If you want to short circuit lazy loading, go ahead and just export them as normal.</p>
+
+<h2>Performance</h2>
+
+<p>We say about a 8x performance increase by lazy loading the modules.</p>
+
+<p>CLI run times:
+<code>
+Not lazy loading modules:   830ms
+Lazy loading modules:       200ms
+</code></p>
+
+<p>Enjoy!</p>
+]]></content>
+  </entry>
+  
+</feed>

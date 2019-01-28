@@ -1,0 +1,535 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: rails | Josh Bavari's Ramblings]]></title>
+  <link href="http://jbavari.github.io/blog/categories/rails/atom.xml" rel="self"/>
+  <link href="http://jbavari.github.io/"/>
+  <updated>2019-01-27T19:16:40-07:00</updated>
+  <id>http://jbavari.github.io/</id>
+  <author>
+    <name><![CDATA[Josh Bavari]]></name>
+    <email><![CDATA[jbavari@gmail.com]]></email>
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Pushing Jobs to Sidekiq From Another Server]]></title>
+    <link href="http://jbavari.github.io/blog/2014/06/21/pushing-jobs-to-sidekiq-from-another-server/"/>
+    <updated>2014-06-21T00:35:00-06:00</updated>
+    <id>http://jbavari.github.io/blog/2014/06/21/pushing-jobs-to-sidekiq-from-another-server</id>
+    <content type="html"><![CDATA[<p>We use <a href="http://sidekiq.org/">Sidekiq</a> for our background job processing for videos, social integrations, and other tasks. It works great for what it does.</p>
+
+<p>Due to some of technical decisions at work, we have a few servers set up.</p>
+
+<ul>
+<li>An API server</li>
+<li>A job processing server</li>
+<li>An analytical dashboard Rails server</li>
+</ul>
+
+
+<p>The job processing server has all the Sidekiq worker models in it, as you&rsquo;d expect. We did this to keep all processing in one central location.</p>
+
+<p>Some use cases we have for it is to have all Push notifications sent from a single location, the job server. However, we need to trigger some of those from our API or analytical dashboard.</p>
+
+<h2>The problem and solution</h2>
+
+<p>How do we get workers queued up from other servers without replicating the Worker class in other servers? Since Sidekiq uses <a href="http://redis.io">Redis</a>, we figure&rsquo;d we&rsquo;d make a simple <code>RedisJobPusher</code> class to push workers to list in Redis that Sidekiq watches. Using this class, we can now queue jobs from other servers.</p>
+
+<p>The class has a core method, <code>push_to_queue</code>, that other methods (<code>push_leg_notification</code>, etc) call to push the worker name and parameters in redis. The above class assumes it is able to connect to redis.</p>
+
+<p>It looks like this:</p>
+
+<p>``` ruby
+require &lsquo;redis&rsquo;
+require &lsquo;json&rsquo;
+class RedisJobPusher</p>
+
+<pre><code>def self.push_leg_notification(user_id, event_id, message, title)
+    params = [user_id, event_id, 'leg', message, title, nil]
+    RedisJobPusher.push_to_queue('PushNotificationWorker', params)
+end
+
+def self.push_post_notification(user_id, event_id, message, title, event_user_social_id)
+    params = [user_id, event_id, 'post', message, title, event_user_social_id]
+    RedisJobPusher.push_to_queue('PushNotificationWorker', params)
+end
+
+def self.push_to_queue(worker_name, params)
+# using &lt;&lt;  rather than + because it cats instead of newing up string objects
+redisurl = 'redis://' &lt;&lt; CONFIG[:redis_server] &lt;&lt; ':6379' &lt;&lt; '/' &lt;&lt; CONFIG[:redis_db_num]
+
+    msg = { 'class' =&gt; worker_name, 'args' =&gt; params, 'retry' =&gt; true }
+    redis = Redis.new(:url =&gt; redisurl)
+    redis.lpush("raisemore_sidekiq:queue:JobWorker", JSON.dump(msg))
+end
+</code></pre>
+
+<p>end
+```</p>
+
+<p>As you can see, there isn&rsquo;t a lot going on here. Simple and easy. Just connect to redis, do a quick <code>lpush</code>, and go on your day.</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Handling AngularJS Popups for OAuth on Rails]]></title>
+    <link href="http://jbavari.github.io/blog/2014/06/04/handling-angularjs-popups-for-oauth/"/>
+    <updated>2014-06-04T22:56:00-06:00</updated>
+    <id>http://jbavari.github.io/blog/2014/06/04/handling-angularjs-popups-for-oauth</id>
+    <content type="html"><![CDATA[<p>I&rsquo;ve been using AngularJS a lot lately in some of my projects at work. It&rsquo;s been a great tool to use to help me solve challenging problems the nicest and cleanest way possible.</p>
+
+<p>I ran into needing some users to log into a variety of different social platforms. Since I was using Rails, I chose to use <a href="https://github.com/intridea/omniauth">omniauth</a> for <a href="https://github.com/mkdynamic/omniauth-facebook">facebook</a> and <a href="https://github.com/arunagw/omniauth-twitter">twitter</a>. It became even more challenging because they needed to login to these platforms with THEIR social application ID&rsquo;s, not ours.</p>
+
+<h2>The Problem</h2>
+
+<ul>
+<li>Need to have admin window where user clicks login button for facebook or twitter and logs in with their Facebook application (think Coke, Pepsi, etc)</li>
+<li>User then sees pop up window where OAuth login process happens</li>
+<li>After OAuth login complete, pop up window goes away and they resume their actions</li>
+</ul>
+
+
+<h2>The solution</h2>
+
+<h3>Solving dynamic twitter/facebook log ins for Social Platforms</h3>
+
+<p>I started by having this config in Rails for my omniauth initializer:</p>
+
+<p>``` rb
+SETUP_FACEBOOK = lambda do |env|</p>
+
+<pre><code>AccountAuth.setup_facebook_keys(env)
+</code></pre>
+
+<p>end</p>
+
+<p>SETUP_TWITTER = lambda do |env|</p>
+
+<pre><code>AccountAuth.setup_twitter_keys(env)
+</code></pre>
+
+<p>end</p>
+
+<p>Rails.application.config.middleware.use OmniAuth::Builder do</p>
+
+<pre><code>provider :twitter, :setup =&gt; SETUP_TWITTER
+provider :facebook, :setup =&gt; SETUP_FACEBOOK
+</code></pre>
+
+<p>end
+```</p>
+
+<p>Simple and clean. In those AccountAuth methods, I take the <code>env</code> variable (essential the request) and pick off my variables there from an OAuth URL (<a href="http://my.dashboard.dev/auth/facebook?appid=123456789">http://my.dashboard.dev/auth/facebook?appid=123456789</a>).</p>
+
+<h3>Solving the User pop up</h3>
+
+<p>I had a dashboard with a ton of user actions, as well as two well placed social log in buttons. View template like so:</p>
+
+<p>``` html</p>
+
+<div class="container" ng-controller="SettingsCtrl">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="header-copy">Account Settings</div>
+                <div class="section-title"></div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6">
+                <div class="header-copy">Facebook Settings</div>
+                <div class="divider"></div>
+
+                <div ng-show="facebookId">
+                    Currently ({{ facebookName}}) &nbsp;
+                    <span class="btn dash-subs" ng-click="logout('facebook')">Logout</span>
+                </div>
+                <div ng-hide="facebookId">
+                    <span class="btn dash-subs login-btn" ng-click="authNetwork('facebook')">Login With Facebook</span>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="header-copy">Twitter Settings</div>
+                <div class="divider"></div>
+                <div ng-show="twitterName">
+                    Currently (@{{twitterName}}) &nbsp;
+                    <span class="btn dash-subs" ng-click="logout('twitter')">Logout</span>
+                </div>
+                <div ng-hide="twitterName">
+                    <span class="btn dash-subs login-btn" ng-click="authNetwork('twitter')">Login With Twitter</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+<p>```</p>
+
+<p>Now on my SettingsCtrl, I had to respond to the authNetwork clicks in the template above to show my pop up window for the network specified, handle its settings, then update this controller. We get that link by setting a global variable on the <code>window</code> that opened by doing <code>window.$windowScope = $scope</code>.</p>
+
+<p>``` js
+angular.module(&lsquo;myApp&rsquo;, [&lsquo;ui.bootstrap&rsquo;]);</p>
+
+<p>function SettingsCtrl($scope, $http) {
+  //..snip!..
+   $scope.handlePopupAuthentication = function handlePopupAuthentication(network, account) {</p>
+
+<pre><code>  //Note: using $scope.$apply wrapping
+  //the window popup will call this 
+  //and is unwatched func 
+  //so we need to wrap
+  $scope.$apply(function(){
+     $scope.applyNetwork(network, account);
+  });
+</code></pre>
+
+<p>   }</p>
+
+<p>   $scope.authNetwork = function authNetwork(network) {</p>
+
+<pre><code>  var openUrl = '/auth/' + network + '?account_id=' + $scope.accountTokens['id'] + "&amp;eid=" + eventId;
+  window.$windowScope = $scope;
+  window.open(openUrl, "Authenticate Account", "width=500, height=500");
+</code></pre>
+
+<p>   };
+}
+```</p>
+
+<h3>Solving popup talking to AngularJS controller</h3>
+
+<p>Once the OAuth pop up that is being opened via <code>window.open</code> is completed, it will come back to our server (<a href="http://my.dashboard.dev/session/create">http://my.dashboard.dev/session/create</a>) in which I will render a view through Rails that will display a simple &lsquo;this window is closing&rsquo; message. It will also pass in some information from the Rails controller and pass back its completed information back to our calling AngularJS controller. (Thats a lot of controllers, folks)</p>
+
+<p>```</p>
+
+<p>This view will now self-destruct</p>
+
+
+<script>
+   try {
+      window.opener.$windowScope.handlePopupAuthentication('<%= @provider %>', <%= @account.to_json.html_safe %>);
+   } catch(err) {}
+   window.close();
+</script>
+
+
+<p>```</p>
+
+<h3>Conclusion</h3>
+
+<p>That&rsquo;s pretty much it. That is how I handled my popups reporting back to its calling AngularJS controller through OAuth on Rails. Hope this helps others out there trying to solve problems like these.</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Pow and weird starting issues]]></title>
+    <link href="http://jbavari.github.io/blog/2014/05/07/pow-and-weird-starting-issues/"/>
+    <updated>2014-05-07T14:56:00-06:00</updated>
+    <id>http://jbavari.github.io/blog/2014/05/07/pow-and-weird-starting-issues</id>
+    <content type="html"><![CDATA[<p>Lately I&rsquo;ve been getting this weird error from Pow in Rails 4:</p>
+
+<p><code>Bundler::GemNotFound: Could not find rake-10.3.1 in any of the sources</code></p>
+
+<p>Read more below to see what I did.</p>
+
+<p>In boot.rb:</p>
+
+<p>```
+require &lsquo;rubygems&rsquo;</p>
+
+<h1>Set up gems listed in the Gemfile.</h1>
+
+<p>ENV[&lsquo;BUNDLE_GEMFILE&rsquo;] ||= File.expand_path(&lsquo;../../Gemfile&rsquo;, <strong>FILE</strong>)</p>
+
+<p>require &lsquo;bundler/setup&rsquo; if File.exists?(ENV[&lsquo;BUNDLE_GEMFILE&rsquo;])</p>
+
+<p>```</p>
+
+<p>In config.ru:</p>
+
+<p><code>
+require ::File.expand_path('../config/environment',  __FILE__)
+run Rails.application
+</code></p>
+
+<p>Hope this helps.</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[In depth dive with Postgres Hstore and Rails 4]]></title>
+    <link href="http://jbavari.github.io/blog/2014/04/26/in-depth-dive-with-postgres-hstore-and-rails-4/"/>
+    <updated>2014-04-26T12:08:00-06:00</updated>
+    <id>http://jbavari.github.io/blog/2014/04/26/in-depth-dive-with-postgres-hstore-and-rails-4</id>
+    <content type="html"><![CDATA[<p>I had a unique little situation pop up that needed a little more flexibility when it came to storing data in the db. We use Postgres at RaiseMore because we respect ourselves, so naturally, I wanted to take a swing using some Hstore options for our ever changing data schema.</p>
+
+<p>My intention is not to cover the basics of getting started with Rails 4 and <a href="http://www.postgresql.org/docs/9.3/static/hstore.html">Postgres HStore</a>, so <a href="http://tastehoneyco.com/blog/postgresql-array-and-hstore-column-reference/?utm_source=rubyweekly&amp;utm_medium=email/">read at Honey Co</a> or <a href="http://inopinatus.org/2013/07/12/using-arrays-of-hstore-with-rails-4/">here at inopinatus</a> to get started.</p>
+
+<h2>What I needed</h2>
+
+<p>Simple, to store a few bits of data about a communication &ndash; primarily the subject, message, date/time, and what networks it was sent out on. It may or may not have some of these fields, and the networks may or may not change in the future. This sounds perfect for HStore.</p>
+
+<p>First I started with a simple schema:</p>
+
+<p>```
+CREATE TABLE comm_logs (</p>
+
+<pre><code>id serial NOT NULL,
+user_id integer,
+history hstore
+</code></pre>
+
+<p>)
+```</p>
+
+<p>At first, I just wanted to store when a message was sent and on what networks. I figured I&rsquo;d just have an AR model with one hstore column and everything would fit into that. It looked like this:</p>
+
+<p>```
+class CommunicationLogging &lt; ActiveRecord::Base</p>
+
+<pre><code>def self.log(user_id, network, message, subject = nil)
+    comm = CommunicationLogging.where('user_id = ?', user_id).first
+    if comm.nil?
+        comm = CommunicationLogging.new
+        comm.user_id = user_id
+        # Storing network as an array incase they decide to send to another network after this.
+        comm.history = { 'message' =&gt; message, 'subject' =&gt; subject, 'network' =&gt; [network], 'time' =&gt; DateTime.now }}
+    else 
+        # Add history to array stored in network
+        comm.history['network'].push(network)
+    end
+    comm.history_will_change!
+    comm.save!
+end
+</code></pre>
+
+<p>end
+```</p>
+
+<p>Pretty easy right? I ran into some difficulties REAL fast. The first was from JSON serialization. When I did this:</p>
+
+<p>```</p>
+
+<h1>In Rails Console</h1>
+
+<p>CommunicationLogging.find(4).history[&lsquo;network&rsquo;]
+=> &ldquo;[\"facebook\&rdquo;, \&ldquo;twitter\&rdquo;]&ldquo;
+```</p>
+
+<p>It gave me a nice FAT serialized version of a Hash array. What good does a string do me? I want my object! BLEH!</p>
+
+<p>We still have to get this thing working, so lets proceed anyway and just do some manual converions with PostgreSQL&rsquo;s awesome <code>to_json</code> functionality.</p>
+
+<p>Our result:</p>
+
+<p><code>
+"{"c": "networks", "networks": "[\"facebook\", \"twitter\"]"}"
+</code></p>
+
+<p>Cool, so its gonna be nasty still. Ok, how about just using Rails to_json method:</p>
+
+<p><code>
+"{\"id\":11,\"event_user_id\":null,\"history\":null,\"networks\":{\"c\":\"networks\",\"networks\":\"[\\\"facebook\\\", \\\"twitter\\\"]\"}}"
+</code></p>
+
+<p>Thanks, but no thanks. I&rsquo;m pretty set on having an array of values instead of some manual labor on converting those values.</p>
+
+<p>I was learning real fast that storing arrays in hstore was going to be a challenge. The next stab I wanted to take was to simplify the storage and retrieval as well as using natural arrays.</p>
+
+<p>NOTE: I changed the way I attacked the problem here partly because I was doing it wrong. Hopefully you can learn from my mistakes? :&ndash;)</p>
+
+<p>This was my next stab, altering the table structure just a bit:</p>
+
+<p>```
+CREATE TABLE communication_logs (</p>
+
+<pre><code>id serial NOT NULL,
+user_id integer,
+history hstore[]
+networks hstore
+</code></pre>
+
+<p>)
+```</p>
+
+<p>What I did here was harness the awesome power of PostgreSQL&rsquo;s arrays and hstore. Taking this thing to the limit. I did this for two reasons:</p>
+
+<ul>
+<li>Constraints changed, we could send multiple communications out on multiple networks at any given time</li>
+<li>I wanted a log of history with whatever pieces of data may or may not be there</li>
+<li>Be able to quickly get the networks sent out per user</li>
+</ul>
+
+
+<p>Now my AR model is decorated with <a href="http://api.rubyonrails.org/classes/ActiveRecord/Store.html">store_accessor</a> to give me model attributes for the networks. It also stores the log of messages in an array naturally through the model, and accessed as a real HSTORE with array values (instead of json, yay).</p>
+
+<p>```
+class CommunicationLogging &lt; ActiveRecord::Base</p>
+
+<pre><code>store_accessor :networks, :facebook, :twitter, :email, :sms, :push
+
+def set_network(network)
+    # for brevity only one listed
+    case network.downcase
+    when 'twitter'
+        self.twitter = true
+    end
+end
+
+def self.log(user_id, network, message, subject = nil)
+    comm = CommunicationLogging.where('user_id = ?', user_id).first
+    if comm.nil?
+        comm = CommunicationLogging.new
+        comm.user_id = user_id
+    end
+
+    comm.set_network(network)
+
+    history_log = { 'message' =&gt; message, 'subject' =&gt; subject, 'network' =&gt; network, 'time' =&gt; DateTime.now }
+    comm.history.push(history_log)
+
+
+    comm.networks_will_change!
+    comm.history_will_change!
+    comm.save!
+end
+</code></pre>
+
+<p>end
+```</p>
+
+<p>So what happens when I to_json my fields now in PostgreSQL?</p>
+
+<p>```
+// Networks
+&ldquo;{"twitter&rdquo;: &ldquo;true&rdquo;}"</p>
+
+<p>// History
+&ldquo;[{"time&rdquo;: &ldquo;2014-04-27T10:15:50-05:00&rdquo;, &ldquo;message&rdquo;: &ldquo;asf&rdquo;, &ldquo;network&rdquo;: &ldquo;twitter&rdquo;, &ldquo;subject&rdquo;: &ldquo;asd&rdquo;}]&ldquo;
+```</p>
+
+<p>And rails?</p>
+
+<p>```</p>
+
+<h1>Networks</h1>
+
+<p>&ldquo;{"twitter&rdquo;:\&ldquo;true&rdquo;}"</p>
+
+<h1>History</h1>
+
+<p>&ldquo;[{"time&rdquo;:&ldquo;2014-04-27T10:15:50-05:00&rdquo;,&ldquo;message&rdquo;:&ldquo;asf&rdquo;,&ldquo;network&rdquo;:&ldquo;twitter&rdquo;,&ldquo;subject&rdquo;:&ldquo;asd&rdquo;}]&ldquo;
+```</p>
+
+<p>Beautiful.</p>
+
+<p>I had a lot of fun using PostgreSQL and Rails 4. I didn&rsquo;t find a lot of in-depth knowledge on it so I wanted to shed some light on the topic and hope this would push someone else who might be considering to try it out to give it a go.</p>
+
+<p>I&rsquo;d like to follow up this post with another article on how to search these bad boys.</p>
+
+<p>In closing:</p>
+
+<ul>
+<li>I will definitely use hstore more in the future. I like the freedom to just store whatever I want</li>
+<li>I need to reach out to the Rails team and see what I can do about improving the array support in Active Record</li>
+<li>I hope you try it out as well</li>
+</ul>
+
+
+<h3>Additional Resources</h3>
+
+<ul>
+<li><a href="http://postgresguide.com/sexy/hstore.html">Postgres Guide on HStore</a></li>
+<li><a href="http://mikecoutermarsh.com/using-hstore-with-rails-4/">Mike Countermash&rsquo;s guide to Hstore with Rails 4</a></li>
+<li><a href="http://platformonrails.wordpress.com/2013/03/17/enabling-postgresql-hstore-with-rails-4/">Platform on Rails &ndash; Enabling PostgreSQL Hstore in Rails 4</a></li>
+<li><a href="http://blog.remarkablelabs.com/2012/12/a-love-affair-with-postgresql-rails-4-countdown-to-2013">RemarkableLabs &ndash; A love affair with PostgreSQL [Rails 4 Countdown to 2013]</a></li>
+</ul>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Nodejs Rails subdomains - POW!]]></title>
+    <link href="http://jbavari.github.io/blog/2014/03/12/nodejs-rails-subdomains-pow/"/>
+    <updated>2014-03-12T23:44:00-06:00</updated>
+    <id>http://jbavari.github.io/blog/2014/03/12/nodejs-rails-subdomains-pow</id>
+    <content type="html"><![CDATA[<p>I wanted to do a quick write up of how I use <a href="http://pow.cx/">Pow</a> to run several rails/rack apps and provide subdomains for the rails / rack apps as well as node.js servers! I&rsquo;ll even throw in a Livereload plug in Rails/rack.</p>
+
+<h2>The why</h2>
+
+<p>We have several rails projects &ndash; an API server, a queue'ing rails project running <a href="https://github.com/mperham/sidekiq">Sidekiq</a>, an admin dashboard using Rails &amp; angular, and a node.js server running a PhoneGap mobile app run in express.</p>
+
+<p>I needed an easy domain set up, something like:</p>
+
+<ul>
+<li>project.dev</li>
+<li>my.project.dev</li>
+<li>jobs.project.dev</li>
+<li>m.project.dev</li>
+</ul>
+
+
+<p>I also needed Livereload due to the time it saves, who doesn&rsquo;t right? I do ok, quit asking questions. (But seriously please comment and ask)</p>
+
+<h2>What I did</h2>
+
+<p>After installing POW, I created a few symbolic links and a file containing the port that I would run the node.js server. As seen in the <a href="http://pow.cx/manual">the POW documentation</a> and listed in the same order as above.</p>
+
+<p>``` sh
+ln -s ~/Dev/RM/web ~/.pow/project</p>
+
+<p>ln -s ~/Dev/RM/my ~/.pow/my.project</p>
+
+<p>ln -s ~/Dev/RM/jobs ~/.pow/jobs.project
+echo 5000 > ~/.pow/m.project
+```</p>
+
+<p>Awesome. So now Pow got the rails/racks apps up. Just need to start my node server by simply running <code>node app.js</code></p>
+
+<h3>Ensure its there</h3>
+
+<p>Now that I&rsquo;ve got the servers all running, i&rsquo;ll hit them up to check A-OK. Navigate to <code>http://my.project.dev</code>, <code>http://m.project.dev</code>, <code>http://project.dev</code>. Yep, all A-OK.</p>
+
+<h3>Now to set up Livereload.</h3>
+
+<p>Snag up a few gems to help Rails/rack do some livereloads automatically for me.</p>
+
+<p><code>rb
+gem 'rack-livereload'
+gem 'guard'
+gem 'guard-livereload'
+</code></p>
+
+<p>Two things to configure before livereload will work in the rails/rack apps &ndash; the first is a config setting in our development.rb file and our Guardfile with a host definition.</p>
+
+<p>The first is development.rb:</p>
+
+<p><code>ruby
+MyProjectCom::Application.configure do
+  #comments
+  config.middleware.use Rack::LiveReload
+  #the comments are a lie
+end
+</code></p>
+
+<p>Now the magic for the rails/rack apps is the Guardfile:</p>
+
+<p><code>rb
+guard 'livereload', host: 'my.project.dev'do
+  watch(%r{app/views/.+\.(erb|haml|slim)$})
+  watch(%r{app/helpers/.+\.rb})
+  watch(%r{public/.+\.(css|js|html)})
+  watch(%r{config/locales/.+\.yml})
+  # Rails Assets Pipeline
+  watch(%r{(app|vendor)(/assets/\w+/(.+\.(css|js|html|png|jpg))).*}) { |m| "/assets/#{m[3]}" }
+end
+</code>
+Boom! Now I&rsquo;ve got Livereload being injected into each of the rails/rack apps I configured and handling all the other business. I just have to sit back and code.</p>
+
+<p>Hope this helps any who may be wanting a similar set up with subdomains with rails/rack &amp; node.js hosted apps.</p>
+]]></content>
+  </entry>
+  
+</feed>

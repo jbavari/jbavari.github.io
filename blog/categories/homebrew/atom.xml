@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: homebrew | Josh Bavari's Ramblings]]></title>
+  <link href="http://jbavari.github.io/blog/categories/homebrew/atom.xml" rel="self"/>
+  <link href="http://jbavari.github.io/"/>
+  <updated>2019-01-27T19:16:40-07:00</updated>
+  <id>http://jbavari.github.io/</id>
+  <author>
+    <name><![CDATA[Josh Bavari]]></name>
+    <email><![CDATA[jbavari@gmail.com]]></email>
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Using brew to install old versions]]></title>
+    <link href="http://jbavari.github.io/blog/2015/12/12/using-brew-to-install-old-versions/"/>
+    <updated>2015-12-12T13:50:00-07:00</updated>
+    <id>http://jbavari.github.io/blog/2015/12/12/using-brew-to-install-old-versions</id>
+    <content type="html"><![CDATA[<p>I just wanted to share a quick little tidbit on how to install older brew versions.</p>
+
+<p>I was having some issues with an older version of Elixir failing tests (1.0.1), and the latest version (1.1.1) is working fine.</p>
+
+<p>Just running <code>brew install elixir</code> gets latest.</p>
+
+<p>To get 1.0.1 installed, I first went to the <a href="https://github.com/Homebrew/homebrew">homebrew github repo</a>, looked at the <code>Library/Formula</code> folder, found the <code>elixir.rb</code> formula to install elixir, looked in the history, found 1.0.1, and then executed the following line:</p>
+
+<p><code>
+brew install https://raw.githubusercontent.com/Homebrew/homebrew/8506ced146655c24920f3cc5b20e6bc9e6e703cc/Library/Formula/elixir.rb
+</code></p>
+
+<p>That did it, I easily got 1.0.1 installed, and going back to 1.1.1 was super easy.</p>
+
+<p>Hope this helps, enjoy! Cheers!</p>
+]]></content>
+  </entry>
+  
+</feed>

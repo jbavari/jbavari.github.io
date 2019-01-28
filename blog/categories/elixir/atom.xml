@@ -1,0 +1,310 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: elixir | Josh Bavari's Ramblings]]></title>
+  <link href="http://jbavari.github.io/blog/categories/elixir/atom.xml" rel="self"/>
+  <link href="http://jbavari.github.io/"/>
+  <updated>2019-01-27T19:16:40-07:00</updated>
+  <id>http://jbavari.github.io/</id>
+  <author>
+    <name><![CDATA[Josh Bavari]]></name>
+    <email><![CDATA[jbavari@gmail.com]]></email>
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Test Coverage Reports in Elixir]]></title>
+    <link href="http://jbavari.github.io/blog/2017/03/13/test-coverage-reports-in-elixir/"/>
+    <updated>2017-03-13T18:38:00-06:00</updated>
+    <id>http://jbavari.github.io/blog/2017/03/13/test-coverage-reports-in-elixir</id>
+    <content type="html"><![CDATA[<p>Lately I&rsquo;ve been learning a ton more about Elixir and really working towards refactoring and hardening the system.</p>
+
+<p>On my current project, I&rsquo;ve got about 200 tests that exercise various parts of the system. Lately though, I&rsquo;ve been trying to analyze which parts of the system aren&rsquo;t being covered, and of course, theres tools to help with that.</p>
+
+<p>The two I looked at were <a href="https://github.com/parroty/excoveralls">Coveralls</a> and <a href="https://github.com/alfert/coverex">Coverex</a>. I&rsquo;m going to be using <code>coverex</code> in this post.</p>
+
+<p>Getting started is a breeze, check the readme for that. I&rsquo;ll cover it briefly for a bit here, my modifying our <code>mix.exs</code> file:</p>
+
+<p><code>`` elixir
+  # in</code>def project`, we add test_coverage
+  test_coverage: [</p>
+
+<pre><code>tool: Coverex.Task
+</code></pre>
+
+<p>  ],</p>
+
+<p>  # in deps, add the depedency for only test environment
+  {:coverex, &ldquo;~> 1.4.10&rdquo;, only: :test},
+```</p>
+
+<p>After setup, running <code>mix test --cover</code> generates some reports in your projects <code>./cover</code> folder &ndash; with <code>functions.html</code> and <code>modules.html</code>. These give you your standard coverage reports with lines covered / ratio covered.</p>
+
+<p>For my project, I had quite a bit of generated files using <a href="https://github.com/bitwalker/exprotobuf">exprotobuf</a>. The coverage report was getting butchered from not using these many files in my tests.</p>
+
+<p>According to the docs, we can add a keyword for <code>ignore_modules</code> in the keyword list <code>test_coverage</code> and the coverage reports will ignore those modules.</p>
+
+<p>However, for my generated list of modules, I had quite the growing list to ignore and it quickly became unwieldy to put that list of modules in my <code>mix.exs</code> file.</p>
+
+<p>Since we can&rsquo;t access other modules from our mix file, I had a quick solution. I created a <code>.coverignore</code> file in the project directory, lumped in all the modules I wanted to ignore (from the <code>modules.html</code> generated file) and put them all in the <code>.coverignore</code> file.</p>
+
+<p>I ensured all the modules I wanted to ignore were all newline delimited (<code>\n</code>).</p>
+
+<p>From there, I modified my <code>mix.exs</code> file as such:</p>
+
+<p>```elixir
+  # Near the top
+  @ignore_modules File.read!(&ldquo;./.coverignore&rdquo;) |> String.split(&ldquo;\n&rdquo;) |> Enum.map(&amp;(String.to_atom(&amp;1)))</p>
+
+<p>  # in def project
+  test_coverage: [</p>
+
+<pre><code>tool: Coverex.Task,
+ignore_modules: @ignore_modules
+</code></pre>
+
+<p>  ],
+```</p>
+
+<p>Boom, that does it! Now we&rsquo;ve got a manageable list of modules to ignore in a separate file so we can keep our mix file clean.</p>
+
+<p>All in all, <code>coverex</code> is a great module, and I would suggest using it if you do not want to ship data to coveralls.</p>
+
+<p>Hope this helps, happy coding. Cheers!</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Using Erlang Observer on a Remote Elixir Server]]></title>
+    <link href="http://jbavari.github.io/blog/2016/03/11/using-erlang-observer-on-a-remote-elixir-server/"/>
+    <updated>2016-03-11T14:01:00-07:00</updated>
+    <id>http://jbavari.github.io/blog/2016/03/11/using-erlang-observer-on-a-remote-elixir-server</id>
+    <content type="html"><![CDATA[<p>I’ve been using Elixir a ton at work and in some fun side projects and I’m absolutely in love with it.</p>
+
+<p>One tool I especially love is the Erlang Observer tool, that shows you IO, memory, and CPU usage used by your app and the Erlang VM.</p>
+
+<p>Once I got some apps deployed, I wanted to observe them remotely. I found a few <a href="https://groups.google.com/forum/#!topic/elixir-lang-talk/312PlJLSgLw">google forum</a> posts and the <a href="http://elixir-lang.org/docs/stable/iex/IEx.html">IEx docs</a>, but I wanted to wrap up this knowledge for when I need it in the future.</p>
+
+<p>I’m going to monitor a Phoenix app in this quick blog post.</p>
+
+<p>First, fire up your Phoenix server on say, a VPS, giving it a node name:</p>
+
+<p><code>iex --name server@64.16.134.61 --cookie jbavari -S mix phoenix.server</code></p>
+
+<p>Then on your remote viewing machine, say your Mac, run the following:</p>
+
+<p><code>iex --name josh@192.168.1.1 --cookie jbavari</code></p>
+
+<p>Now we’re set up to do some remote observations!</p>
+
+<p>Fire up <code>:observer.start</code> on your local machine, which should open up the Erlang observer.</p>
+
+<p>Now from the menu, select ‘Nodes’, then you should see your node there. If not, click the connect to node button, type in your <code>server@64.16.134.61</code> node address and you should be able to view your node via the observer!</p>
+
+<p>Enjoy!</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Custom JSON encoding in Phoenix]]></title>
+    <link href="http://jbavari.github.io/blog/2016/01/24/custom-json-encoding-in-phoenix/"/>
+    <updated>2016-01-24T19:30:00-07:00</updated>
+    <id>http://jbavari.github.io/blog/2016/01/24/custom-json-encoding-in-phoenix</id>
+    <content type="html"><![CDATA[<p>I recently have been working a lot using Leaflet.js to do some mapping.</p>
+
+<p>In some of my models, I use the lovely <code>Geo</code> package for Elixir point and geospatial usage. I needed to add support for Poison to encode my model.</p>
+
+<p>I&rsquo;ve been serving geo json from my models, and I needed a way to use the JSON encoding way easier. I&rsquo;m sending some data out to a ZeroMQ socket so I need to encode it by transorming my Geo module in a way that I could encode it with Geo JSON.</p>
+
+<p>I modified my model in two ways &ndash; one by putting the <code>@derive</code> directive to tell Poison to encode only certain fields. That is one way.</p>
+
+<p>In another way, I needed to encode it everytime by calling the <code>Geo.JSON.encode</code> method without me having to do it. You can see that in the <code>defimpl</code>.</p>
+
+<p>``` elixir
+defmodule MyApp.Point do
+  use MyApp.Web, :model</p>
+
+<p>  # Option 1 &ndash; specify exactly which fields to encode
+  @derive {Poison.Encoder, only: [:id, :name, :geo_json]}
+  schema &ldquo;points&rdquo; do</p>
+
+<pre><code>field :name, :string
+field :position, Geo.Point
+field :geo_json, :string, virtual: true
+
+timestamps
+</code></pre>
+
+<p>  end</p>
+
+<p>  def encode_model(point) do</p>
+
+<pre><code>%MyApp.Point{point | geo_json: Geo.JSON.encode(point.position) }
+</code></pre>
+
+<p>  end</p>
+
+<p>  defimpl Poison.Encoder, for: MyApp.Point do</p>
+
+<pre><code>def encode(point, options) do
+  point = MyApp.Point.encode_model(point)
+  Poison.Encoder.Map.encode(Map.take(point, [:id, :name, :geo_json]), options)
+end
+</code></pre>
+
+<p>  end
+end
+```</p>
+
+<p>Cheers.</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Adding Additional static paths in Phoenix]]></title>
+    <link href="http://jbavari.github.io/blog/2016/01/24/adding-additional-static-paths-in-phoenix/"/>
+    <updated>2016-01-24T19:24:00-07:00</updated>
+    <id>http://jbavari.github.io/blog/2016/01/24/adding-additional-static-paths-in-phoenix</id>
+    <content type="html"><![CDATA[<p>Phoenix is awesome.</p>
+
+<p>A problem I ran into lately is how to add additional static paths to be served.</p>
+
+<p>If you take a look in your <code>lib/endpoint.ex</code> file, you&rsquo;ll see the plug used for adding static paths:</p>
+
+<p><code>elixir
+plug Plug.Static,
+  at: "/", from: :electronify, gzip: false,
+  only: ~w(css fonts images js favicon.ico robots.txt)
+</code></p>
+
+<p>I wanted to add another folder to be served, &lsquo;zips&rsquo;, that I had to edit the <code>only:</code> line in the plug specification as such:</p>
+
+<p><code>elixir
+plug Plug.Static,
+  at: "/", from: :electronify, gzip: false,
+  only: ~w(css fonts images js favicon.ico robots.txt zips)
+</code></p>
+
+<p>There you have it, now I can access the files in the <code>zips</code> folder in <code>priv/static/zips</code> through the URL. Cheers!</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Shipping data with Protocol Buffers in Elixir]]></title>
+    <link href="http://jbavari.github.io/blog/2016/01/16/shipping-data-with-protocol-buffers-in-elixir/"/>
+    <updated>2016-01-16T22:49:00-07:00</updated>
+    <id>http://jbavari.github.io/blog/2016/01/16/shipping-data-with-protocol-buffers-in-elixir</id>
+    <content type="html"><![CDATA[<p>Lately, I&rsquo;ve needed some data shipped across to various nodes to exchange data in a variety of places on a problem I was working on. There were a few ways to get that data shipped across, as the usual suspects are JSON, XML, or Google&rsquo;s <a href="https://developers.google.com/protocol-buffers/?hl=en">Protocol Buffers</a>.</p>
+
+<p>For this specific problem, we were needing to get that data shared from C++ nodes to Elixir/Erlang.</p>
+
+<p>Since the team was using Protocol buffers already, I decided to give them a run in Elixir using <a href="https://github.com/bitwalker/exprotobuf">exprotobuf</a>.</p>
+
+<p>Note: <a href="https://github.com/jbavari/elixir-zeromq-protobuf-uploader">the client for this experiement is on github</a>.</p>
+
+<h2>The idea</h2>
+
+<p>The idea here is &ndash; we&rsquo;ll capture pieces of data from one node and ship it to the server for processing. We define the data structure by a <code>.proto</code> file, then turn our data into binary form by encoding it, and finally shipping it to it&rsquo;s destination. We could do the same thing with JSON, but we want the data as light as possible.</p>
+
+<p>We&rsquo;ll use <a href="http://zeromq.org/">ZeroMQ</a> to ship the data and use the Elixir package <a href="https://github.com/zeromq/exzmq">exzmq</a> to encode in protocol buffers.</p>
+
+<h2>The process</h2>
+
+<p>First we define our protocol buffer format for an image message we want to send with data, its width, height, and bits per pixel:</p>
+
+<p><code>protobuf
+message ImageMsg {
+  optional bytes data = 1;
+  optional int32 width = 2;
+  optional int32 height = 3;
+  optional int32 bpp = 4;
+}
+</code></p>
+
+<p>We set up our application to use <code>exprotobuf</code> in our <code>mix.exs</code> file:</p>
+
+<p>``` elixir
+def application do</p>
+
+<pre><code>[applications: [:logger, :exzmq, :exprotobuf],
+ mod: {Zmq2, []}]
+</code></pre>
+
+<p>end
+```</p>
+
+<p>as well as including it as a dependency:</p>
+
+<p>``` elixir
+defp deps do
+  [</p>
+
+<pre><code>{:exzmq, git: "https://github.com/zeromq/exzmq"},
+{:exprotobuf, "1.0.0-rc1"}
+</code></pre>
+
+<p>  ]
+end
+```</p>
+
+<p>Finally we create an Elixir struct from this <a href="https://github.com/jbavari/elixir-zeromq-protobuf-uploader/blob/master/lib/proto/imagemsg.proto">proto file</a> as such:</p>
+
+<p><code>elixir
+defmodule Zmq2.Protobuf do
+  use Protobuf, from: Path.wildcard(Path.expand("./proto/imagemsg.proto", __DIR__))
+end
+</code></p>
+
+<p>Now that we have our protobuf file read in, let&rsquo;s get an images binary data, create an elixir structure from our protobuf file, and send that data over a Zero MQ socket (using <code>exzmq</code>):</p>
+
+<p>``` elixir
+def check_file(file_path, socket) do
+  IO.puts &ldquo;Sending image from file path: #{Path.expand(file_path, <strong>DIR</strong>)}&rdquo;</p>
+
+<p>  case File.read(Path.expand(file_path)) do</p>
+
+<pre><code>{:error, :enoent} -&gt;
+  IO.puts "No file at the path: #{file_path}"
+{:ok, img_data} -&gt;
+  send_image_data(socket, img_data)
+</code></pre>
+
+<p>  end
+end</p>
+
+<p>def send_image_data(socket, img_data) do
+  img_message = Zmq2.Protobuf.ImageMsg.new(data: img_data)
+  encoded_data = Zmq2.Protobuf.ImageMsg.encode(img_message)</p>
+
+<p>  IO.puts &ldquo;The encoded data: #{inspect encoded_data}&rdquo;</p>
+
+<p>  Exzmq.send(socket, [encoded_data])</p>
+
+<p>  IO.puts &ldquo;Sent request &ndash; awaiting reply\n\n&rdquo;</p>
+
+<p>  # {:ok, r} =
+  case Exzmq.recv(socket) do</p>
+
+<pre><code>{:ok, r} -&gt; IO.puts("Received reply #{inspect r}")
+_ -&gt; {:error, "No Reply"}
+</code></pre>
+
+<p>  end</p>
+
+<p>end
+```</p>
+
+<p>And there we have it, a message sent serialized with protocol buffers. We can now apply this same strategy over any different protocol buffer messages we define, and ship them over any protocl we&rsquo;d like.</p>
+
+<h3>Some inspiration</h3>
+
+<p>Along the R&amp;D process, I came across <a href="http://dbeck.github.io">David Beck&rsquo;s blog</a>. David has an experiment where he was <a href="http://dbeck.github.io/Wrapping-up-my-Elixir-TCP-experiments/">sending several million messages in TCP</a> where he explores some ultra-efficient methods of sending messages, it&rsquo;s a great read. He also covers <a href="http://dbeck.github.io/5-lessons-learnt-from-choosing-zeromq-and-protobuf/">zeromq and protocol buffers</a> that goes more in depth into Protocol buffers and some lessons learned.</p>
+
+<p>Alas, we move on!</p>
+
+<p>Cheers</p>
+]]></content>
+  </entry>
+  
+</feed>

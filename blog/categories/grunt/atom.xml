@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: grunt | Josh Bavari's Ramblings]]></title>
+  <link href="http://jbavari.github.io/blog/categories/grunt/atom.xml" rel="self"/>
+  <link href="http://jbavari.github.io/"/>
+  <updated>2019-01-27T19:16:40-07:00</updated>
+  <id>http://jbavari.github.io/</id>
+  <author>
+    <name><![CDATA[Josh Bavari]]></name>
+    <email><![CDATA[jbavari@gmail.com]]></email>
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[KCDC - Javascript Build System Showdown]]></title>
+    <link href="http://jbavari.github.io/blog/2014/05/16/kcdc-javascript-build-system-showdown/"/>
+    <updated>2014-05-16T10:44:00-06:00</updated>
+    <id>http://jbavari.github.io/blog/2014/05/16/kcdc-javascript-build-system-showdown</id>
+    <content type="html"><![CDATA[<p>I spoke about the different Javascript Build systems at KCDC. I wanted to make sure my slides are available to any who wanted to view them.</p>
+
+<p>A few things about the slides:</p>
+
+<p>There is a Gruntfile.js that contains tasks that I talked about in the presentation. There is also a gulpfile.js that does the same tasks as the Gruntfile. It will show you the differences between the two systems.</p>
+
+<p>The slides are found <a href="http://jbavari.github.io/JavascriptBuildSystemShowdown/#/">here</a>, and the repo for the files <a href="https://github.com/jbavari/JavascriptBuildSystemShowdown">here</a>.</p>
+
+<p>I hope this is helpful for some out there,
+Enjoy!</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Grunt.js Orchestration & Organization of Applescript Actions]]></title>
+    <link href="http://jbavari.github.io/blog/2014/01/24/grunt-orchestration-of-applescript/"/>
+    <updated>2014-01-24T14:14:00-07:00</updated>
+    <id>http://jbavari.github.io/blog/2014/01/24/grunt-orchestration-of-applescript</id>
+    <content type="html"><![CDATA[<p>Lately I&rsquo;ve learned a little about AppleScript. If you&rsquo;re not familiar, I suggest reading the <a href="https://developer.apple.com/library/mac/documentation/applescript/conceptual/applescriptlangguide/introduction/ASLR_intro.html#//apple_ref/doc/uid/TP40000983-CH208-SW1">AppleScript Language Guide</a> to get a little more background information about it. In a nutshell, however, its basically a scripting language developed by Apple to do Inter-application communication using AppleEvents (yes, I used the language from the Wiki page).</p>
+
+<p>In the last few months, I&rsquo;ve been absolutely obsessed with automating the boring tasks that wear me out. This is just another platform to add automation events. Imagine making a script that will open all your dev programs, set them up how you want them, launch a build process, focus a device simulator, and then begin clicking around that simulator. That is my vision for now.</p>
+
+<p>In this post, I&rsquo;d like to address some ways I&rsquo;m leveraging AppleScript to automate some of my boring tasks. I won&rsquo;t focus much on the syntax, or how to navigate the language, but rather the methods I&rsquo;ve used to learn this knowledge. I&rsquo;ll be using <a href="http://gruntjs.com/">Grunt.js</a> to handle all my orchestration of applescript actions.</p>
+
+<h2>Requirements</h2>
+
+<p>You must be using an Apple device such as a Mac. That&rsquo;s about it</p>
+
+<h2>A Handy Tip</h2>
+
+<p>You might want to ensure you have Accessibility options turned on. You can learn about how to do that <a href="http://www.macosxautomation.com/applescript/uiscripting/">here</a></p>
+
+<h2>Getting started</h2>
+
+<p>It&rsquo;s really easy folks, just pop open your favorite text editor or use the native AppleScript Editor and start cranking it out.</p>
+
+<p>Let&rsquo;s look an easy script that will do the following:</p>
+
+<ul>
+<li>Execute XCode run command</li>
+<li>Open Safari</li>
+<li>Run the Web Inspector for the Simulator running</li>
+</ul>
+
+
+<p>```applescript
+on open_developer_window()</p>
+
+<pre><code>try
+    tell application "Safari"
+        activate
+    end tell
+    tell application "System Events"
+        tell process "Safari"
+            tell menu bar 1
+                tell menu bar item 8
+                    tell menu 1
+                        tell menu item 4
+                            tell menu 1
+                                click menu item 2
+                            end tell
+                        end tell
+                    end tell
+                end tell
+            end tell
+        end tell
+    end tell
+    return "Yo good job"
+on error error_message
+    return error_message
+end try
+</code></pre>
+
+<p>end open_developer_window
+```</p>
+
+<h2>The problem</h2>
+
+<p>After finding out how powerful AppleScript is, I began cranking out scripts for all my boring tasks. It became pretty nasty to manage having hundreds of lines into a single script.</p>
+
+<p>The good news is, AppleScript has a way to import other scripts to use their methods, just by calling <code>load script &lt;name&gt;</code>.</p>
+
+<p>The bad news is, it gets pretty sloppy trying to do the applescript &lsquo;load script&rsquo; command, as it became pretty nasty pretty quick.</p>
+
+<p>Thats where Grunt came in. I figured instead of having a few include scripts &ndash; make the applescript files have just the functionality I wanted</p>
+
+<h2>Using Grunt Shell</h2>
+
+<p>I chose to use the <a href="https://github.com/sindresorhus/grunt-shell">Grunt shell</a> plugin to execute these scripts. You can easily do it over shell by executing <code>osascript &lt;name_of_script&gt;</code>.</p>
+
+<p>What I did was create a nice layout for my applescript tasks as follows:</p>
+
+<p>```
+Applescripts
+|
++&mdash;&ndash;+&mdash;iPhone simulator tasks</p>
+
+<pre><code>|  |
+|  +-- reset_simulator.applescript
+|
++--safari tasks
+|  |
+|  +-- start_safari_dev_console.applescript
+|  +-- dev_console_test_runner.applescript
+|
++--XCode tasks
+   |
+   +-- open_ios_project_file.applescript
+   +-- run_simulator.applescript
+   +-- select_simulator_6.applescript
+</code></pre>
+
+<p>```</p>
+
+<p>Then, I created Grunt tasks for each applescript task as I wanted, as such:</p>
+
+<p>``` javascript
+grunt.initConfig({</p>
+
+<pre><code>shell: {
+    start_safari_dev_console: {
+        command: ['osascript ./applescripts/safari_tasks/start_safari_dev_console.applescript'].join("&amp;&amp;")
+    },
+    dev_console_test_runner: {
+        command: ['osascript ./applescripts/safari_tasks/dev_console_test_runner.applescript'].join("&amp;&amp;")
+    },
+    open_ios_project_file: {
+        command: ['osascript ./applescripts/xcode_tasks/open_ios_project_file.applescript'].join("&amp;&amp;")
+    },
+    run_simulator: {
+        command: ['osascript ./applescripts/xcode_tasks/run_simulator.applescript'].join("&amp;&amp;")
+    },
+    simulator_6: {
+        command: ['osascript ./applescripts/xcode_tasks/simulator_6.applescript'].join("&amp;&amp;")
+    },
+    reset_simulator: {
+        command: ['osascript ./applescripts/simulator_tasks/reset_simulator.applescript'].join("&amp;&amp;")
+    }
+}
+</code></pre>
+
+<p>});
+```</p>
+
+<p>Followed by a few set of tasks:</p>
+
+<p>``` javascript</p>
+
+<p>grunt.registerTask(&lsquo;run_sim&rsquo;, [&lsquo;shell:run_simulator&rsquo;, &lsquo;shell:start_safari_dev_console&rsquo;]);</p>
+
+<p>grunt.registerTask(&lsquo;start_project&rsquo;, [&lsquo;shell:open_ios_project_file&rsquo;, &lsquo;shell:simulator_6&rsquo;, &lsquo;run_sim&rsquo;]);</p>
+
+<p>grunt.registerTask(&lsquo;restart_sim&rsquo;, [&lsquo;shell:reset_simulator&rsquo;, &lsquo;run_sim&rsquo;]);</p>
+
+<p>```</p>
+
+<h2>Useful tools</h2>
+
+<p>After learning the basic structure of AppleScript, it&rsquo;s easy to see how the structures are laid out. The hard part, is figuring out how they are actually laid out. There&rsquo;s an awesome built in tool, called &ldquo;Accessibility Inspector&rdquo;. This tool will tell you the control you are focusing on an application.</p>
+
+<p>The second tool that is EXTREMELY helpful is a tool called <a href="http://pfiddlesoft.com/uibrowser/">UI Browser</a>. This is a tool that you can select an application, hover over that application, and UI Browser will tell you that controls. It even has a drop down of common actions, like clicking, filling in text, and other common uses.</p>
+
+<h2>Overall results</h2>
+
+<p>Altogether, I&rsquo;m pretty happy with how my little Applescript trials went. It&rsquo;s very easy now to chain together applescript tasks using Grunt.</p>
+
+<p>On a side note.. Apparently applescript is already used in some grunt plugins, as I&rsquo;ve found tucked away in some projects code.</p>
+
+<p>Happy coding.</p>
+]]></content>
+  </entry>
+  
+</feed>

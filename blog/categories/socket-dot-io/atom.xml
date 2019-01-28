@@ -1,0 +1,279 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: socket.io | Josh Bavari's Ramblings]]></title>
+  <link href="http://jbavari.github.io/blog/categories/socket-dot-io/atom.xml" rel="self"/>
+  <link href="http://jbavari.github.io/"/>
+  <updated>2019-01-27T19:16:40-07:00</updated>
+  <id>http://jbavari.github.io/</id>
+  <author>
+    <name><![CDATA[Josh Bavari]]></name>
+    <email><![CDATA[jbavari@gmail.com]]></email>
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Building a chat client with Ionic / Socket.io / Redis / Node.js]]></title>
+    <link href="http://jbavari.github.io/blog/2014/06/17/building-a-chat-client-with-ionic/"/>
+    <updated>2014-06-17T00:09:00-06:00</updated>
+    <id>http://jbavari.github.io/blog/2014/06/17/building-a-chat-client-with-ionic</id>
+    <content type="html"><![CDATA[<p>I wanted a fun challenge to push myself and cross a few things off my ever so growing <code>I want to play with this</code> type of lists. I love learning, and there are so many awesome tools / utilities / libraries out there to evaluate its hard to justify incorporating them into every project at work without having some knowledge of the tools.</p>
+
+<p>DISCLAIMER: I may use some tools incorrectly, but the main purpose of this fun little project was to learn and have fun.</p>
+
+<p>The list was this:</p>
+
+<ul>
+<li><a href="http://ionicframework.com">Ionic Framework</a></li>
+<li><a href="http://socket.io">Socket.io</a></li>
+<li><a href="http://redis.io">Redis</a></li>
+<li><a href="https://github.com/mranney/node_redis">Node.js Redis client</a></li>
+</ul>
+
+
+<h2>The Idea</h2>
+
+<p>I wanted to build a chat client that would have messages that disappear after a certain time, much like SnapChat. The idea also included the ability to create channels that also disappear after a certain time like messages.</p>
+
+<p>In future versions, I&rsquo;d love to include location to join channels that are near you.</p>
+
+<p>Users can join existing channels, or create their own. All users can see channels, and join any.</p>
+
+<h2>Tech details &ndash; using Redis / Node.js</h2>
+
+<p>At first, I wanted to create messages some how and have them each have <code>expire</code> times. After failing miserably, I got the amazing chance to pair up with <a href="https://twitter.com/michaelgorsuch">Michael Gorsuch</a> to give me some alternative ideas. (Shameless plug &ndash; if you need to do some server monitoring, check out his project <a href="http://canary.io/">Canary.io</a>, it&rsquo;s AWESOME).</p>
+
+<p>The concept is &ndash; instead of using separate keys with ezxpire times &ndash; use Redis' sorted sets with scores of the times in UNIX format and the member being a JSON encoded string. I had my channels keys in the format of <code>messages:ChannelName</code>.</p>
+
+<p>Something like:</p>
+
+<p><code>
+//ZADD key score member [score member ...]
+zadd messages:RedisChat 10581098019 '{"name": "Josh", "id": "5"}'
+</code></p>
+
+<p>Now, when we want to get all messages for a channel, its simply:</p>
+
+<p><code>
+//ZRANGEBYSCORE key min max [WITHSCORES] [LIMIT offset count]
+zrangebyscore messages:RedisChat 0 10924019840
+</code></p>
+
+<p>Since I was using Node.js &ndash; I simply used <code>setInterval</code> to have a function be run that removes all old posts named <code>removeKeys</code>, and looked as such:</p>
+
+<p>``` js
+//NOTE: Using Moment.js, as well as having channelWatchList being populated
+var channelWatchList = [&lsquo;Lobby&rsquo;, &lsquo;RedisChat&rsquo;];</p>
+
+<p>function removeKeys() {
+  console.log(&lsquo;We are removing old messages&rsquo;);</p>
+
+<p>  for(var channelIndex in channelWatchList) {</p>
+
+<pre><code>var channel = channelWatchList[channelIndex];
+var messageChannel = 'messages:' + channel;
+console.log('message channel', messageChannel)
+var timeToRemove = moment().subtract('m', 1).unix(); //Remove messages before min ago
+
+redisClient.zrangebyscore(messageChannel, 0, timeToRemove, function(err, result) {
+  if(result &amp;&amp; result.length &gt; 0) {
+    for (var resultIndex in result) {
+      var message = JSON.parse(result[resultIndex]);
+      //NOTE: Using socket.io
+      io.emit('message:remove:channel:' + channel, { message: message, channel: channel });
+    }
+  }
+});
+
+redisClient.zremrangebyscore(messageChannel, 0, timeToRemove, function(err, result) {
+  console.log('Removed ', result, ' messages');
+});
+</code></pre>
+
+<p>  }
+}
+```</p>
+
+<h2>The client &ndash; Ionic</h2>
+
+<p>This was by far the easy part. First I just used the Ionic CLI to create a basic app.</p>
+
+<p>I started by modifying the index.html file to include Socket.io. Nothing too fancy: <code>&lt;script src="js/socket.io.js"&gt;&lt;/script&gt;</code>.</p>
+
+<p>Next, I used some AngularJS <a href="https://github.com/jbavari/ionic-socket.io-redis-chat/blob/master/client/RedisChat/www/js/services.js">services</a> for socket.io:</p>
+
+<p>```
+angular.module(&lsquo;services&rsquo;, [])</p>
+
+<p>.factory(&lsquo;socket&rsquo;, function socket($rootScope) {
+  var socket = io.connect(baseUrl);
+  return {</p>
+
+<pre><code>on: function (eventName, callback) {
+  socket.on(eventName, function () {  
+    var args = arguments;
+    $rootScope.$apply(function () {
+      callback.apply(socket, args);
+    });
+  });
+},
+emit: function (eventName, data, callback) {
+  socket.emit(eventName, data, function () {
+    var args = arguments;
+    $rootScope.$apply(function () {
+      if (callback) {
+        callback.apply(socket, args);
+      }
+    });
+  })
+}
+</code></pre>
+
+<p>  };
+})
+```</p>
+
+<p>Then, I constructed my <code>AppCtrl</code> to handle my <a href="https://github.com/jbavari/ionic-socket.io-redis-chat/blob/master/client/RedisChat/www/js/controllers.js">controllers</a> interaction with Socket.io:</p>
+
+<p>``` js
+angular.module(&lsquo;starter.controllers&rsquo;, [&lsquo;services&rsquo;])</p>
+
+<p>.controller(&lsquo;AppCtrl&rsquo;, function($scope, $state, $filter, socket, Auth) {</p>
+
+<pre><code>//Ensure they are authed first.
+if(Auth.currentUser() == null) {
+    $state.go('login');
+    return;
+}
+
+//input models
+$scope.draft = { message: '' };
+$scope.channel = { name: '' };
+
+//App info
+$scope.channels = [];
+$scope.listeningChannels = [];
+$scope.activeChannel = null;
+$scope.userName = Auth.currentUser().name;
+$scope.messages = [];
+</code></pre>
+
+<p>///////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////
+//Socket.io listeners
+///////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////</p>
+
+<pre><code>socket.on('channels', function channels(channels){
+    console.log('channels', channels);
+
+    console.log(channels);
+    $scope.channels = channels;
+});
+
+socket.on('message:received', function messageReceived(message) {
+    $scope.messages.push(message);
+});
+
+socket.emit('user:joined', {name: Auth.currentUser().name});
+
+socket.on('user:joined', function(user) {
+    console.log('user:joined');
+    $scope.messages.push(user);
+});
+
+$scope.listenChannel = function listenChannel (channel) {
+    socket.on('messages:channel:' + channel, function messages(messages) {
+        console.log('got messages: ', messages);
+        console.log(messages.length);
+        for(var i = 0, j = messages.length; i &lt; j; i++) {
+            var message = messages[i];
+            console.log('message');
+            console.log(message);
+                console.log('apply with function');
+            $scope.messages.push(message);
+        }
+    });
+
+    socket.on('message:channel:' + channel, function message(message) {
+        console.log('got message: ' + message);
+        if(channel != $scope.activeChannel) {
+            return;
+        }
+        $scope.messages.push(message);
+    });
+
+    socket.on('message:remove:channel:' + channel, function(removalInfo) {
+        console.log('removalInfo to remove: ', removalInfo);
+        var expires = removalInfo.message.expires;
+        var expireMessageIndex = $filter('messageByExpires')($scope.messages, expires);
+        if(expireMessageIndex) {
+            $scope.messages.splice(expireMessageIndex, 1);
+        }
+
+    });
+
+    $scope.listeningChannels.push(channel);
+
+}
+</code></pre>
+
+<p>///////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////
+// Controller methods
+///////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////</p>
+
+<pre><code>$scope.joinChannel = function joinChannel(channel) {
+    $scope.activeChannel = channel;
+    $scope.messages = [];
+
+    $scope.channel.name = '';
+
+    //Listen to channel if we dont have it already.
+    if($scope.listeningChannels.indexOf(channel) == -1) {
+        $scope.listenChannel(channel);      
+    }
+
+    socket.emit('channel:join', { channel: channel, name: Auth.currentUser().name });
+}
+
+$scope.sendMessage = function sendMessage(draft) {
+    if(!draft.message || draft.message == null || typeof draft == 'undefined' || draft.length == 0) {
+        return;
+    }
+    socket.emit('message:send', { message: draft.message, name: Auth.currentUser().name, channel: $scope.activeChannel });
+    $scope.draft.message = '';
+};
+
+$scope.logout = function logout() {
+    Auth.logout();
+    $state.go('login');
+}
+
+//Auto join the lobby
+$scope.joinChannel('Lobby');
+</code></pre>
+
+<p>})
+```</p>
+
+<p>All of the code can be found on <a href="https://github.com/jbavari/ionic-socket.io-redis-chat">github here</a>.</p>
+
+<h3>Things to improve</h3>
+
+<ul>
+<li>Testing &ndash; for sure. I definitely failed in getting tests first</li>
+<li>Removing the inline functions from Socket.io callbacks &ndash; not sure I like how I handled that to be honest</li>
+<li>Improve the UI</li>
+<li>Actually make the channels expire over time &ndash; and alert the user</li>
+<li>Have some kind of location tracking to pull local channels near you</li>
+</ul>
+
+
+<p>Enjoy! Hope this helps any others learn some tips for developing in any of these technologies used!</p>
+]]></content>
+  </entry>
+  
+</feed>

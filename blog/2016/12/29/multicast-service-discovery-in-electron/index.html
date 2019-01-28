@@ -1,0 +1,383 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Multicast Service Discovery in Electron - Josh Bavari's Ramblings</title>
+  <meta name="author" content="Josh Bavari">
+
+  
+  <meta name="description" content="I’ve been playing around with mDNS lately for broadcasting some services for applications to auto-connect with. The first experiment I had was &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://jbavari.github.io/blog/2016/12/29/multicast-service-discovery-in-electron">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="Josh Bavari's Ramblings" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">Josh Bavari's Ramblings</a></h1>
+  
+    <h2>tech babbles on Ruby, Javascript, Rails, Phonegap/Cordova, Grunt, and more</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:jbavari.github.io" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+  <li><a href="/about">About</a></li>
+  <li><a href="/speaking">Speaking</a></li>
+  <li><a href="/knowledge">Knowledge</a></li>
+  <li><a href="/about/resume">Resume</a></li>
+  <li><a href="/cv">C.V.</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Multicast Service Discovery in Electron</h1>
+    
+    
+      <p class="meta">
+        <span class="reading-time">about a 1 minute read</span>
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2016-12-29T14:01:00-07:00" pubdate data-updated="true">Dec 29<span>th</span>, 2016</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>I’ve been playing around with mDNS lately for broadcasting some services for applications to auto-connect with.</p>
+
+<p>The first experiment I had was setting up a server that broadcasts a TCP endpoint for an Electron application to discover and connect for the application data.</p>
+
+<p>This was so easily done that I challenged myself to see how fast I can whip out a blog post.</p>
+
+<p>First, get an Ubuntu server up (I used a Vagrant VM).</p>
+
+<p>Run the commands:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>sudo apt-get install avahi-utils</span></code></pre></td></tr></table></div></figure>
+
+
+<p>From here, the service for avahi (mdns) should be auto-started. Edit the configuration to enable broadcasting:</p>
+
+<p><code>vim /etc/avahi/avahi-daemon.conf</code> – here’s a config that’s minimally broadcasting only the IPv4 address:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>[server]
+</span><span class='line'>host-name=webserver
+</span><span class='line'>domain-name=local
+</span><span class='line'>use-ipv4=yes
+</span><span class='line'>use-ipv6=no
+</span><span class='line'>allow-interfaces=eth1
+</span><span class='line'>deny-interfaces=eth0
+</span><span class='line'>ratelimit-interval-usec=1000000
+</span><span class='line'>ratelimit-burst=1000
+</span><span class='line'>
+</span><span class='line'>[wide-area]
+</span><span class='line'>enable-wide-area=yes
+</span><span class='line'>
+</span><span class='line'>[publish]
+</span><span class='line'>publish-addresses=yes
+</span><span class='line'>publish-hinfo=yes
+</span><span class='line'>publish-workstation=no
+</span><span class='line'>publish-domain=yes</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Now, create a service configuration: <code>vim /etc/avahi/services/mywebserver.service</code>, with this contents:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>&lt;service-group&gt;
+</span><span class='line'>  &lt;name&gt;Webserver&lt;/name&gt;
+</span><span class='line'>  &lt;service&gt;
+</span><span class='line'>    &lt;type&gt;_http._tcp&lt;/type&gt;
+</span><span class='line'>    &lt;port&gt;80&lt;/port&gt;
+</span><span class='line'>  &lt;/service&gt;
+</span><span class='line'>&lt;/service-group&gt;</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Simple as that. Just restart the avahi-daemon – <code>sudo service avahi-daemon restart</code>.</p>
+
+<p>This should now have your server broadcasting that it has a webserver running at port 80, named <code>Webserver</code>.</p>
+
+<p>To check the service is broadcasting, run <code>avahi-browse _http._tcp -tr</code> – this should show your server as servername.local, with <code>Webserver</code>, pointing to its IP and port.</p>
+
+<p>Example:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>+   eth1 IPv4 webserver                              Web Site             local
+</span><span class='line'>=   eth1 IPv4 webserver                              Web Site             local
+</span><span class='line'>   hostname = [webserver.local]
+</span><span class='line'>   address = [192.168.0.101]
+</span><span class='line'>   port = [80]
+</span><span class='line'>   txt = []</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Now for the electron portion, in your application, install the node mdns module: <code>npm install --save mdns</code>.</p>
+
+<p>This will add the node module to your project, but since it has native compilation steps, you must build it with <code>electron-rebuild</code>. Do this: <code>npm install --save-dev electron-rebuild</code>.</p>
+
+<p>Then run: <code>./node_modules/.bin/electron-rebuild</code> – this will rebuild the mdns module for your electron node version correctly.</p>
+
+<p>To do the DNS lookups, simply run the steps from the node mdns <code>README</code>. Set the discovery type to <code>http</code> and it will find your service. From there, you can grab the address and then get the data from the web server (or html page redirection) as you so wish!</p>
+
+<p>Happy coding!</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Josh Bavari</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2016-12-29T14:01:00-07:00" pubdate data-updated="true">Dec 29<span>th</span>, 2016</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/avahi/'>avahi</a>, <a class='category' href='/blog/categories/electron/'>electron</a>, <a class='category' href='/blog/categories/mdns/'>mdns</a>, <a class='category' href='/blog/categories/nodejs/'>nodejs</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://jbavari.github.io/blog/2016/12/29/multicast-service-discovery-in-electron/" data-via="jbavari" data-counturl="http://jbavari.github.io/blog/2016/12/29/multicast-service-discovery-in-electron/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2016/03/11/using-erlang-observer-on-a-remote-elixir-server/" title="Previous Post: Using Erlang Observer on a Remote Elixir Server">&laquo; Using Erlang Observer on a Remote Elixir Server</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2017/03/13/test-coverage-reports-in-elixir/" title="Next Post: Test Coverage Reports in Elixir">Test Coverage Reports in Elixir &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2017/04/16/puppet-a-testing-handbook/">Puppet: A Testing Handbook</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2017/03/13/test-coverage-reports-in-elixir/">Test Coverage Reports in Elixir</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/12/29/multicast-service-discovery-in-electron/">Multicast Service Discovery in Electron</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/03/11/using-erlang-observer-on-a-remote-elixir-server/">Using Erlang Observer on a Remote Elixir Server</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/01/24/custom-json-encoding-in-phoenix/">Custom JSON Encoding in Phoenix</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/jbavari">@jbavari</a> on GitHub
+  
+  <script type="text/javascript">
+    $(document).ready(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'jbavari',
+            count: 0,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2019 - Josh Bavari -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+  <script src="//static.getclicky.com/js" type="text/javascript"></script>
+  <script type="text/javascript">try{ clicky.init(100896582); }catch(e){}</script>
+  <noscript><p><img alt="Clicky" width="1" height="1" src="//in.getclicky.com/100896582ns.gif" /></p></noscript>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'joshbavari';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://jbavari.github.io/blog/2016/12/29/multicast-service-discovery-in-electron/';
+        var disqus_url = 'http://jbavari.github.io/blog/2016/12/29/multicast-service-discovery-in-electron/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

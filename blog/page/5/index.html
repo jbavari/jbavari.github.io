@@ -1,0 +1,2185 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Josh Bavari's Ramblings</title>
+  <meta name="author" content="Josh Bavari">
+
+  
+  <meta name="description" content="I&rsquo;ve been using AngularJS a lot lately. Since I do a lot of Javascript, that means I&rsquo;m prone to make a lot of runtime script errors. You &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://jbavari.github.io/blog/page/5">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="Josh Bavari's Ramblings" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">Josh Bavari's Ramblings</a></h1>
+  
+    <h2>tech babbles on Ruby, Javascript, Rails, Phonegap/Cordova, Grunt, and more</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:jbavari.github.io" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+  <li><a href="/about">About</a></li>
+  <li><a href="/speaking">Speaking</a></li>
+  <li><a href="/knowledge">Knowledge</a></li>
+  <li><a href="/about/resume">Resume</a></li>
+  <li><a href="/cv">C.V.</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div class="blog-index">
+  
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/06/11/unit-testing-angularjs-services/">Unit Testing AngularJS Services</a></h1>
+    
+    
+      <p class="meta">
+        <span class="reading-time">less than a 1 minute read</span>
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-06-11T17:52:00-06:00" pubdate data-updated="true">Jun 11<span>th</span>, 2014</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>I&rsquo;ve been using AngularJS a lot lately. Since I do a lot of Javascript, that means I&rsquo;m prone to make a lot of runtime script errors.</p>
+
+<p>You know those silly javascript errors &ndash; like ReferenceError and ParseError? Those can always be avoided by just writing some simple unit tests with Jasmine. I&rsquo;d like to cover just how I do that.</p>
+
+<p>(NOTE &ndash; I am forever learning, not teaching or saying THIS is the way it MUST be done)</p>
+
+<p>I read through Andy Shora&rsquo;s great blog post about <a href="http://andyshora.com/unit-testing-best-practices-angularjs.html">Unit Testing Best Practices for AngularJS</a>, but I wanted to record my actual steps so I can reference this again and capture my knowledge.</p>
+
+<h2>Tools for Javascript Testing AngularJS Services</h2>
+
+<p>There&rsquo;s a few things going on here. First we need something to set up our tests and set expectations &ndash; thats Jasmine. Then we need something to run the tests in browsers (or PhantomJS) &ndash; thats Karma. We then need a task runner to go and do these tests for us in some build process, thats Grunt/Gulp. Each tool has a file that will tell it how to run.</p>
+
+<ul>
+<li><a href="http://jasmine.github.io/2.0/introduction.html">Jasmine</a> (unit testing framework)</li>
+<li><a href="http://karma-runner.github.io/0.12/index.html">Karma</a> (for multiple browsers)</li>
+<li><a href="http://http://gruntjs.com/">Grunt</a> / <a href="http://gulpjs.com/">Gulp</a> (task runners / build systems)</li>
+<li><a href="https://github.com/angular/angular.js/blob/master/src/ngMock/angular-mocks.js">Angular Mocks</a></li>
+</ul>
+
+
+<p>Jasmine takes test spec files, Karma takes a config to tell it where to find the test spec files and actual code files, and grunt or gulp will help us run karma. Lets look at how those config files look.</p>
+
+<h1>Setting up Karma / Jasmine / Gulp configs</h1>
+
+<p>I use gulp these days, that requires me to use the gulp CLI as well as the gulp-jasmine plugin. You can use Grunt as well, just exchange gulp for grunt.</p>
+
+<p>I did the following in my command shell:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'>npm install -g gulp
+</span><span class='line'>npm install -g karma
+</span><span class='line'>npm install gulp-jasmine --save-dev
+</span><span class='line'>npm install karma-jasmine --save-dev
+</span><span class='line'>npm install karma-phantomjs-launcher --save-dev
+</span><span class='line'>npm install karma-spec-reporter --save-dev
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>Setting up Karma config</h2>
+
+<p>I simply ran this in my command shell for a nice simple walk through: <code>karma init</code>. It asks a few questions about what browsers to use, to keep running, and what files to use. Pretty basic stuff.</p>
+
+<p>Interesting tidbits:</p>
+
+<ul>
+<li>files &ndash; simply and array of files and glob&rsquo;s</li>
+<li>frameworks &ndash; specify here which you want to use</li>
+<li>reporters &ndash; customize your test output</li>
+<li>browsers &ndash; list which you&rsquo;d want to actually test in</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+<span class='line-number'>67</span>
+<span class='line-number'>68</span>
+<span class='line-number'>69</span>
+<span class='line-number'>70</span>
+<span class='line-number'>71</span>
+<span class='line-number'>72</span>
+<span class='line-number'>73</span>
+<span class='line-number'>74</span>
+<span class='line-number'>75</span>
+<span class='line-number'>76</span>
+<span class='line-number'>77</span>
+<span class='line-number'>78</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="c1">// Karma configuration</span>
+</span><span class='line'><span class="c1">// Generated on Wed Jun 11 2014 09:51:52 GMT-0500 (CDT)</span>
+</span><span class='line'>
+</span><span class='line'><span class="nx">module</span><span class="p">.</span><span class="nx">exports</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">config</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>  <span class="nx">config</span><span class="p">.</span><span class="nx">set</span><span class="p">({</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">// base path that will be used to resolve all patterns (eg. files, exclude)</span>
+</span><span class='line'>    <span class="nx">basePath</span><span class="o">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">// frameworks to use</span>
+</span><span class='line'>    <span class="c1">// available frameworks: https://npmjs.org/browse/keyword/karma-adapter</span>
+</span><span class='line'>    <span class="nx">frameworks</span><span class="o">:</span> <span class="p">[</span><span class="s1">&#39;jasmine&#39;</span><span class="p">],</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">// list of files / patterns to load in the browser</span>
+</span><span class='line'>    <span class="nx">files</span><span class="o">:</span> <span class="p">[</span>
+</span><span class='line'>        <span class="s1">&#39;./www/js/moment.min.js&#39;</span>
+</span><span class='line'>        <span class="p">,</span> <span class="s1">&#39;./www/js/controllers/*.js&#39;</span>
+</span><span class='line'>        <span class="p">,</span> <span class="s1">&#39;./www/js/models/*.js&#39;</span>
+</span><span class='line'>        <span class="p">,</span> <span class="s1">&#39;./www/js/services.js&#39;</span>
+</span><span class='line'>        <span class="p">,</span> <span class="s1">&#39;./www/lib/ionic/js/angular/angular.js&#39;</span>
+</span><span class='line'>        <span class="p">,</span> <span class="s1">&#39;./plugins/org.apache.cordova.FacebookConnect/www/angular/facebookConnect.js&#39;</span>
+</span><span class='line'>        <span class="p">,</span> <span class="s1">&#39;./test/lib/angular-mocks.js&#39;</span>
+</span><span class='line'>        <span class="p">,</span> <span class="s1">&#39;./test/spec/**/*.js&#39;</span>
+</span><span class='line'>    <span class="p">],</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">// list of files to exclude</span>
+</span><span class='line'>    <span class="nx">exclude</span><span class="o">:</span> <span class="p">[</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="p">],</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">// preprocess matching files before serving them to the browser</span>
+</span><span class='line'>    <span class="c1">// available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor</span>
+</span><span class='line'>    <span class="nx">preprocessors</span><span class="o">:</span> <span class="p">{</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="p">},</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">// test results reporter to use</span>
+</span><span class='line'>    <span class="c1">// possible values: &#39;dots&#39;, &#39;progress&#39;</span>
+</span><span class='line'>    <span class="c1">// available reporters: https://npmjs.org/browse/keyword/karma-reporter</span>
+</span><span class='line'>    <span class="nx">reporters</span><span class="o">:</span> <span class="p">[</span><span class="s1">&#39;spec&#39;</span><span class="p">],</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">// web server port</span>
+</span><span class='line'>    <span class="nx">port</span><span class="o">:</span> <span class="mi">9876</span><span class="p">,</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">// enable / disable colors in the output (reporters and logs)</span>
+</span><span class='line'>    <span class="nx">colors</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">// level of logging</span>
+</span><span class='line'>    <span class="c1">// possible values: config.LOG_DISABLE || config.LOG_ERROR || config.LOG_WARN || config.LOG_INFO || config.LOG_DEBUG</span>
+</span><span class='line'>    <span class="nx">logLevel</span><span class="o">:</span> <span class="nx">config</span><span class="p">.</span><span class="nx">LOG_INFO</span><span class="p">,</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">// enable / disable watching file and executing tests whenever any file changes</span>
+</span><span class='line'>    <span class="nx">autoWatch</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">// start these browsers</span>
+</span><span class='line'>    <span class="c1">// available browser launchers: https://npmjs.org/browse/keyword/karma-launcher</span>
+</span><span class='line'>    <span class="nx">browsers</span><span class="o">:</span> <span class="p">[</span>
+</span><span class='line'>        <span class="s1">&#39;PhantomJS&#39;</span>
+</span><span class='line'>        <span class="c1">// , &#39;Chrome&#39;</span>
+</span><span class='line'>        <span class="c1">// , &#39;Firefox&#39;</span>
+</span><span class='line'>        <span class="c1">// , &#39;Safari&#39;</span>
+</span><span class='line'>    <span class="p">],</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">// Continuous Integration mode</span>
+</span><span class='line'>    <span class="c1">// if true, Karma captures browsers, runs the tests and exits</span>
+</span><span class='line'>    <span class="nx">singleRun</span><span class="o">:</span> <span class="kc">false</span>
+</span><span class='line'>  <span class="p">});</span>
+</span><span class='line'><span class="p">};</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>Gulpfile for running tests</h2>
+
+<p>Next I had to get a little gulpfile together to run my tests. Right away, I found a quick little SNAFU with the way the gulp task runs the source files VS how I specified them in my Karma config file. A few interesting points here:</p>
+
+<ul>
+<li>Dont actually pass in files to <code>gulp.src</code> &ndash; instead use a dummy. You specify the files in your karma config file.</li>
+<li>If you intend on running a <code>gulp.watch</code> task to autorun, dont error out your karma stream! Use <code>this.emit('end')</code> in your error handler</li>
+</ul>
+
+
+<p>The code itself:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">var</span> <span class="nx">karma</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;gulp-karma&#39;</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="nx">gulp</span><span class="p">.</span><span class="nx">task</span><span class="p">(</span><span class="s1">&#39;test&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>  <span class="c1">// Be sure to return the stream</span>
+</span><span class='line'>  <span class="c1">// NOTE: Using the fake &#39;./foobar&#39; so as to run the files</span>
+</span><span class='line'>  <span class="c1">// listed in karma.conf.js INSTEAD of what was passed to</span>
+</span><span class='line'>  <span class="c1">// gulp.src !</span>
+</span><span class='line'>  <span class="k">return</span> <span class="nx">gulp</span><span class="p">.</span><span class="nx">src</span><span class="p">(</span><span class="s1">&#39;./foobar&#39;</span><span class="p">)</span>
+</span><span class='line'>    <span class="p">.</span><span class="nx">pipe</span><span class="p">(</span><span class="nx">karma</span><span class="p">({</span>
+</span><span class='line'>      <span class="nx">configFile</span><span class="o">:</span> <span class="s1">&#39;karma.conf.js&#39;</span><span class="p">,</span>
+</span><span class='line'>      <span class="nx">action</span><span class="o">:</span> <span class="s1">&#39;run&#39;</span>
+</span><span class='line'>    <span class="p">}))</span>
+</span><span class='line'>    <span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">&#39;error&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>      <span class="c1">// Make sure failed tests cause gulp to exit non-zero</span>
+</span><span class='line'>      <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">err</span><span class="p">);</span>
+</span><span class='line'>      <span class="k">this</span><span class="p">.</span><span class="nx">emit</span><span class="p">(</span><span class="s1">&#39;end&#39;</span><span class="p">);</span> <span class="c1">//instead of erroring the stream, end it</span>
+</span><span class='line'>    <span class="p">});</span>
+</span><span class='line'><span class="p">});</span>
+</span><span class='line'>
+</span><span class='line'><span class="nx">gulp</span><span class="p">.</span><span class="nx">task</span><span class="p">(</span><span class="s1">&#39;autotest&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>  <span class="k">return</span> <span class="nx">gulp</span><span class="p">.</span><span class="nx">watch</span><span class="p">([</span><span class="s1">&#39;www/js/**/*.js&#39;</span><span class="p">,</span> <span class="s1">&#39;test/spec/*.js&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;test&#39;</span><span class="p">]);</span>
+</span><span class='line'><span class="p">});</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Awesome, not much left to do as far as setting up our test environment, lets get some code to test!</p>
+
+<h2>Setting Up AngularJS Service</h2>
+
+<p>Its a pretty basic setup &ndash; an Auth service with a few methods to get a user and call a back end service to retrieve a user.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="nx">angular</span><span class="p">.</span><span class="nx">module</span><span class="p">(</span><span class="s1">&#39;services&#39;</span><span class="p">)</span>
+</span><span class='line'>  <span class="p">.</span><span class="nx">factory</span><span class="p">(</span><span class="s1">&#39;Auth&#39;</span><span class="p">,</span> <span class="kd">function</span> <span class="nx">Auth</span><span class="p">(</span><span class="nx">$http</span><span class="p">,</span> <span class="nx">$q</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>      <span class="kd">var</span> <span class="nx">user</span> <span class="o">=</span> <span class="kc">null</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="kd">var</span> <span class="nx">readStoredUser</span> <span class="o">=</span> <span class="kd">function</span> <span class="nx">readStoredUser</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>          <span class="c1">//Try to read in from localStorage if one exists</span>
+</span><span class='line'>          <span class="kd">var</span> <span class="nx">storedUser</span> <span class="o">=</span> <span class="nb">window</span><span class="p">.</span><span class="nx">localStorage</span><span class="p">.</span><span class="nx">getItem</span><span class="p">(</span><span class="s1">&#39;user&#39;</span><span class="p">);</span>
+</span><span class='line'>          <span class="k">try</span> <span class="p">{</span>
+</span><span class='line'>              <span class="k">if</span><span class="p">(</span><span class="nx">storedUser</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>                  <span class="c1">// Note: Using a simple user model here</span>
+</span><span class='line'>                  <span class="nx">user</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">User</span><span class="p">(</span><span class="nx">JSON</span><span class="p">.</span><span class="nx">parse</span><span class="p">(</span><span class="nx">storedUser</span><span class="p">));</span>
+</span><span class='line'>              <span class="p">}</span>
+</span><span class='line'>          <span class="p">}</span> <span class="k">catch</span> <span class="p">(</span><span class="nx">ex</span><span class="p">)</span> <span class="p">{</span> <span class="cm">/* Silently fail..*/</span> <span class="p">}</span>
+</span><span class='line'>      <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="nx">readStoredUser</span><span class="p">();</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="kd">var</span> <span class="nx">currentUser</span> <span class="o">=</span> <span class="kd">function</span> <span class="nx">currentUser</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>          <span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="nx">user</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>              <span class="nx">readStoredUser</span><span class="p">();</span>
+</span><span class='line'>          <span class="p">}</span>
+</span><span class='line'>          <span class="k">return</span> <span class="nx">user</span><span class="p">;</span>
+</span><span class='line'>      <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="kd">var</span> <span class="nx">saveUser</span> <span class="o">=</span> <span class="kd">function</span> <span class="nx">saveUser</span><span class="p">(</span><span class="nx">userToSave</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>          <span class="nb">window</span><span class="p">.</span><span class="nx">localStorage</span><span class="p">.</span><span class="nx">setItem</span><span class="p">(</span><span class="s1">&#39;user&#39;</span><span class="p">,</span> <span class="nx">JSON</span><span class="p">.</span><span class="nx">stringify</span><span class="p">(</span><span class="nx">userToSave</span><span class="p">));</span>
+</span><span class='line'>          <span class="nx">user</span> <span class="o">=</span> <span class="nx">userToSave</span><span class="p">;</span>
+</span><span class='line'>      <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="kd">var</span> <span class="nx">loginWithEmail</span> <span class="o">=</span> <span class="kd">function</span> <span class="nx">loginWithEmail</span><span class="p">(</span><span class="nx">name</span><span class="p">,</span> <span class="nx">email</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>          <span class="kd">var</span> <span class="nx">deferred</span> <span class="o">=</span> <span class="nx">$q</span><span class="p">.</span><span class="nx">defer</span><span class="p">();</span>
+</span><span class='line'>
+</span><span class='line'>          <span class="kd">var</span> <span class="nx">postPath</span> <span class="o">=</span> <span class="s1">&#39;http://someurl.dev/api/v1/login&#39;</span><span class="p">;</span>
+</span><span class='line'>          <span class="kd">var</span> <span class="nx">postData</span> <span class="o">=</span> <span class="p">{</span> <span class="nx">name</span><span class="o">:</span> <span class="nx">name</span><span class="p">,</span> <span class="nx">email</span><span class="o">:</span> <span class="nx">email</span> <span class="p">};</span>
+</span><span class='line'>
+</span><span class='line'>          <span class="nx">$http</span><span class="p">.</span><span class="nx">post</span><span class="p">(</span><span class="nx">postPath</span><span class="p">,</span> <span class="nx">postData</span><span class="p">).</span><span class="nx">success</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">data</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>              <span class="k">if</span><span class="p">(</span><span class="nx">data</span><span class="p">.</span><span class="nx">success</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>                  <span class="nx">deferred</span><span class="p">.</span><span class="nx">resolve</span><span class="p">(</span><span class="nx">data</span><span class="p">);</span>
+</span><span class='line'>              <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span><span class='line'>                  <span class="nx">deferred</span><span class="p">.</span><span class="nx">reject</span><span class="p">(</span><span class="nx">data</span><span class="p">);</span>
+</span><span class='line'>              <span class="p">}</span>
+</span><span class='line'>          <span class="p">}).</span><span class="nx">error</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">error</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>              <span class="nx">deferred</span><span class="p">.</span><span class="nx">reject</span><span class="p">(</span><span class="nx">error</span><span class="p">);</span>
+</span><span class='line'>          <span class="p">});</span>
+</span><span class='line'>
+</span><span class='line'>          <span class="k">return</span> <span class="nx">deferred</span><span class="p">.</span><span class="nx">promise</span><span class="p">;</span>
+</span><span class='line'>      <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="k">return</span> <span class="p">{</span>
+</span><span class='line'>          <span class="nx">currentUser</span><span class="o">:</span> <span class="nx">currentUser</span><span class="p">,</span>
+</span><span class='line'>          <span class="nx">loginWithEmail</span><span class="o">:</span> <span class="nx">loginWithEmail</span><span class="p">,</span>
+</span><span class='line'>          <span class="nx">saveUser</span><span class="o">:</span> <span class="nx">saveUser</span>
+</span><span class='line'>      <span class="p">};</span>
+</span><span class='line'>  <span class="p">})</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Thats a simple bare bones <code>Auth</code> service above. We have a few interesting parts to test:</p>
+
+<ul>
+<li>readStoredUser</li>
+<li>currentUser</li>
+<li>loginWithEmail</li>
+</ul>
+
+
+<p>The first is somewhat hard because it is private to the Auth service. How do we test that? I guess the option is to make it public via a return in the service?</p>
+
+<h2>Test Specs</h2>
+
+<p>There was a few interesting things going on my spec &ndash; first I have a beforeEach that sets up some modules I need to use. Otherwise you&rsquo;ll get some fun / weird <code>couldnt bind</code> errors.</p>
+
+<p>The second was &ndash; In my HTTP tests, I mock out the httpBackend (as provided by angular-mocks) to give me a fake version of my actual HTTP call. This way, I know for sure I&rsquo;m testing my code, not the outside world.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+<span class='line-number'>67</span>
+<span class='line-number'>68</span>
+<span class='line-number'>69</span>
+<span class='line-number'>70</span>
+<span class='line-number'>71</span>
+<span class='line-number'>72</span>
+<span class='line-number'>73</span>
+<span class='line-number'>74</span>
+<span class='line-number'>75</span>
+<span class='line-number'>76</span>
+<span class='line-number'>77</span>
+<span class='line-number'>78</span>
+<span class='line-number'>79</span>
+<span class='line-number'>80</span>
+<span class='line-number'>81</span>
+<span class='line-number'>82</span>
+<span class='line-number'>83</span>
+<span class='line-number'>84</span>
+<span class='line-number'>85</span>
+<span class='line-number'>86</span>
+<span class='line-number'>87</span>
+<span class='line-number'>88</span>
+<span class='line-number'>89</span>
+<span class='line-number'>90</span>
+<span class='line-number'>91</span>
+<span class='line-number'>92</span>
+<span class='line-number'>93</span>
+<span class='line-number'>94</span>
+<span class='line-number'>95</span>
+<span class='line-number'>96</span>
+<span class='line-number'>97</span>
+<span class='line-number'>98</span>
+<span class='line-number'>99</span>
+<span class='line-number'>100</span>
+<span class='line-number'>101</span>
+<span class='line-number'>102</span>
+<span class='line-number'>103</span>
+<span class='line-number'>104</span>
+<span class='line-number'>105</span>
+<span class='line-number'>106</span>
+<span class='line-number'>107</span>
+<span class='line-number'>108</span>
+<span class='line-number'>109</span>
+<span class='line-number'>110</span>
+<span class='line-number'>111</span>
+<span class='line-number'>112</span>
+<span class='line-number'>113</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="c1">//Interesting things to test the Auth service for</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// Logging in with Facebook</span>
+</span><span class='line'><span class="c1">// Handling callback to server for checkuser</span>
+</span><span class='line'><span class="c1">// Saving user to localstorage after login</span>
+</span><span class='line'><span class="c1">// Logging out (removing user object as well as localstorage)</span>
+</span><span class='line'>
+</span><span class='line'><span class="nx">describe</span><span class="p">(</span><span class="s2">&quot;Auth Service Unit Tests&quot;</span><span class="p">,</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nx">beforeEach</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>      <span class="c1">//Ensure angular modules available</span>
+</span><span class='line'>    <span class="nx">module</span><span class="p">(</span><span class="s1">&#39;starter.services&#39;</span><span class="p">);</span>
+</span><span class='line'>    <span class="nx">module</span><span class="p">(</span><span class="s1">&#39;ngCordova.plugins.facebookConnect&#39;</span><span class="p">);</span>
+</span><span class='line'>  <span class="p">});</span>
+</span><span class='line'>
+</span><span class='line'>   <span class="c1">// instantiate service</span>
+</span><span class='line'>  <span class="kd">var</span> <span class="nx">apiResponse</span> <span class="o">=</span> <span class="p">{</span>
+</span><span class='line'>    <span class="nx">name</span><span class="o">:</span> <span class="s1">&#39;Josh Bavari&#39;</span><span class="p">,</span>
+</span><span class='line'>    <span class="nx">email</span><span class="o">:</span> <span class="s1">&#39;jbavari@gmail.com&#39;</span><span class="p">,</span>
+</span><span class='line'>    <span class="nx">id</span><span class="o">:</span> <span class="s1">&#39;4409480064&#39;</span>
+</span><span class='line'>  <span class="p">};</span>
+</span><span class='line'>  <span class="kd">var</span> <span class="nx">Auth</span><span class="p">;</span>
+</span><span class='line'>  <span class="kd">var</span> <span class="nx">FB</span> <span class="o">=</span> <span class="p">{</span>
+</span><span class='line'>    <span class="nx">init</span><span class="o">:</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="p">},</span>
+</span><span class='line'>    <span class="nx">login</span><span class="o">:</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="p">},</span>
+</span><span class='line'>    <span class="nx">api</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">url</span><span class="p">,</span> <span class="nx">params</span><span class="p">,</span> <span class="nx">callback</span> <span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>      <span class="k">return</span> <span class="nx">callback</span><span class="p">(</span><span class="nx">apiResponse</span><span class="p">);</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>  <span class="p">};</span>
+</span><span class='line'>  <span class="kd">var</span> <span class="nx">FacebookConnect</span> <span class="o">=</span> <span class="p">{</span>
+</span><span class='line'>    <span class="nx">login</span><span class="o">:</span> <span class="nx">FB</span><span class="p">.</span><span class="nx">login</span>
+</span><span class='line'>  <span class="p">};</span>
+</span><span class='line'>  <span class="kd">var</span> <span class="nx">httpBackend</span> <span class="o">=</span> <span class="kc">null</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nx">beforeEach</span><span class="p">(</span><span class="nx">inject</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">_Auth_</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="nx">Auth</span> <span class="o">=</span> <span class="nx">_Auth_</span><span class="p">;</span>
+</span><span class='line'>  <span class="p">}));</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nx">it</span><span class="p">(</span><span class="s1">&#39;should have Auth service be defined&#39;</span><span class="p">,</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>    <span class="nx">expect</span><span class="p">(</span><span class="nx">Auth</span><span class="p">).</span><span class="nx">toBeDefined</span><span class="p">();</span>
+</span><span class='line'>  <span class="p">});</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nx">it</span><span class="p">(</span><span class="s1">&#39;should not have a user existing upon starting up&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>    <span class="nx">expect</span><span class="p">(</span><span class="nx">Auth</span><span class="p">.</span><span class="nx">currentUser</span><span class="p">()).</span><span class="nx">toBe</span><span class="p">(</span><span class="kc">null</span><span class="p">);</span>
+</span><span class='line'>  <span class="p">});</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nx">it</span><span class="p">(</span><span class="s1">&#39;should save a user&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>    <span class="kd">var</span> <span class="nx">user</span> <span class="o">=</span> <span class="p">{</span> <span class="nx">name</span><span class="o">:</span> <span class="s1">&#39;Josh Bavari&#39;</span><span class="p">,</span> <span class="nx">id</span><span class="o">:</span> <span class="mi">1</span> <span class="p">};</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nx">Auth</span><span class="p">.</span><span class="nx">saveUser</span><span class="p">(</span><span class="nx">user</span><span class="p">);</span>
+</span><span class='line'>    <span class="kd">var</span> <span class="nx">currUser</span> <span class="o">=</span> <span class="nx">Auth</span><span class="p">.</span><span class="nx">currentUser</span><span class="p">();</span>
+</span><span class='line'>    <span class="nx">expect</span><span class="p">(</span><span class="nx">currUser</span><span class="p">.</span><span class="nx">name</span><span class="p">).</span><span class="nx">toBe</span><span class="p">(</span><span class="nx">user</span><span class="p">.</span><span class="nx">name</span><span class="p">);</span>
+</span><span class='line'>    <span class="nx">expect</span><span class="p">(</span><span class="nx">currUser</span><span class="p">.</span><span class="nx">id</span><span class="p">).</span><span class="nx">toBe</span><span class="p">(</span><span class="nx">user</span><span class="p">.</span><span class="nx">id</span><span class="p">);</span>
+</span><span class='line'>  <span class="p">});</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nx">it</span><span class="p">(</span><span class="s1">&#39;should have a user in local storage after calling saveUser&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>    <span class="kd">var</span> <span class="nx">user</span> <span class="o">=</span> <span class="p">{</span> <span class="nx">name</span><span class="o">:</span> <span class="s1">&#39;Josh Bavari&#39;</span><span class="p">,</span> <span class="nx">id</span><span class="o">:</span> <span class="mi">1</span> <span class="p">};</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nx">Auth</span><span class="p">.</span><span class="nx">saveUser</span><span class="p">(</span><span class="nx">user</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">var</span> <span class="nx">localUser</span> <span class="o">=</span> <span class="nx">JSON</span><span class="p">.</span><span class="nx">parse</span><span class="p">(</span><span class="nb">window</span><span class="p">.</span><span class="nx">localStorage</span><span class="p">.</span><span class="nx">getItem</span><span class="p">(</span><span class="s1">&#39;user&#39;</span><span class="p">));</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nx">expect</span><span class="p">(</span><span class="nx">localUser</span><span class="p">.</span><span class="nx">name</span><span class="p">).</span><span class="nx">toBe</span><span class="p">(</span><span class="nx">user</span><span class="p">.</span><span class="nx">name</span><span class="p">);</span>
+</span><span class='line'>    <span class="nx">expect</span><span class="p">(</span><span class="nx">localUser</span><span class="p">.</span><span class="nx">id</span><span class="p">).</span><span class="nx">toBe</span><span class="p">(</span><span class="nx">user</span><span class="p">.</span><span class="nx">id</span><span class="p">);</span>
+</span><span class='line'>  <span class="p">});</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nx">it</span><span class="p">(</span><span class="s1">&#39;should remove the user from local storage after logging out&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>    <span class="kd">var</span> <span class="nx">user</span> <span class="o">=</span> <span class="p">{</span> <span class="nx">name</span><span class="o">:</span> <span class="s1">&#39;Josh Bavari&#39;</span><span class="p">,</span> <span class="nx">id</span><span class="o">:</span> <span class="mi">1</span> <span class="p">};</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nx">Auth</span><span class="p">.</span><span class="nx">saveUser</span><span class="p">(</span><span class="nx">user</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">var</span> <span class="nx">localUser</span> <span class="o">=</span> <span class="nx">JSON</span><span class="p">.</span><span class="nx">parse</span><span class="p">(</span><span class="nb">window</span><span class="p">.</span><span class="nx">localStorage</span><span class="p">.</span><span class="nx">getItem</span><span class="p">(</span><span class="s1">&#39;user&#39;</span><span class="p">));</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nx">expect</span><span class="p">(</span><span class="nx">localUser</span><span class="p">.</span><span class="nx">name</span><span class="p">).</span><span class="nx">toBe</span><span class="p">(</span><span class="nx">user</span><span class="p">.</span><span class="nx">name</span><span class="p">);</span>
+</span><span class='line'>    <span class="nx">expect</span><span class="p">(</span><span class="nx">localUser</span><span class="p">.</span><span class="nx">id</span><span class="p">).</span><span class="nx">toBe</span><span class="p">(</span><span class="nx">user</span><span class="p">.</span><span class="nx">id</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nx">Auth</span><span class="p">.</span><span class="nx">logout</span><span class="p">();</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nx">expect</span><span class="p">(</span><span class="nx">Auth</span><span class="p">.</span><span class="nx">currentUser</span><span class="p">()).</span><span class="nx">toBe</span><span class="p">(</span><span class="kc">null</span><span class="p">);</span>
+</span><span class='line'>  <span class="p">});</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nx">describe</span><span class="p">(</span><span class="s1">&#39;Mocked HTTP Requests&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">var</span> <span class="nx">$httpBackend</span><span class="p">;</span>
+</span><span class='line'>    <span class="kd">var</span> <span class="nx">name</span> <span class="o">=</span> <span class="s1">&#39;Josh Bavari&#39;</span><span class="p">;</span>
+</span><span class='line'>    <span class="kd">var</span> <span class="nx">email</span> <span class="o">=</span> <span class="s1">&#39;jbavari@gmail.com&#39;</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nx">beforeEach</span><span class="p">(</span><span class="nx">inject</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">$injector</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>      <span class="c1">// Set up the mock http service responses</span>
+</span><span class='line'>      <span class="nx">$httpBackend</span> <span class="o">=</span> <span class="nx">$injector</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">&#39;$httpBackend&#39;</span><span class="p">);</span>
+</span><span class='line'>      <span class="nx">$httpBackend</span><span class="p">.</span><span class="nx">when</span><span class="p">(</span><span class="s1">&#39;POST&#39;</span><span class="p">,</span> <span class="s1">&#39;http://raisemore.dev/api/v1/user/checkuser&#39;</span><span class="p">)</span>
+</span><span class='line'>        <span class="p">.</span><span class="nx">respond</span><span class="p">(</span><span class="mi">200</span><span class="p">,</span> <span class="p">{</span><span class="nx">name</span><span class="o">:</span> <span class="nx">name</span><span class="p">,</span> <span class="nx">email</span><span class="o">:</span> <span class="nx">email</span><span class="p">,</span> <span class="nx">success</span><span class="o">:</span> <span class="kc">true</span><span class="p">});</span>
+</span><span class='line'>     <span class="p">}));</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nx">afterEach</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>     <span class="nx">$httpBackend</span><span class="p">.</span><span class="nx">verifyNoOutstandingExpectation</span><span class="p">();</span>
+</span><span class='line'>     <span class="nx">$httpBackend</span><span class="p">.</span><span class="nx">verifyNoOutstandingRequest</span><span class="p">();</span>
+</span><span class='line'>    <span class="p">});</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>    <span class="nx">it</span><span class="p">(</span><span class="s1">&#39;should have sent a POST request to the checkuser API&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>        <span class="kd">var</span> <span class="nx">result</span> <span class="o">=</span> <span class="nx">Auth</span><span class="p">.</span><span class="nx">checkUser</span><span class="p">(</span><span class="nx">name</span><span class="p">,</span> <span class="nx">email</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;4408064001&#39;</span><span class="p">,</span> <span class="kc">null</span><span class="p">);</span>
+</span><span class='line'>        <span class="nx">$httpBackend</span><span class="p">.</span><span class="nx">expectPOST</span><span class="p">(</span><span class="s1">&#39;http://raisemore.dev/api/v1/user/checkuser&#39;</span><span class="p">);</span>
+</span><span class='line'>        <span class="nx">$httpBackend</span><span class="p">.</span><span class="nx">flush</span><span class="p">();</span>
+</span><span class='line'>    <span class="p">});</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="p">});</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">});</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Theres a few key points to look at in the Jasmine tests:</p>
+
+<ul>
+<li><code>beforeEach(inject(function (_Auth_) {})</code> sets our local <code>Auth</code> variable</li>
+<li>using inject($injector) to get us our mocked out <code>$httpBackend</code> to fake our HTTP requests.</li>
+</ul>
+
+
+<p>That just about covers it. In recap:</p>
+
+<ul>
+<li>Set up the testing framework Karma</li>
+<li>Got the test runners for Gulp</li>
+<li>Set up some tests with Jasmine</li>
+<li>Mocked out $http requests to return us some fake data</li>
+<li>Ensured our services called the http requests correctly</li>
+<li>Avoided any future errors from testing &ndash; as well as avoiding Parse/Reference errors along the way</li>
+</ul>
+
+
+<p>AngularJS does a lot of the heavy lifting for you. However, it still gives you just enough rope to hang yourself with.</p>
+
+<p>With just some simple tests you can also avoid any silly run time errors you may encounter.</p>
+
+<p>Hope this gives ideas on how to openly test your services as well as models.</p>
+
+<h3>References</h3>
+
+<ul>
+<li><a href="http://andyshora.com/unit-testing-best-practices-angularjs.html">Andy Shora&rsquo;s Blog post &ndash; Unit Testing Best Practices in AngularJS</a></li>
+<li><a href="http://www.benlesh.com/2013/05/angularjs-unit-testing-controllers.html">AngularJS Unit Testing Controllers</a></li>
+<li><a href="http://www.benlesh.com/2013/06/angular-js-unit-testing-services.html">AngularJS Unit Testing Services</a></li>
+</ul>
+
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/06/04/handling-angularjs-popups-for-oauth/">Handling AngularJS Popups for OAuth on Rails</a></h1>
+    
+    
+      <p class="meta">
+        <span class="reading-time">less than a 1 minute read</span>
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-06-04T22:56:00-06:00" pubdate data-updated="true">Jun 4<span>th</span>, 2014</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>I&rsquo;ve been using AngularJS a lot lately in some of my projects at work. It&rsquo;s been a great tool to use to help me solve challenging problems the nicest and cleanest way possible.</p>
+
+<p>I ran into needing some users to log into a variety of different social platforms. Since I was using Rails, I chose to use <a href="https://github.com/intridea/omniauth">omniauth</a> for <a href="https://github.com/mkdynamic/omniauth-facebook">facebook</a> and <a href="https://github.com/arunagw/omniauth-twitter">twitter</a>. It became even more challenging because they needed to login to these platforms with THEIR social application ID&rsquo;s, not ours.</p>
+
+<h2>The Problem</h2>
+
+<ul>
+<li>Need to have admin window where user clicks login button for facebook or twitter and logs in with their Facebook application (think Coke, Pepsi, etc)</li>
+<li>User then sees pop up window where OAuth login process happens</li>
+<li>After OAuth login complete, pop up window goes away and they resume their actions</li>
+</ul>
+
+
+<h2>The solution</h2>
+
+<h3>Solving dynamic twitter/facebook log ins for Social Platforms</h3>
+
+<p>I started by having this config in Rails for my omniauth initializer:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class='rb'><span class='line'><span class="no">SETUP_FACEBOOK</span> <span class="o">=</span> <span class="nb">lambda</span> <span class="k">do</span> <span class="o">|</span><span class="n">env</span><span class="o">|</span>
+</span><span class='line'>    <span class="no">AccountAuth</span><span class="o">.</span><span class="n">setup_facebook_keys</span><span class="p">(</span><span class="n">env</span><span class="p">)</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="no">SETUP_TWITTER</span> <span class="o">=</span> <span class="nb">lambda</span> <span class="k">do</span> <span class="o">|</span><span class="n">env</span><span class="o">|</span>
+</span><span class='line'>    <span class="no">AccountAuth</span><span class="o">.</span><span class="n">setup_twitter_keys</span><span class="p">(</span><span class="n">env</span><span class="p">)</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="no">Rails</span><span class="o">.</span><span class="n">application</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">middleware</span><span class="o">.</span><span class="n">use</span> <span class="ss">OmniAuth</span><span class="p">:</span><span class="ss">:Builder</span> <span class="k">do</span>
+</span><span class='line'>    <span class="n">provider</span> <span class="ss">:twitter</span><span class="p">,</span> <span class="ss">:setup</span> <span class="o">=&gt;</span> <span class="no">SETUP_TWITTER</span>
+</span><span class='line'>    <span class="n">provider</span> <span class="ss">:facebook</span><span class="p">,</span> <span class="ss">:setup</span> <span class="o">=&gt;</span> <span class="no">SETUP_FACEBOOK</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Simple and clean. In those AccountAuth methods, I take the <code>env</code> variable (essential the request) and pick off my variables there from an OAuth URL (<a href="http://my.dashboard.dev/auth/facebook?appid=123456789">http://my.dashboard.dev/auth/facebook?appid=123456789</a>).</p>
+
+<h3>Solving the User pop up</h3>
+
+<p>I had a dashboard with a ton of user actions, as well as two well placed social log in buttons. View template like so:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">&quot;container&quot;</span> <span class="na">ng-controller=</span><span class="s">&quot;SettingsCtrl&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">&quot;row&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">&quot;col-md-12&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>                <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">&quot;header-copy&quot;</span><span class="nt">&gt;</span>Account Settings<span class="nt">&lt;/div&gt;</span>
+</span><span class='line'>                <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">&quot;section-title&quot;</span><span class="nt">&gt;&lt;/div&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;/div&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;/div&gt;</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">&quot;row&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">&quot;col-md-6&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>                <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">&quot;header-copy&quot;</span><span class="nt">&gt;</span>Facebook Settings<span class="nt">&lt;/div&gt;</span>
+</span><span class='line'>                <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">&quot;divider&quot;</span><span class="nt">&gt;&lt;/div&gt;</span>
+</span><span class='line'>
+</span><span class='line'>                <span class="nt">&lt;div</span> <span class="na">ng-show=</span><span class="s">&quot;facebookId&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>                    Currently ({{ facebookName}}) <span class="ni">&amp;nbsp;</span>
+</span><span class='line'>                    <span class="nt">&lt;span</span> <span class="na">class=</span><span class="s">&quot;btn dash-subs&quot;</span> <span class="na">ng-click=</span><span class="s">&quot;logout(&#39;facebook&#39;)&quot;</span><span class="nt">&gt;</span>Logout<span class="nt">&lt;/span&gt;</span>
+</span><span class='line'>                <span class="nt">&lt;/div&gt;</span>
+</span><span class='line'>                <span class="nt">&lt;div</span> <span class="na">ng-hide=</span><span class="s">&quot;facebookId&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>                    <span class="nt">&lt;span</span> <span class="na">class=</span><span class="s">&quot;btn dash-subs login-btn&quot;</span> <span class="na">ng-click=</span><span class="s">&quot;authNetwork(&#39;facebook&#39;)&quot;</span><span class="nt">&gt;</span>Login With Facebook<span class="nt">&lt;/span&gt;</span>
+</span><span class='line'>                <span class="nt">&lt;/div&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;/div&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">&quot;col-md-6&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>                <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">&quot;header-copy&quot;</span><span class="nt">&gt;</span>Twitter Settings<span class="nt">&lt;/div&gt;</span>
+</span><span class='line'>                <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">&quot;divider&quot;</span><span class="nt">&gt;&lt;/div&gt;</span>
+</span><span class='line'>                <span class="nt">&lt;div</span> <span class="na">ng-show=</span><span class="s">&quot;twitterName&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>                    Currently (@{{twitterName}}) <span class="ni">&amp;nbsp;</span>
+</span><span class='line'>                    <span class="nt">&lt;span</span> <span class="na">class=</span><span class="s">&quot;btn dash-subs&quot;</span> <span class="na">ng-click=</span><span class="s">&quot;logout(&#39;twitter&#39;)&quot;</span><span class="nt">&gt;</span>Logout<span class="nt">&lt;/span&gt;</span>
+</span><span class='line'>                <span class="nt">&lt;/div&gt;</span>
+</span><span class='line'>                <span class="nt">&lt;div</span> <span class="na">ng-hide=</span><span class="s">&quot;twitterName&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>                    <span class="nt">&lt;span</span> <span class="na">class=</span><span class="s">&quot;btn dash-subs login-btn&quot;</span> <span class="na">ng-click=</span><span class="s">&quot;authNetwork(&#39;twitter&#39;)&quot;</span><span class="nt">&gt;</span>Login With Twitter<span class="nt">&lt;/span&gt;</span>
+</span><span class='line'>                <span class="nt">&lt;/div&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;/div&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;/div&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;/div&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Now on my SettingsCtrl, I had to respond to the authNetwork clicks in the template above to show my pop up window for the network specified, handle its settings, then update this controller. We get that link by setting a global variable on the <code>window</code> that opened by doing <code>window.$windowScope = $scope</code>.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="nx">angular</span><span class="p">.</span><span class="nx">module</span><span class="p">(</span><span class="s1">&#39;myApp&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;ui.bootstrap&#39;</span><span class="p">]);</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">function</span> <span class="nx">SettingsCtrl</span><span class="p">(</span><span class="nx">$scope</span><span class="p">,</span> <span class="nx">$http</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>  <span class="c1">//..snip!..</span>
+</span><span class='line'>   <span class="nx">$scope</span><span class="p">.</span><span class="nx">handlePopupAuthentication</span> <span class="o">=</span> <span class="kd">function</span> <span class="nx">handlePopupAuthentication</span><span class="p">(</span><span class="nx">network</span><span class="p">,</span> <span class="nx">account</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="c1">//Note: using $scope.$apply wrapping</span>
+</span><span class='line'>      <span class="c1">//the window popup will call this </span>
+</span><span class='line'>      <span class="c1">//and is unwatched func </span>
+</span><span class='line'>      <span class="c1">//so we need to wrap</span>
+</span><span class='line'>      <span class="nx">$scope</span><span class="p">.</span><span class="nx">$apply</span><span class="p">(</span><span class="kd">function</span><span class="p">(){</span>
+</span><span class='line'>         <span class="nx">$scope</span><span class="p">.</span><span class="nx">applyNetwork</span><span class="p">(</span><span class="nx">network</span><span class="p">,</span> <span class="nx">account</span><span class="p">);</span>
+</span><span class='line'>      <span class="p">});</span>
+</span><span class='line'>   <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>   <span class="nx">$scope</span><span class="p">.</span><span class="nx">authNetwork</span> <span class="o">=</span> <span class="kd">function</span> <span class="nx">authNetwork</span><span class="p">(</span><span class="nx">network</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>      <span class="kd">var</span> <span class="nx">openUrl</span> <span class="o">=</span> <span class="s1">&#39;/auth/&#39;</span> <span class="o">+</span> <span class="nx">network</span> <span class="o">+</span> <span class="s1">&#39;?account_id=&#39;</span> <span class="o">+</span> <span class="nx">$scope</span><span class="p">.</span><span class="nx">accountTokens</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;&amp;eid=&quot;</span> <span class="o">+</span> <span class="nx">eventId</span><span class="p">;</span>
+</span><span class='line'>      <span class="nb">window</span><span class="p">.</span><span class="nx">$windowScope</span> <span class="o">=</span> <span class="nx">$scope</span><span class="p">;</span>
+</span><span class='line'>      <span class="nb">window</span><span class="p">.</span><span class="nx">open</span><span class="p">(</span><span class="nx">openUrl</span><span class="p">,</span> <span class="s2">&quot;Authenticate Account&quot;</span><span class="p">,</span> <span class="s2">&quot;width=500, height=500&quot;</span><span class="p">);</span>
+</span><span class='line'>   <span class="p">};</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Solving popup talking to AngularJS controller</h3>
+
+<p>Once the OAuth pop up that is being opened via <code>window.open</code> is completed, it will come back to our server (<a href="http://my.dashboard.dev/session/create">http://my.dashboard.dev/session/create</a>) in which I will render a view through Rails that will display a simple &lsquo;this window is closing&rsquo; message. It will also pass in some information from the Rails controller and pass back its completed information back to our calling AngularJS controller. (Thats a lot of controllers, folks)</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="o">&lt;</span><span class="nx">p</span><span class="o">&gt;</span><span class="nx">This</span> <span class="nx">view</span> <span class="nx">will</span> <span class="nx">now</span> <span class="nx">self</span><span class="o">-</span><span class="nx">destruct</span><span class="o">&lt;</span><span class="err">/p&gt;</span>
+</span><span class='line'><span class="o">&lt;</span><span class="nx">script</span><span class="o">&gt;</span>
+</span><span class='line'>   <span class="k">try</span> <span class="p">{</span>
+</span><span class='line'>      <span class="nb">window</span><span class="p">.</span><span class="nx">opener</span><span class="p">.</span><span class="nx">$windowScope</span><span class="p">.</span><span class="nx">handlePopupAuthentication</span><span class="p">(</span><span class="s1">&#39;&lt;%= @provider %&gt;&#39;</span><span class="p">,</span> <span class="o">&lt;%=</span> <span class="err">@</span><span class="nx">account</span><span class="p">.</span><span class="nx">to_json</span><span class="p">.</span><span class="nx">html_safe</span> <span class="o">%&gt;</span><span class="p">);</span>
+</span><span class='line'>   <span class="p">}</span> <span class="k">catch</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="p">{}</span>
+</span><span class='line'>   <span class="nb">window</span><span class="p">.</span><span class="nx">close</span><span class="p">();</span>
+</span><span class='line'><span class="o">&lt;</span><span class="err">/script&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Conclusion</h3>
+
+<p>That&rsquo;s pretty much it. That is how I handled my popups reporting back to its calling AngularJS controller through OAuth on Rails. Hope this helps others out there trying to solve problems like these.</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/05/20/okcjs-javascript-debugging-techniques/">OKCjs - Javascript Debugging Techniques</a></h1>
+    
+    
+      <p class="meta">
+        <span class="reading-time">less than a 1 minute read</span>
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-05-20T11:39:00-06:00" pubdate data-updated="true">May 20<span>th</span>, 2014</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>I gave a lightning talk today at OKC.js about Javascript Debugging Techniques.</p>
+
+<p>The slides can be found <a href="http://jbavari.github.io/JavascriptDebuggingTechniques/#/">here</a>.</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/05/17/handling-relationships-in-rethinkdb/">Handling Relationships in RethinkDB</a></h1>
+    
+    
+      <p class="meta">
+        <span class="reading-time">less than a 1 minute read</span>
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-05-17T23:06:00-06:00" pubdate data-updated="true">May 17<span>th</span>, 2014</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Lately I&rsquo;ve been playing a lot with <a href="http://rethinkdb.com">RethinkDB</a> and I&rsquo;m in love with it. Such a sweet document database, amazingly beautiful web interface, and easy to use API&rsquo;s in three different languages. I started up a side project that involves some relational data, and ran into a few bumps along the road.</p>
+
+<p>I&rsquo;m writing this post to share some of the knowledge I&rsquo;ve acquired along the way, and hopefully some will find it helpful.</p>
+
+<h2>The problem</h2>
+
+<p>I&rsquo;m using a doc db because I&rsquo;m still not sure of my database schema, and since its mostly a prototype, I need something flexible. The project is for physical therapy patients involving rehabilitation programs. Each program is comprised of several exercises, and a program is assigned to one user. A user can have multiple programs.</p>
+
+<p>Eat your ER heart out:</p>
+
+<p><img class="[pic]" src="/images/PtMotions.png" title="[250] [250] [PT Motions ER Diagram [ER Diagram]]" ></p>
+
+<h3>Technologies Used</h3>
+
+<p>I wanted to keep it light, so I chose using <a href="http://www.sinatrarb.com/">Sinatra</a> for my API and <a href="http://ionicframework.com">Ionic Framework</a> for my mobile application. BTW &ndash; when it comes to choosing a framework for Cordova, I suggest trying Ionic. They are crushing it.</p>
+
+<h2>Setting up the tables</h2>
+
+<p>First I made a dataload.rb file, which would be run on the init of my server which would set up my database, set up the tables, and dump some initial data in the tables. It looked something like this:</p>
+
+<figure class='code'><figcaption><span>InitialData.rb</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+<span class='line-number'>67</span>
+<span class='line-number'>68</span>
+<span class='line-number'>69</span>
+<span class='line-number'>70</span>
+<span class='line-number'>71</span>
+<span class='line-number'>72</span>
+<span class='line-number'>73</span>
+<span class='line-number'>74</span>
+<span class='line-number'>75</span>
+<span class='line-number'>76</span>
+<span class='line-number'>77</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="nb">require</span> <span class="s1">&#39;rethinkdb&#39;</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1"># We will use these settings later in the code to connect </span>
+</span><span class='line'><span class="c1"># to the RethinkDB server.</span>
+</span><span class='line'><span class="no">RDB_CONFIG</span> <span class="o">=</span> <span class="p">{</span>
+</span><span class='line'>  <span class="ss">:host</span> <span class="o">=&gt;</span> <span class="no">ENV</span><span class="o">[</span><span class="s1">&#39;RDB_HOST&#39;</span><span class="o">]</span> <span class="o">||</span> <span class="s1">&#39;localhost&#39;</span><span class="p">,</span>
+</span><span class='line'>  <span class="ss">:port</span> <span class="o">=&gt;</span> <span class="no">ENV</span><span class="o">[</span><span class="s1">&#39;RDB_PORT&#39;</span><span class="o">]</span> <span class="o">||</span> <span class="mi">28015</span><span class="p">,</span>
+</span><span class='line'>  <span class="ss">:db</span>   <span class="o">=&gt;</span> <span class="no">ENV</span><span class="o">[</span><span class="s1">&#39;RDB_DB&#39;</span><span class="o">]</span>   <span class="o">||</span> <span class="s1">&#39;PtMotions&#39;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1"># A friendlly shortcut for accessing ReQL functions</span>
+</span><span class='line'><span class="n">r</span> <span class="o">=</span> <span class="ss">RethinkDB</span><span class="p">:</span><span class="ss">:RQL</span><span class="o">.</span><span class="n">new</span>
+</span><span class='line'>
+</span><span class='line'><span class="vi">@rdb_connection</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="ss">:host</span> <span class="o">=&gt;</span> <span class="no">RDB_CONFIG</span><span class="o">[</span><span class="ss">:host</span><span class="o">]</span><span class="p">,</span> <span class="ss">:port</span> <span class="o">=&gt;</span> <span class="no">RDB_CONFIG</span><span class="o">[</span><span class="ss">:port</span><span class="o">]</span><span class="p">,</span> <span class="ss">:db</span> <span class="o">=&gt;</span> <span class="no">RDB_CONFIG</span><span class="o">[</span><span class="ss">:db</span><span class="o">]</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="vi">@users</span> <span class="o">=</span> <span class="o">[</span>
+</span><span class='line'>  <span class="p">{</span>
+</span><span class='line'>      <span class="ss">:clinicId</span> <span class="o">=&gt;</span> <span class="s1">&#39;At Home PT&#39;</span><span class="p">,</span>
+</span><span class='line'>      <span class="ss">:patientId</span> <span class="o">=&gt;</span> <span class="s1">&#39;jbavari&#39;</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="o">]</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">user_id</span> <span class="o">=</span> <span class="kp">nil</span>
+</span><span class='line'>
+</span><span class='line'><span class="vi">@users</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">user</span><span class="o">|</span>
+</span><span class='line'>  <span class="k">begin</span>
+</span><span class='line'>      <span class="n">result</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">table</span><span class="p">(</span><span class="s1">&#39;Users&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">user</span><span class="p">)</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="vi">@rdb_connection</span><span class="p">)</span>
+</span><span class='line'>      <span class="c1"># Grab user id from result to use later for assigning the program</span>
+</span><span class='line'>      <span class="n">user_id</span> <span class="o">=</span> <span class="n">result</span><span class="o">[</span><span class="s1">&#39;generated_keys&#39;</span><span class="o">][</span><span class="mi">0</span><span class="o">]</span>
+</span><span class='line'>  <span class="k">rescue</span>
+</span><span class='line'>      <span class="nb">p</span> <span class="s1">&#39;Error: &#39;</span> <span class="o">+</span> <span class="n">result</span><span class="o">.</span><span class="n">to_s</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="vi">@exercises</span> <span class="o">=</span> <span class="o">[</span><span class="p">{</span>
+</span><span class='line'>          <span class="ss">:name</span> <span class="o">=&gt;</span> <span class="s1">&#39;Resisted Right Shoulder Internal/External Rotation&#39;</span><span class="p">,</span>
+</span><span class='line'>          <span class="ss">:startingPosition</span> <span class="o">=&gt;</span> <span class="s1">&#39;Lying on your back with your legs bent with your right hand holding a kettle bell.&#39;</span><span class="p">,</span>
+</span><span class='line'>          <span class="ss">:description</span> <span class="o">=&gt;</span> <span class="s1">&#39;Lift the kettle bell straight up in the air and hold. Pull your shoulder into the ground and away from your ear. Slowly rotate your arm all the way in then all the way out without letting your arm sway&#39;</span><span class="p">,</span>
+</span><span class='line'>          <span class="ss">:whatYouFeel</span> <span class="o">=&gt;</span> <span class="s1">&#39;Strengthing in your right shoulder&#39;</span><span class="p">,</span>
+</span><span class='line'>          <span class="ss">:videoUrl</span> <span class="o">=&gt;</span> <span class="s1">&#39;http://ptmotions.com/ptm_mp4_768_432/s11t02_063.mp4&#39;</span>
+</span><span class='line'>        <span class="p">},</span>
+</span><span class='line'>        <span class="p">{</span>
+</span><span class='line'>          <span class="ss">:name</span> <span class="o">=&gt;</span> <span class="s1">&#39;Side Resisted Right Shoulder Internal/External Rotation&#39;</span><span class="p">,</span>
+</span><span class='line'>          <span class="ss">:startingPosition</span> <span class="o">=&gt;</span> <span class="s1">&#39;Lying on your left side with your right hand holding a kettle bell&#39;</span><span class="p">,</span>
+</span><span class='line'>          <span class="ss">:description</span> <span class="o">=&gt;</span> <span class="s1">&#39;Lift the kettle bell straight up in the air and hold. Pull your shoulder down away from your ear. Slowly rotate your arm all the way in, then all the way out without letting your arm sway&#39;</span><span class="p">,</span>
+</span><span class='line'>          <span class="ss">:whatYouFeel</span> <span class="o">=&gt;</span> <span class="s1">&#39;Strengthing in your right shoulder&#39;</span><span class="p">,</span>
+</span><span class='line'>          <span class="ss">:videoUrl</span> <span class="o">=&gt;</span> <span class="s1">&#39;http://ptmotions.com/ptm_mp4_768_432/s11t02_065.mp4&#39;</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'><span class="o">]</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">exercise_list</span> <span class="o">=</span> <span class="nb">Array</span><span class="o">.</span><span class="n">new</span>
+</span><span class='line'>
+</span><span class='line'><span class="vi">@exercises</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">exercise</span><span class="o">|</span>
+</span><span class='line'>  <span class="k">begin</span>
+</span><span class='line'>      <span class="n">result</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">table</span><span class="p">(</span><span class="s1">&#39;Exercises&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">exercise</span><span class="p">)</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="vi">@rdb_connection</span><span class="p">)</span>
+</span><span class='line'>      <span class="n">exercise_list</span><span class="o">.</span><span class="n">push</span> <span class="n">result</span><span class="o">[</span><span class="s1">&#39;generated_keys&#39;</span><span class="o">][</span><span class="mi">0</span><span class="o">]</span>
+</span><span class='line'>  <span class="k">rescue</span>
+</span><span class='line'>      <span class="nb">p</span> <span class="s1">&#39;Error: &#39;</span> <span class="o">+</span> <span class="n">result</span><span class="o">.</span><span class="n">to_s</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="vi">@joshs_program</span> <span class="o">=</span> <span class="p">{</span>
+</span><span class='line'>  <span class="ss">:name</span> <span class="o">=&gt;</span> <span class="s1">&#39;Joshs Shoulder Rehab&#39;</span><span class="p">,</span>
+</span><span class='line'>  <span class="ss">:notes</span> <span class="o">=&gt;</span> <span class="s1">&#39;Focus on keeping core tight&#39;</span><span class="p">,</span>
+</span><span class='line'>  <span class="ss">:instructions</span> <span class="o">=&gt;</span> <span class="p">{</span>
+</span><span class='line'>      <span class="ss">:howOften</span> <span class="o">=&gt;</span> <span class="s1">&#39;3 sets per day&#39;</span><span class="p">,</span>
+</span><span class='line'>      <span class="ss">:howMany</span> <span class="o">=&gt;</span> <span class="s1">&#39;15 per side&#39;</span>
+</span><span class='line'>  <span class="p">},</span>
+</span><span class='line'>  <span class="ss">:exercises</span> <span class="o">=&gt;</span> <span class="n">exercise_list</span><span class="p">,</span>
+</span><span class='line'>  <span class="ss">:userId</span> <span class="o">=&gt;</span> <span class="n">user_id</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">begin</span>
+</span><span class='line'>  <span class="n">result</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">table</span><span class="p">(</span><span class="s1">&#39;Programs&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="vi">@joshs_program</span><span class="p">)</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="vi">@rdb_connection</span><span class="p">)</span>
+</span><span class='line'><span class="k">rescue</span>
+</span><span class='line'>  <span class="nb">p</span> <span class="s1">&#39;Error: &#39;</span> <span class="o">+</span> <span class="n">result</span><span class="o">.</span><span class="n">to_s</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Above you&rsquo;ll see I have a list of exercises, as they are inserted I add their ID&rsquo;s to an array. I then take that array and use that to store in <code>@joshs_program</code> so that I can set up a relationship with exercises.</p>
+
+<h2>Retrieving data</h2>
+
+<p>Now that I have programs with an array of exercises, I need to get all the exercises by the program. First &ndash; I need a query that will get me all of my exercises by program ID &ndash; so thats similar to a type of inner join, or a SQL equivalent of <code>SELECT IN</code>. Luckily, RethinkDB has awesome documentation about <a href="http://rethinkdb.com/docs/sql-to-reql/">SQL-to-RQL</a> and <a href="http://rethinkdb.com/docs/data-modeling/">data modeling</a>.</p>
+
+<p>From the documentation, they recommend doing the following:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="n">r</span><span class="o">.</span><span class="n">table</span><span class="p">(</span><span class="s">&quot;users&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">doc</span><span class="p">:</span>
+</span><span class='line'>    <span class="n">r</span><span class="o">.</span><span class="n">expr</span><span class="p">([</span><span class="s">&quot;Peter&quot;</span><span class="p">,</span> <span class="s">&quot;John&quot;</span><span class="p">])</span>
+</span><span class='line'>        <span class="o">.</span><span class="n">contains</span><span class="p">(</span><span class="n">doc</span><span class="p">[</span><span class="s">&quot;name&quot;</span><span class="p">])</span>
+</span><span class='line'><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>However, the example is in Python, so you&rsquo;ll need to do a little more work to get it in Ruby.</p>
+
+<p>This led me to take a different path in RQL. I found out how to do a <code>SELECT IN</code> type query, and in Ruby it looks like this with <code>inner_join</code>:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="vi">@programId</span> <span class="o">=</span> <span class="n">params</span><span class="o">[</span><span class="ss">:programId</span><span class="o">]</span> <span class="o">||</span> <span class="s1">&#39;37feebf9-54ce-45f5-ba76-d13fe634b035&#39;</span>
+</span><span class='line'><span class="n">exercises</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">table</span><span class="p">(</span><span class="s2">&quot;Programs&quot;</span><span class="p">)</span>
+</span><span class='line'>      <span class="o">.</span><span class="n">filter</span><span class="p">({</span><span class="s1">&#39;id&#39;</span> <span class="o">=&gt;</span> <span class="vi">@programId</span><span class="p">})</span>
+</span><span class='line'>      <span class="o">.</span><span class="n">inner_join</span><span class="p">(</span> <span class="n">r</span><span class="o">.</span><span class="n">table</span><span class="p">(</span><span class="s2">&quot;Exercises&quot;</span><span class="p">))</span> <span class="p">{</span> <span class="o">|</span><span class="nb">p</span><span class="p">,</span> <span class="n">e</span><span class="o">|</span>
+</span><span class='line'>          <span class="nb">p</span><span class="o">[</span><span class="s1">&#39;exercises&#39;</span><span class="o">].</span><span class="n">contains</span><span class="p">(</span> <span class="n">e</span><span class="o">[</span><span class="s1">&#39;id&#39;</span><span class="o">]</span> <span class="p">)</span>
+</span><span class='line'>      <span class="p">}</span>
+</span><span class='line'>      <span class="o">.</span><span class="n">zip</span><span class="p">()</span>
+</span><span class='line'>      <span class="o">.</span><span class="n">without</span><span class="p">(</span><span class="s1">&#39;exercises&#39;</span><span class="p">,</span> <span class="s1">&#39;userId&#39;</span><span class="p">)</span>
+</span><span class='line'>      <span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">desc</span><span class="p">(</span><span class="s1">&#39;created_at&#39;</span><span class="p">))</span>
+</span><span class='line'>      <span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="vi">@rdb_connection</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>You&rsquo;ll see I&rsquo;m using the RQL <code>inner_join</code>, and as part of my lamba I use the table attribute <code>p['exercises']</code> which contains my array of exercise ID&rsquo;s, then using the <code>contains</code> method on my exercise table <code>e['id']</code>. It works wonderfully. I&rsquo;m not sure if it is the best way to handle this, and I&rsquo;m still a RethinkDB newbie so this was a good workout for me.</p>
+
+<h3>The API code</h3>
+
+<p>The rest of my API code relied heavily on the RethinkDB <a href="http://www.rethinkdb.com/docs/examples/sinatra-pastie/">sample app &ndash; Pastie</a>. The really interesting joins are found around line 77.</p>
+
+<p>I&rsquo;m including my own version here to help give some ideas how I&rsquo;m setting up my API:</p>
+
+<figure class='code'><figcaption><span>server.rb</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+<span class='line-number'>67</span>
+<span class='line-number'>68</span>
+<span class='line-number'>69</span>
+<span class='line-number'>70</span>
+<span class='line-number'>71</span>
+<span class='line-number'>72</span>
+<span class='line-number'>73</span>
+<span class='line-number'>74</span>
+<span class='line-number'>75</span>
+<span class='line-number'>76</span>
+<span class='line-number'>77</span>
+<span class='line-number'>78</span>
+<span class='line-number'>79</span>
+<span class='line-number'>80</span>
+<span class='line-number'>81</span>
+<span class='line-number'>82</span>
+<span class='line-number'>83</span>
+<span class='line-number'>84</span>
+<span class='line-number'>85</span>
+<span class='line-number'>86</span>
+<span class='line-number'>87</span>
+<span class='line-number'>88</span>
+<span class='line-number'>89</span>
+<span class='line-number'>90</span>
+<span class='line-number'>91</span>
+<span class='line-number'>92</span>
+<span class='line-number'>93</span>
+<span class='line-number'>94</span>
+<span class='line-number'>95</span>
+<span class='line-number'>96</span>
+<span class='line-number'>97</span>
+<span class='line-number'>98</span>
+<span class='line-number'>99</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="nb">require</span> <span class="s1">&#39;sinatra&#39;</span>
+</span><span class='line'><span class="nb">require</span> <span class="s1">&#39;rethinkdb&#39;</span>
+</span><span class='line'><span class="nb">require</span> <span class="s1">&#39;json&#39;</span>
+</span><span class='line'>
+</span><span class='line'><span class="no">RDB_CONFIG</span> <span class="o">=</span> <span class="p">{</span>
+</span><span class='line'>  <span class="ss">:host</span> <span class="o">=&gt;</span> <span class="no">ENV</span><span class="o">[</span><span class="s1">&#39;RDB_HOST&#39;</span><span class="o">]</span> <span class="o">||</span> <span class="s1">&#39;localhost&#39;</span><span class="p">,</span>
+</span><span class='line'>  <span class="ss">:port</span> <span class="o">=&gt;</span> <span class="no">ENV</span><span class="o">[</span><span class="s1">&#39;RDB_PORT&#39;</span><span class="o">]</span> <span class="o">||</span> <span class="mi">28015</span><span class="p">,</span>
+</span><span class='line'>  <span class="ss">:db</span>   <span class="o">=&gt;</span> <span class="no">ENV</span><span class="o">[</span><span class="s1">&#39;RDB_DB&#39;</span><span class="o">]</span>   <span class="o">||</span> <span class="s1">&#39;PtMotions&#39;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">r</span> <span class="o">=</span> <span class="ss">RethinkDB</span><span class="p">:</span><span class="ss">:RQL</span><span class="o">.</span><span class="n">new</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1"># The pattern we&#39;re using for managing database connections is to have **a connection per request**. </span>
+</span><span class='line'><span class="c1"># We&#39;re using Sinatra&#39;s `before` and `after` for </span>
+</span><span class='line'><span class="c1"># [opening a database connection](http://www.rethinkdb.com/api/ruby/connect/) and </span>
+</span><span class='line'><span class="c1"># [closing it](http://www.rethinkdb.com/api/ruby/close/) respectively.</span>
+</span><span class='line'><span class="n">before</span> <span class="k">do</span>
+</span><span class='line'>  <span class="n">headers</span> <span class="s1">&#39;Access-Control-Allow-Origin&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;*&#39;</span><span class="p">,</span>
+</span><span class='line'>            <span class="s1">&#39;Access-Control-Allow-Methods&#39;</span> <span class="o">=&gt;</span> <span class="o">[</span><span class="s1">&#39;OPTIONS&#39;</span><span class="p">,</span> <span class="s1">&#39;GET&#39;</span><span class="p">,</span> <span class="s1">&#39;POST&#39;</span><span class="o">]</span>
+</span><span class='line'>  <span class="k">begin</span>
+</span><span class='line'>    <span class="c1"># When openning a connection we can also specify the database:</span>
+</span><span class='line'>    <span class="vi">@rdb_connection</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="ss">:host</span> <span class="o">=&gt;</span> <span class="no">RDB_CONFIG</span><span class="o">[</span><span class="ss">:host</span><span class="o">]</span><span class="p">,</span> <span class="ss">:port</span> <span class="o">=&gt;</span> <span class="no">RDB_CONFIG</span><span class="o">[</span><span class="ss">:port</span><span class="o">]</span><span class="p">,</span> <span class="ss">:db</span> <span class="o">=&gt;</span> <span class="n">settings</span><span class="o">.</span><span class="n">db</span><span class="p">)</span>
+</span><span class='line'>  <span class="k">rescue</span> <span class="no">Exception</span> <span class="o">=&gt;</span> <span class="n">err</span>
+</span><span class='line'>    <span class="n">logger</span><span class="o">.</span><span class="n">error</span> <span class="s2">&quot;Cannot connect to RethinkDB database </span><span class="si">#{</span><span class="no">RDB_CONFIG</span><span class="o">[</span><span class="ss">:host</span><span class="o">]</span><span class="si">}</span><span class="s2">:</span><span class="si">#{</span><span class="no">RDB_CONFIG</span><span class="o">[</span><span class="ss">:port</span><span class="o">]</span><span class="si">}</span><span class="s2"> (</span><span class="si">#{</span><span class="n">err</span><span class="o">.</span><span class="n">message</span><span class="si">}</span><span class="s2">)&quot;</span>
+</span><span class='line'>    <span class="n">halt</span> <span class="mi">501</span><span class="p">,</span> <span class="s1">&#39;This page could look nicer, unfortunately the error is the same: database not available.&#39;</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1"># After each request we [close the database connection](http://www.rethinkdb.com/api/ruby/close/).</span>
+</span><span class='line'><span class="n">after</span> <span class="k">do</span>
+</span><span class='line'>  <span class="k">begin</span>
+</span><span class='line'>    <span class="vi">@rdb_connection</span><span class="o">.</span><span class="n">close</span> <span class="k">if</span> <span class="vi">@rdb_connection</span>
+</span><span class='line'>  <span class="k">rescue</span>
+</span><span class='line'>    <span class="n">logger</span><span class="o">.</span><span class="n">warn</span> <span class="s2">&quot;Couldn&#39;t close connection&quot;</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">get</span> <span class="s1">&#39;/&#39;</span> <span class="k">do</span>
+</span><span class='line'>  <span class="vi">@snippet</span> <span class="o">=</span> <span class="p">{}</span>
+</span><span class='line'>  <span class="n">erb</span> <span class="ss">:new</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">post</span> <span class="s1">&#39;/add&#39;</span> <span class="k">do</span>
+</span><span class='line'>  <span class="vi">@user</span> <span class="o">=</span> <span class="p">{</span> <span class="ss">:clinicId</span> <span class="o">=&gt;</span> <span class="n">params</span><span class="o">[</span><span class="ss">:clinicId</span><span class="o">]</span><span class="p">,</span> <span class="ss">:patientId</span> <span class="o">=&gt;</span> <span class="n">params</span><span class="o">[</span><span class="ss">:patientId</span><span class="o">]</span> <span class="p">}</span>
+</span><span class='line'>  <span class="c1"># result = r.table(&#39;Users&#39;).insert(@user).run(@rdb_connnection)</span>
+</span><span class='line'>  <span class="n">result</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">table</span><span class="p">(</span><span class="s1">&#39;Users&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="vi">@user</span><span class="p">)</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="vi">@rdb_connection</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">if</span> <span class="n">result</span><span class="o">[</span><span class="s1">&#39;inserted&#39;</span><span class="o">]</span> <span class="o">==</span> <span class="mi">1</span>
+</span><span class='line'>      <span class="n">redirect</span> <span class="s2">&quot;/</span><span class="si">#{</span><span class="n">result</span><span class="o">[</span><span class="s1">&#39;generated_keys&#39;</span><span class="o">][</span><span class="mi">0</span><span class="o">]</span><span class="si">}</span><span class="s2">&quot;</span>
+</span><span class='line'>  <span class="k">else</span>
+</span><span class='line'>      <span class="n">logger</span><span class="o">.</span><span class="n">error</span> <span class="n">result</span>
+</span><span class='line'>      <span class="n">redirect</span> <span class="s1">&#39;/&#39;</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">get</span> <span class="s1">&#39;/programs/:userId&#39;</span> <span class="k">do</span>
+</span><span class='line'>  <span class="n">content_type</span> <span class="ss">:json</span>
+</span><span class='line'>  <span class="vi">@userId</span> <span class="o">=</span> <span class="n">params</span><span class="o">[</span><span class="ss">:userId</span><span class="o">].</span><span class="n">downcase</span>
+</span><span class='line'>  <span class="n">max_results</span> <span class="o">=</span> <span class="n">params</span><span class="o">[</span><span class="ss">:limit</span><span class="o">]</span> <span class="o">||</span> <span class="mi">10</span>
+</span><span class='line'>  <span class="n">results</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">table</span><span class="p">(</span><span class="s1">&#39;Programs&#39;</span><span class="p">)</span><span class="o">.</span>
+</span><span class='line'>      <span class="n">filter</span><span class="p">(</span><span class="s1">&#39;userId&#39;</span> <span class="o">=&gt;</span> <span class="vi">@userId</span><span class="p">)</span><span class="o">.</span>
+</span><span class='line'>      <span class="c1"># pluck(&#39;id&#39;, &#39;name&#39;, &#39;created_at&#39;).</span>
+</span><span class='line'>      <span class="n">without</span><span class="p">(</span><span class="s1">&#39;userId&#39;</span><span class="p">)</span><span class="o">.</span>
+</span><span class='line'>      <span class="n">order_by</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">desc</span><span class="p">(</span><span class="s1">&#39;created_at&#39;</span><span class="p">))</span><span class="o">.</span>
+</span><span class='line'>      <span class="n">limit</span><span class="p">(</span><span class="n">max_results</span><span class="p">)</span><span class="o">.</span>
+</span><span class='line'>      <span class="n">run</span><span class="p">(</span><span class="vi">@rdb_connection</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">results</span><span class="o">.</span><span class="n">to_json</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">get</span> <span class="s1">&#39;/exercises/:programId&#39;</span> <span class="k">do</span>
+</span><span class='line'>  <span class="n">content_type</span> <span class="ss">:json</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="vi">@programId</span> <span class="o">=</span> <span class="n">params</span><span class="o">[</span><span class="ss">:programId</span><span class="o">]</span> <span class="o">||</span> <span class="s1">&#39;37feebf9-54ce-45f5-ba76-d13fe634b035&#39;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">exercises</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">table</span><span class="p">(</span><span class="s2">&quot;Programs&quot;</span><span class="p">)</span>
+</span><span class='line'>      <span class="o">.</span><span class="n">filter</span><span class="p">({</span><span class="s1">&#39;id&#39;</span> <span class="o">=&gt;</span> <span class="vi">@programId</span><span class="p">})</span>
+</span><span class='line'>      <span class="o">.</span><span class="n">inner_join</span><span class="p">(</span> <span class="n">r</span><span class="o">.</span><span class="n">table</span><span class="p">(</span><span class="s2">&quot;Exercises&quot;</span><span class="p">))</span> <span class="p">{</span> <span class="o">|</span><span class="nb">p</span><span class="p">,</span> <span class="n">e</span><span class="o">|</span>
+</span><span class='line'>              <span class="nb">p</span><span class="o">[</span><span class="s1">&#39;exercises&#39;</span><span class="o">].</span><span class="n">contains</span><span class="p">(</span> <span class="n">e</span><span class="o">[</span><span class="s1">&#39;id&#39;</span><span class="o">]</span> <span class="p">)</span>
+</span><span class='line'>          <span class="p">}</span>
+</span><span class='line'>          <span class="o">.</span><span class="n">zip</span><span class="p">()</span>
+</span><span class='line'>          <span class="o">.</span><span class="n">without</span><span class="p">(</span><span class="s1">&#39;exercises&#39;</span><span class="p">,</span> <span class="s1">&#39;userId&#39;</span><span class="p">)</span>
+</span><span class='line'>          <span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">desc</span><span class="p">(</span><span class="s1">&#39;created_at&#39;</span><span class="p">))</span>
+</span><span class='line'>          <span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="vi">@rdb_connection</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">exercises</span><span class="o">.</span><span class="n">to_json</span>
+</span><span class='line'>  <span class="c1"># exercise_ids.to_json</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">get</span> <span class="s1">&#39;/getuser/:patientId&#39;</span> <span class="k">do</span>
+</span><span class='line'>  <span class="n">content_type</span> <span class="ss">:json</span>
+</span><span class='line'>  <span class="n">user</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">table</span><span class="p">(</span><span class="s1">&#39;Users&#39;</span><span class="p">)</span>
+</span><span class='line'>      <span class="o">.</span><span class="n">filter</span><span class="p">({</span><span class="s1">&#39;patientId&#39;</span> <span class="o">=&gt;</span> <span class="n">params</span><span class="o">[</span><span class="ss">:patientId</span><span class="o">]</span><span class="p">})</span>
+</span><span class='line'>      <span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="vi">@rdb_connection</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">user</span><span class="o">.</span><span class="n">first</span><span class="o">.</span><span class="n">to_json</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>That&rsquo;s all folks! Hope this helps some in understanding how to do foreign key references in RethinkDB!</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/05/17/moving-forward-with-phonegap-slash-cordova-plugins/">Moving Forward With Phonegap / Cordova Plugins</a></h1>
+    
+    
+      <p class="meta">
+        <span class="reading-time">less than a 1 minute read</span>
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-05-17T15:24:00-06:00" pubdate data-updated="true">May 17<span>th</span>, 2014</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>I spoke about how plugins work and how to create plugins in Cordova at KCDC. I wanted to make sure my slides are available to any who wanted to view them.</p>
+
+<p>The slides are located <a href="http://jbavari.github.io/MovingForwardWithCordovaPlugins/">here</a>.</p>
+
+<p>I hope this is helpful for some out there,
+Enjoy!</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/05/16/kcdc-javascript-build-system-showdown/">KCDC - Javascript Build System Showdown</a></h1>
+    
+    
+      <p class="meta">
+        <span class="reading-time">less than a 1 minute read</span>
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-05-16T10:44:00-06:00" pubdate data-updated="true">May 16<span>th</span>, 2014</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>I spoke about the different Javascript Build systems at KCDC. I wanted to make sure my slides are available to any who wanted to view them.</p>
+
+<p>A few things about the slides:</p>
+
+<p>There is a Gruntfile.js that contains tasks that I talked about in the presentation. There is also a gulpfile.js that does the same tasks as the Gruntfile. It will show you the differences between the two systems.</p>
+
+<p>The slides are found <a href="http://jbavari.github.io/JavascriptBuildSystemShowdown/#/">here</a>, and the repo for the files <a href="https://github.com/jbavari/JavascriptBuildSystemShowdown">here</a>.</p>
+
+<p>I hope this is helpful for some out there,
+Enjoy!</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/05/07/pow-and-weird-starting-issues/">Pow and Weird Starting Issues</a></h1>
+    
+    
+      <p class="meta">
+        <span class="reading-time">less than a 1 minute read</span>
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-05-07T14:56:00-06:00" pubdate data-updated="true">May 7<span>th</span>, 2014</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Lately I&rsquo;ve been getting this weird error from Pow in Rails 4:</p>
+
+<p><code>Bundler::GemNotFound: Could not find rake-10.3.1 in any of the sources</code></p>
+
+<p>Read more below to see what I did.</p>
+
+<p>In boot.rb:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>require 'rubygems'
+</span><span class='line'># Set up gems listed in the Gemfile.
+</span><span class='line'>ENV['BUNDLE_GEMFILE'] ||= File.expand_path('../../Gemfile', __FILE__)
+</span><span class='line'>
+</span><span class='line'>require 'bundler/setup' if File.exists?(ENV['BUNDLE_GEMFILE'])
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>In config.ru:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>require ::File.expand_path('../config/environment',  __FILE__)
+</span><span class='line'>run Rails.application</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Hope this helps.</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/04/26/in-depth-dive-with-postgres-hstore-and-rails-4/">In Depth Dive With Postgres Hstore and Rails 4</a></h1>
+    
+    
+      <p class="meta">
+        <span class="reading-time">less than a 1 minute read</span>
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-04-26T12:08:00-06:00" pubdate data-updated="true">Apr 26<span>th</span>, 2014</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>I had a unique little situation pop up that needed a little more flexibility when it came to storing data in the db. We use Postgres at RaiseMore because we respect ourselves, so naturally, I wanted to take a swing using some Hstore options for our ever changing data schema.</p>
+
+<p>My intention is not to cover the basics of getting started with Rails 4 and <a href="http://www.postgresql.org/docs/9.3/static/hstore.html">Postgres HStore</a>, so <a href="http://tastehoneyco.com/blog/postgresql-array-and-hstore-column-reference/?utm_source=rubyweekly&amp;utm_medium=email/">read at Honey Co</a> or <a href="http://inopinatus.org/2013/07/12/using-arrays-of-hstore-with-rails-4/">here at inopinatus</a> to get started.</p>
+
+<h2>What I needed</h2>
+
+<p>Simple, to store a few bits of data about a communication &ndash; primarily the subject, message, date/time, and what networks it was sent out on. It may or may not have some of these fields, and the networks may or may not change in the future. This sounds perfect for HStore.</p>
+
+<p>First I started with a simple schema:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>CREATE TABLE comm_logs (
+</span><span class='line'>  id serial NOT NULL,
+</span><span class='line'>  user_id integer,
+</span><span class='line'>  history hstore
+</span><span class='line'>)</span></code></pre></td></tr></table></div></figure>
+
+
+<p>At first, I just wanted to store when a message was sent and on what networks. I figured I&rsquo;d just have an AR model with one hstore column and everything would fit into that. It looked like this:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>class CommunicationLogging &lt; ActiveRecord::Base
+</span><span class='line'>  def self.log(user_id, network, message, subject = nil)
+</span><span class='line'>      comm = CommunicationLogging.where('user_id = ?', user_id).first
+</span><span class='line'>      if comm.nil?
+</span><span class='line'>          comm = CommunicationLogging.new
+</span><span class='line'>          comm.user_id = user_id
+</span><span class='line'>          # Storing network as an array incase they decide to send to another network after this.
+</span><span class='line'>          comm.history = { 'message' =&gt; message, 'subject' =&gt; subject, 'network' =&gt; [network], 'time' =&gt; DateTime.now }}
+</span><span class='line'>      else 
+</span><span class='line'>          # Add history to array stored in network
+</span><span class='line'>          comm.history['network'].push(network)
+</span><span class='line'>      end
+</span><span class='line'>      comm.history_will_change!
+</span><span class='line'>      comm.save!
+</span><span class='line'>  end
+</span><span class='line'>end</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Pretty easy right? I ran into some difficulties REAL fast. The first was from JSON serialization. When I did this:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'># In Rails Console
+</span><span class='line'>CommunicationLogging.find(4).history['network']
+</span><span class='line'>=&gt; "[\"facebook\", \"twitter\"]" </span></code></pre></td></tr></table></div></figure>
+
+
+<p>It gave me a nice FAT serialized version of a Hash array. What good does a string do me? I want my object! BLEH!</p>
+
+<p>We still have to get this thing working, so lets proceed anyway and just do some manual converions with PostgreSQL&rsquo;s awesome <code>to_json</code> functionality.</p>
+
+<p>Our result:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>"{"c": "networks", "networks": "[\"facebook\", \"twitter\"]"}"</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Cool, so its gonna be nasty still. Ok, how about just using Rails to_json method:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>"{\"id\":11,\"event_user_id\":null,\"history\":null,\"networks\":{\"c\":\"networks\",\"networks\":\"[\\\"facebook\\\", \\\"twitter\\\"]\"}}"</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Thanks, but no thanks. I&rsquo;m pretty set on having an array of values instead of some manual labor on converting those values.</p>
+
+<p>I was learning real fast that storing arrays in hstore was going to be a challenge. The next stab I wanted to take was to simplify the storage and retrieval as well as using natural arrays.</p>
+
+<p>NOTE: I changed the way I attacked the problem here partly because I was doing it wrong. Hopefully you can learn from my mistakes? :&ndash;)</p>
+
+<p>This was my next stab, altering the table structure just a bit:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>CREATE TABLE communication_logs (
+</span><span class='line'>  id serial NOT NULL,
+</span><span class='line'>  user_id integer,
+</span><span class='line'>  history hstore[]
+</span><span class='line'>  networks hstore
+</span><span class='line'>)</span></code></pre></td></tr></table></div></figure>
+
+
+<p>What I did here was harness the awesome power of PostgreSQL&rsquo;s arrays and hstore. Taking this thing to the limit. I did this for two reasons:</p>
+
+<ul>
+<li>Constraints changed, we could send multiple communications out on multiple networks at any given time</li>
+<li>I wanted a log of history with whatever pieces of data may or may not be there</li>
+<li>Be able to quickly get the networks sent out per user</li>
+</ul>
+
+
+<p>Now my AR model is decorated with <a href="http://api.rubyonrails.org/classes/ActiveRecord/Store.html">store_accessor</a> to give me model attributes for the networks. It also stores the log of messages in an array naturally through the model, and accessed as a real HSTORE with array values (instead of json, yay).</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>class CommunicationLogging &lt; ActiveRecord::Base
+</span><span class='line'>  store_accessor :networks, :facebook, :twitter, :email, :sms, :push
+</span><span class='line'>
+</span><span class='line'>  def set_network(network)
+</span><span class='line'>      # for brevity only one listed
+</span><span class='line'>      case network.downcase
+</span><span class='line'>      when 'twitter'
+</span><span class='line'>          self.twitter = true
+</span><span class='line'>      end
+</span><span class='line'>  end
+</span><span class='line'>
+</span><span class='line'>  def self.log(user_id, network, message, subject = nil)
+</span><span class='line'>      comm = CommunicationLogging.where('user_id = ?', user_id).first
+</span><span class='line'>      if comm.nil?
+</span><span class='line'>          comm = CommunicationLogging.new
+</span><span class='line'>          comm.user_id = user_id
+</span><span class='line'>      end
+</span><span class='line'>
+</span><span class='line'>      comm.set_network(network)
+</span><span class='line'>
+</span><span class='line'>      history_log = { 'message' =&gt; message, 'subject' =&gt; subject, 'network' =&gt; network, 'time' =&gt; DateTime.now }
+</span><span class='line'>      comm.history.push(history_log)
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>      comm.networks_will_change!
+</span><span class='line'>      comm.history_will_change!
+</span><span class='line'>      comm.save!
+</span><span class='line'>  end
+</span><span class='line'>end</span></code></pre></td></tr></table></div></figure>
+
+
+<p>So what happens when I to_json my fields now in PostgreSQL?</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>// Networks
+</span><span class='line'>"{"twitter": "true"}"
+</span><span class='line'>
+</span><span class='line'>// History
+</span><span class='line'>"[{"time": "2014-04-27T10:15:50-05:00", "message": "asf", "network": "twitter", "subject": "asd"}]"</span></code></pre></td></tr></table></div></figure>
+
+
+<p>And rails?</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'># Networks
+</span><span class='line'>"{"twitter":\"true"}" 
+</span><span class='line'>
+</span><span class='line'># History
+</span><span class='line'>"[{"time":"2014-04-27T10:15:50-05:00","message":"asf","network":"twitter","subject":"asd"}]" </span></code></pre></td></tr></table></div></figure>
+
+
+<p>Beautiful.</p>
+
+<p>I had a lot of fun using PostgreSQL and Rails 4. I didn&rsquo;t find a lot of in-depth knowledge on it so I wanted to shed some light on the topic and hope this would push someone else who might be considering to try it out to give it a go.</p>
+
+<p>I&rsquo;d like to follow up this post with another article on how to search these bad boys.</p>
+
+<p>In closing:</p>
+
+<ul>
+<li>I will definitely use hstore more in the future. I like the freedom to just store whatever I want</li>
+<li>I need to reach out to the Rails team and see what I can do about improving the array support in Active Record</li>
+<li>I hope you try it out as well</li>
+</ul>
+
+
+<h3>Additional Resources</h3>
+
+<ul>
+<li><a href="http://postgresguide.com/sexy/hstore.html">Postgres Guide on HStore</a></li>
+<li><a href="http://mikecoutermarsh.com/using-hstore-with-rails-4/">Mike Countermash&rsquo;s guide to Hstore with Rails 4</a></li>
+<li><a href="http://platformonrails.wordpress.com/2013/03/17/enabling-postgresql-hstore-with-rails-4/">Platform on Rails &ndash; Enabling PostgreSQL Hstore in Rails 4</a></li>
+<li><a href="http://blog.remarkablelabs.com/2012/12/a-love-affair-with-postgresql-rails-4-countdown-to-2013">RemarkableLabs &ndash; A love affair with PostgreSQL [Rails 4 Countdown to 2013]</a></li>
+</ul>
+
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/04/18/enabling-android-remote-debugging-in-phonegap-2-dot-9/">Enabling Android Remote Debugging in Phonegap 2.9</a></h1>
+    
+    
+      <p class="meta">
+        <span class="reading-time">less than a 1 minute read</span>
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-04-18T10:13:00-06:00" pubdate data-updated="true">Apr 18<span>th</span>, 2014</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Recently the Cordova (as well as Phonegap) team has introduced <a href="http://www.raymondcamden.com/index.cfm/2014/1/2/Apache-Cordova-33-and-Remote-Debugging-for-Android">the ability to remote debug Android 4.4+</a> from <a href="https://issues.apache.org/jira/browse/CB-5487">this issue</a>.</p>
+
+<p>If you&rsquo;re like us, you have a lot of invested technology into Phonegap 2.9, and are actively making the move to Cordova 3.4. In the real world, you aren&rsquo;t always granted conveniences to move to the latest and greatest all at one time when you have released products. <a href="http://www.raymondcamden.com/index.cfm/2014/4/11/Results-of-PhoneGap-Survey">Raymond Camden did a survey</a> and apparently there are still some out there utilizing Phonegap/Cordova 2.9.</p>
+
+<p>I wanted to show how easy it was our team to backport some of the changes needed to enable Remote Debugging in Phonegap 2.9.</p>
+
+<p>You&rsquo;ll need to make a few changes to your MainActivity.java file. The first is an import statement, and the second is to make these changes near the bottom of the onCreate method:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>// At the top near your other import statements:
+</span><span class='line'>import android.webkit.WebView;
+</span><span class='line'>// ..snip..!
+</span><span class='line'>
+</span><span class='line'>public void onCreate(Bundle savedInstanceState) {
+</span><span class='line'>    // ..snip..
+</span><span class='line'>    // Enable web debugging
+</span><span class='line'>    if(android.os.Build.VERSION.SDK_INT &gt;= android.os.Build.VERSION_CODES.KITKAT) {
+</span><span class='line'>      WebView.setWebContentsDebuggingEnabled(true);
+</span><span class='line'>    }
+</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
+
+
+<p>One thing to note, this only works for Android versions 4.4 or greater! If you aren&rsquo;t using Android API 19 or greater, you&rsquo;ll have to keep using Weinre.</p>
+
+<p>Now just start your app, enable USB debugging, open Chrome, go to about:inspect, and enjoy your remote debugging in Phonegap/Cordova 2.9! Cheers!</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/04/14/apachecon-2014/">Apachecon 2014</a></h1>
+    
+    
+      <p class="meta">
+        <span class="reading-time">less than a 1 minute read</span>
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-04-14T20:58:00-06:00" pubdate data-updated="true">Apr 14<span>th</span>, 2014</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>This year I was fortunate enough to attend ApacheCon 2014 in Denver CO. It was a big adventure for me, partyly due to one of my main goals this year was to contribute more to open source. I&rsquo;ve been actively contributing to the Apache Cordova project, so this was my opportunity to meet some of the Cordova contributors.</p>
+
+<p>The conference kicked off first with Steve Gill&rsquo;s (<a href="https://twitter.com/stevesgill">@stevesgill</a>) talk on the Cordova CLI and the work flow with it. Steve is in charge of all the releases for Cordova, and we&rsquo;ve worked together on the <a href="http://plugins.cordova.io">cordova plugins registry</a> since the beginning of this year. Steve really pulls this team together, as he&rsquo;s a stand up guy and really easy to talk to. I, for one, am very thankful to have him be a part of the Cordova team!</p>
+
+<p>The next talk was by <a href="https://twitter.com/doncoleman">@doncoleman</a> over Bluetooth LE and how to use it with the Cordova platform. This presentation really opened my eyes to what the Cordova project is capable of (not that I hadn&rsquo;t known, but he sure opened up some ideas), and much more so with Don&rsquo;s awesome <a href="https://github.com/don/cordova-plugin-rfduino">Cordova Plugin &ndash; RFDuino</a>, as well as his <a href="https://github.com/don/phonegap-nfc">NFC Plugin</a> that he presented later in the day. Not only can you write your Bluetooth/NFC items once, but they can run across platforms. Way awesome.</p>
+
+<p>I was then lucky enough to see Andrew Grieve&rsquo;s <a href="https://twitter.com/GrieveAndrew">@GrieveAndrew</a> talk over the <a href="https://dl.dropboxusercontent.com/u/6648754/apachecon2014/index.html#1">Cordova Development Lifecycle</a> &ndash; it amazes me that the Cordova project is composed of around 50+ repos, and releases can take days! Wow. Theres&rsquo;s a lot that goes into the Cordova project.</p>
+
+<p><a href="https://twitter.com/hazems">Hazem Saleh</a> then spoke about Javascript and Cordova &ndash; and how they fit together with the native bridges quite easily. He also quizzed the audience over some Javascript gotchas. Hazem also spoke to what it is like outside of the US &ndash; where there are other phones us American&rsquo;s don&rsquo;t really get to play with. Now that is global support, way to go Cordova!</p>
+
+<p>Finally, <a href="https://twitter.com/LisaSeacat">Lisa DeLuca</a> gave a very informative presentation on how her and the other open source members around the world translate all of the Cordova documenation in a ton of different languages. It&rsquo;s interesting &ndash; first they take the English documents, upload to <a href="https://crowdin.net/">Crowdin</a> &ndash; which then handles either human translation (preferred) and even gives the option for automated translation (not perfect).</p>
+
+<p>Finally, there was the hackathon held by Red Hat and IBM. It was awesome getting to sit with 8 of the core Cordova team members and hacking on my own project as well as getting very familiar with the code base. It was a truly exciting time for me.</p>
+
+<p>Hopefully I&rsquo;ll get the opportunity to work with these fine folks more in the future! Cheers!</p>
+
+<p><img class="left" src="https://pbs.twimg.com/media/Bky_CGxCAAAzDRb.jpg"></p>
+</div>
+  
+  
+
+
+    </article>
+  
+  <div class="pagination">
+    
+      <a class="prev" href="/blog/page/6/">&larr; Older</a>
+    
+    <a href="/blog/archives">Blog Archives</a>
+    
+    <a class="next" href="/blog/page/4/">Newer &rarr;</a>
+    
+  </div>
+</div>
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2017/04/16/puppet-a-testing-handbook/">Puppet: A Testing Handbook</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2017/03/13/test-coverage-reports-in-elixir/">Test Coverage Reports in Elixir</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/12/29/multicast-service-discovery-in-electron/">Multicast Service Discovery in Electron</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/03/11/using-erlang-observer-on-a-remote-elixir-server/">Using Erlang Observer on a Remote Elixir Server</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/01/24/custom-json-encoding-in-phoenix/">Custom JSON Encoding in Phoenix</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating&#8230;</li>
+  </ul>
+  
+  <a href="https://github.com/jbavari">@jbavari</a> on GitHub
+  
+  <script type="text/javascript">
+    $(document).ready(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'jbavari',
+            count: 0,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+
+
+
+  
+</aside>
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2019 - Josh Bavari -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+  <script src="//static.getclicky.com/js" type="text/javascript"></script>
+  <script type="text/javascript">try{ clicky.init(100896582); }catch(e){}</script>
+  <noscript><p><img alt="Clicky" width="1" height="1" src="//in.getclicky.com/100896582ns.gif" /></p></noscript>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'joshbavari';
+      
+        
+        var disqus_script = 'count.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

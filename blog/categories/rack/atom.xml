@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: rack | Josh Bavari's Ramblings]]></title>
+  <link href="http://jbavari.github.io/blog/categories/rack/atom.xml" rel="self"/>
+  <link href="http://jbavari.github.io/"/>
+  <updated>2019-01-27T19:16:40-07:00</updated>
+  <id>http://jbavari.github.io/</id>
+  <author>
+    <name><![CDATA[Josh Bavari]]></name>
+    <email><![CDATA[jbavari@gmail.com]]></email>
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Nodejs Rails subdomains - POW!]]></title>
+    <link href="http://jbavari.github.io/blog/2014/03/12/nodejs-rails-subdomains-pow/"/>
+    <updated>2014-03-12T23:44:00-06:00</updated>
+    <id>http://jbavari.github.io/blog/2014/03/12/nodejs-rails-subdomains-pow</id>
+    <content type="html"><![CDATA[<p>I wanted to do a quick write up of how I use <a href="http://pow.cx/">Pow</a> to run several rails/rack apps and provide subdomains for the rails / rack apps as well as node.js servers! I&rsquo;ll even throw in a Livereload plug in Rails/rack.</p>
+
+<h2>The why</h2>
+
+<p>We have several rails projects &ndash; an API server, a queue'ing rails project running <a href="https://github.com/mperham/sidekiq">Sidekiq</a>, an admin dashboard using Rails &amp; angular, and a node.js server running a PhoneGap mobile app run in express.</p>
+
+<p>I needed an easy domain set up, something like:</p>
+
+<ul>
+<li>project.dev</li>
+<li>my.project.dev</li>
+<li>jobs.project.dev</li>
+<li>m.project.dev</li>
+</ul>
+
+
+<p>I also needed Livereload due to the time it saves, who doesn&rsquo;t right? I do ok, quit asking questions. (But seriously please comment and ask)</p>
+
+<h2>What I did</h2>
+
+<p>After installing POW, I created a few symbolic links and a file containing the port that I would run the node.js server. As seen in the <a href="http://pow.cx/manual">the POW documentation</a> and listed in the same order as above.</p>
+
+<p>``` sh
+ln -s ~/Dev/RM/web ~/.pow/project</p>
+
+<p>ln -s ~/Dev/RM/my ~/.pow/my.project</p>
+
+<p>ln -s ~/Dev/RM/jobs ~/.pow/jobs.project
+echo 5000 > ~/.pow/m.project
+```</p>
+
+<p>Awesome. So now Pow got the rails/racks apps up. Just need to start my node server by simply running <code>node app.js</code></p>
+
+<h3>Ensure its there</h3>
+
+<p>Now that I&rsquo;ve got the servers all running, i&rsquo;ll hit them up to check A-OK. Navigate to <code>http://my.project.dev</code>, <code>http://m.project.dev</code>, <code>http://project.dev</code>. Yep, all A-OK.</p>
+
+<h3>Now to set up Livereload.</h3>
+
+<p>Snag up a few gems to help Rails/rack do some livereloads automatically for me.</p>
+
+<p><code>rb
+gem 'rack-livereload'
+gem 'guard'
+gem 'guard-livereload'
+</code></p>
+
+<p>Two things to configure before livereload will work in the rails/rack apps &ndash; the first is a config setting in our development.rb file and our Guardfile with a host definition.</p>
+
+<p>The first is development.rb:</p>
+
+<p><code>ruby
+MyProjectCom::Application.configure do
+  #comments
+  config.middleware.use Rack::LiveReload
+  #the comments are a lie
+end
+</code></p>
+
+<p>Now the magic for the rails/rack apps is the Guardfile:</p>
+
+<p><code>rb
+guard 'livereload', host: 'my.project.dev'do
+  watch(%r{app/views/.+\.(erb|haml|slim)$})
+  watch(%r{app/helpers/.+\.rb})
+  watch(%r{public/.+\.(css|js|html)})
+  watch(%r{config/locales/.+\.yml})
+  # Rails Assets Pipeline
+  watch(%r{(app|vendor)(/assets/\w+/(.+\.(css|js|html|png|jpg))).*}) { |m| "/assets/#{m[3]}" }
+end
+</code>
+Boom! Now I&rsquo;ve got Livereload being injected into each of the rails/rack apps I configured and handling all the other business. I just have to sit back and code.</p>
+
+<p>Hope this helps any who may be wanting a similar set up with subdomains with rails/rack &amp; node.js hosted apps.</p>
+]]></content>
+  </entry>
+  
+</feed>

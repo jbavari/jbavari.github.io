@@ -1,0 +1,1365 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Josh Bavari's Ramblings</title>
+  <meta name="author" content="Josh Bavari">
+
+  
+  <meta name="description" content="Throughout the last few months, I&rsquo;ve began helping out the Cordova team with a few bug fixes that I come across and want to contribute back. &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://jbavari.github.io/blog/page/6">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="Josh Bavari's Ramblings" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">Josh Bavari's Ramblings</a></h1>
+  
+    <h2>tech babbles on Ruby, Javascript, Rails, Phonegap/Cordova, Grunt, and more</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:jbavari.github.io" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+  <li><a href="/about">About</a></li>
+  <li><a href="/speaking">Speaking</a></li>
+  <li><a href="/knowledge">Knowledge</a></li>
+  <li><a href="/about/resume">Resume</a></li>
+  <li><a href="/cv">C.V.</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div class="blog-index">
+  
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/04/03/how-i-use-npm-link/">How I Use Npm Link</a></h1>
+    
+    
+      <p class="meta">
+        <span class="reading-time">less than a 1 minute read</span>
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-04-03T10:04:00-06:00" pubdate data-updated="true">Apr 3<span>rd</span>, 2014</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Throughout the last few months, I&rsquo;ve began helping out the <a href="http://cordova.apache.orc">Cordova</a> team with a few bug fixes that I come across and want to contribute back.</p>
+
+<p>Cordova is a host of different <a href="https://issues.apache.org/jira/browse/CB/?selectedTab=com.atlassian.jira.jira-projects-plugin:components-panel">components</a>, many of which rely on node.js modules from npm.</p>
+
+<p>When I first started wantint go help, I didnt know how to make changes to the cordova code to use globally, and I didnt want to just go modify the code in the global node_modules/cordova-cli folder. This post covers on how to get started modifying existing node modules you may use from npm.</p>
+
+<h2>Why?</h2>
+
+<p>Recently, I came across <a href="https://groups.google.com/forum/#!topic/phonegap/ahzIwbUqr4A">a small bug</a> in Cordova CLI 3.4. To begin to poke around the code to find a fix in the cordova-cli project.</p>
+
+<p>When I first started, I had to figure out how to get access to the verion pulled from the repo on Github to use my code instead of the globally installed cordova.</p>
+
+<h2>How I use npm-link</h2>
+
+<ul>
+<li>Uninstalled the currently used cordova cli, <code>npm uninstall -g cordova</code></li>
+<li>Forked the <a href="https://github.com/apache/cordova-cli">cordova-cli repo from github</a></li>
+<li><code>git clone git@github.com:jbavari/cordova-cli.git</code></li>
+<li>Changed directory to the repo I just cloned</li>
+<li>Ran <code>npm link</code></li>
+</ul>
+
+
+<p>After running npm link, I can now run <code>cordova create HelloWorld</code> from any directory, and it will use the code that I just <code>npm link</code>&rsquo;d.</p>
+
+<p>Now, when I make changes to that repo that I cloned on my machine, I can run it immediately instead of having to push or update the package in npm.</p>
+
+<p>Hope this helps others in trying to get started contributing to any projects that they might use from npm! (Or contributing to the Cordova project!)</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/03/29/how-i-use-plugins-with-variables-in-phonegap-slash-cordova-applications/">Properly Using Plugins With Variables in Phonegap / Cordova Applications</a></h1>
+    
+    
+      <p class="meta">
+        <span class="reading-time">less than a 1 minute read</span>
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-03-29T02:14:00-06:00" pubdate data-updated="true">Mar 29<span>th</span>, 2014</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>In the past week I&rsquo;ve been working on upgrading our mobile application from PhoneGap 2.9 to Cordova 3.4. (There is no real reason for going from PhoneGap to Cordova, just that I&rsquo;ve been actively committing to the Cordova project).</p>
+
+<p>I&rsquo;ve come in contact with a weird bug with the Cordova CLI when using plugins that require variables to install them.</p>
+
+<p>Currently <a href="http://devgirl.org/2013/11/12/three-hooks-your-cordovaphonegap-project-needs/">Holly Schinsky and Dan Moore</a> recommend using the <a href="https://github.com/apache/cordova-cli/blob/master/templates/hooks-README.md">Cordova Hook</a> <code>after_platform_add</code> to add in the plugins via a plugin list. While I too think this is a great idea, there is a small problem with it as of Phonegap/Cordova 3.4 when you use plugins with variables.</p>
+
+<p>Before we go further, lets just get a quick intro to the platform hook calls that the <a href="https://github.com/apache/cordova-cli/blob/master/src/platform.js#l56">Cordova CLI</a> gives us. First it will fire off the scripts in the <code>/app/hooks/before_platform_add</code> (or <code>/app/.cordova/hooks/before_platform_add</code> if you&rsquo;re on PhoneGap/Cordova &lt;= 3.3) folder.</p>
+
+<p>Next, Cordova CLI will go through some configs and eventually use a function named <code>call_into_create</code> that will do some housecleaning, but most importantly will <a href="https://github.com/apache/cordova-cli/blob/master/src/platform.js#l378">re-install currently installed plugins</a>.</p>
+
+<p>Certain plugins will require variables for them to be installed. Take a look at the Phonegap Facebook Connect plugin, for example: <code>cordova plugin add https://github.com/phonegap/phonegap-facebook-plugin.git --variable APP_ID='appId' --variable APP_NAME='appName'</code>. Using Holly and Dan&rsquo;s solution, you an add that inline as well, like so:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>var pluginlist = [
+</span><span class='line'>    "https://github.com/phonegap/phonegap-facebook-plugin.git --variable APP_ID='" + appId + "' --variable APP_NAME='" + appName + "'",
+</span><span class='line'>    "org.apache.cordova.camera",
+</span><span class='line'>    "org.apache.cordova.console",
+</span><span class='line'>    "org.apache.cordova.contacts"];
+</span><span class='line'>
+</span><span class='line'>var fs = require('fs');
+</span><span class='line'>var path = require('path');
+</span><span class='line'>var sys = require('sys')
+</span><span class='line'>var exec = require('child_process').exec;
+</span><span class='line'> 
+</span><span class='line'>function puts(error, stdout, stderr) {
+</span><span class='line'>    sys.puts(stdout)
+</span><span class='line'>}
+</span><span class='line'> 
+</span><span class='line'>pluginlist.forEach(function(plug) {
+</span><span class='line'>    exec("cordova plugin add " + plug, puts);
+</span><span class='line'>});
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The problem is, when Cordova CLI goes through to reinstall the plugins, it isn&rsquo;t passing in the variables and will fail to install them, but it will still add the folder to the plugins directory and json file. In fact, after adding the plugins, it will then call the hook (as seen above) and try to install plug-ins yet a second time. And by fail, I mean it will still fail with the facebook plugin &ndash; cordova CLI failed therefore it&rsquo;s half installed, so the hook will fail. (I hope this is clear)</p>
+
+<p>To recap, here&rsquo;s the flow of how to reproduce the problem:</p>
+
+<ul>
+<li>Create new project with <code>cordova create</code></li>
+<li>Add platform for ios</li>
+<li>Add plugin with variables &ndash; <code>cordova plugin add https://github.com/phonegap/phonegap-facebook-plugin.git --variable APP_ID='appId' --variable APP_NAME='appName'</code></li>
+<li>Add platform for android</li>
+</ul>
+
+
+<p>That&rsquo;s when you&rsquo;ll see:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>Installing com.phonegap.plugins.facebookconnect (android)
+</span><span class='line'>Error: Variable(s) missing: APP_ID, APP_NAME
+</span><span class='line'>    at /usr/local/lib/node_modules/cordova/node_modules/plugman/src/install.js:252:29
+</span><span class='line'>    at _fulfilled (/usr/local/lib/node_modules/cordova/node_modules/q/q.js:798:54)
+</span><span class='line'>    at self.promiseDispatch.done (/usr/local/lib/node_modules/cordova/node_modules/q/q.js:827:30)
+</span><span class='line'>    at Promise.promise.promiseDispatch (/usr/local/lib/node_modules/cordova/node_modules/q/q.js:760:13)
+</span><span class='line'>    at /usr/local/lib/node_modules/cordova/node_modules/q/q.js:574:44
+</span><span class='line'>    at flush (/usr/local/lib/node_modules/cordova/node_modules/q/q.js:108:17)
+</span><span class='line'>    at process._tickCallback (node.js:415:13)</span></code></pre></td></tr></table></div></figure>
+
+
+<p>You&rsquo;re probably wondering &ndash; why not add both of the platforms first, then add the plugin? That&rsquo;s what I recommend doing now.</p>
+
+<p>However, going back to Holly and Dan&rsquo;s post, I highly recommend if you have any plugins with variables that you do a little clean-up of plugin&rsquo;s before adding them. And by clean-up, I mean, remove the plugins before adding them.</p>
+
+<p>This should only be an issue until the awesome Cordova team fixes the issue of adding plugins correctly.</p>
+
+<p>Hope this helps!</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/03/19/rethinkdb-the-importing-json-process/">RethinkDB the Importing Json Process</a></h1>
+    
+    
+      <p class="meta">
+        <span class="reading-time">less than a 1 minute read</span>
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-03-19T00:51:00-06:00" pubdate data-updated="true">Mar 19<span>th</span>, 2014</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>I was playing around tonight with RethinkDB &ndash; and I wanted to import some data from a JSON file. It wasn&rsquo;t very well documented, so I wanted to make sure I high-light that for others. <a href="http://www.rethinkdb.com/docs/tutorials/elections/">The tutorial post to see RethinkDB&rsquo;s import</a> covers this command to fire off:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>rethinkdb import -c localhost:28015 --table registry.plugins --pkey _id -f plugins.json --format json</span></code></pre></td></tr></table></div></figure>
+
+
+<p>It&rsquo;s real easy &ndash; lets break it down:</p>
+
+<ul>
+<li>The first part, <code>-c localhost:28015</code> specifies the cluster host and port.</li>
+<li>The next, <code>--table registry.plugins</code> specifies the database &lsquo;registry&rsquo;, and the table &lsquo;plugins&rsquo;.</li>
+<li>Next up is specifying the primary index key of &lsquo;_id&rsquo; with <code>--pkey _id</code>.</li>
+<li>Finally, <code>-f plugins.json --format json</code> tells Rethink to pull in the file located in the CWD named plugins.json, in the jason formats!</li>
+</ul>
+
+
+<p>Chances are, you might not have that Python driver, which gives you this message:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>Error when launching rethinkdb-import: No such file or directory
+</span><span class='line'>The rethinkdb-import command depends on the RethinkDB Python driver, which must be installed.
+</span><span class='line'>Instructions for installing the RethinkDB Python driver are available here:
+</span><span class='line'>http://www.rethinkdb.com/docs/install-drivers/python/</span></code></pre></td></tr></table></div></figure>
+
+
+<p>If thats the case, run the command to install the rethinkdb-import Python driver:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>sudo pip install rethinkdb</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Boom! Now get back to work.</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/03/12/nodejs-rails-subdomains-pow/">Nodejs Rails Subdomains - POW!</a></h1>
+    
+    
+      <p class="meta">
+        <span class="reading-time">less than a 1 minute read</span>
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-03-12T23:44:00-06:00" pubdate data-updated="true">Mar 12<span>th</span>, 2014</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>I wanted to do a quick write up of how I use <a href="http://pow.cx/">Pow</a> to run several rails/rack apps and provide subdomains for the rails / rack apps as well as node.js servers! I&rsquo;ll even throw in a Livereload plug in Rails/rack.</p>
+
+<h2>The why</h2>
+
+<p>We have several rails projects &ndash; an API server, a queue&#8217;ing rails project running <a href="https://github.com/mperham/sidekiq">Sidekiq</a>, an admin dashboard using Rails &amp; angular, and a node.js server running a PhoneGap mobile app run in express.</p>
+
+<p>I needed an easy domain set up, something like:</p>
+
+<ul>
+<li>project.dev</li>
+<li>my.project.dev</li>
+<li>jobs.project.dev</li>
+<li>m.project.dev</li>
+</ul>
+
+
+<p>I also needed Livereload due to the time it saves, who doesn&rsquo;t right? I do ok, quit asking questions. (But seriously please comment and ask)</p>
+
+<h2>What I did</h2>
+
+<p>After installing POW, I created a few symbolic links and a file containing the port that I would run the node.js server. As seen in the <a href="http://pow.cx/manual">the POW documentation</a> and listed in the same order as above.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'>ln -s ~/Dev/RM/web ~/.pow/project
+</span><span class='line'>
+</span><span class='line'>ln -s ~/Dev/RM/my ~/.pow/my.project
+</span><span class='line'>
+</span><span class='line'>ln -s ~/Dev/RM/jobs ~/.pow/jobs.project
+</span><span class='line'><span class="nb">echo </span>5000 &gt; ~/.pow/m.project
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Awesome. So now Pow got the rails/racks apps up. Just need to start my node server by simply running <code>node app.js</code></p>
+
+<h3>Ensure its there</h3>
+
+<p>Now that I&rsquo;ve got the servers all running, i&rsquo;ll hit them up to check A-OK. Navigate to <code>http://my.project.dev</code>, <code>http://m.project.dev</code>, <code>http://project.dev</code>. Yep, all A-OK.</p>
+
+<h3>Now to set up Livereload.</h3>
+
+<p>Snag up a few gems to help Rails/rack do some livereloads automatically for me.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='rb'><span class='line'><span class="n">gem</span> <span class="s1">&#39;rack-livereload&#39;</span>
+</span><span class='line'><span class="n">gem</span> <span class="s1">&#39;guard&#39;</span>
+</span><span class='line'><span class="n">gem</span> <span class="s1">&#39;guard-livereload&#39;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Two things to configure before livereload will work in the rails/rack apps &ndash; the first is a config setting in our development.rb file and our Guardfile with a host definition.</p>
+
+<p>The first is development.rb:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="ss">MyProjectCom</span><span class="p">:</span><span class="ss">:Application</span><span class="o">.</span><span class="n">configure</span> <span class="k">do</span>
+</span><span class='line'>  <span class="c1">#comments</span>
+</span><span class='line'>  <span class="n">config</span><span class="o">.</span><span class="n">middleware</span><span class="o">.</span><span class="n">use</span> <span class="ss">Rack</span><span class="p">:</span><span class="ss">:LiveReload</span>
+</span><span class='line'>  <span class="c1">#the comments are a lie</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Now the magic for the rails/rack apps is the Guardfile:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='rb'><span class='line'><span class="n">guard</span> <span class="s1">&#39;livereload&#39;</span><span class="p">,</span> <span class="ss">host</span><span class="p">:</span> <span class="s1">&#39;my.project.dev&#39;</span><span class="k">do</span>
+</span><span class='line'>  <span class="n">watch</span><span class="p">(</span><span class="sr">%r{app/views/.+\.(erb|haml|slim)$}</span><span class="p">)</span>
+</span><span class='line'>  <span class="n">watch</span><span class="p">(</span><span class="sr">%r{app/helpers/.+\.rb}</span><span class="p">)</span>
+</span><span class='line'>  <span class="n">watch</span><span class="p">(</span><span class="sr">%r{public/.+\.(css|js|html)}</span><span class="p">)</span>
+</span><span class='line'>  <span class="n">watch</span><span class="p">(</span><span class="sr">%r{config/locales/.+\.yml}</span><span class="p">)</span>
+</span><span class='line'>  <span class="c1"># Rails Assets Pipeline</span>
+</span><span class='line'>  <span class="n">watch</span><span class="p">(</span><span class="sr">%r{(app|vendor)(/assets/\w+/(.+\.(css|js|html|png|jpg))).*}</span><span class="p">)</span> <span class="p">{</span> <span class="o">|</span><span class="n">m</span><span class="o">|</span> <span class="s2">&quot;/assets/</span><span class="si">#{</span><span class="n">m</span><span class="o">[</span><span class="mi">3</span><span class="o">]</span><span class="si">}</span><span class="s2">&quot;</span> <span class="p">}</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Boom! Now I&rsquo;ve got Livereload being injected into each of the rails/rack apps I configured and handling all the other business. I just have to sit back and code.</p>
+
+<p>Hope this helps any who may be wanting a similar set up with subdomains with rails/rack &amp; node.js hosted apps.</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/03/11/how-to-be-a-good-imitator-in-phonegap-slash-cordova/">How to Be a Good Imitator in PhoneGap/Cordova</a></h1>
+    
+    
+      <p class="meta">
+        <span class="reading-time">less than a 1 minute read</span>
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-03-11T01:02:00-06:00" pubdate data-updated="true">Mar 11<span>th</span>, 2014</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>If you found your way here, then you&rsquo;re probably seeking knowlege about Phonegap/Cordova. I want to first remind you what the purpose of the PhoneGap / Cordova project is:</p>
+
+<blockquote><p><a href="http://phonegap.com/2012/05/09/phonegap-beliefs-goals-and-philosophy/">The ultimate purpose of PhoneGap is to cease to exist.</a></p></blockquote>
+
+<p>What this means is &ndash; you should really start getting ready to make Native-like apps regardless of what technology is used.</p>
+
+<p>How can we give native apps a better feel from PhoneGap / Cordova? Or stated another way, what are some tricks we can use to make the application feel more native?</p>
+
+<p>The answer then, is to be a better imitator, you must first understand what you are imitating.</p>
+
+<h2>The chameleons change color to their surroundings</h2>
+
+<p>Simply stated &ndash; you adapt to what your surroundings are.</p>
+
+<p>Our surroundings for PhoneGap / Cordova are quite wide:</p>
+
+<ul>
+<li>iOS</li>
+<li>Android</li>
+<li>Windows Phone</li>
+<li>BlackBerry</li>
+<li>Firefox OS</li>
+</ul>
+
+
+<p>That is a lot to adapt to. It may take a little time to familiarize yourself with each platform. If you do though, your users will thank you.</p>
+
+<h2>Some suggestions</h2>
+
+<ul>
+<li>Put navigation items near the top in Android, for iOS put them near the bottom. Users are used to having their navigation in the same place.</li>
+<li>In Android / Windows Phone &ndash; mind the Back button! Users use their phones natively, and if you try to change this, they will hate your app.</li>
+<li>Dont use the same button styles for each platform! Buttons on iOS do not look like buttons on Android &ndash; if you try this though, your users will notice and find it odd. <a href="http://goratchet.com/components/">See these great examples from Ratchet.js (look for the Base/iOS/Android buttons near the top)</a></li>
+<li>Use Native-like loading animations. iOS generally has a small circle &ndash; if you try using this instead of your own custom loading icon, users will most likely blame their phone over your app. <a href="http://mercury.io/blog/the-psychology-of-waiting-loading-animations-and-facebook">See this study by Facebook for loading animations</a></li>
+<li>Test on actual devices. You cant get a native feel from clicking on a simulator.</li>
+</ul>
+
+
+<p>References:</p>
+
+<p><a href="http://www.tricedesigns.com/2013/03/11/performance-ux-considerations-for-successful-phonegap-apps/">Performance UX Considerations for successful PhoneGap apps</a></p>
+
+<p><a href="http://www.mikedellanoce.com/2012/09/10-tips-for-getting-that-native-ios.html">Tips for getting that native feel</a></p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/03/01/its-not-the-tools-its-you/">Its Not the Tools - Its You</a></h1>
+    
+    
+      <p class="meta">
+        <span class="reading-time">less than a 1 minute read</span>
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-03-01T02:16:00-07:00" pubdate data-updated="true">Mar 1<span>st</span>, 2014</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h1>Reminder &ndash; you write the code, not the tools</h1>
+
+<p>Duh, right?</p>
+
+<p>There&rsquo;s a lot of debate I see about people saying you have to use a certain language or tool
+to write good software or create apps. This is simply not the fact.</p>
+
+<p>Case and point &ndash; if you write an app in iOS and it works great, the user simply does not care if it
+was written in Objective-C, PhoneGap, or some other hybrid tool. (NOTE: unless the user is a troll)</p>
+
+<p>I personally do a lot of work lately with Cordova/PhoneGap. I actively contribute to Cordova as well.
+When I hear purists come down on the technology, I really wonder why.</p>
+
+<p>Certainly, there can be some bad apps created with it. The same can be said for Objective-C!
+Whatever the tool/language is, it can always be used in the wrong or inefficient way.</p>
+
+<p>The truth is, there are some awesome technologies coming out from all kinds of directions.
+What makes the tech better? The tools/languages/software used, or the overall look/feel/usage?</p>
+
+<h2>Why am I writing this?</h2>
+
+<p>Lately, I&rsquo;ve been trying to grow as a developer and really fine tune my craft.
+I&rsquo;m writing this to remind myself &amp; hopefully remind others, any products/apps we make are only as good as we can make them.
+<strong>NOT</strong> the tools we use to make them. (NOTE: sometimes a tool can improve performance, or some other aspect, but its still up to you to learn and adapt)</p>
+
+<h2>If your app/product sucks, its your fault</h2>
+
+<p>That&rsquo;s right &ndash; true responsibility.</p>
+
+<p>Think about this &ndash; these days developers can make awesome, usable softare with only a text editor and some command line tools.</p>
+
+<p>Now, given some additional IDEs, SDKs, Frameworks, ETC., the same developer could make more software, generally quicker.
+Was it the tools that made the finalized product awesome?</p>
+
+<p>That being said, if you are using a tool/system/framework, and it truly does suck &ndash; guess what?
+You are free to change it!</p>
+
+<h2>The weakness is you</h2>
+
+<p>What makes someone great at anything is when they know what they are weak at and actively improve on those weaknesses.</p>
+
+<p>One thing I wanted to focus fire this year was hitting my weak points.</p>
+
+<p>It&rsquo;s always difficult to take a true honest look at yourself and evaluate what actions you should take. However, if you really want to improve and get ahead, there&rsquo;s no other way.</p>
+
+<h3>Some of my weaknesses</h3>
+
+<ul>
+<li>Writing tests for my code &amp; taking a TDD approach</li>
+<li>Actively testing my product (thoroughly)</li>
+<li>Reading and keeping up to date with knowledge (blogs/books/etc)</li>
+<li>Communicating and expressing my ideas</li>
+</ul>
+
+
+<h3>What I&rsquo;m trying</h3>
+
+<ul>
+<li>Expecting small improvements.</li>
+<li>Iterate quickly.</li>
+<li>Evaluate often.</li>
+<li>Always be learning.</li>
+</ul>
+
+
+<h3>What I&rsquo;m doing</h3>
+
+<ul>
+<li>Starting to write tests for older code &amp; refactoring when needed, especially in Javascript &amp; Ruby</li>
+<li>Getting together active test runners for iOS, Android, and the Web (CasperJS).</li>
+<li>Evaluating weekly my tests I&rsquo;m writing &ndash; Using <a href="http://codeclimate.com">Code climate</a> to evaluate the quality/complexity of our code</li>
+<li>Looking at other open source projects and how they write tests</li>
+<li>Reading some BDD/TDD books to learn</li>
+</ul>
+
+
+<h2>The big picture</h2>
+
+<p>Next time you are getting frustrated with your tools, programming language, etc &ndash; remember, it&rsquo;s up to you to improve it, or improve yourself. Cheers.</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/01/24/grunt-orchestration-of-applescript/">Grunt.js Orchestration & Organization of Applescript Actions</a></h1>
+    
+    
+      <p class="meta">
+        <span class="reading-time">less than a 1 minute read</span>
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-01-24T14:14:00-07:00" pubdate data-updated="true">Jan 24<span>th</span>, 2014</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Lately I&rsquo;ve learned a little about AppleScript. If you&rsquo;re not familiar, I suggest reading the <a href="https://developer.apple.com/library/mac/documentation/applescript/conceptual/applescriptlangguide/introduction/ASLR_intro.html#//apple_ref/doc/uid/TP40000983-CH208-SW1">AppleScript Language Guide</a> to get a little more background information about it. In a nutshell, however, its basically a scripting language developed by Apple to do Inter-application communication using AppleEvents (yes, I used the language from the Wiki page).</p>
+
+<p>In the last few months, I&rsquo;ve been absolutely obsessed with automating the boring tasks that wear me out. This is just another platform to add automation events. Imagine making a script that will open all your dev programs, set them up how you want them, launch a build process, focus a device simulator, and then begin clicking around that simulator. That is my vision for now.</p>
+
+<p>In this post, I&rsquo;d like to address some ways I&rsquo;m leveraging AppleScript to automate some of my boring tasks. I won&rsquo;t focus much on the syntax, or how to navigate the language, but rather the methods I&rsquo;ve used to learn this knowledge. I&rsquo;ll be using <a href="http://gruntjs.com/">Grunt.js</a> to handle all my orchestration of applescript actions.</p>
+
+<h2>Requirements</h2>
+
+<p>You must be using an Apple device such as a Mac. That&rsquo;s about it</p>
+
+<h2>A Handy Tip</h2>
+
+<p>You might want to ensure you have Accessibility options turned on. You can learn about how to do that <a href="http://www.macosxautomation.com/applescript/uiscripting/">here</a></p>
+
+<h2>Getting started</h2>
+
+<p>It&rsquo;s really easy folks, just pop open your favorite text editor or use the native AppleScript Editor and start cranking it out.</p>
+
+<p>Let&rsquo;s look an easy script that will do the following:</p>
+
+<ul>
+<li>Execute XCode run command</li>
+<li>Open Safari</li>
+<li>Run the Web Inspector for the Simulator running</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+</pre></td><td class='code'><pre><code class='applescript'><span class='line'><span class="k">on</span> <span class="nv">open_developer_window</span><span class="p">()</span>
+</span><span class='line'>  <span class="k">try</span>
+</span><span class='line'>      <span class="k">tell</span> <span class="nb">application</span> <span class="s2">&quot;Safari&quot;</span>
+</span><span class='line'>          <span class="nb">activate</span>
+</span><span class='line'>      <span class="k">end</span> <span class="k">tell</span>
+</span><span class='line'>      <span class="k">tell</span> <span class="nb">application</span> <span class="s2">&quot;System Events&quot;</span>
+</span><span class='line'>          <span class="k">tell</span> <span class="nv">process</span> <span class="s2">&quot;Safari&quot;</span>
+</span><span class='line'>              <span class="k">tell</span> <span class="na">menu</span> <span class="nv">bar</span> <span class="mi">1</span>
+</span><span class='line'>                  <span class="k">tell</span> <span class="na">menu</span> <span class="nv">bar</span> <span class="nb">item</span> <span class="mi">8</span>
+</span><span class='line'>                      <span class="k">tell</span> <span class="na">menu</span> <span class="mi">1</span>
+</span><span class='line'>                          <span class="k">tell</span> <span class="na">menu</span> <span class="nb">item</span> <span class="mi">4</span>
+</span><span class='line'>                              <span class="k">tell</span> <span class="na">menu</span> <span class="mi">1</span>
+</span><span class='line'>                                  <span class="nv">click</span> <span class="na">menu</span> <span class="nb">item</span> <span class="mi">2</span>
+</span><span class='line'>                              <span class="k">end</span> <span class="k">tell</span>
+</span><span class='line'>                          <span class="k">end</span> <span class="k">tell</span>
+</span><span class='line'>                      <span class="k">end</span> <span class="k">tell</span>
+</span><span class='line'>                  <span class="k">end</span> <span class="k">tell</span>
+</span><span class='line'>              <span class="k">end</span> <span class="k">tell</span>
+</span><span class='line'>          <span class="k">end</span> <span class="k">tell</span>
+</span><span class='line'>      <span class="k">end</span> <span class="k">tell</span>
+</span><span class='line'>      <span class="no">return</span> <span class="s2">&quot;Yo good job&quot;</span>
+</span><span class='line'>  <span class="nb">on</span> <span class="k">error</span> <span class="nv">error_message</span>
+</span><span class='line'>      <span class="no">return</span> <span class="nv">error_message</span>
+</span><span class='line'>  <span class="k">end</span> <span class="k">try</span>
+</span><span class='line'><span class="k">end</span> <span class="nv">open_developer_window</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>The problem</h2>
+
+<p>After finding out how powerful AppleScript is, I began cranking out scripts for all my boring tasks. It became pretty nasty to manage having hundreds of lines into a single script.</p>
+
+<p>The good news is, AppleScript has a way to import other scripts to use their methods, just by calling <code>load script &lt;name&gt;</code>.</p>
+
+<p>The bad news is, it gets pretty sloppy trying to do the applescript &lsquo;load script&rsquo; command, as it became pretty nasty pretty quick.</p>
+
+<p>Thats where Grunt came in. I figured instead of having a few include scripts &ndash; make the applescript files have just the functionality I wanted</p>
+
+<h2>Using Grunt Shell</h2>
+
+<p>I chose to use the <a href="https://github.com/sindresorhus/grunt-shell">Grunt shell</a> plugin to execute these scripts. You can easily do it over shell by executing <code>osascript &lt;name_of_script&gt;</code>.</p>
+
+<p>What I did was create a nice layout for my applescript tasks as follows:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+</pre></td><td class='code'><pre><code class='applescript'><span class='line'><span class="nv">Applescripts</span>
+</span><span class='line'><span class="err">|</span>
+</span><span class='line'><span class="o">+</span><span class="c">---+--iPhone simulator tasks</span>
+</span><span class='line'>  <span class="err">|</span>  <span class="err">|</span>
+</span><span class='line'>  <span class="err">|</span>  <span class="o">+</span><span class="c">-- reset_simulator.applescript</span>
+</span><span class='line'>  <span class="err">|</span>
+</span><span class='line'>  <span class="o">+</span><span class="c">--safari tasks</span>
+</span><span class='line'>  <span class="err">|</span>  <span class="err">|</span>
+</span><span class='line'>  <span class="err">|</span>  <span class="o">+</span><span class="c">-- start_safari_dev_console.applescript</span>
+</span><span class='line'>  <span class="err">|</span>  <span class="o">+</span><span class="c">-- dev_console_test_runner.applescript</span>
+</span><span class='line'>  <span class="err">|</span>
+</span><span class='line'>  <span class="o">+</span><span class="c">--XCode tasks</span>
+</span><span class='line'>     <span class="err">|</span>
+</span><span class='line'>     <span class="o">+</span><span class="c">-- open_ios_project_file.applescript</span>
+</span><span class='line'>     <span class="o">+</span><span class="c">-- run_simulator.applescript</span>
+</span><span class='line'>     <span class="o">+</span><span class="c">-- select_simulator_6.applescript</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Then, I created Grunt tasks for each applescript task as I wanted, as such:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">grunt</span><span class="p">.</span><span class="nx">initConfig</span><span class="p">({</span>
+</span><span class='line'>  <span class="nx">shell</span><span class="o">:</span> <span class="p">{</span>
+</span><span class='line'>      <span class="nx">start_safari_dev_console</span><span class="o">:</span> <span class="p">{</span>
+</span><span class='line'>          <span class="nx">command</span><span class="o">:</span> <span class="p">[</span><span class="s1">&#39;osascript ./applescripts/safari_tasks/start_safari_dev_console.applescript&#39;</span><span class="p">].</span><span class="nx">join</span><span class="p">(</span><span class="s2">&quot;&amp;&amp;&quot;</span><span class="p">)</span>
+</span><span class='line'>      <span class="p">},</span>
+</span><span class='line'>      <span class="nx">dev_console_test_runner</span><span class="o">:</span> <span class="p">{</span>
+</span><span class='line'>          <span class="nx">command</span><span class="o">:</span> <span class="p">[</span><span class="s1">&#39;osascript ./applescripts/safari_tasks/dev_console_test_runner.applescript&#39;</span><span class="p">].</span><span class="nx">join</span><span class="p">(</span><span class="s2">&quot;&amp;&amp;&quot;</span><span class="p">)</span>
+</span><span class='line'>      <span class="p">},</span>
+</span><span class='line'>      <span class="nx">open_ios_project_file</span><span class="o">:</span> <span class="p">{</span>
+</span><span class='line'>          <span class="nx">command</span><span class="o">:</span> <span class="p">[</span><span class="s1">&#39;osascript ./applescripts/xcode_tasks/open_ios_project_file.applescript&#39;</span><span class="p">].</span><span class="nx">join</span><span class="p">(</span><span class="s2">&quot;&amp;&amp;&quot;</span><span class="p">)</span>
+</span><span class='line'>      <span class="p">},</span>
+</span><span class='line'>      <span class="nx">run_simulator</span><span class="o">:</span> <span class="p">{</span>
+</span><span class='line'>          <span class="nx">command</span><span class="o">:</span> <span class="p">[</span><span class="s1">&#39;osascript ./applescripts/xcode_tasks/run_simulator.applescript&#39;</span><span class="p">].</span><span class="nx">join</span><span class="p">(</span><span class="s2">&quot;&amp;&amp;&quot;</span><span class="p">)</span>
+</span><span class='line'>      <span class="p">},</span>
+</span><span class='line'>      <span class="nx">simulator_6</span><span class="o">:</span> <span class="p">{</span>
+</span><span class='line'>          <span class="nx">command</span><span class="o">:</span> <span class="p">[</span><span class="s1">&#39;osascript ./applescripts/xcode_tasks/simulator_6.applescript&#39;</span><span class="p">].</span><span class="nx">join</span><span class="p">(</span><span class="s2">&quot;&amp;&amp;&quot;</span><span class="p">)</span>
+</span><span class='line'>      <span class="p">},</span>
+</span><span class='line'>      <span class="nx">reset_simulator</span><span class="o">:</span> <span class="p">{</span>
+</span><span class='line'>          <span class="nx">command</span><span class="o">:</span> <span class="p">[</span><span class="s1">&#39;osascript ./applescripts/simulator_tasks/reset_simulator.applescript&#39;</span><span class="p">].</span><span class="nx">join</span><span class="p">(</span><span class="s2">&quot;&amp;&amp;&quot;</span><span class="p">)</span>
+</span><span class='line'>      <span class="p">}</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="p">});</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Followed by a few set of tasks:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">grunt</span><span class="p">.</span><span class="nx">registerTask</span><span class="p">(</span><span class="s1">&#39;run_sim&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;shell:run_simulator&#39;</span><span class="p">,</span> <span class="s1">&#39;shell:start_safari_dev_console&#39;</span><span class="p">]);</span>
+</span><span class='line'>
+</span><span class='line'><span class="nx">grunt</span><span class="p">.</span><span class="nx">registerTask</span><span class="p">(</span><span class="s1">&#39;start_project&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;shell:open_ios_project_file&#39;</span><span class="p">,</span> <span class="s1">&#39;shell:simulator_6&#39;</span><span class="p">,</span> <span class="s1">&#39;run_sim&#39;</span><span class="p">]);</span>
+</span><span class='line'>
+</span><span class='line'><span class="nx">grunt</span><span class="p">.</span><span class="nx">registerTask</span><span class="p">(</span><span class="s1">&#39;restart_sim&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;shell:reset_simulator&#39;</span><span class="p">,</span> <span class="s1">&#39;run_sim&#39;</span><span class="p">]);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>Useful tools</h2>
+
+<p>After learning the basic structure of AppleScript, it&rsquo;s easy to see how the structures are laid out. The hard part, is figuring out how they are actually laid out. There&rsquo;s an awesome built in tool, called &ldquo;Accessibility Inspector&rdquo;. This tool will tell you the control you are focusing on an application.</p>
+
+<p>The second tool that is EXTREMELY helpful is a tool called <a href="http://pfiddlesoft.com/uibrowser/">UI Browser</a>. This is a tool that you can select an application, hover over that application, and UI Browser will tell you that controls. It even has a drop down of common actions, like clicking, filling in text, and other common uses.</p>
+
+<h2>Overall results</h2>
+
+<p>Altogether, I&rsquo;m pretty happy with how my little Applescript trials went. It&rsquo;s very easy now to chain together applescript tasks using Grunt.</p>
+
+<p>On a side note.. Apparently applescript is already used in some grunt plugins, as I&rsquo;ve found tucked away in some projects code.</p>
+
+<p>Happy coding.</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/01/14/making-rails-and-postgres-arrays-play-nice/">Making Rails and Postgres Arrays Play Nice</a></h1>
+    
+    
+      <p class="meta">
+        <span class="reading-time">less than a 1 minute read</span>
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-01-14T12:01:00-07:00" pubdate data-updated="true">Jan 14<span>th</span>, 2014</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Lately I&rsquo;ve had a small need to store an array of string values in a Postgres array instead of making foreign tables and dealing with the fun ActiveRecord fancies there are to play with.</p>
+
+<p>Digging into the topic, I was looking for some pre-existing knowledge on the topic. Turns out the people at <a href="http://blog.relatabase.com/rails-postgres-arrays">Relatabase</a> and <a href="https://coderwall.com/p/sud9ja">Stuart Liston at CoderWall</a> had some great knowledge to share on this.</p>
+
+<p>Being the simpleton that I am, I found a ton of knowledge on how to query them, how to add them to your models, but still lacked some basic knowledge of how to USE them. Maybe you&rsquo;re like me, and this will help.</p>
+
+<p>Adding to Stuart&rsquo;s code, lets assume we&rsquo;ve added the postgres column:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">AddTechToCompanies</span> <span class="o">&lt;</span> <span class="ss">ActiveRecord</span><span class="p">:</span><span class="ss">:Migration</span>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">change</span>
+</span><span class='line'>    <span class="n">add_column</span> <span class="ss">:companies</span><span class="p">,</span> <span class="ss">:technology_used</span><span class="p">,</span> <span class="ss">:string</span><span class="p">,</span> <span class="ss">array</span><span class="p">:</span> <span class="kp">true</span><span class="p">,</span> <span class="ss">default</span><span class="p">:</span> <span class="s1">&#39;{}&#39;</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Using <a href="http://guides.rubyonrails.org/active_record_querying.html#scopes">Ruby Scopes</a> and the proper Postgres querying syntax:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">Company</span> <span class="o">&lt;</span> <span class="ss">ActiveRecord</span><span class="p">:</span><span class="ss">:Base</span>
+</span><span class='line'>  <span class="n">scope</span> <span class="ss">:any_tech</span><span class="p">,</span> <span class="o">-&gt;</span> <span class="p">(</span><span class="n">tech</span><span class="p">){</span><span class="n">where</span><span class="p">(</span><span class="s1">&#39;? = ANY(technology_used)&#39;</span><span class="p">,</span> <span class="n">tech</span><span class="p">)}</span>
+</span><span class='line'>  <span class="n">scope</span> <span class="ss">:all_tech</span><span class="p">,</span> <span class="o">-&gt;</span> <span class="p">(</span><span class="n">tech</span><span class="p">){</span><span class="n">where</span><span class="p">(</span><span class="s1">&#39;? = ALL(technology_used)&#39;</span><span class="p">,</span> <span class="n">tech</span><span class="p">)}</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Simple enough and easy to read. Lets tackle the simple task of adding a company with a few properties: Name, website, and technology_used.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="c1">#..snip..</span>
+</span><span class='line'><span class="n">company</span> <span class="o">=</span> <span class="no">Company</span><span class="o">.</span><span class="n">new</span>
+</span><span class='line'><span class="n">company</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;RaiseMore&quot;</span>
+</span><span class='line'><span class="n">company</span><span class="o">.</span><span class="n">website_url</span> <span class="o">=</span> <span class="s2">&quot;http://www.raisemore.com&quot;</span>
+</span><span class='line'><span class="n">company</span><span class="o">.</span><span class="n">technology_used</span> <span class="o">=</span> <span class="o">[</span><span class="s1">&#39;Ruby&#39;</span><span class="p">,</span> <span class="s1">&#39;Rails&#39;</span><span class="p">,</span> <span class="s1">&#39;Sinatra&#39;</span><span class="p">,</span> <span class="s1">&#39;JavaScript&#39;</span><span class="p">,</span> <span class="s1">&#39;Redis&#39;</span><span class="p">,</span> <span class="s1">&#39;PhoneGap&#39;</span><span class="p">,</span> <span class="s1">&#39;Sidekiq&#39;</span><span class="o">]</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">company</span><span class="o">.</span><span class="n">save!</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>This will add our basic info, as well as get us our data back by doing this:</p>
+
+<figure class='code'><figcaption><span>Interactive Console Output</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">rails_company</span> <span class="o">=</span> <span class="no">Company</span><span class="o">.</span><span class="n">any_tech</span><span class="p">(</span><span class="s1">&#39;Rails&#39;</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="no">Company</span> <span class="no">Load</span> <span class="p">(</span><span class="mi">2</span><span class="o">.</span><span class="mi">6</span><span class="n">ms</span><span class="p">)</span>  <span class="no">SELECT</span> <span class="s2">&quot;companies&quot;</span><span class="o">.</span><span class="n">*</span> <span class="no">FROM</span> <span class="s2">&quot;companies&quot;</span> <span class="no">WHERE</span> <span class="p">(</span><span class="s1">&#39;Rails&#39;</span> <span class="o">=</span> <span class="no">ANY</span><span class="p">(</span><span class="n">technology_used</span><span class="p">))</span>
+</span><span class='line'> <span class="o">=&gt;</span> <span class="c1">#&lt;ActiveRecord::Relation [#&lt;Company id: 1, name: &quot;RaiseMore&quot;, founded: &quot;2011&quot;, website_url: &quot;http://www.raisemore.com&quot;, logo_url: &quot;http://res.cloudinary.com/hfjjoialf/image/upload/v1...&quot;, description: &quot;We are an event fundraising platform focused on hel...&quot;, company_type: &quot;Start up&quot;, market: &quot;Charity Fundraising&quot;, technology_used: [&quot;Rails&quot;, &quot;Postgres&quot;, &quot;Sinatra&quot;, &quot;PhoneGap&quot;, &quot;JavaScript&quot;, &quot;HTML5&quot;, &quot;Redis&quot;], interns_needed: true, twitter_id: &quot;@raise_more&quot;, created_at: &quot;2014-01-13 21:49:39&quot;, updated_at: &quot;2014-01-13 21:49:39&quot;&gt;]&gt; </span>
+</span><span class='line'>
+</span><span class='line'><span class="n">rails_company</span><span class="o">.</span><span class="n">technology_used</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">=&gt;</span> <span class="o">[</span><span class="s2">&quot;Rails&quot;</span><span class="p">,</span> <span class="s2">&quot;Postgres&quot;</span><span class="p">,</span> <span class="s2">&quot;Sinatra&quot;</span><span class="p">,</span> <span class="s2">&quot;PhoneGap&quot;</span><span class="p">,</span> <span class="s2">&quot;JavaScript&quot;</span><span class="p">,</span> <span class="s2">&quot;HTML5&quot;</span><span class="p">,</span> <span class="s2">&quot;Redis&quot;</span><span class="o">]</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Cool, so saving the array data is easy. What about updating? As <a href="http://blog.relatabase.com/rails-postgres-arrays">the relatabase post points out</a>,</p>
+
+<p><code>One huge caveat of this approach is that rails doesn’t clone the array when saving the original for dirty checking, so any in-place modification to the array won’t register that it’s changed.</code></p>
+
+<p>This leaves us with these options:</p>
+
+<ul>
+<li>set the dirty flag ourselves: <code>rails_company.technology_used_will_change!</code></li>
+<li>update using update_attributes: <code>rails_company.update_attributes(:technology_used =&gt; ['Rails', 'Redis', 'Go', 'Erlang'] )</code></li>
+</ul>
+
+
+<h2>Overall results</h2>
+
+<p>The way Rails handles arrays is not as complete as a like, but hey, we are skipping a step by getting around foreign key tables. It&rsquo;s not like you should expect much. I&rsquo;d say they are allowed for small use projects, but if you really need to do some searching or have referential integrity, stick with foreign key tables.</p>
+
+<p>Also, check out the following resources:</p>
+
+<p><a href="http://adamsanderson.github.io/railsconf_2013/?full#1">Postgres &ndash; The Best Tool You&rsquo;re Already Using</a></p>
+
+<p><a href="http://reefpoints.dockyard.com/ruby/2012/09/18/rails-4-sneak-peek-postgresql-array-support.html">Rails 4.0 Sneak Peek: PostgreSQL array support</a></p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/12/17/dont-be-a-grunt/">Dont Be a Grunt</a></h1>
+    
+    
+      <p class="meta">
+        <span class="reading-time">less than a 1 minute read</span>
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-12-17T10:18:00-07:00" pubdate data-updated="true">Dec 17<span>th</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>I&rsquo;ve posted some slides I presented at the <a href="http://okcjs.com">OKC Javascript User Group</a> over Grunt.js titled <a href="http://jbavari.github.io/Dont-Be-a-Grunt-Use-Grunt-Slides/">Dont be a grunt, use grunt</a>.</p>
+
+<p>I encourage any and all to take any ideas and information from the slides. I&rsquo;m hoping they provide value to anyone who may want to learn and use Grunt.</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/12/04/automating-local-ip-lookup-with-grunt-and-node/">Automating Local IP Lookup With Grunt and Node</a></h1>
+    
+    
+      <p class="meta">
+        <span class="reading-time">less than a 1 minute read</span>
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-12-04T15:18:00-07:00" pubdate data-updated="true">Dec 4<span>th</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>In the last few write-ups I&rsquo;ve done lately (see <a href="/blog/2013/12/02/automating-underlying-mobile-infrastructure-with-grunt">the servers post</a> and the <a href="/blog/2013/11/30/automating-phonegap-builds-with-grunt">phonegap builds post</a>), I&rsquo;ve been requiring the user to pass in the IP or the host in the command line. That works and all, but I usually have to go look up that ip using the good ol &lsquo;ifconfig&rsquo; command.</p>
+
+<p>Since I&rsquo;m obsesed with automation, I&rsquo;d rather be lazy and just have the IP Address look up be automatic.</p>
+
+<h2>Why am I writing this?</h2>
+
+<p>I work in a dozen of different places. At any given time I may be at home, work, a coffee shop, etc. Most times my ip address will be different. I really just want to boot the servers up to my current IP and have the mobile app point at that IP. (The actual device can&rsquo;t understand localhost or a local 0.0.0.0 IP address over wifi)</p>
+
+<p>Have you guessed it yet? I want to automatically set that ip address / hostname to my local IP without having to go look it up every time.</p>
+
+<p>I found this post on <a href="http://stackoverflow.com/questions/3653065/get-local-ip-address-in-node-js">stackoverflow</a> that pointed me at this <a href="http://nodejs.org/api/os.html#os_os_networkinterfaces">Node.js documentation</a> to look up the network interfaces. This lets us dig deeper with Grunt to get the IP Address, especially since grunt sits on Node.js.</p>
+
+<h3>Simple and (too) easy</h3>
+
+<p>There&rsquo;s a Node.js call that puts all of the config settings into nice JSON for you to work with.</p>
+
+<figure class='code'><figcaption><span>Node.js command for getting network interfaces</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="c1">//Gets a JSON much like running &#39;ifconfig&#39;</span>
+</span><span class='line'><span class="kd">var</span> <span class="nx">ifaces</span> <span class="o">=</span> <span class="nx">os</span><span class="p">.</span><span class="nx">networkInterfaces</span><span class="p">();</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The next key is to go through all the interfaces, and get the current local IP from the device from ethernet or wifi.</p>
+
+<p>My grunt config looks something like this:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">module</span><span class="p">.</span><span class="nx">exports</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">grunt</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="kd">var</span> <span class="nx">os</span><span class="o">=</span><span class="nx">require</span><span class="p">(</span><span class="s1">&#39;os&#39;</span><span class="p">);</span>
+</span><span class='line'>  <span class="kd">var</span> <span class="nx">ifaces</span><span class="o">=</span><span class="nx">os</span><span class="p">.</span><span class="nx">networkInterfaces</span><span class="p">();</span>
+</span><span class='line'>  <span class="kd">var</span> <span class="nx">lookupIpAddress</span> <span class="o">=</span> <span class="kc">null</span><span class="p">;</span>
+</span><span class='line'>  <span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">dev</span> <span class="k">in</span> <span class="nx">ifaces</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>      <span class="k">if</span><span class="p">(</span><span class="nx">dev</span> <span class="o">!=</span> <span class="s2">&quot;en1&quot;</span> <span class="o">&amp;&amp;</span> <span class="nx">dev</span> <span class="o">!=</span> <span class="s2">&quot;en0&quot;</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>          <span class="k">continue</span><span class="p">;</span>
+</span><span class='line'>      <span class="p">}</span>
+</span><span class='line'>      <span class="nx">ifaces</span><span class="p">[</span><span class="nx">dev</span><span class="p">].</span><span class="nx">forEach</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">details</span><span class="p">){</span>
+</span><span class='line'>        <span class="k">if</span> <span class="p">(</span><span class="nx">details</span><span class="p">.</span><span class="nx">family</span><span class="o">==</span><span class="s1">&#39;IPv4&#39;</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>          <span class="nx">lookupIpAddress</span> <span class="o">=</span> <span class="nx">details</span><span class="p">.</span><span class="nx">address</span><span class="p">;</span>
+</span><span class='line'>          <span class="k">break</span><span class="p">;</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>      <span class="p">});</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="c1">//If an IP Address is passed</span>
+</span><span class='line'>  <span class="c1">//we&#39;re going to use the ip/host from the param</span>
+</span><span class='line'>  <span class="c1">//passed over the command line </span>
+</span><span class='line'>  <span class="c1">//over the ip addressed that was looked up</span>
+</span><span class='line'>  <span class="kd">var</span> <span class="nx">ipAddress</span> <span class="o">=</span> <span class="nx">grunt</span><span class="p">.</span><span class="nx">option</span><span class="p">(</span><span class="s1">&#39;host&#39;</span><span class="p">)</span> <span class="o">||</span> <span class="nx">lookupIpAddress</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nx">grunt</span><span class="p">.</span><span class="nx">initConfig</span><span class="p">({</span>
+</span><span class='line'>      <span class="nx">bgShell</span><span class="o">:</span> <span class="p">{</span>
+</span><span class='line'>          <span class="nx">weinre</span><span class="o">:</span> <span class="p">{</span>
+</span><span class='line'>              <span class="nx">cmd</span><span class="o">:</span> <span class="s1">&#39;weinre --httpPort 8080 --boundHost=&#39;</span> <span class="o">+</span> <span class="nx">ipAddress</span><span class="p">,</span>
+</span><span class='line'>              <span class="nx">bg</span><span class="o">:</span> <span class="kc">false</span>
+</span><span class='line'>          <span class="p">},</span>
+</span><span class='line'>          <span class="nx">rails</span><span class="o">:</span> <span class="p">{</span>
+</span><span class='line'>              <span class="nx">cmd</span><span class="o">:</span> <span class="s1">&#39;cd ../raisemore_web &amp;&amp; rails s -p 3000 -b &#39;</span> <span class="o">+</span> <span class="nx">ipAddress</span>
+</span><span class='line'>          <span class="p">}</span>
+</span><span class='line'>      <span class="p">}</span>
+</span><span class='line'>  <span class="p">});</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="c1">//Load in the preprocess tasks</span>
+</span><span class='line'>  <span class="nx">grunt</span><span class="p">.</span><span class="nx">loadTasks</span><span class="p">(</span><span class="s1">&#39;preprocess&#39;</span><span class="p">);</span>
+</span><span class='line'>  <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;load-grunt-tasks&#39;</span><span class="p">)(</span><span class="nx">grunt</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="c1">//Tasks to have both servers at local ip and app at local ip</span>
+</span><span class='line'>  <span class="nx">grunt</span><span class="p">.</span><span class="nx">registerTask</span><span class="p">(</span><span class="s1">&#39;servers&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;env:dev&#39;</span><span class="p">,</span> <span class="s1">&#39;preprocess:dev&#39;</span><span class="p">,</span> <span class="s1">&#39;bgShell:weinre&#39;</span><span class="p">,</span> <span class="s1">&#39;bgShell:rails&#39;</span><span class="p">]);</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="c1">//Task to set up app files pointing at stage ip</span>
+</span><span class='line'>  <span class="c1">//and setting up weinre at current local ip</span>
+</span><span class='line'>  <span class="nx">grunt</span><span class="p">.</span><span class="nx">registerTask</span><span class="p">(</span><span class="s1">&#39;debug&#39;</span><span class="p">,</span> <span class="p">[</span> <span class="s1">&#39;env:stage&#39;</span><span class="p">,</span> <span class="s1">&#39;preprocess:stage&#39;</span><span class="p">,</span> <span class="s1">&#39;bgShell:weinre&#39;</span><span class="p">]);</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Now we can just do &lsquo;grunt servers&rsquo; to have both servers up at my current local ip or &lsquo;grunt debug&rsquo; to get app accessing the stage server and having weinre run locally to debug the app.</p>
+
+<p>Not much to it &ndash; call networkInterfaces(), go through JSON, get ipAddress &ndash; assign it to the option unless one was passed in. You&rsquo;re done.</p>
+
+<p>Cheers.</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  <div class="pagination">
+    
+      <a class="prev" href="/blog/page/7/">&larr; Older</a>
+    
+    <a href="/blog/archives">Blog Archives</a>
+    
+    <a class="next" href="/blog/page/5/">Newer &rarr;</a>
+    
+  </div>
+</div>
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2017/04/16/puppet-a-testing-handbook/">Puppet: A Testing Handbook</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2017/03/13/test-coverage-reports-in-elixir/">Test Coverage Reports in Elixir</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/12/29/multicast-service-discovery-in-electron/">Multicast Service Discovery in Electron</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/03/11/using-erlang-observer-on-a-remote-elixir-server/">Using Erlang Observer on a Remote Elixir Server</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/01/24/custom-json-encoding-in-phoenix/">Custom JSON Encoding in Phoenix</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating&#8230;</li>
+  </ul>
+  
+  <a href="https://github.com/jbavari">@jbavari</a> on GitHub
+  
+  <script type="text/javascript">
+    $(document).ready(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'jbavari',
+            count: 0,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+
+
+
+  
+</aside>
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2019 - Josh Bavari -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+  <script src="//static.getclicky.com/js" type="text/javascript"></script>
+  <script type="text/javascript">try{ clicky.init(100896582); }catch(e){}</script>
+  <noscript><p><img alt="Clicky" width="1" height="1" src="//in.getclicky.com/100896582ns.gif" /></p></noscript>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'joshbavari';
+      
+        
+        var disqus_script = 'count.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

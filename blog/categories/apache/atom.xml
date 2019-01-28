@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: apache | Josh Bavari's Ramblings]]></title>
+  <link href="http://jbavari.github.io/blog/categories/apache/atom.xml" rel="self"/>
+  <link href="http://jbavari.github.io/"/>
+  <updated>2019-01-27T19:16:40-07:00</updated>
+  <id>http://jbavari.github.io/</id>
+  <author>
+    <name><![CDATA[Josh Bavari]]></name>
+    <email><![CDATA[jbavari@gmail.com]]></email>
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Apachecon 2014]]></title>
+    <link href="http://jbavari.github.io/blog/2014/04/14/apachecon-2014/"/>
+    <updated>2014-04-14T20:58:00-06:00</updated>
+    <id>http://jbavari.github.io/blog/2014/04/14/apachecon-2014</id>
+    <content type="html"><![CDATA[<p>This year I was fortunate enough to attend ApacheCon 2014 in Denver CO. It was a big adventure for me, partyly due to one of my main goals this year was to contribute more to open source. I&rsquo;ve been actively contributing to the Apache Cordova project, so this was my opportunity to meet some of the Cordova contributors.</p>
+
+<p>The conference kicked off first with Steve Gill&rsquo;s (<a href="https://twitter.com/stevesgill">@stevesgill</a>) talk on the Cordova CLI and the work flow with it. Steve is in charge of all the releases for Cordova, and we&rsquo;ve worked together on the <a href="http://plugins.cordova.io">cordova plugins registry</a> since the beginning of this year. Steve really pulls this team together, as he&rsquo;s a stand up guy and really easy to talk to. I, for one, am very thankful to have him be a part of the Cordova team!</p>
+
+<p>The next talk was by <a href="https://twitter.com/doncoleman">@doncoleman</a> over Bluetooth LE and how to use it with the Cordova platform. This presentation really opened my eyes to what the Cordova project is capable of (not that I hadn&rsquo;t known, but he sure opened up some ideas), and much more so with Don&rsquo;s awesome <a href="https://github.com/don/cordova-plugin-rfduino">Cordova Plugin &ndash; RFDuino</a>, as well as his <a href="https://github.com/don/phonegap-nfc">NFC Plugin</a> that he presented later in the day. Not only can you write your Bluetooth/NFC items once, but they can run across platforms. Way awesome.</p>
+
+<p>I was then lucky enough to see Andrew Grieve&rsquo;s <a href="https://twitter.com/GrieveAndrew">@GrieveAndrew</a> talk over the <a href="https://dl.dropboxusercontent.com/u/6648754/apachecon2014/index.html#1">Cordova Development Lifecycle</a> &ndash; it amazes me that the Cordova project is composed of around 50+ repos, and releases can take days! Wow. Theres&rsquo;s a lot that goes into the Cordova project.</p>
+
+<p><a href="https://twitter.com/hazems">Hazem Saleh</a> then spoke about Javascript and Cordova &ndash; and how they fit together with the native bridges quite easily. He also quizzed the audience over some Javascript gotchas. Hazem also spoke to what it is like outside of the US &ndash; where there are other phones us American&rsquo;s don&rsquo;t really get to play with. Now that is global support, way to go Cordova!</p>
+
+<p>Finally, <a href="https://twitter.com/LisaSeacat">Lisa DeLuca</a> gave a very informative presentation on how her and the other open source members around the world translate all of the Cordova documenation in a ton of different languages. It&rsquo;s interesting &ndash; first they take the English documents, upload to <a href="https://crowdin.net/">Crowdin</a> &ndash; which then handles either human translation (preferred) and even gives the option for automated translation (not perfect).</p>
+
+<p>Finally, there was the hackathon held by Red Hat and IBM. It was awesome getting to sit with 8 of the core Cordova team members and hacking on my own project as well as getting very familiar with the code base. It was a truly exciting time for me.</p>
+
+<p>Hopefully I&rsquo;ll get the opportunity to work with these fine folks more in the future! Cheers!</p>
+
+<p><img class="left <a" src="href="https://pbs.twimg.com/media/Bky_CGxCAAAzDRb.jpg">https://pbs.twimg.com/media/Bky_CGxCAAAzDRb.jpg</a>"></p>
+]]></content>
+  </entry>
+  
+</feed>

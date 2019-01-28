@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: gulp | Josh Bavari's Ramblings]]></title>
+  <link href="http://jbavari.github.io/blog/categories/gulp/atom.xml" rel="self"/>
+  <link href="http://jbavari.github.io/"/>
+  <updated>2019-01-27T19:16:40-07:00</updated>
+  <id>http://jbavari.github.io/</id>
+  <author>
+    <name><![CDATA[Josh Bavari]]></name>
+    <email><![CDATA[jbavari@gmail.com]]></email>
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[KCDC - Javascript Build System Showdown]]></title>
+    <link href="http://jbavari.github.io/blog/2014/05/16/kcdc-javascript-build-system-showdown/"/>
+    <updated>2014-05-16T10:44:00-06:00</updated>
+    <id>http://jbavari.github.io/blog/2014/05/16/kcdc-javascript-build-system-showdown</id>
+    <content type="html"><![CDATA[<p>I spoke about the different Javascript Build systems at KCDC. I wanted to make sure my slides are available to any who wanted to view them.</p>
+
+<p>A few things about the slides:</p>
+
+<p>There is a Gruntfile.js that contains tasks that I talked about in the presentation. There is also a gulpfile.js that does the same tasks as the Gruntfile. It will show you the differences between the two systems.</p>
+
+<p>The slides are found <a href="http://jbavari.github.io/JavascriptBuildSystemShowdown/#/">here</a>, and the repo for the files <a href="https://github.com/jbavari/JavascriptBuildSystemShowdown">here</a>.</p>
+
+<p>I hope this is helpful for some out there,
+Enjoy!</p>
+]]></content>
+  </entry>
+  
+</feed>

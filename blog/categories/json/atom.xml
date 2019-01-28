@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: json | Josh Bavari's Ramblings]]></title>
+  <link href="http://jbavari.github.io/blog/categories/json/atom.xml" rel="self"/>
+  <link href="http://jbavari.github.io/"/>
+  <updated>2019-01-27T19:16:40-07:00</updated>
+  <id>http://jbavari.github.io/</id>
+  <author>
+    <name><![CDATA[Josh Bavari]]></name>
+    <email><![CDATA[jbavari@gmail.com]]></email>
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Using JSON serializers in Sinatra]]></title>
+    <link href="http://jbavari.github.io/blog/2015/12/04/using-json-serializers-in-sinatra/"/>
+    <updated>2015-12-04T11:17:00-07:00</updated>
+    <id>http://jbavari.github.io/blog/2015/12/04/using-json-serializers-in-sinatra</id>
+    <content type="html"><![CDATA[<p>I ran into a quick little issue with serializing some of my <a href="https://github.com/jeremyevans/sequel">Sequel</a> models.</p>
+
+<p>The <a href="http://sequel.jeremyevans.net/rdoc-plugins/classes/Sequel/Plugins/JsonSerializer.html">official JSON serializer docs</a> are great, I just wanted to shine more light on the issue.</p>
+
+<p>If you&rsquo;re using Sequel models, just throw in the quick line of <code>plugin :json_serializer</code>.</p>
+
+<p>``` ruby</p>
+
+<h1>Get our database connection</h1>
+
+<p>require_relative &ldquo;./db&rdquo;
+module ScoreboardApi
+  class Team &lt; Sequel::Model(:team)</p>
+
+<pre><code>plugin :json_serializer
+serialize_attributes :json, :name
+</code></pre>
+
+<p>  end
+end
+```</p>
+
+<p>Then, you just use the Sinatra contrib gem to have it json serializer attach:</p>
+
+<p>```</p>
+
+<h1>Web framework</h1>
+
+<p>gem &ldquo;sinatra&rdquo;, &ldquo;1.4.6&rdquo;, require: &ldquo;sinatra/base&rdquo;</p>
+
+<h1>Sinatra addons &ndash; JSON, Namespace</h1>
+
+<p>gem &ldquo;sinatra-contrib&rdquo;, &ldquo;1.4.6&rdquo;
+```</p>
+
+<p>Set up your API routes and spit out JSON:</p>
+
+<p>```
+require &ldquo;bundler&rdquo;
+require &ldquo;sinatra/base&rdquo;
+require &ldquo;sinatra/json&rdquo;
+require &ldquo;sinatra/namespace&rdquo;</p>
+
+<p>require &ldquo;./models/scoreboard&rdquo;
+require &ldquo;./models/team&rdquo;</p>
+
+<p>Bundler.require</p>
+
+<p>module ScoreboardApi
+  class App &lt; Sinatra::Application</p>
+
+<pre><code>register Sinatra::Namespace
+configure do
+  disable :method_override
+  disable :static
+
+  set :sessions,
+      :httponly     =&gt; true,
+      :secure       =&gt; production?,
+      :expire_after =&gt; 31557600, # 1 year
+      :secret       =&gt; ENV["SESSION_SECRET"]
+end
+
+use Rack::Deflater
+
+namespace "/api/v1" do
+  get "/scores" do
+    json :scoreboard =&gt; Scoreboard.all
+  end
+
+  get "/teams" do
+    json :teams =&gt; Team.all
+  end
+end
+</code></pre>
+
+<p>  end
+end</p>
+
+<p>```</p>
+
+<p>That"s all folks!</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[RethinkDB the importing json process]]></title>
+    <link href="http://jbavari.github.io/blog/2014/03/19/rethinkdb-the-importing-json-process/"/>
+    <updated>2014-03-19T00:51:00-06:00</updated>
+    <id>http://jbavari.github.io/blog/2014/03/19/rethinkdb-the-importing-json-process</id>
+    <content type="html"><![CDATA[<p>I was playing around tonight with RethinkDB &ndash; and I wanted to import some data from a JSON file. It wasn&rsquo;t very well documented, so I wanted to make sure I high-light that for others. <a href="http://www.rethinkdb.com/docs/tutorials/elections/">The tutorial post to see RethinkDB&rsquo;s import</a> covers this command to fire off:</p>
+
+<p><code>
+rethinkdb import -c localhost:28015 --table registry.plugins --pkey _id -f plugins.json --format json
+</code></p>
+
+<p>It&rsquo;s real easy &ndash; lets break it down:</p>
+
+<ul>
+<li>The first part, <code>-c localhost:28015</code> specifies the cluster host and port.</li>
+<li>The next, <code>--table registry.plugins</code> specifies the database &lsquo;registry&rsquo;, and the table &lsquo;plugins&rsquo;.</li>
+<li>Next up is specifying the primary index key of &lsquo;_id&rsquo; with <code>--pkey _id</code>.</li>
+<li>Finally, <code>-f plugins.json --format json</code> tells Rethink to pull in the file located in the CWD named plugins.json, in the jason formats!</li>
+</ul>
+
+
+<p>Chances are, you might not have that Python driver, which gives you this message:</p>
+
+<p><code>
+Error when launching rethinkdb-import: No such file or directory
+The rethinkdb-import command depends on the RethinkDB Python driver, which must be installed.
+Instructions for installing the RethinkDB Python driver are available here:
+http://www.rethinkdb.com/docs/install-drivers/python/
+</code></p>
+
+<p>If thats the case, run the command to install the rethinkdb-import Python driver:</p>
+
+<p><code>
+sudo pip install rethinkdb
+</code></p>
+
+<p>Boom! Now get back to work.</p>
+]]></content>
+  </entry>
+  
+</feed>

@@ -1,1 +1,2017 @@
-My Octopress Page is coming soon &hellip;
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Josh Bavari's Ramblings</title>
+  <meta name="author" content="Josh Bavari">
+
+  
+  <meta name="description" content="Explain why the post &ndash; job required, growing pains, need for stability and health of the repo
+Why to test
+What to test
+How to test Lint &ndash &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://jbavari.github.io">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="Josh Bavari's Ramblings" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">Josh Bavari's Ramblings</a></h1>
+  
+    <h2>tech babbles on Ruby, Javascript, Rails, Phonegap/Cordova, Grunt, and more</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:jbavari.github.io" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+  <li><a href="/about">About</a></li>
+  <li><a href="/speaking">Speaking</a></li>
+  <li><a href="/knowledge">Knowledge</a></li>
+  <li><a href="/about/resume">Resume</a></li>
+  <li><a href="/cv">C.V.</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div class="blog-index">
+  
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2017/04/16/puppet-a-testing-handbook/">Puppet: A Testing Handbook</a></h1>
+    
+    
+      <p class="meta">
+        <span class="reading-time">less than a 1 minute read</span>
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2017-04-16T13:09:00-06:00" pubdate data-updated="true">Apr 16<span>th</span>, 2017</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><ul>
+<li>Explain why the post &ndash; job required, growing pains, need for stability and health of the repo</li>
+<li>Why to test</li>
+<li>What to test</li>
+<li>How to test
+<strong> Lint &ndash; Rake file
+</strong> Parser &ndash; rake file with globbing to run easier
+<strong> Rspec &ndash; spec type tests to run on puppet code (syntax mainly)
+</strong> Beaker &ndash; run tests on provisioned VM to ensure correct</li>
+</ul>
+
+
+<p>Cover:</p>
+
+<p>puppet-lint
+puppet parser validate &lt;manifest.pp>
+puppet-rspec &ndash; A gem that runs rspec unit tests on a module (Based on compiled catalog)
+Beaker</p>
+
+<hr />
+
+<p>Part of my role at work is managing a fleet of robots, servers, and other
+infrastructure responsible for running our business. Due to the nature of our
+business, we run within customer warehouses.</p>
+
+<p>Being a one man operation, one of my main concerns is keeping all the systems
+stable and proper working conditions. I am not the only developer touching our
+puppet code, but I&rsquo;m the one responsible for the system(s).</p>
+
+<p>As I embarked on the journey to add reliability to our infrastructure, something
+very clear came up: there&rsquo;s a lot of information about testing puppet, but most
+of it is fractured, out of date, or hard to understand. <a href="https://www.slideshare.net/PuppetLabs/puppetconf-2016-the-future-of-testing-puppet-code-gareth-rushgrove-puppet?qid=eee7d5c2-f52e-4ceb-8000-42e4fc174721&amp;v=&amp;b=&amp;from_search=2">See this slideshow from 2016 about the state of testing puppet</a>.</p>
+
+<p>I&rsquo;m writing this post up to act as a handbook of sorts for testing puppet, as
+well as a &lsquo;repository&rsquo; for testing puppet.</p>
+
+<h1>Testing resources</h1>
+
+<ul>
+<li><a href="http://puppet-lint.com/">Puppet-lint</a> &ndash; Useful for linting your puppet code</li>
+<li><a href="http://rspec-puppet.com/">Rspec Puppet</a> &ndash; Rspec tests for puppet code</li>
+<li><a href="https://docs.puppet.com/puppet/4.10/tests_smoke.html">Puppet: module smoke testing</a></li>
+<li><a href="http://www.example42.com/tutorials/PuppetTutorial/#slide-80">Slideshow about all things puppet</a></li>
+<li><a href="https://www.safaribooksonline.com/library/view/extending-puppet-/9781785885686/">Extending Puppet &ndash; Second Edition</a></li>
+<li><a href="https://github.com/puppetlabs/beaker/">Beaker</a></li>
+<li><a href="http://www.xkyle.com/getting-started-puppet-acceptance-tests-with-beaker/">Getting Started Puppet Acceptance Tests With Beaker</a></li>
+<li><a href="https://github.com/puppetlabs/puppetlabs-mysql/tree/master/spec">Great example of testing &ndash; Puppet MySQL module</a></li>
+<li><a href="https://github.com/puppetlabs/puppetlabs_spec_helper">Puppetlabs Spec Helper</a></li>
+<li><a href="https://www.puppetcookbook.com/posts/simple-syntax-check-manifests.html">Puppet Cookbook &ndash; Simple Syntax Check</a></li>
+<li><a href="http://www.cakesolutions.net/teamblogs/testing-puppet">Testing Puppet</a></li>
+</ul>
+
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2017/03/13/test-coverage-reports-in-elixir/">Test Coverage Reports in Elixir</a></h1>
+    
+    
+      <p class="meta">
+        <span class="reading-time">less than a 1 minute read</span>
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2017-03-13T18:38:00-06:00" pubdate data-updated="true">Mar 13<span>th</span>, 2017</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Lately I&rsquo;ve been learning a ton more about Elixir and really working towards refactoring and hardening the system.</p>
+
+<p>On my current project, I&rsquo;ve got about 200 tests that exercise various parts of the system. Lately though, I&rsquo;ve been trying to analyze which parts of the system aren&rsquo;t being covered, and of course, theres tools to help with that.</p>
+
+<p>The two I looked at were <a href="https://github.com/parroty/excoveralls">Coveralls</a> and <a href="https://github.com/alfert/coverex">Coverex</a>. I&rsquo;m going to be using <code>coverex</code> in this post.</p>
+
+<p>Getting started is a breeze, check the readme for that. I&rsquo;ll cover it briefly for a bit here, my modifying our <code>mix.exs</code> file:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='elixir'><span class='line'>  <span class="c1"># in `def project`, we add test_coverage</span>
+</span><span class='line'>  <span class="ss">test_coverage:</span> <span class="p">[</span>
+</span><span class='line'>    <span class="ss">tool:</span> <span class="no">Coverex</span><span class="o">.</span><span class="no">Task</span>
+</span><span class='line'>  <span class="p">],</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="c1"># in deps, add the depedency for only test environment</span>
+</span><span class='line'>  <span class="p">{</span><span class="ss">:coverex</span><span class="p">,</span> <span class="s2">&quot;~&gt; 1.4.10&quot;</span><span class="p">,</span> <span class="ss">only:</span> <span class="ss">:test</span><span class="p">},</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>After setup, running <code>mix test --cover</code> generates some reports in your projects <code>./cover</code> folder &ndash; with <code>functions.html</code> and <code>modules.html</code>. These give you your standard coverage reports with lines covered / ratio covered.</p>
+
+<p>For my project, I had quite a bit of generated files using <a href="https://github.com/bitwalker/exprotobuf">exprotobuf</a>. The coverage report was getting butchered from not using these many files in my tests.</p>
+
+<p>According to the docs, we can add a keyword for <code>ignore_modules</code> in the keyword list <code>test_coverage</code> and the coverage reports will ignore those modules.</p>
+
+<p>However, for my generated list of modules, I had quite the growing list to ignore and it quickly became unwieldy to put that list of modules in my <code>mix.exs</code> file.</p>
+
+<p>Since we can&rsquo;t access other modules from our mix file, I had a quick solution. I created a <code>.coverignore</code> file in the project directory, lumped in all the modules I wanted to ignore (from the <code>modules.html</code> generated file) and put them all in the <code>.coverignore</code> file.</p>
+
+<p>I ensured all the modules I wanted to ignore were all newline delimited (<code>\n</code>).</p>
+
+<p>From there, I modified my <code>mix.exs</code> file as such:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='elixir'><span class='line'>  <span class="c1"># Near the top</span>
+</span><span class='line'>  <span class="nv">@ignore_modules</span> <span class="no">File</span><span class="o">.</span><span class="n">read!</span><span class="p">(</span><span class="s2">&quot;./.coverignore&quot;</span><span class="p">)</span> <span class="o">|&gt;</span> <span class="no">String</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;\n&quot;</span><span class="p">)</span> <span class="o">|&gt;</span> <span class="no">Enum</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="err">&amp;</span><span class="p">(</span><span class="no">String</span><span class="o">.</span><span class="n">to_atom</span><span class="p">(</span><span class="nv">&amp;1</span><span class="p">)))</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="c1"># in def project</span>
+</span><span class='line'>  <span class="ss">test_coverage:</span> <span class="p">[</span>
+</span><span class='line'>    <span class="ss">tool:</span> <span class="no">Coverex</span><span class="o">.</span><span class="no">Task</span><span class="p">,</span>
+</span><span class='line'>    <span class="ss">ignore_modules:</span> <span class="nv">@ignore_modules</span>
+</span><span class='line'>  <span class="p">],</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Boom, that does it! Now we&rsquo;ve got a manageable list of modules to ignore in a separate file so we can keep our mix file clean.</p>
+
+<p>All in all, <code>coverex</code> is a great module, and I would suggest using it if you do not want to ship data to coveralls.</p>
+
+<p>Hope this helps, happy coding. Cheers!</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2016/12/29/multicast-service-discovery-in-electron/">Multicast Service Discovery in Electron</a></h1>
+    
+    
+      <p class="meta">
+        <span class="reading-time">less than a 1 minute read</span>
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2016-12-29T14:01:00-07:00" pubdate data-updated="true">Dec 29<span>th</span>, 2016</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>I’ve been playing around with mDNS lately for broadcasting some services for applications to auto-connect with.</p>
+
+<p>The first experiment I had was setting up a server that broadcasts a TCP endpoint for an Electron application to discover and connect for the application data.</p>
+
+<p>This was so easily done that I challenged myself to see how fast I can whip out a blog post.</p>
+
+<p>First, get an Ubuntu server up (I used a Vagrant VM).</p>
+
+<p>Run the commands:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>sudo apt-get install avahi-utils</span></code></pre></td></tr></table></div></figure>
+
+
+<p>From here, the service for avahi (mdns) should be auto-started. Edit the configuration to enable broadcasting:</p>
+
+<p><code>vim /etc/avahi/avahi-daemon.conf</code> – here’s a config that’s minimally broadcasting only the IPv4 address:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>[server]
+</span><span class='line'>host-name=webserver
+</span><span class='line'>domain-name=local
+</span><span class='line'>use-ipv4=yes
+</span><span class='line'>use-ipv6=no
+</span><span class='line'>allow-interfaces=eth1
+</span><span class='line'>deny-interfaces=eth0
+</span><span class='line'>ratelimit-interval-usec=1000000
+</span><span class='line'>ratelimit-burst=1000
+</span><span class='line'>
+</span><span class='line'>[wide-area]
+</span><span class='line'>enable-wide-area=yes
+</span><span class='line'>
+</span><span class='line'>[publish]
+</span><span class='line'>publish-addresses=yes
+</span><span class='line'>publish-hinfo=yes
+</span><span class='line'>publish-workstation=no
+</span><span class='line'>publish-domain=yes</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Now, create a service configuration: <code>vim /etc/avahi/services/mywebserver.service</code>, with this contents:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>&lt;service-group&gt;
+</span><span class='line'>  &lt;name&gt;Webserver&lt;/name&gt;
+</span><span class='line'>  &lt;service&gt;
+</span><span class='line'>    &lt;type&gt;_http._tcp&lt;/type&gt;
+</span><span class='line'>    &lt;port&gt;80&lt;/port&gt;
+</span><span class='line'>  &lt;/service&gt;
+</span><span class='line'>&lt;/service-group&gt;</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Simple as that. Just restart the avahi-daemon – <code>sudo service avahi-daemon restart</code>.</p>
+
+<p>This should now have your server broadcasting that it has a webserver running at port 80, named <code>Webserver</code>.</p>
+
+<p>To check the service is broadcasting, run <code>avahi-browse _http._tcp -tr</code> – this should show your server as servername.local, with <code>Webserver</code>, pointing to its IP and port.</p>
+
+<p>Example:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>+   eth1 IPv4 webserver                              Web Site             local
+</span><span class='line'>=   eth1 IPv4 webserver                              Web Site             local
+</span><span class='line'>   hostname = [webserver.local]
+</span><span class='line'>   address = [192.168.0.101]
+</span><span class='line'>   port = [80]
+</span><span class='line'>   txt = []</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Now for the electron portion, in your application, install the node mdns module: <code>npm install --save mdns</code>.</p>
+
+<p>This will add the node module to your project, but since it has native compilation steps, you must build it with <code>electron-rebuild</code>. Do this: <code>npm install --save-dev electron-rebuild</code>.</p>
+
+<p>Then run: <code>./node_modules/.bin/electron-rebuild</code> – this will rebuild the mdns module for your electron node version correctly.</p>
+
+<p>To do the DNS lookups, simply run the steps from the node mdns <code>README</code>. Set the discovery type to <code>http</code> and it will find your service. From there, you can grab the address and then get the data from the web server (or html page redirection) as you so wish!</p>
+
+<p>Happy coding!</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2016/03/11/using-erlang-observer-on-a-remote-elixir-server/">Using Erlang Observer on a Remote Elixir Server</a></h1>
+    
+    
+      <p class="meta">
+        <span class="reading-time">less than a 1 minute read</span>
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2016-03-11T14:01:00-07:00" pubdate data-updated="true">Mar 11<span>th</span>, 2016</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>I’ve been using Elixir a ton at work and in some fun side projects and I’m absolutely in love with it.</p>
+
+<p>One tool I especially love is the Erlang Observer tool, that shows you IO, memory, and CPU usage used by your app and the Erlang VM.</p>
+
+<p>Once I got some apps deployed, I wanted to observe them remotely. I found a few <a href="https://groups.google.com/forum/#!topic/elixir-lang-talk/312PlJLSgLw">google forum</a> posts and the <a href="http://elixir-lang.org/docs/stable/iex/IEx.html">IEx docs</a>, but I wanted to wrap up this knowledge for when I need it in the future.</p>
+
+<p>I’m going to monitor a Phoenix app in this quick blog post.</p>
+
+<p>First, fire up your Phoenix server on say, a VPS, giving it a node name:</p>
+
+<p><code>iex --name server@64.16.134.61 --cookie jbavari -S mix phoenix.server</code></p>
+
+<p>Then on your remote viewing machine, say your Mac, run the following:</p>
+
+<p><code>iex --name josh@192.168.1.1 --cookie jbavari</code></p>
+
+<p>Now we’re set up to do some remote observations!</p>
+
+<p>Fire up <code>:observer.start</code> on your local machine, which should open up the Erlang observer.</p>
+
+<p>Now from the menu, select ‘Nodes’, then you should see your node there. If not, click the connect to node button, type in your <code>server@64.16.134.61</code> node address and you should be able to view your node via the observer!</p>
+
+<p>Enjoy!</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2016/01/24/custom-json-encoding-in-phoenix/">Custom JSON Encoding in Phoenix</a></h1>
+    
+    
+      <p class="meta">
+        <span class="reading-time">less than a 1 minute read</span>
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2016-01-24T19:30:00-07:00" pubdate data-updated="true">Jan 24<span>th</span>, 2016</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>I recently have been working a lot using Leaflet.js to do some mapping.</p>
+
+<p>In some of my models, I use the lovely <code>Geo</code> package for Elixir point and geospatial usage. I needed to add support for Poison to encode my model.</p>
+
+<p>I&rsquo;ve been serving geo json from my models, and I needed a way to use the JSON encoding way easier. I&rsquo;m sending some data out to a ZeroMQ socket so I need to encode it by transorming my Geo module in a way that I could encode it with Geo JSON.</p>
+
+<p>I modified my model in two ways &ndash; one by putting the <code>@derive</code> directive to tell Poison to encode only certain fields. That is one way.</p>
+
+<p>In another way, I needed to encode it everytime by calling the <code>Geo.JSON.encode</code> method without me having to do it. You can see that in the <code>defimpl</code>.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+</pre></td><td class='code'><pre><code class='elixir'><span class='line'><span class="k">defmodule</span> <span class="no">MyApp</span><span class="o">.</span><span class="no">Point</span> <span class="k">do</span>
+</span><span class='line'><span class="k">  </span><span class="kn">use</span> <span class="no">MyApp</span><span class="o">.</span><span class="no">Web</span><span class="p">,</span> <span class="ss">:model</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="c1"># Option 1 - specify exactly which fields to encode</span>
+</span><span class='line'>  <span class="nv">@derive</span> <span class="p">{</span><span class="no">Poison</span><span class="o">.</span><span class="no">Encoder</span><span class="p">,</span> <span class="ss">only:</span> <span class="p">[</span><span class="ss">:id</span><span class="p">,</span> <span class="ss">:name</span><span class="p">,</span> <span class="ss">:geo_json</span><span class="p">]}</span>
+</span><span class='line'>  <span class="n">schema</span> <span class="s2">&quot;points&quot;</span> <span class="k">do</span>
+</span><span class='line'><span class="k">    </span><span class="n">field</span> <span class="ss">:name</span><span class="p">,</span> <span class="ss">:string</span>
+</span><span class='line'>    <span class="n">field</span> <span class="ss">:position</span><span class="p">,</span> <span class="no">Geo</span><span class="o">.</span><span class="no">Point</span>
+</span><span class='line'>    <span class="n">field</span> <span class="ss">:geo_json</span><span class="p">,</span> <span class="ss">:string</span><span class="p">,</span> <span class="ss">virtual:</span> <span class="no">true</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">timestamps</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">def</span> <span class="n">encode_model</span><span class="p">(</span><span class="n">point</span><span class="p">)</span> <span class="k">do</span>
+</span><span class='line'><span class="k">    </span><span class="err">%</span><span class="no">MyApp</span><span class="o">.</span><span class="no">Point</span><span class="p">{</span><span class="n">point</span> <span class="o">|</span> <span class="ss">geo_json:</span> <span class="no">Geo</span><span class="o">.</span><span class="no">JSON</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="n">point</span><span class="o">.</span><span class="n">position</span><span class="p">)</span> <span class="p">}</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">defimpl</span> <span class="no">Poison</span><span class="o">.</span><span class="no">Encoder</span><span class="p">,</span> <span class="ss">for:</span> <span class="no">MyApp</span><span class="o">.</span><span class="no">Point</span> <span class="k">do</span>
+</span><span class='line'><span class="k">    def</span> <span class="n">encode</span><span class="p">(</span><span class="n">point</span><span class="p">,</span> <span class="n">options</span><span class="p">)</span> <span class="k">do</span>
+</span><span class='line'><span class="k">      </span><span class="n">point</span> <span class="o">=</span> <span class="no">MyApp</span><span class="o">.</span><span class="no">Point</span><span class="o">.</span><span class="n">encode_model</span><span class="p">(</span><span class="n">point</span><span class="p">)</span>
+</span><span class='line'>      <span class="no">Poison</span><span class="o">.</span><span class="no">Encoder</span><span class="o">.</span><span class="no">Map</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="no">Map</span><span class="o">.</span><span class="n">take</span><span class="p">(</span><span class="n">point</span><span class="p">,</span> <span class="p">[</span><span class="ss">:id</span><span class="p">,</span> <span class="ss">:name</span><span class="p">,</span> <span class="ss">:geo_json</span><span class="p">]),</span> <span class="n">options</span><span class="p">)</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Cheers.</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2016/01/24/adding-additional-static-paths-in-phoenix/">Adding Additional Static Paths in Phoenix</a></h1>
+    
+    
+      <p class="meta">
+        <span class="reading-time">less than a 1 minute read</span>
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2016-01-24T19:24:00-07:00" pubdate data-updated="true">Jan 24<span>th</span>, 2016</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Phoenix is awesome.</p>
+
+<p>A problem I ran into lately is how to add additional static paths to be served.</p>
+
+<p>If you take a look in your <code>lib/endpoint.ex</code> file, you&rsquo;ll see the plug used for adding static paths:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='elixir'><span class='line'><span class="n">plug</span> <span class="no">Plug</span><span class="o">.</span><span class="no">Static</span><span class="p">,</span>
+</span><span class='line'>  <span class="ss">at:</span> <span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="ss">from:</span> <span class="ss">:electronify</span><span class="p">,</span> <span class="ss">gzip:</span> <span class="no">false</span><span class="p">,</span>
+</span><span class='line'>  <span class="ss">only:</span> <span class="err">~</span><span class="n">w</span><span class="p">(</span><span class="n">css</span> <span class="n">fonts</span> <span class="n">images</span> <span class="n">js</span> <span class="n">favicon</span><span class="o">.</span><span class="n">ico</span> <span class="n">robots</span><span class="o">.</span><span class="n">txt</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>I wanted to add another folder to be served, &lsquo;zips&rsquo;, that I had to edit the <code>only:</code> line in the plug specification as such:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='elixir'><span class='line'><span class="n">plug</span> <span class="no">Plug</span><span class="o">.</span><span class="no">Static</span><span class="p">,</span>
+</span><span class='line'>  <span class="ss">at:</span> <span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="ss">from:</span> <span class="ss">:electronify</span><span class="p">,</span> <span class="ss">gzip:</span> <span class="no">false</span><span class="p">,</span>
+</span><span class='line'>  <span class="ss">only:</span> <span class="err">~</span><span class="n">w</span><span class="p">(</span><span class="n">css</span> <span class="n">fonts</span> <span class="n">images</span> <span class="n">js</span> <span class="n">favicon</span><span class="o">.</span><span class="n">ico</span> <span class="n">robots</span><span class="o">.</span><span class="n">txt</span> <span class="n">zips</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>There you have it, now I can access the files in the <code>zips</code> folder in <code>priv/static/zips</code> through the URL. Cheers!</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2016/01/16/shipping-data-with-protocol-buffers-in-elixir/">Shipping Data With Protocol Buffers in Elixir</a></h1>
+    
+    
+      <p class="meta">
+        <span class="reading-time">less than a 1 minute read</span>
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2016-01-16T22:49:00-07:00" pubdate data-updated="true">Jan 16<span>th</span>, 2016</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Lately, I&rsquo;ve needed some data shipped across to various nodes to exchange data in a variety of places on a problem I was working on. There were a few ways to get that data shipped across, as the usual suspects are JSON, XML, or Google&rsquo;s <a href="https://developers.google.com/protocol-buffers/?hl=en">Protocol Buffers</a>.</p>
+
+<p>For this specific problem, we were needing to get that data shared from C++ nodes to Elixir/Erlang.</p>
+
+<p>Since the team was using Protocol buffers already, I decided to give them a run in Elixir using <a href="https://github.com/bitwalker/exprotobuf">exprotobuf</a>.</p>
+
+<p>Note: <a href="https://github.com/jbavari/elixir-zeromq-protobuf-uploader">the client for this experiement is on github</a>.</p>
+
+<h2>The idea</h2>
+
+<p>The idea here is &ndash; we&rsquo;ll capture pieces of data from one node and ship it to the server for processing. We define the data structure by a <code>.proto</code> file, then turn our data into binary form by encoding it, and finally shipping it to it&rsquo;s destination. We could do the same thing with JSON, but we want the data as light as possible.</p>
+
+<p>We&rsquo;ll use <a href="http://zeromq.org/">ZeroMQ</a> to ship the data and use the Elixir package <a href="https://github.com/zeromq/exzmq">exzmq</a> to encode in protocol buffers.</p>
+
+<h2>The process</h2>
+
+<p>First we define our protocol buffer format for an image message we want to send with data, its width, height, and bits per pixel:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='protobuf'><span class='line'><span class="kd">message</span> <span class="nc">ImageMsg</span> <span class="p">{</span>
+</span><span class='line'>  <span class="k">optional</span> <span class="kt">bytes</span> <span class="na">data</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+</span><span class='line'>  <span class="k">optional</span> <span class="kt">int32</span> <span class="na">width</span> <span class="o">=</span> <span class="mi">2</span><span class="p">;</span>
+</span><span class='line'>  <span class="k">optional</span> <span class="kt">int32</span> <span class="na">height</span> <span class="o">=</span> <span class="mi">3</span><span class="p">;</span>
+</span><span class='line'>  <span class="k">optional</span> <span class="kt">int32</span> <span class="na">bpp</span> <span class="o">=</span> <span class="mi">4</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>We set up our application to use <code>exprotobuf</code> in our <code>mix.exs</code> file:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='elixir'><span class='line'><span class="k">def</span> <span class="n">application</span> <span class="k">do</span>
+</span><span class='line'><span class="k">    </span><span class="p">[</span><span class="ss">applications:</span> <span class="p">[</span><span class="ss">:logger</span><span class="p">,</span> <span class="ss">:exzmq</span><span class="p">,</span> <span class="ss">:exprotobuf</span><span class="p">],</span>
+</span><span class='line'>     <span class="ss">mod:</span> <span class="p">{</span><span class="no">Zmq2</span><span class="p">,</span> <span class="p">[]}]</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>as well as including it as a dependency:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='elixir'><span class='line'><span class="k">defp</span> <span class="n">deps</span> <span class="k">do</span>
+</span><span class='line'><span class="k">  </span><span class="p">[</span>
+</span><span class='line'>    <span class="p">{</span><span class="ss">:exzmq</span><span class="p">,</span> <span class="ss">git:</span> <span class="s2">&quot;https://github.com/zeromq/exzmq&quot;</span><span class="p">},</span>
+</span><span class='line'>    <span class="p">{</span><span class="ss">:exprotobuf</span><span class="p">,</span> <span class="s2">&quot;1.0.0-rc1&quot;</span><span class="p">}</span>
+</span><span class='line'>  <span class="p">]</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Finally we create an Elixir struct from this <a href="https://github.com/jbavari/elixir-zeromq-protobuf-uploader/blob/master/lib/proto/imagemsg.proto">proto file</a> as such:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='elixir'><span class='line'><span class="k">defmodule</span> <span class="no">Zmq2</span><span class="o">.</span><span class="no">Protobuf</span> <span class="k">do</span>
+</span><span class='line'><span class="k">  </span><span class="kn">use</span> <span class="no">Protobuf</span><span class="p">,</span> <span class="ss">from:</span> <span class="no">Path</span><span class="o">.</span><span class="n">wildcard</span><span class="p">(</span><span class="no">Path</span><span class="o">.</span><span class="n">expand</span><span class="p">(</span><span class="s2">&quot;./proto/imagemsg.proto&quot;</span><span class="p">,</span> <span class="n">__DIR__</span><span class="p">))</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Now that we have our protobuf file read in, let&rsquo;s get an images binary data, create an elixir structure from our protobuf file, and send that data over a Zero MQ socket (using <code>exzmq</code>):</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+</pre></td><td class='code'><pre><code class='elixir'><span class='line'><span class="k">def</span> <span class="n">check_file</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="n">socket</span><span class="p">)</span> <span class="k">do</span>
+</span><span class='line'><span class="k">  </span><span class="no">IO</span><span class="o">.</span><span class="n">puts</span> <span class="s2">&quot;Sending image from file path: </span><span class="si">#{</span><span class="no">Path</span><span class="o">.</span><span class="n">expand</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="n">__DIR__</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">case</span> <span class="no">File</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="no">Path</span><span class="o">.</span><span class="n">expand</span><span class="p">(</span><span class="n">file_path</span><span class="p">))</span> <span class="k">do</span>
+</span><span class='line'><span class="k">    </span><span class="p">{</span><span class="ss">:error</span><span class="p">,</span> <span class="ss">:enoent</span><span class="p">}</span> <span class="o">-&gt;</span>
+</span><span class='line'>      <span class="no">IO</span><span class="o">.</span><span class="n">puts</span> <span class="s2">&quot;No file at the path: </span><span class="si">#{</span><span class="n">file_path</span><span class="si">}</span><span class="s2">&quot;</span>
+</span><span class='line'>    <span class="p">{</span><span class="ss">:ok</span><span class="p">,</span> <span class="n">img_data</span><span class="p">}</span> <span class="o">-&gt;</span>
+</span><span class='line'>      <span class="n">send_image_data</span><span class="p">(</span><span class="n">socket</span><span class="p">,</span> <span class="n">img_data</span><span class="p">)</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">def</span> <span class="n">send_image_data</span><span class="p">(</span><span class="n">socket</span><span class="p">,</span> <span class="n">img_data</span><span class="p">)</span> <span class="k">do</span>
+</span><span class='line'><span class="k">  </span><span class="n">img_message</span> <span class="o">=</span> <span class="no">Zmq2</span><span class="o">.</span><span class="no">Protobuf</span><span class="o">.</span><span class="no">ImageMsg</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="ss">data:</span> <span class="n">img_data</span><span class="p">)</span>
+</span><span class='line'>  <span class="n">encoded_data</span> <span class="o">=</span> <span class="no">Zmq2</span><span class="o">.</span><span class="no">Protobuf</span><span class="o">.</span><span class="no">ImageMsg</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="n">img_message</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="no">IO</span><span class="o">.</span><span class="n">puts</span> <span class="s2">&quot;The encoded data: </span><span class="si">#{</span><span class="n">inspect</span> <span class="n">encoded_data</span><span class="si">}</span><span class="s2">&quot;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="no">Exzmq</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">socket</span><span class="p">,</span> <span class="p">[</span><span class="n">encoded_data</span><span class="p">])</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="no">IO</span><span class="o">.</span><span class="n">puts</span> <span class="s2">&quot;Sent request - awaiting reply\n\n&quot;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="c1"># {:ok, r} =</span>
+</span><span class='line'>  <span class="k">case</span> <span class="no">Exzmq</span><span class="o">.</span><span class="n">recv</span><span class="p">(</span><span class="n">socket</span><span class="p">)</span> <span class="k">do</span>
+</span><span class='line'><span class="k">    </span><span class="p">{</span><span class="ss">:ok</span><span class="p">,</span> <span class="n">r</span><span class="p">}</span> <span class="o">-&gt;</span> <span class="no">IO</span><span class="o">.</span><span class="n">puts</span><span class="p">(</span><span class="s2">&quot;Received reply </span><span class="si">#{</span><span class="n">inspect</span> <span class="n">r</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</span><span class='line'>    <span class="n">_</span> <span class="o">-&gt;</span> <span class="p">{</span><span class="ss">:error</span><span class="p">,</span> <span class="s2">&quot;No Reply&quot;</span><span class="p">}</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>And there we have it, a message sent serialized with protocol buffers. We can now apply this same strategy over any different protocol buffer messages we define, and ship them over any protocl we&rsquo;d like.</p>
+
+<h3>Some inspiration</h3>
+
+<p>Along the R&amp;D process, I came across <a href="http://dbeck.github.io">David Beck&rsquo;s blog</a>. David has an experiment where he was <a href="http://dbeck.github.io/Wrapping-up-my-Elixir-TCP-experiments/">sending several million messages in TCP</a> where he explores some ultra-efficient methods of sending messages, it&rsquo;s a great read. He also covers <a href="http://dbeck.github.io/5-lessons-learnt-from-choosing-zeromq-and-protobuf/">zeromq and protocol buffers</a> that goes more in depth into Protocol buffers and some lessons learned.</p>
+
+<p>Alas, we move on!</p>
+
+<p>Cheers</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/12/15/scoreboard-forms-in-react-and-angular-2/">Scoreboard Forms in React and Angular 2</a></h1>
+    
+    
+      <p class="meta">
+        <span class="reading-time">less than a 1 minute read</span>
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-12-15T23:01:00-07:00" pubdate data-updated="true">Dec 15<span>th</span>, 2015</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>As a developer, you should be focused on spending some of your own time learning and staying up to date with technology that is always moving.</p>
+
+<p>I wanted to find a reason to hop into some of the &lsquo;newer&rsquo; front-end frameworks, React and Angular 2, as well as some of the module bundlers <a href="http://browserify.org/">browserify</a> and <a href="https://webpack.github.io/">webpack</a>.</p>
+
+<p>I had the opportunity to try out Angular 2 while it was still in alpha. With the recent announcement of Angular 2 going out in Beta, I wanted to build a Scoreboard form that went along with my Scoreboard project to evaluate the two frameworks.</p>
+
+<p>This post will aim to build a simple scoreboard form in both frameworks, so you can see the same DOM interactions and the code it takes to form them.</p>
+
+<p>Please also note, I&rsquo;m still very much learning, and some code may not be &lsquo;ideal&rsquo;.</p>
+
+<p>We&rsquo;ll cover:</p>
+
+<ul>
+<li>The scoreboard form idea</li>
+<li>Learning the ideas behind the frameworks</li>
+<li>The bundling systems</li>
+<li>Angular 2 implementation (TypeScript)</li>
+<li>React implementation (ES6)</li>
+<li>The differences between the two</li>
+<li>Pros and Cons of each (in my eyes)</li>
+</ul>
+
+
+<p>All of the source code is available on my Github profile in the <a href="https://github.com/jbavari/scoreboard-form">scoreboard-form</a> repository.</p>
+
+<h1>The Scoreboard Form</h1>
+
+<p>A scoreboard is simple &ndash; you&rsquo;ll enter the two team names, then specify a touchdown or field goal for either team.</p>
+
+<p>That means we will need a few components: a scoreboard and a team.</p>
+
+<p>The idea will be to build these components in React and Angular2, having them use similar templates to render to the equivalent DOM structures.</p>
+
+<h2>Learning the ideas behind the frameworks</h2>
+
+<p>Both frameworks aim to contain all of the functionality and display into a component.</p>
+
+<p>The idea will be to build a team component, that displays teams, and a scoreboard component, that will display both of those teams and have a submit method to post that data to our scoreboard API server.</p>
+
+<p>The main difference we will see between the two frameworks is adapting to <a href="http://es6-features.org/">ES6</a> or <a href="http://www.typescriptlang.org/">TypeScript</a>.</p>
+
+<p>In either framework, we will create a class for the component in ES6/TypeScript, and then connect the template to it, and finally attach it in the DOM.</p>
+
+<h1>The bundling systems</h1>
+
+<p>We will use Browserify to pack up React into a single module, while using webpack to bundle up Angular 2 into a single bundle.</p>
+
+<p>What is bundling you say? It&rsquo;s taking all the source for our components and bundling them up with the framework code to have one JavaScript file to load the entire bundle. That way, we only need one JavaScript file instead of a whole load of <code>&lt;script&gt;</code> tags.</p>
+
+<h1>Angular 2 implementation</h1>
+
+<p>Angular 2 is built in TypeScript, which is a superset of JavaScript that allows types to have a &lsquo;stronger type&rsquo; to work with. We will build our component in TypeScript, and transpile it down to ES5 JavaScript.</p>
+
+<h2>Building the Team component</h2>
+
+<p>In Angular 2, we need to use a decorator (<a href="https://www.sitepen.com/blog/2015/10/20/typescript-decorators/">see this blog post about TypeScript decorators</a>) to specify a Team as a component that will render.</p>
+
+<p>We will import the Decorator, <code>Component</code>, and then apply it to our class. The <code>Component</code> decorator specifies which DOM element it will attach to (in this case, <code>team</code>), any inputs our control may have, what template it will use (specified as the <code>template</code> key), and what other directives will be used to parse our template.</p>
+
+<p>Then, we have our class that defines the component itself with a name and score, methods to increase score (<code>touchdown</code> and <code>fieldGoal</code>), a <code>toJson</code> method, and finally callbacks to update itself from the parent component.</p>
+
+<p>The team component:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>import {Component, EventEmitter, Output} from 'angular2/core';
+</span><span class='line'>import {NgFor, NgIf, NgModel} from 'angular2/common';
+</span><span class='line'>
+</span><span class='line'>@Component({
+</span><span class='line'>  directives: [NgFor, NgIf, NgModel],
+</span><span class='line'>  selector: 'team',
+</span><span class='line'>  template: `
+</span><span class='line'>    &lt;div *ngIf="name == ''"&gt;
+</span><span class='line'>      &lt;h3&gt;No team set&lt;/h3&gt;
+</span><span class='line'>      &lt;input type="text" [(ngModel)]="nameInput" placeholder="Enter a name"/&gt;
+</span><span class='line'>      &lt;button type="submit" (click)="setName()"&gt;Set name&lt;/button&gt;
+</span><span class='line'>    &lt;/div&gt;
+</span><span class='line'>    &lt;div *ngIf="name != ''"&gt;
+</span><span class='line'>      &lt;h3&gt;&lt;/h3&gt;
+</span><span class='line'>      &lt;button (click)="touchdown($event)"&gt;Touchdown&lt;/button&gt;
+</span><span class='line'>      &lt;button (click)="fieldGoal($event)"&gt;Field Goal&lt;/button&gt;
+</span><span class='line'>      &lt;h4&gt;Score: &lt;/h4&gt;
+</span><span class='line'>    &lt;/div&gt;
+</span><span class='line'>    `
+</span><span class='line'>    }
+</span><span class='line'>})
+</span><span class='line'>export class Team {
+</span><span class='line'>  @Output() updateTeam = new EventEmitter&lt;Team&gt;();
+</span><span class='line'>  constructor() {
+</span><span class='line'>    this.nameInput = '';
+</span><span class='line'>    this.name = '';
+</span><span class='line'>    this.score = 0;
+</span><span class='line'>  }
+</span><span class='line'>
+</span><span class='line'>  fieldGoal(e) {
+</span><span class='line'>    e.preventDefault();
+</span><span class='line'>    this.score += 3;
+</span><span class='line'>  }
+</span><span class='line'>
+</span><span class='line'>  touchdown(e) {
+</span><span class='line'>    e.preventDefault();
+</span><span class='line'>    this.score += 7;
+</span><span class='line'>  }
+</span><span class='line'>
+</span><span class='line'>  setName(nameInput) {
+</span><span class='line'>    this.name = this.nameInput;
+</span><span class='line'>    this.nameInput = '';
+</span><span class='line'>    if(this.updateTeam) {
+</span><span class='line'>      this.updateTeam.next(this);
+</span><span class='line'>    }
+</span><span class='line'>  }
+</span><span class='line'>
+</span><span class='line'>  toJson() {
+</span><span class='line'>    return { name: this.name, score: this.score };
+</span><span class='line'>  }
+</span><span class='line'>}
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>Defining the scoreboard component</h2>
+
+<p>Now we need to displays these teams in a side by side manner, a callback to update information from the team component, and a method to submit the scores to the API.</p>
+
+<p>We&rsquo;ll define the component as follows:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>import {Component} from 'angular2/core';
+</span><span class='line'>import {Team} from '../team/team';
+</span><span class='line'>
+</span><span class='line'>@Component({
+</span><span class='line'>  directives: [Team],
+</span><span class='line'>  selector: 'scoreboard',
+</span><span class='line'>  template: `
+</span><span class='line'>    &lt;form (ngSubmit)="submitScore()"&gt;
+</span><span class='line'>      &lt;div class="row"&gt;
+</span><span class='line'>        &lt;div class="col-md-6"&gt;
+</span><span class='line'>          &lt;h2&gt;Home Team&lt;/h2&gt;
+</span><span class='line'>          &lt;team (updateTeam)="updateHomeTeam($event)" home="true"&gt;&lt;/team&gt;
+</span><span class='line'>        &lt;/div&gt;
+</span><span class='line'>        &lt;div class="col-md-6"&gt;
+</span><span class='line'>          &lt;h2&gt;Visitor Team&lt;/h2&gt;
+</span><span class='line'>          &lt;team (updateTeam)="updateVisitorTeam($event)"&gt;&lt;/team&gt;
+</span><span class='line'>        &lt;/div&gt;
+</span><span class='line'>      &lt;/div&gt;
+</span><span class='line'>      &lt;div class="row"&gt;
+</span><span class='line'>        &lt;button type="submit"&gt;Submit&lt;/button&gt;
+</span><span class='line'>      &lt;/div&gt;
+</span><span class='line'>      &lt;div *ngIf="submitted"&gt;
+</span><span class='line'>        JSON payload: 
+</span><span class='line'>      &lt;/div&gt;
+</span><span class='line'>    &lt;/form&gt;  
+</span><span class='line'>  `
+</span><span class='line'>})
+</span><span class='line'>export class Scoreboard {
+</span><span class='line'>  homeTeam: Team = new Team();
+</span><span class='line'>  visitorTeam: Team = new Team();
+</span><span class='line'>  submitted: boolean = false;
+</span><span class='line'>  jsonPayload: string = null;
+</span><span class='line'>
+</span><span class='line'>  constuctor() {
+</span><span class='line'>  }
+</span><span class='line'>
+</span><span class='line'>  submitScore() {
+</span><span class='line'>    this.submitted = true;
+</span><span class='line'>    this.jsonPayload = JSON.stringify({ homeTeam: this.homeTeam.toJson(), visitorTeam: this.visitorTeam.toJson()});
+</span><span class='line'>  }
+</span><span class='line'>
+</span><span class='line'>  updateHomeTeam(team: Team) {
+</span><span class='line'>    this.homeTeam = team;
+</span><span class='line'>  }
+</span><span class='line'>
+</span><span class='line'>  updateVisitorTeam(team: Team) {
+</span><span class='line'>    this.visitorTeam = team;
+</span><span class='line'>  }
+</span><span class='line'>}
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>Pros and Cons</h2>
+
+<h3>Pros</h3>
+
+<h3>Cons</h3>
+
+<ul>
+<li>Angular 2 &ndash; docs are all over the place.</li>
+<li>Main blogs that are linked from docs site are using old kabob style (e.g. <code>*ng-if</code> instead of <code>*ngIf</code>).</li>
+<li>Webpack configuration &ndash; I didn&rsquo;t include zone.js in my entries, and I could not get any DOM updates coming from my components changing.</li>
+<li>When to use two-way bindings, and one-way bindings was good enough.</li>
+<li>No &lsquo;why&rsquo; to what im doing &ndash; it aims to just follow the same &lsquo;idea&rsquo; as Angular.js.</li>
+<li>Plunkers aren&rsquo;t up to date.</li>
+</ul>
+
+
+<h1>React implementation (ES6)</h1>
+
+<p>Now that we have the basic idea of the team and scoreboard, you&rsquo;ll see React is very similiar. Instead of having a decorator specify the template and DOM elements to attach to, we&rsquo;ll specify a class that extends <code>React.Component</code>, a method that will render the markup, and finally, some bootstrap code to attach our class to a DOM element.</p>
+
+<h2>Defining the team component</h2>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>import React from 'react';
+</span><span class='line'>
+</span><span class='line'>export default class Team extends React.Component {
+</span><span class='line'>  constructor(props) {
+</span><span class='line'>    super(props);
+</span><span class='line'>    this.props = props;
+</span><span class='line'>    this.name = props.name;
+</span><span class='line'>    this.score = props.score || 0;
+</span><span class='line'>    this.setName = this.setName.bind(this);
+</span><span class='line'>    // this.state = {name: this.name, score: this.score};
+</span><span class='line'>    this.touchdown = this.touchdown.bind(this);
+</span><span class='line'>    this.fieldGoal = this.fieldGoal.bind(this);
+</span><span class='line'>  }
+</span><span class='line'>
+</span><span class='line'>  fieldGoal(e) {
+</span><span class='line'>    e.preventDefault();
+</span><span class='line'>    this.score += 3;
+</span><span class='line'>    this.setState(this);
+</span><span class='line'>  }
+</span><span class='line'>
+</span><span class='line'>  touchdown(e) {
+</span><span class='line'>    e.preventDefault();
+</span><span class='line'>    this.score += 7;
+</span><span class='line'>    this.setState(this);
+</span><span class='line'>  }
+</span><span class='line'>
+</span><span class='line'>  setName(e) {
+</span><span class='line'>    e.preventDefault();
+</span><span class='line'>    this.name = this.refs.teamName.value;
+</span><span class='line'>    this.setState(this);
+</span><span class='line'>    this.props.update(this);
+</span><span class='line'>  }
+</span><span class='line'>
+</span><span class='line'>  toJson() {
+</span><span class='line'>    return { name: this.name, score: this.score };
+</span><span class='line'>  }
+</span><span class='line'>
+</span><span class='line'>  render() {
+</span><span class='line'>    if (!this.name) {
+</span><span class='line'>      return (
+</span><span class='line'>        &lt;div&gt;
+</span><span class='line'>          &lt;h3&gt;No team set&lt;/h3&gt;
+</span><span class='line'>          &lt;input type="text" ref="teamName" placeholder="Enter a name.." value={this.props.name}/&gt;
+</span><span class='line'>          &lt;button onClick={this.setName}&gt;Set Name&lt;/button&gt;
+</span><span class='line'>        &lt;/div&gt;
+</span><span class='line'>      );
+</span><span class='line'>    } else {
+</span><span class='line'>      return (
+</span><span class='line'>        &lt;div&gt;
+</span><span class='line'>          &lt;h3&gt;{this.name}&lt;/h3&gt;
+</span><span class='line'>          &lt;button onClick={this.touchdown}&gt;Touch Down&lt;/button&gt;
+</span><span class='line'>          &lt;button onClick={this.fieldGoal}&gt;Field Goal&lt;/button&gt;
+</span><span class='line'>          &lt;h4&gt;Score: {this.score}&lt;/h4&gt;
+</span><span class='line'>        &lt;/div&gt;
+</span><span class='line'>      );
+</span><span class='line'>    }
+</span><span class='line'>  }
+</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>Defining the Scoreboard component</h2>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>import Team from './team.jsx';
+</span><span class='line'>import React from 'react';
+</span><span class='line'>
+</span><span class='line'>export default class Scoreboard extends React.Component {
+</span><span class='line'>  constructor(props) {
+</span><span class='line'>    super(props);
+</span><span class='line'>    this.homeTeam = {};
+</span><span class='line'>    this.visitorTeam = {};
+</span><span class='line'>    this.url = this.props.url;
+</span><span class='line'>    this.submit = this.submit.bind(this);
+</span><span class='line'>    this.updateTeam = this.updateTeam.bind(this);
+</span><span class='line'>    this.submitted = false;
+</span><span class='line'>    this.jsonPayload = null;
+</span><span class='line'>  }
+</span><span class='line'>
+</span><span class='line'>  submit(event) {
+</span><span class='line'>    event.preventDefault();
+</span><span class='line'>    this.submitted = true;
+</span><span class='line'>    this.setState(this);
+</span><span class='line'>    this.jsonPayload = JSON.stringify({ homeTeam: this.homeTeam.toJson(), visitorTeam: this.visitorTeam.toJson()});
+</span><span class='line'>  }
+</span><span class='line'>
+</span><span class='line'>  updateTeam(team) {
+</span><span class='line'>    if (team.props.home) {
+</span><span class='line'>      this.homeTeam = team;
+</span><span class='line'>    } else {
+</span><span class='line'>      this.visitorTeam = team;
+</span><span class='line'>    }
+</span><span class='line'>  }
+</span><span class='line'>
+</span><span class='line'>  render() {
+</span><span class='line'>    var jsonInformation = this.submitted ? (&lt;div&gt;JSON payload: {this.jsonPayload}&lt;/div&gt;) : null;
+</span><span class='line'>    return (
+</span><span class='line'>      &lt;form onSubmit={this.submit}&gt;
+</span><span class='line'>        &lt;div className="row"&gt;
+</span><span class='line'>          &lt;div className="col-md-6"&gt;
+</span><span class='line'>            &lt;h2&gt;Home Team&lt;/h2&gt;
+</span><span class='line'>            &lt;Team home="true" update={this.updateTeam}&gt;&lt;/Team&gt;
+</span><span class='line'>          &lt;/div&gt;
+</span><span class='line'>          &lt;div className="col-md-6"&gt;
+</span><span class='line'>            &lt;h2&gt;Visitor Team&lt;/h2&gt;
+</span><span class='line'>            &lt;Team update={this.updateTeam}&gt;&lt;/Team&gt;
+</span><span class='line'>          &lt;/div&gt;
+</span><span class='line'>        &lt;/div&gt;
+</span><span class='line'>        &lt;div className="row"&gt;
+</span><span class='line'>          &lt;button type="submit"&gt;Submit&lt;/button&gt;
+</span><span class='line'>        &lt;/div&gt;
+</span><span class='line'>        {jsonInformation}
+</span><span class='line'>      &lt;/form&gt;
+</span><span class='line'>    )
+</span><span class='line'>  }
+</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Now you&rsquo;ll see, theres no way we tell React to attach to a DOM node to attach our components to the browser DOM.</p>
+
+<p>This happens by the bootstrapping code:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>import React from 'react';
+</span><span class='line'>import ReactDOM from 'react-dom';
+</span><span class='line'>import Scoreboard from '../component/scoreboard.jsx';
+</span><span class='line'>
+</span><span class='line'>window.app = (function() {
+</span><span class='line'>  return ReactDOM.render(&lt;Scoreboard/&gt;, document.getElementById('react-scoreboard'));
+</span><span class='line'>})();</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Now, React knows to use our <code>Scoreboard</code> component (the one that was imported) to attach it to the <code>react-scoreboard</code> DOM element with an id of <code>react-scoreboard</code>. Internally for the Scoreboard, it specifies it&rsquo;s render method:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>import Team from './team.jsx';
+</span><span class='line'>// .. snipped code ..
+</span><span class='line'>render() {
+</span><span class='line'>  var jsonInformation = this.submitted ? (&lt;div&gt;JSON payload: {this.jsonPayload}&lt;/div&gt;) : null;
+</span><span class='line'>  return (
+</span><span class='line'>    &lt;form onSubmit={this.submit}&gt;
+</span><span class='line'>      &lt;div className="row"&gt;
+</span><span class='line'>        &lt;div className="col-md-6"&gt;
+</span><span class='line'>          &lt;h2&gt;Home Team&lt;/h2&gt;
+</span><span class='line'>          &lt;Team home="true" update={this.updateTeam}&gt;&lt;/Team&gt;
+</span><span class='line'>        &lt;/div&gt;
+</span><span class='line'>        &lt;div className="col-md-6"&gt;
+</span><span class='line'>          &lt;h2&gt;Visitor Team&lt;/h2&gt;
+</span><span class='line'>          &lt;Team update={this.updateTeam}&gt;&lt;/Team&gt;
+</span><span class='line'>        &lt;/div&gt;
+</span><span class='line'>      &lt;/div&gt;
+</span><span class='line'>      &lt;div className="row"&gt;
+</span><span class='line'>        &lt;button type="submit"&gt;Submit&lt;/button&gt;
+</span><span class='line'>      &lt;/div&gt;
+</span><span class='line'>      {jsonInformation}
+</span><span class='line'>    &lt;/form&gt;
+</span><span class='line'>  )
+</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>Pros and Cons</h2>
+
+<h3>Pros</h3>
+
+<p><a href="https://chrome.google.com/webstore/detail/react-developer-tools/fmkadmapgofadopljbjfkapdkoienihi?hl=en">React Dev tools</a> &ndash; inspect react components, super handy.
+Dev docs talk about how to think in react &ndash; giving the why before the what, really helped understand the concepts.</p>
+
+<h3>Cons</h3>
+
+<p>Dev tooling is not straight forward &ndash; you have to decide yourself.
+Figuring how to plug in rendering steps between state changes. <code>this.setState({})</code> with some state information.</p>
+
+<h1>Differences between the two</h1>
+
+<p>The main difference I can see if how Angular 2 specifies its <code>selector</code> to find out how it attaches to a DOM element you specify.</p>
+
+<p>React just follows using JSX to specify the component, which you can pass in properties.</p>
+
+<p>Angular 2 takes the approach of keeping state and doing stateful checks from its Virtual DOM diff&#8217;ing. However, the templating directives you can use, like <code>*ngIf</code> requires handling a template of some sort, where as React, you can just use JavaScript conditionals to render your DOM.</p>
+
+<h1>Conclusions</h1>
+
+<p>I really like the approach React takes. I also feel like it is a year early to the Virtual DOM party, and Angular 2 is really trying to keep up.</p>
+
+<p>As far as intuition and ease of development goes, React was definitely easier. Even with my previous Angular 2 knowledge, it still took me longer to get up and going.</p>
+
+<p>To give Angular 2 a fair shot, it is still in Beta. However, if I were to start a project today, it would be in React, due to the huge community that is building, the tooling available, and being backed by Facebook, one of the utmost leaders in User inface design and performance.</p>
+
+<p>I hope this short write up helps! If you have any questions, please drop a comment and we&rsquo;ll clear things up!</p>
+
+<p>As a reminder, <a href="https://github.com/jbavari/scoreboard-form">here is all of the code</a> is available on Github, feel free to open an issue.</p>
+
+<p>Cheers!</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/12/12/using-brew-to-install-old-versions/">Using Brew to Install Old Versions</a></h1>
+    
+    
+      <p class="meta">
+        <span class="reading-time">less than a 1 minute read</span>
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-12-12T13:50:00-07:00" pubdate data-updated="true">Dec 12<span>th</span>, 2015</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>I just wanted to share a quick little tidbit on how to install older brew versions.</p>
+
+<p>I was having some issues with an older version of Elixir failing tests (1.0.1), and the latest version (1.1.1) is working fine.</p>
+
+<p>Just running <code>brew install elixir</code> gets latest.</p>
+
+<p>To get 1.0.1 installed, I first went to the <a href="https://github.com/Homebrew/homebrew">homebrew github repo</a>, looked at the <code>Library/Formula</code> folder, found the <code>elixir.rb</code> formula to install elixir, looked in the history, found 1.0.1, and then executed the following line:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>brew install https://raw.githubusercontent.com/Homebrew/homebrew/8506ced146655c24920f3cc5b20e6bc9e6e703cc/Library/Formula/elixir.rb</span></code></pre></td></tr></table></div></figure>
+
+
+<p>That did it, I easily got 1.0.1 installed, and going back to 1.1.1 was super easy.</p>
+
+<p>Hope this helps, enjoy! Cheers!</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/12/07/adding-postgresql-geometric-type-support-to-elixir/">Adding PostgreSQL Geometric Type Support to Elixir</a></h1>
+    
+    
+      <p class="meta">
+        <span class="reading-time">less than a 1 minute read</span>
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-12-07T18:04:00-07:00" pubdate data-updated="true">Dec 7<span>th</span>, 2015</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>In the last week or so, I&rsquo;ve had a blast playing around with basic Postgres <a href="http://www.postgresql.org/docs/9.4/static/datatype-geometric.html">geometric types</a> to do basic earth distance queries.</p>
+
+<p>From my favorite blog, <a href="http://datachomp.com/archives/radius-queries-in-postgres/">Datachomp shows how to use radius queries in postgres</a> to find the closest place to get a burrito fix. Since I&rsquo;ve been on an <a href="http://elixir-lang.org/">Elixir</a> kick lately, I figured it was time to contribute back to the open source world by adding first class burrito, err, geometric type support.</p>
+
+<h2>Initial reaction</h2>
+
+<p>I immediately made an Ecto model trying to use the point type in my model:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+</pre></td><td class='code'><pre><code class='elixir'><span class='line'><span class="k">defmodule</span> <span class="no">MyApp</span><span class="o">.</span><span class="no">LocationPoint</span> <span class="k">do</span>
+</span><span class='line'><span class="k">  </span><span class="kn">use</span> <span class="no">MyApp</span><span class="o">.</span><span class="no">Web</span><span class="p">,</span> <span class="ss">:model</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">schema</span> <span class="s2">&quot;location_point&quot;</span> <span class="k">do</span>
+</span><span class='line'><span class="k">    </span><span class="n">field</span> <span class="ss">:name</span><span class="p">,</span> <span class="ss">:string</span>
+</span><span class='line'>    <span class="n">field</span> <span class="ss">:date</span><span class="p">,</span> <span class="no">Ecto</span><span class="o">.</span><span class="no">DateTime</span>
+</span><span class='line'>    <span class="n">field</span> <span class="ss">:location</span><span class="p">,</span> <span class="ss">:point</span>
+</span><span class='line'>    <span class="n">timestamps</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nv">@required_fields</span> <span class="err">~</span><span class="n">w</span><span class="p">(</span><span class="n">name</span> <span class="n">date</span><span class="p">)</span>
+</span><span class='line'>  <span class="nv">@optional_fields</span> <span class="err">~</span><span class="n">w</span><span class="p">(</span><span class="n">location</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nv">@doc</span> <span class="sd">&quot;&quot;&quot;</span>
+</span><span class='line'><span class="sd">  Creates a changeset based on the `model` and `params`.</span>
+</span><span class='line'>
+</span><span class='line'><span class="sd">  If no params are provided, an invalid changeset is returned</span>
+</span><span class='line'><span class="sd">  with no validation performed.</span>
+</span><span class='line'><span class="sd">  &quot;&quot;&quot;</span>
+</span><span class='line'>  <span class="k">def</span> <span class="n">changeset</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">params</span> <span class="p">\\</span> <span class="ss">:empty</span><span class="p">)</span> <span class="k">do</span>
+</span><span class='line'><span class="k">    </span><span class="n">model</span>
+</span><span class='line'>    <span class="o">|&gt;</span> <span class="n">cast</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="nv">@required_fields</span><span class="p">,</span> <span class="nv">@optional_fields</span><span class="p">)</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Right away, when I ran the commands to retrieve this location from <code>iex</code>, it gave me some errors:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='elixir'><span class='line'><span class="err">$</span> <span class="n">iex</span> <span class="o">-</span><span class="no">S</span> <span class="n">mix</span>
+</span><span class='line'><span class="err">$</span> <span class="n">alias</span> <span class="no">MyApp</span><span class="o">.</span><span class="no">Repo</span>
+</span><span class='line'><span class="err">$</span> <span class="n">alias</span> <span class="no">MyApp</span><span class="o">.</span><span class="no">LocationPoint</span>
+</span><span class='line'><span class="err">$</span> <span class="no">Repo</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="no">LocationPoint</span><span class="p">)</span>
+</span><span class='line'><span class="err">$</span> <span class="o">**</span> <span class="p">(</span><span class="no">ArgumentError</span><span class="p">)</span> <span class="n">no</span> <span class="n">extension</span> <span class="n">found</span> <span class="n">for</span> <span class="n">oid</span> <span class="err">`</span><span class="m">600</span><span class="err">`</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Right away, I knew this mission was up to me to get point support into Postgrex.</p>
+
+<p>In this post, I&rsquo;ll outline how to add type support to Postgres via the Elixir package, <a href="https://github.com/ericmj/postgrex">postgrex</a>. We will walk through adding the <code>Point</code> data type in Postgres.</p>
+
+<p>This post will cover:</p>
+
+<ul>
+<li>How to see how postgres stores its types (built in and composite)</li>
+<li>How postgrex does its type lookups</li>
+<li>Finding the source type &ndash; adding it to postgres senders</li>
+<li>Looking up postgres source code for data mapping</li>
+<li>Adding new type <code>Point</code> type</li>
+<li>Adding built in <code>Type</code> structs</li>
+<li>Adding encode method</li>
+<li>Adding decode method</li>
+</ul>
+
+
+<h1>How Postgres stores its types</h1>
+
+<p>Postgres stores its types in a special system table called <code>pg_type</code> (<a href="http://www.postgresql.org/docs/9.4/static/catalog-pg-type.html">docs</a>). It defines a few things about the type:</p>
+
+<ul>
+<li>Its <code>typelem</code> &ndash; how the type is stored &ndash; array, or otherwise</li>
+<li>Its <code>typsend</code> &ndash; Output conversion function (binary format), or 0 if none</li>
+<li>Its <code>typarray</code> &ndash; an oid to another array type that has its send method</li>
+</ul>
+
+
+<h1>How Postgrex does type lookups</h1>
+
+<p>Postgrex at it&rsquo;s core is a simple data adapter into PostgreSQL from Elixir. It&rsquo;s an awesome library, and if you&rsquo;re using <a href="https://github.com/elixir-lang/ecto">Ecto</a>, you&rsquo;re already using it!</p>
+
+<p>First, let&rsquo;s look at how they are loading most types, by looking them up in the <code>pg_type</code> table in postgres:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+</pre></td><td class='code'><pre><code class='elixir'><span class='line'>  <span class="c1">### BOOTSTRAP TYPES AND EXTENSIONS ###</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nv">@doc</span> <span class="no">false</span>
+</span><span class='line'>  <span class="k">def</span> <span class="n">bootstrap_query</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">version</span><span class="p">)</span> <span class="k">do</span>
+</span><span class='line'><span class="k">    </span><span class="p">{</span><span class="n">rngsubtype</span><span class="p">,</span> <span class="n">join_range</span><span class="p">}</span> <span class="o">=</span>
+</span><span class='line'>      <span class="k">if</span> <span class="n">version</span> <span class="o">&gt;=</span> <span class="p">{</span><span class="m">9</span><span class="p">,</span> <span class="m">2</span><span class="p">,</span> <span class="m">0</span><span class="p">}</span> <span class="k">do</span>
+</span><span class='line'><span class="k">        </span><span class="p">{</span><span class="s2">&quot;coalesce(r.rngsubtype, 0)&quot;</span><span class="p">,</span>
+</span><span class='line'>         <span class="s2">&quot;LEFT JOIN pg_range AS r ON r.rngtypid = t.oid&quot;</span><span class="p">}</span>
+</span><span class='line'>      <span class="k">else</span>
+</span><span class='line'>        <span class="p">{</span><span class="s2">&quot;0&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">}</span>
+</span><span class='line'>      <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="sd">&quot;&quot;&quot;</span>
+</span><span class='line'><span class="sd">    SELECT t.oid, t.typname, t.typsend, t.typreceive, t.typoutput, t.typinput,</span>
+</span><span class='line'><span class="sd">           t.typelem, #{rngsubtype}, ARRAY (</span>
+</span><span class='line'><span class="sd">      SELECT a.atttypid</span>
+</span><span class='line'><span class="sd">      FROM pg_attribute AS a</span>
+</span><span class='line'><span class="sd">      WHERE a.attrelid = t.typrelid AND a.attnum &gt; 0 AND NOT a.attisdropped</span>
+</span><span class='line'><span class="sd">      ORDER BY a.attnum</span>
+</span><span class='line'><span class="sd">    )</span>
+</span><span class='line'><span class="sd">    FROM pg_type AS t</span>
+</span><span class='line'><span class="sd">    #{join_range}</span>
+</span><span class='line'><span class="sd">    WHERE</span>
+</span><span class='line'><span class="sd">      t.typname::text = ANY ((#{sql_array(m.type)})::text[]) OR</span>
+</span><span class='line'><span class="sd">      t.typsend::text = ANY ((#{sql_array(m.send)})::text[]) OR</span>
+</span><span class='line'><span class="sd">      t.typreceive::text = ANY ((#{sql_array(m.receive)})::text[]) OR</span>
+</span><span class='line'><span class="sd">      t.typoutput::text = ANY ((#{sql_array(m.output)})::text[]) OR</span>
+</span><span class='line'><span class="sd">      t.typinput::text = ANY ((#{sql_array(m.input)})::text[])</span>
+</span><span class='line'><span class="sd">    &quot;&quot;&quot;</span>
+</span><span class='line'>  <span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>You can see that under the hood, we&rsquo;re querying Postgres and asking it for it&rsquo;s types, so we can do OID lookups and call the appropriate encoder/decoder methods. From here, we can match up our newly added types encoding/decoding methods.</p>
+
+<h1>Finding the source type &ndash; adding it to postgres senders</h1>
+
+<p>Find information about the geometrics category:</p>
+
+<p><code>SELECT * from pg_type where typcategory = 'G';</code></p>
+
+<p>We will see the point type has an oid of 600, which is using a send specification of <code>point_send</code>. Other notable send types for geometries: <code>point_send lseg_send path_send box_send poly_send line_send circle_send</code>.</p>
+
+<p>Thus, we&rsquo;ll update the send types in postgrex, located in the <code>binary.ex</code> file:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='elixir'><span class='line'><span class="nv">@senders</span> <span class="err">~</span><span class="n">w</span><span class="p">(</span><span class="n">boolsend</span> <span class="n">bpcharsend</span> <span class="n">textsend</span> <span class="n">varcharsend</span> <span class="n">byteasend</span>
+</span><span class='line'>            <span class="n">int2send</span> <span class="n">int4send</span> <span class="n">int8send</span> <span class="n">float4send</span> <span class="n">float8send</span> <span class="n">numeric_send</span>
+</span><span class='line'>            <span class="n">uuid_send</span> <span class="n">date_send</span> <span class="n">time_send</span> <span class="n">timetz_send</span> <span class="n">timestamp_send</span>
+</span><span class='line'>            <span class="n">timestamptz_send</span> <span class="n">interval_send</span> <span class="n">enum_send</span> <span class="n">tidsend</span> <span class="n">unknownsend</span>
+</span><span class='line'>            <span class="n">inet_send</span> <span class="n">cidr_send</span> <span class="n">macaddr_send</span> <span class="n">point_send</span>
+</span><span class='line'>            <span class="p">)</span> <span class="o">++</span> <span class="nv">@oid_senders</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Boom, that gets us the oid to encode/decode off of!</p>
+
+<h1>Looking up postgres source code for data mapping</h1>
+
+<p>I hopped into the Postgres source code and looked up the struct type for point, <a href="https://github.com/postgres/postgres/blob/master/src/include/utils/geo_decls.h#L58-L62">found here</a>.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='c++'><span class='line'><span class="k">typedef</span> <span class="k">struct</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>  <span class="kt">double</span>    <span class="n">x</span><span class="p">,</span>
+</span><span class='line'>        <span class="n">y</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span> <span class="n">Point</span><span class="p">;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Great, its just two floats, no big deal.</p>
+
+<h1>Adding the point struct</h1>
+
+<p>Let&rsquo;s craft our Postgrex stuct type in <code>builtins.ex</code> then!</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+</pre></td><td class='code'><pre><code class='c++'><span class='line'><span class="n">defmodule</span> <span class="n">Postgrex</span><span class="p">.</span><span class="n">Point</span> <span class="k">do</span>
+</span><span class='line'>  <span class="err">@</span><span class="n">moduledoc</span> <span class="s">&quot;&quot;&quot;</span>
+</span><span class='line'>  <span class="n">Struct</span> <span class="k">for</span> <span class="n">Postgres</span> <span class="n">point</span><span class="p">.</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="err">##</span> <span class="n">Fields</span>
+</span><span class='line'>    <span class="o">*</span> <span class="err">`</span><span class="n">x</span><span class="err">`</span>
+</span><span class='line'>    <span class="o">*</span> <span class="err">`</span><span class="n">y</span><span class="err">`</span>
+</span><span class='line'>  <span class="s">&quot;&quot;&quot;</span>
+</span><span class='line'>  <span class="n">require</span> <span class="n">Decimal</span>
+</span><span class='line'>  <span class="err">@</span><span class="n">type</span> <span class="n">t</span> <span class="o">::</span> <span class="o">%</span><span class="n">__MODULE__</span><span class="p">{</span><span class="nl">x:</span> <span class="kt">float</span><span class="p">,</span> <span class="nl">y:</span> <span class="kt">float</span><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">defstruct</span> <span class="p">[</span>
+</span><span class='line'>    <span class="nl">x:</span> <span class="n">nil</span><span class="p">,</span>
+</span><span class='line'>    <span class="nl">y:</span> <span class="n">nil</span><span class="p">]</span>
+</span><span class='line'><span class="n">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h1>Adding the encode method</h1>
+
+<p>Now since we are sending PostgreSQL binary data, we need to take our data and map it to it&rsquo;s binary form, via an <code>encode</code> method.</p>
+
+<p>However, postgrex is going to do a type look up, based on the types that we used in that query above.</p>
+
+<p>We&rsquo;ll add the methods to encode, that does some pattern matching to decipher we are getting the correct sender value.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='c++'><span class='line'><span class="n">def</span> <span class="n">encode</span><span class="p">(</span><span class="o">%</span><span class="n">TypeInfo</span><span class="p">{</span><span class="nl">type:</span> <span class="s">&quot;point&quot;</span><span class="p">,</span> <span class="nl">send:</span> <span class="s">&quot;point_send&quot;</span><span class="p">},</span> <span class="o">%</span><span class="n">Postgrex</span><span class="p">.</span><span class="n">Point</span><span class="p">{}</span> <span class="o">=</span> <span class="n">point</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">),</span>
+</span><span class='line'>  <span class="k">do</span><span class="o">:</span> <span class="n">encode_point</span><span class="p">(</span><span class="n">point</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>As you can see, we are encoding, when a <code>TypeInfo</code> tuple is passed with type <code>point</code> and <code>send</code> <code>point_send</code>! Great, we just pass that to this method to parse out the two floats passed in the binary object:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='c++'><span class='line'><span class="n">defp</span> <span class="n">encode_point</span><span class="p">(</span><span class="o">%</span><span class="n">Postgrex</span><span class="p">.</span><span class="n">Point</span><span class="p">{</span><span class="nl">x:</span> <span class="n">x</span><span class="p">,</span> <span class="nl">y:</span> <span class="n">y</span><span class="p">}),</span>
+</span><span class='line'>  <span class="k">do</span><span class="o">:</span> <span class="o">&lt;&lt;</span><span class="n">x</span><span class="o">::</span><span class="n">float64</span><span class="p">,</span> <span class="n">y</span><span class="o">::</span><span class="n">float64</span><span class="o">&gt;&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>It just takes those two values, and serializes them down to their binary counterparts.</p>
+
+<p>That now handles the test we&rsquo;ve got to keep us honest:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='c++'><span class='line'><span class="n">test</span> <span class="s">&quot;encode point&quot;</span><span class="p">,</span> <span class="n">context</span> <span class="k">do</span>
+</span><span class='line'>  <span class="n">assert</span> <span class="p">[[</span><span class="o">%</span><span class="n">Postgrex</span><span class="p">.</span><span class="n">Point</span><span class="p">{</span><span class="nl">x:</span> <span class="o">-</span><span class="mi">97</span><span class="p">,</span> <span class="nl">y:</span> <span class="mi">100</span><span class="p">}]]</span> <span class="o">==</span> <span class="n">query</span><span class="p">(</span><span class="s">&quot;SELECT $1::point&quot;</span><span class="p">,</span> <span class="p">[</span><span class="o">%</span><span class="n">Postgrex</span><span class="p">.</span><span class="n">Point</span><span class="p">{</span><span class="nl">x:</span> <span class="o">-</span><span class="mi">97</span><span class="p">,</span> <span class="nl">y:</span> <span class="mi">100</span><span class="p">}])</span>
+</span><span class='line'><span class="n">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>This test as promised, takes a <code>Postgrex.Point</code> type, and encodes it to the binary form, and sends it off to Postgres. How beautiful.</p>
+
+<h1>Adding the decode method</h1>
+
+<p>Now, when we get binary values from Postgres, we need to map that to our <code>Point</code> type we&rsquo;ve created.</p>
+
+<p>Adding the functions to <code>decode</code> in <code>binary.ex</code>:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='c++'><span class='line'><span class="n">def</span> <span class="n">decode</span><span class="p">(</span><span class="o">%</span><span class="n">TypeInfo</span><span class="p">{</span><span class="nl">type:</span> <span class="s">&quot;point&quot;</span><span class="p">},</span> <span class="n">binary</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">),</span>
+</span><span class='line'>  <span class="k">do</span><span class="o">:</span> <span class="n">decode_point</span><span class="p">(</span><span class="n">binary</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="cp"># ..snip..</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">defp</span> <span class="n">decode_point</span><span class="p">(</span><span class="o">&lt;&lt;</span><span class="n">x</span><span class="o">::</span><span class="n">float64</span><span class="p">,</span> <span class="n">y</span><span class="o">::</span><span class="n">float64</span><span class="o">&gt;&gt;</span><span class="p">)</span> <span class="k">do</span>
+</span><span class='line'>  <span class="o">%</span><span class="n">Postgrex</span><span class="p">.</span><span class="n">Point</span><span class="p">{</span><span class="nl">x:</span> <span class="n">x</span><span class="p">,</span> <span class="nl">y:</span> <span class="n">y</span><span class="p">}</span>
+</span><span class='line'><span class="n">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The real meat and potatoes is, receiving our binary parameter, mapping its individual segmets as two floats, sized 8 bytes, and then with the pattern matching mapping those to our <code>Postgrex.Point</code> struct. QED.</p>
+
+<p>And the test:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='c++'><span class='line'><span class="n">test</span> <span class="s">&quot;decode point&quot;</span><span class="p">,</span> <span class="n">context</span> <span class="k">do</span>
+</span><span class='line'>  <span class="n">assert</span> <span class="p">[[</span><span class="o">%</span><span class="n">Postgrex</span><span class="p">.</span><span class="n">Point</span><span class="p">{</span><span class="nl">x:</span> <span class="o">-</span><span class="mi">97</span><span class="p">,</span> <span class="nl">y:</span> <span class="mi">100</span><span class="p">}]]</span> <span class="o">==</span> <span class="n">query</span><span class="p">(</span><span class="s">&quot;SELECT point(-97, 100)::point&quot;</span><span class="p">,</span> <span class="p">[])</span>
+</span><span class='line'>  <span class="n">assert</span> <span class="p">[[</span><span class="o">%</span><span class="n">Postgrex</span><span class="p">.</span><span class="n">Point</span><span class="p">{</span><span class="nl">x:</span> <span class="o">-</span><span class="mf">97.5</span><span class="p">,</span> <span class="nl">y:</span> <span class="mf">100.1</span><span class="p">}]]</span> <span class="o">==</span> <span class="n">query</span><span class="p">(</span><span class="s">&quot;SELECT point(-97.5, 100.1)::point&quot;</span><span class="p">,</span> <span class="p">[])</span>
+</span><span class='line'><span class="n">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h1>Conclusion</h1>
+
+<p>Once I finally figured out what pieces were what, I was able to run and create the point type, its mappings, and its senders it required, easily mapping to the struct in Elixir.</p>
+
+<p>I plan to keep working on postgrex, to add first class support for Postgres geometric types.</p>
+
+<p>Cheers!</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  <div class="pagination">
+    
+      <a class="prev" href="/blog/page/2/">&larr; Older</a>
+    
+    <a href="/blog/archives">Blog Archives</a>
+    
+  </div>
+</div>
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2017/04/16/puppet-a-testing-handbook/">Puppet: A Testing Handbook</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2017/03/13/test-coverage-reports-in-elixir/">Test Coverage Reports in Elixir</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/12/29/multicast-service-discovery-in-electron/">Multicast Service Discovery in Electron</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/03/11/using-erlang-observer-on-a-remote-elixir-server/">Using Erlang Observer on a Remote Elixir Server</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/01/24/custom-json-encoding-in-phoenix/">Custom JSON Encoding in Phoenix</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating&#8230;</li>
+  </ul>
+  
+  <a href="https://github.com/jbavari">@jbavari</a> on GitHub
+  
+  <script type="text/javascript">
+    $(document).ready(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'jbavari',
+            count: 0,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+
+
+
+  
+</aside>
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2019 - Josh Bavari -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+  <script src="//static.getclicky.com/js" type="text/javascript"></script>
+  <script type="text/javascript">try{ clicky.init(100896582); }catch(e){}</script>
+  <noscript><p><img alt="Clicky" width="1" height="1" src="//in.getclicky.com/100896582ns.gif" /></p></noscript>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'joshbavari';
+      
+        
+        var disqus_script = 'count.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

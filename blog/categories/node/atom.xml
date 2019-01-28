@@ -1,0 +1,474 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: node | Josh Bavari's Ramblings]]></title>
+  <link href="http://jbavari.github.io/blog/categories/node/atom.xml" rel="self"/>
+  <link href="http://jbavari.github.io/"/>
+  <updated>2019-01-27T19:16:40-07:00</updated>
+  <id>http://jbavari.github.io/</id>
+  <author>
+    <name><![CDATA[Josh Bavari]]></name>
+    <email><![CDATA[jbavari@gmail.com]]></email>
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Ionic 2.0 Generators - Services]]></title>
+    <link href="http://jbavari.github.io/blog/2015/11/06/ionic-2-dot-0-generators-services/"/>
+    <updated>2015-11-06T01:23:00-07:00</updated>
+    <id>http://jbavari.github.io/blog/2015/11/06/ionic-2-dot-0-generators-services</id>
+    <content type="html"><![CDATA[<p>This is the second post in a series covering the new Ionic Generators in Ionic 2.0. In the <a href="http://jbavari.github.io/blog/2015/11/05/using-ionic-2-dot-0-generators/">first post</a>, we discussed generating pages, let&rsquo;s focus now on generating some services to consume some JSON data via an http request.</p>
+
+<h2>Get the tools</h2>
+
+<p>Run this to get started:</p>
+
+<p><code>bash Install Ionic CLI and start an Ionic application
+npm install -g ionic@alpha
+ionic start MyIonic2App tabs --v2
+cd MyIonic2App
+</code></p>
+
+<h2>Generate the service</h2>
+
+<p><code>ionic g injectable MyDataService</code></p>
+
+<p>You should see the service:</p>
+
+<p><code>bash Run generate command
+~/Development/testing/MyIonic2App$ ionic g injectable MyDataService
+√ Create www/app/my-data-service/my-data-service.js
+</code></p>
+
+<p>The basic blueprint of the generated service is as follows:</p>
+
+<p>``` javascript Generated Data Service
+import {Injectable} from &lsquo;angular2/angular2&rsquo;;
+import {Http} from &lsquo;angular2/http&rsquo;;</p>
+
+<p>@Injectable()
+export class MyDataService {
+  constructor(<a href="http:">http:</a> Http) {</p>
+
+<pre><code>this.http = http;
+this.data = null;
+</code></pre>
+
+<p>  }</p>
+
+<p>  retrieveData() {</p>
+
+<pre><code>//Here, we're going to get a JSON data file, use the `map` call to parse json
+// and finally subscribe to the observable and set our data
+//to the value it provides once the http request is complete.
+this.http.get('path/to/data.json')
+  .map(res =&gt; res.json())
+  .subscribe(data =&gt; {
+    this.data = data;
+  }, error =&gt; {
+    console.log('Error with http.get: ', error);
+  });
+</code></pre>
+
+<p>  }
+}</p>
+
+<p>```</p>
+
+<h2>Wiring it in to be used</h2>
+
+<p>Adjust <code>www/app/app.js</code> to import the data service, as well as provide it for all of its components:</p>
+
+<p>```js www/app/app.js
+import {MyDataService} from &lsquo;./my-data-service/my-data-service&rsquo;;</p>
+
+<p>@App({
+  template: &lsquo;&lt;ion-nav [root]=&ldquo;root&rdquo;>&lt;/ion-nav>&rsquo;,
+  providers: [Friends, MyDataService]
+})
+```</p>
+
+<h2>Use the service</h2>
+
+<p>We&rsquo;ll use the tabs starter dashboard page to pull data.</p>
+
+<p>Let&rsquo;s modify <code>www/app/dash/dash.ts</code> &ndash; adding an import for <code>MyDataService</code>, adding <code>MyDataService</code> to the constructore as an injected dependency, and finally adding the call to <code>retrieveData</code> in the constructore method.</p>
+
+<p>``` js www/app/dash/dash.ts
+import {Page, NavController, ViewController} from &lsquo;ionic/ionic&rsquo;;
+import {MyDataService} from &lsquo;../my-data-service/my-data-service&rsquo;;
+import {About} from &lsquo;../about/about&rsquo;;</p>
+
+<p>@Page({
+  templateUrl: &lsquo;app/dash/dash.html&rsquo;,
+})
+export class Dash {
+  constructor(nav: NavController, view: ViewController, data: MyDataService) {</p>
+
+<pre><code>this.nav = nav;
+this.view = view;
+data.retrieveData();
+</code></pre>
+
+<p>  }</p>
+
+<p>  goToAboutPage() {</p>
+
+<pre><code>this.nav.push(About);
+</code></pre>
+
+<p>  }</p>
+
+<p>}
+```</p>
+
+<h2>Additional information</h2>
+
+<p>If you&rsquo;ve used Angular 1, you&rsquo;re probably familiar with promises to return your data from http requests.</p>
+
+<p>Under the hood of Angular 2 lies <a href="https://github.com/Reactive-Extensions/RxJS">RxJs</a> that builds on promises, focusing on being repeatable.</p>
+
+<p>Enjoy!</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Using Ionic 2.0 Generators]]></title>
+    <link href="http://jbavari.github.io/blog/2015/11/05/using-ionic-2-dot-0-generators/"/>
+    <updated>2015-11-05T21:49:00-07:00</updated>
+    <id>http://jbavari.github.io/blog/2015/11/05/using-ionic-2-dot-0-generators</id>
+    <content type="html"><![CDATA[<p>At the time of writing this, Ionic 2.0 is still in alpha.</p>
+
+<p>Ionic 2.0 builds on a ton of new technologies, such as Angular v2, TypeScript (with decorators), and ES6. If you&rsquo;ve never dabbled in these technologies, you can use the generators available in the <a href="http://npmjs.org/package/ionic"><code>ionic-cli</code></a> to get ramped up quickly!</p>
+
+<h2>Getting started</h2>
+
+<p>First, install the <code>alpha</code> version of the Ionic CLI: <code>npm install -g ionic@alpha</code>, currently version 2.0.0-alpha.19.</p>
+
+<p>Start an app with the tabs template: <code>ionic start MyIonic2App tabs --v2</code>.</p>
+
+<p>Change directories and serve the app in the browser: <code>cd MyIonic2App &amp;&amp; ionic serve</code>.</p>
+
+<p>You&rsquo;ll see, we&rsquo;ve got a basic tabs starter now avilable at <code>MyIonic2App</code> directory.</p>
+
+<h2>Generating a few pages</h2>
+
+<p>Let&rsquo;s say we want to link to a new page, &lsquo;About&rsquo;, from one of the tabs. First, let&rsquo;s generate our page with this command: <code>ionic generate page About</code>. NOTE: You can also use the generate alias, <code>ionic g</code>.</p>
+
+<p>You&rsquo;ll see a few files added:</p>
+
+<p><code>bash
+~/Development/testing/MyIonic2App$ ionic g page About
+√ Create www/app/about/about.html
+√ Create www/app/about/about.js
+√ Create www/app/about/about.scss
+</code></p>
+
+<h2>Adding link on view to the About page</h2>
+
+<p>Let&rsquo;s add the link to the main tab page in <code>www/app/dash/dash.html</code>, via the <code>(click)</code> handler on an anchor, like so:</p>
+
+<p>```
+&lt;ion-card>
+  &lt;ion-card-header></p>
+
+<pre><code>Go to about page
+</code></pre>
+
+<p>  &lt;/ion-card-header>
+  &lt;ion-card-content></p>
+
+<pre><code>&lt;button (click)="goToAboutPage()"&gt;About this&lt;/button&gt;
+</code></pre>
+
+<p>  &lt;/ion-card-content>
+&lt;/ion-card>
+```</p>
+
+<h2>Navigating to the page</h2>
+
+<p>Modify the Dashboard TypeScript file (<code>www/app/dash/dash.ts</code>) to import our new about page, add the click event handler, and push the page on the nav controller, all like so:</p>
+
+<p>```js
+import {Page, NavController} from &lsquo;ionic/ionic&rsquo;;
+import {About} from &lsquo;../about/about&rsquo;;</p>
+
+<p>@Page({
+  templateUrl: &lsquo;app/dash/dash.html&rsquo;,
+})
+export class Dash {
+  constructor(nav: NavController, view: ViewController) {</p>
+
+<pre><code>this.nav = nav;
+this.view = view;
+</code></pre>
+
+<p>  }</p>
+
+<p>  goToAboutPage() {</p>
+
+<pre><code>this.nav.push(About);
+</code></pre>
+
+<p>  }</p>
+
+<p>}
+```</p>
+
+<h2>Try it out!</h2>
+
+<p>Look in your browser, you should have an anchor available to click/tap that will then navigate you to the About page, fresh for you to get working!</p>
+
+<p>Here&rsquo;s a GIF of what it looks like:</p>
+
+<p><img class="[pic]" src="/images/IonicV2Generators.gif" title="[250] [250] [Ionic 2.0- Page generator example]" ></p>
+
+<p>I&rsquo;d like to also note, Ionic 2 is much smoother than a GIF would allow.</p>
+
+<h2>Wiring up sass</h2>
+
+<p>If you want to use the custom sass styles on the about page, first wire in the <code>about.scss</code> page in your <code>www/app/app.scss</code> sass file, like so: <code>@import 'about/about';</code>.</p>
+
+<h2>A quick note on naming conventions</h2>
+
+<p>For Ionic 2.0, we&rsquo;ve contributed to a <a href="https://en.wikipedia.org/wiki/Naming_convention_%28programming%29#Multiple-word_identifiers">naming convention</a> of kabob-casing for file names (my-about-page.html) and css classes (.my-about-page), and using PascalCasing for JavaScript classes in ES6 / TypeScript (MyAboutPage).</p>
+
+<h2>Other generators</h2>
+
+<p>Check out all the generators available: <code>ionic g --list</code></p>
+
+<p><code>bash
+~/Development/testing/MyIonic2App$ ionic g --list
+Available generators:
+ * component
+ * directive
+ * injectable
+ * page
+ * page-login
+ * page-sidemenu
+ * page-signup
+ * pipe
+ * tabs
+</code></p>
+
+<h1>Final words</h1>
+
+<p>We hope you find the generators help you get started with ramping up quickly and building some awesome Ionic applications! Enjoy.</p>
+
+<p>We&rsquo;d love your feedback, drop us a line at <a href="https://github.com/driftyco/ionic2/issues">Ionic v2 Github Issues</a>.</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[npm Production Checklist]]></title>
+    <link href="http://jbavari.github.io/blog/2015/10/17/npm-production-checklist/"/>
+    <updated>2015-10-17T18:33:00-06:00</updated>
+    <id>http://jbavari.github.io/blog/2015/10/17/npm-production-checklist</id>
+    <content type="html"><![CDATA[<p>I recently read this post by RisingStack over the <a href="https://blog.risingstack.com/node-js-production-checklist">Node.js Production Checklist</a>.</p>
+
+<p>Since this was aimed at releasing node.js applications for the most part, I wanted to touch base on a &lsquo;production checklist&rsquo; on releasing a npm module.</p>
+
+<p>The <a href="https://docs.npmjs.com/misc/developers">npm-developers guide</a> does a <em>great</em> job of explaining much you need to know about publishing your npm module.</p>
+
+<p>This post will mainly serve as a work in progress document to supplement the developers guide, as well as serving as a way to help me continue to keep learning best practices all the time.</p>
+
+<p>Some of the methods I use in my npm release schedule are as follows:</p>
+
+<ol>
+<li>Keeping files out of your package</li>
+<li>Locking versions</li>
+<li>Continuous integration (tests, install, etc)</li>
+<li>Alpha/beta pushes (user testing)</li>
+<li><a href="https://github.com/tjunnone/npm-check-updates">npm-check-updates</a></li>
+</ol>
+
+
+<h2>Keeping files out of your package</h2>
+
+<p>We want our users to only have to download what they need to use your module. This may mean removing any files that are not beneficial for the user. Much like <code>.gitignore</code> for files being checked into git, npm has <code>.npmignore</code>.</p>
+
+<p>Straight from <a href="https://docs.npmjs.com/misc/developers#keeping-files-out-of-your-package">npm docs</a>:</p>
+
+<blockquote><p>Use a .npmignore file to keep stuff out of your package. If there&rsquo;s no .npmignore file, but there is a .gitignore file, then npm will ignore the stuff matched by the .gitignore file. If you want to include something that is excluded by your .gitignore file, you can create an empty .npmignore file to override it. Like git, npm looks for .npmignore and .gitignore files in all subdirectories of your package, not only the root directory.</p></blockquote>
+
+<p>We can also use a command in the npm CLI called <code>prune</code>.</p>
+
+<p>Again, straight from the <a href="https://docs.npmjs.com/cli/prune">npm documentation</a>:</p>
+
+<blockquote><p>This command removes &ldquo;extraneous&rdquo; packages. If a package name is provided, then only packages matching one of the supplied names are removed.
+Extraneous packages are packages that are not listed on the parent package&rsquo;s dependencies list.
+If the &mdash;production flag is specified or the NODE_ENV environment variable is set to production, this command will remove the packages specified in your devDependencies. Setting &mdash;production=false will negate NODE_ENV being set to production.</p></blockquote>
+
+<p>This is a great way to ensure you dont have any extra packages you might have installed via <code>npm install</code> and either forgot to pass the <code>--save</code> flag or were just testing functionality.</p>
+
+<p>You can also use this command inline with the <code>--production</code> flag when installing node modules to avoid having the extra cruft of the <code>devDependencies</code>, which are mainly used for developing the modules (think testing, etc).</p>
+
+<h2>Locking versions</h2>
+
+<p>Theres a few methods to use with npm to lock down your versions. You can use the <code>npm shrinkwrap</code> command or specify node modules to bundle in your module with <code>bundleDependencies</code>.</p>
+
+<p>The strategy is, you can either pack those in with your tarball as they are in your <code>node_modules</code> folder, or you can lock down those exact versions by storing the exact tarball to download when the user <code>npm install</code>s your module.</p>
+
+<p>Edit: I&rsquo;ve just learned on a new method to package bundle up node modules by using the <code>bundledDependencies</code> attribute in your projects <code>package.json</code> file.</p>
+
+<h2>Bundling</h2>
+
+<p>By specifying <code>bundleDependencies</code> in your package.json, you are telling npm on its publishing process to include those modules listed in the tarball it creates and pushes up to the npm registry. For example, if you go to any npm repo and download the tarball in the url there, unzip it and open it, you&rsquo;ll see those exact node modules in them as you&rsquo;ve got in your own <code>node_modules</code> folder.</p>
+
+<p>This effectively locks down your modules versions, at the cost of a larger tarball size the user will download intially. Any modules that are not bundled, will then be downloaded and installed after the tarball is downloaded.</p>
+
+<h2>Shrinkwrapping</h2>
+
+<p>If you&rsquo;ve ever done any Rails, you&rsquo;ve probably seen the gemfile.lock. The equivalent in Node land is the <code>npm-shrinkwrap.json</code> file.</p>
+
+<p>What the <code>npm shrinkwrap</code> command does is looks at your <code>node_modules</code> folder and looks at the packages installed there and compares those to what is in your <code>package.json</code> file.</p>
+
+<p>Straight from <a href="https://docs.npmjs.com/cli/shrinkwrap">npm documentation</a>:</p>
+
+<blockquote><p>The shrinkwrap command has locked down the dependencies based on what&rsquo;s currently installed in node_modules. The installation behavior is changed to:</p>
+
+<p>The module tree described by the shrinkwrap is reproduced. This means reproducing the structure described in the file, using the specific files referenced in &ldquo;resolved&rdquo; if available, falling back to normal package resolution using &ldquo;version&rdquo; if one isn&rsquo;t.</p>
+
+<p>The tree is walked and any missing dependencies are installed in the usual fasion.</p></blockquote>
+
+<p>A huge misconception is that shrinkwrap locks down what versions are in your <code>package.json</code> file. This is incorrect. Just to reiterate, it will look in your <code>node_modules</code> and use that compared to your <code>package.json</code> file.</p>
+
+<p>Edit: Another thing to note, if you take a look in your npm-shrinkwrap.json, you&rsquo;ll see the exact URL for that versions tarball to download, which npm cli will use to grab without taking a peep at anything else. This may cause issues for some users, as stated by <a href="https://github.com/driftyco/ionic-cli/issues/636">Forrest on this Ionic CLI issue</a>:</p>
+
+<blockquote><p>Due to how shrinkwrap works, it ends up bypassing the npm cache and redownloading every package mentioned in the shrinkwrap each time npm install is run. If users have any issues with their network, or something gets sticky with npm&rsquo;s CDN, the whole install can fail, forcing them to start over again.</p></blockquote>
+
+<p>Heed this warning, friends.</p>
+
+<h2>Testing</h2>
+
+<p>Try to avoid the old addage, &lsquo;it worked on my machine&rsquo;, by having a CI server pull your package, run some tests, and even sometimes install the module to make sure it works on other machines besides your own.</p>
+
+<p>I really enjoy using <a href="https://circleci.com/">CircleCI</a>, as it is free for open source projects! You can normally specify a config file that says what version of node/npm to use and the rest is automated.</p>
+
+<h2>Alpha/beta pushes</h2>
+
+<p>I covered this in a <a href="http://jbavari.github.io/blog/2015/10/16/using-npm-tags">previous article about using npm tags</a>.</p>
+
+<p>The idea is, before publishing your version to npm, try doing a alpha/beta push first (to save the version in npm you&rsquo;re about to publish, since there can only be <em>one</em> version) to let users <code>npm install</code> the module to run some tests before commiting that to the <code>latest</code> tag for everyone to install.</p>
+
+<h2>npm Check Updates</h2>
+
+<p>There&rsquo;s a nice module that looks at your <code>package.json</code> file and looks to see the latest tags on the modules you specify in your dependencies.</p>
+
+<p>It will give you some heads up if there are latest packages, so you can update if you have too many out of date packages.</p>
+
+<p>Hope this helps!</p>
+
+<p>References:</p>
+
+<ul>
+<li><a href="http://blog.keithcirkel.co.uk/how-to-use-npm-as-a-build-tool/">Using npm as a build tool</a></li>
+<li><a href="http://jbavari.github.io/blog/2015/10/16/using-npm-tags">Using npm tags</a></li>
+<li><a href="https://docs.npmjs.com/cli/shrinkwrap">npm documentation</a></li>
+<li><a href="https://docs.npmjs.com/misc/developers">npm-developers guide</a></li>
+<li><a href="https://www.npmjs.com/package/module-best-practices#naming-conventions">npm &ndash; Module best practices</a></li>
+<li><a href="https://blog.risingstack.com/node-js-production-checklist">Node.js Production Checklist</a></li>
+<li><a href="http://blog.nchaulet.fr/publish-package-on-npm-best-practice/">Publish packages on npm &ndash; best practice</a></li>
+</ul>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Using npm tags]]></title>
+    <link href="http://jbavari.github.io/blog/2015/10/16/using-npm-tags/"/>
+    <updated>2015-10-16T15:16:00-06:00</updated>
+    <id>http://jbavari.github.io/blog/2015/10/16/using-npm-tags</id>
+    <content type="html"><![CDATA[<p>If you do any kind of deployments to npm, you&rsquo;ll probably find learning more about npm tags very helpful.</p>
+
+<p>Just as git tags mark commits in your repository history, npm tags mark a specific version in the npm registry of your published versions.</p>
+
+<p>If you didn&rsquo;t know, npm manages a tag &lsquo;latest&rsquo; that points to the last version you put out with <code>npm publish</code>.</p>
+
+<p>The syntax to publish a new version and tag that version with the name beta, use: <code>npm publish --tag beta</code>.</p>
+
+<h2>Installing from tags</h2>
+
+<p>To have your users install your node module, they just type <code>npm install</code>. What that does is looks at npm&rsquo;s latest tag for your repository, and installs that version.</p>
+
+<p>They can also specify a version by passing it after the <code>@</code> character after the module name: <code>npm install module@1.7.3</code>.</p>
+
+<p>Lets say you have some beta users and always want them to grab the beta, without having to remember the latest version you&rsquo;ve pushed.</p>
+
+<p>You just run <code>npm publish --tag beta</code>, then have them run <code>npm install module@beta</code>.</p>
+
+<p>At any time, they can still specify the beta version <code>npm install module@1.7.3-beta.1</code> if they want to hop down or up a version, for example.</p>
+
+<h2>Looking up npm tags</h2>
+
+<p>Using the npm CLI, you can easily see the versions by running <code>npm view ionic dist-tags</code>. Just replace <code>ionic</code> with whatever module you&rsquo;d want to see.</p>
+
+<p>You can also look up the entire list of versions npm maintains at the url, <a href="http://registry.npmjs.org/ionic">registry.npmjs.org/ionic</a>.</p>
+
+<p>As a fun fact, npm uses tags on its own tool, npm, to mark the <code>latest</code>, <code>latest-2</code>, <code>next</code>, <code>next-2</code>, as well as their next versions in their current major/minor versions, for example:</p>
+
+<p><code>latest =&gt; 3.3.8 next =&gt; 3.3.9 latest-2 =&gt; 2.14.7 next-2 =&gt; 2.14.8 v3.x-latest =&gt; 3.3.8 3.x-latest =&gt; 3.3.8 3.x-next =&gt; 3.3.9 v3.x-next =&gt; 3.3.9</code></p>
+
+<p>Also, I made a <a href="http://jbavari.github.io/registry">quick tool</a> to look up tags for you npm version.</p>
+
+<h2>Assigning a tag</h2>
+
+<p>Let&rsquo;s say you have a blessed version you now want to promote. It&rsquo;s super simple to set up that tag to the previous version.</p>
+
+<p>Just run <code>npm dist-tags add ionic-app-lib@0.6.5 latest</code> and you&rsquo;ll have the <code>latest</code> tag point at <code>0.6.5</code>.</p>
+
+<h3>Whoops, I accidently published without a tag!</h3>
+
+<p>This has happened to me thousands of times. I&rsquo;ve run <code>npm publish</code> without specifying a tag, and now, my <code>latest</code> points at an alpha version. How embarassing.</p>
+
+<p>The scenario is this &ndash; my module <code>ionic-app-lib</code> currently has its latest tag at <code>0.6.4</code>, i&rsquo;m working on <code>2.0.0-alpha.18</code>, and I type in <code>npm publish</code>. I wanted to tag this as <code>alpha</code>, but because of my haste, now all my users will grab this version blindly without wanting it.</p>
+
+<p>Thankfully, this is easily fixed &ndash; we just have to point <code>latest</code> tag back to its version.</p>
+
+<p>First, just put latest back to 0.6.4, like so: <code>npm dist-tags add ionic-app-lib@0.6.4 latest</code>.</p>
+
+<p>Now we put alpha to what we wanted originally, like so: <code>npm dist-tags add ionic-app-lib@2.0.0-alpha.18 alpha</code>.</p>
+
+<p>Bam! Now everything is back to how we want it!</p>
+
+<h2>Removing tags</h2>
+
+<p>This is super simple: <code>npm dist-tags rm alpha</code> &ndash; this wipes it out.</p>
+
+<p>Hope this helps!</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Understanding Built Node Modules]]></title>
+    <link href="http://jbavari.github.io/blog/2015/10/15/understanding-built-node-modules/"/>
+    <updated>2015-10-15T08:32:00-06:00</updated>
+    <id>http://jbavari.github.io/blog/2015/10/15/understanding-built-node-modules</id>
+    <content type="html"><![CDATA[<p>If you&rsquo;ve recently change node versions and begun running into issues with some of your modules, you might get a little help from understanding how native node modules work.</p>
+
+<p>TL;DR: If you upgraded node, run <code>npm rebuild</code> or <code>rm -rf node_modules &amp;&amp; npm install</code>.</p>
+
+<p>Why: This has to do with some of your modules you may be using having native bindings to your current system runtime.</p>
+
+<p>This then put me on a quest to understand more how native node modules are used. What I&rsquo;m referring to, is using <a href="https://nodejs.org/api/addons.html">Node addons</a>:</p>
+
+<blockquote><p>Addons are dynamically linked shared objects. They can provide glue to C and C++ libraries. The API (at the moment) is rather complex, involving knowledge of several libraries</p>
+
+<p>Node.js statically compiles all its dependencies into the executable. When compiling your module, you don&rsquo;t need to worry about linking to any of these libraries.</p></blockquote>
+
+<p>Since I maintain the <a href="https://github.com/driftyco/ionic-cli">Ionic CLI</a>, we have a few depedencies to a native node module, node-sass.</p>
+
+<p>Node-sass relies on some native C/C++ bindings to compile SASS down to CSS.</p>
+
+<p>If you have a version of Node 0.12 for example, and install the ionic-cli, then install Node 4.2.1, you may have issues running the CLI.</p>
+
+<p>This is due to the module building itself with that version of node and using those bindings, then when you install a new version of Node, you can&rsquo;t use those same bindings.</p>
+
+<p>When you change versions of node, make sure you do a quick <code>rm -rf node_modules</code> if on mac, or deleting the node_modules folder on windows and doing a fresh <code>npm install</code>.</p>
+
+<p>If you want to read a little more, background information is shared by <a href="http://twitter.com/voodootikigod">Chris Williams</a> about his struggles maintaining the node-serialport module on <a href="http://www.voodootikigod.com/on-maintaining-a-native-node-module/">this post</a>.</p>
+]]></content>
+  </entry>
+  
+</feed>

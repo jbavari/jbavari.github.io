@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: vagrant | Josh Bavari's Ramblings]]></title>
+  <link href="http://jbavari.github.io/blog/categories/vagrant/atom.xml" rel="self"/>
+  <link href="http://jbavari.github.io/"/>
+  <updated>2019-01-27T19:16:40-07:00</updated>
+  <id>http://jbavari.github.io/</id>
+  <author>
+    <name><![CDATA[Josh Bavari]]></name>
+    <email><![CDATA[jbavari@gmail.com]]></email>
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Puppet: A Testing Handbook]]></title>
+    <link href="http://jbavari.github.io/blog/2017/04/16/puppet-a-testing-handbook/"/>
+    <updated>2017-04-16T13:09:00-06:00</updated>
+    <id>http://jbavari.github.io/blog/2017/04/16/puppet-a-testing-handbook</id>
+    <content type="html"><![CDATA[<ul>
+<li>Explain why the post &ndash; job required, growing pains, need for stability and health of the repo</li>
+<li>Why to test</li>
+<li>What to test</li>
+<li>How to test
+<strong> Lint &ndash; Rake file
+</strong> Parser &ndash; rake file with globbing to run easier
+<strong> Rspec &ndash; spec type tests to run on puppet code (syntax mainly)
+</strong> Beaker &ndash; run tests on provisioned VM to ensure correct</li>
+</ul>
+
+
+<p>Cover:</p>
+
+<p>puppet-lint
+puppet parser validate &lt;manifest.pp>
+puppet-rspec &ndash; A gem that runs rspec unit tests on a module (Based on compiled catalog)
+Beaker</p>
+
+<hr />
+
+<p>Part of my role at work is managing a fleet of robots, servers, and other
+infrastructure responsible for running our business. Due to the nature of our
+business, we run within customer warehouses.</p>
+
+<p>Being a one man operation, one of my main concerns is keeping all the systems
+stable and proper working conditions. I am not the only developer touching our
+puppet code, but I&rsquo;m the one responsible for the system(s).</p>
+
+<p>As I embarked on the journey to add reliability to our infrastructure, something
+very clear came up: there&rsquo;s a lot of information about testing puppet, but most
+of it is fractured, out of date, or hard to understand. <a href="https://www.slideshare.net/PuppetLabs/puppetconf-2016-the-future-of-testing-puppet-code-gareth-rushgrove-puppet?qid=eee7d5c2-f52e-4ceb-8000-42e4fc174721&amp;v=&amp;b=&amp;from_search=2">See this slideshow from 2016 about the state of testing puppet</a>.</p>
+
+<p>I&rsquo;m writing this post up to act as a handbook of sorts for testing puppet, as
+well as a &lsquo;repository&rsquo; for testing puppet.</p>
+
+<h1>Testing resources</h1>
+
+<ul>
+<li><a href="http://puppet-lint.com/">Puppet-lint</a> &ndash; Useful for linting your puppet code</li>
+<li><a href="http://rspec-puppet.com/">Rspec Puppet</a> &ndash; Rspec tests for puppet code</li>
+<li><a href="https://docs.puppet.com/puppet/4.10/tests_smoke.html">Puppet: module smoke testing</a></li>
+<li><a href="http://www.example42.com/tutorials/PuppetTutorial/#slide-80">Slideshow about all things puppet</a></li>
+<li><a href="https://www.safaribooksonline.com/library/view/extending-puppet-/9781785885686/">Extending Puppet &ndash; Second Edition</a></li>
+<li><a href="https://github.com/puppetlabs/beaker/">Beaker</a></li>
+<li><a href="http://www.xkyle.com/getting-started-puppet-acceptance-tests-with-beaker/">Getting Started Puppet Acceptance Tests With Beaker</a></li>
+<li><a href="https://github.com/puppetlabs/puppetlabs-mysql/tree/master/spec">Great example of testing &ndash; Puppet MySQL module</a></li>
+<li><a href="https://github.com/puppetlabs/puppetlabs_spec_helper">Puppetlabs Spec Helper</a></li>
+<li><a href="https://www.puppetcookbook.com/posts/simple-syntax-check-manifests.html">Puppet Cookbook &ndash; Simple Syntax Check</a></li>
+<li><a href="http://www.cakesolutions.net/teamblogs/testing-puppet">Testing Puppet</a></li>
+</ul>
+
+]]></content>
+  </entry>
+  
+</feed>

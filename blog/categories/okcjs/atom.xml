@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: okcjs | Josh Bavari's Ramblings]]></title>
+  <link href="http://jbavari.github.io/blog/categories/okcjs/atom.xml" rel="self"/>
+  <link href="http://jbavari.github.io/"/>
+  <updated>2019-01-27T19:16:40-07:00</updated>
+  <id>http://jbavari.github.io/</id>
+  <author>
+    <name><![CDATA[Josh Bavari]]></name>
+    <email><![CDATA[jbavari@gmail.com]]></email>
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[OKCjs - Javascript Debugging Techniques]]></title>
+    <link href="http://jbavari.github.io/blog/2014/05/20/okcjs-javascript-debugging-techniques/"/>
+    <updated>2014-05-20T11:39:00-06:00</updated>
+    <id>http://jbavari.github.io/blog/2014/05/20/okcjs-javascript-debugging-techniques</id>
+    <content type="html"><![CDATA[<p>I gave a lightning talk today at OKC.js about Javascript Debugging Techniques.</p>
+
+<p>The slides can be found <a href="http://jbavari.github.io/JavascriptDebuggingTechniques/#/">here</a>.</p>
+]]></content>
+  </entry>
+  
+</feed>

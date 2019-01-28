@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: iphone | Josh Bavari's Ramblings]]></title>
+  <link href="http://jbavari.github.io/blog/categories/iphone/atom.xml" rel="self"/>
+  <link href="http://jbavari.github.io/"/>
+  <updated>2019-01-27T19:16:40-07:00</updated>
+  <id>http://jbavari.github.io/</id>
+  <author>
+    <name><![CDATA[Josh Bavari]]></name>
+    <email><![CDATA[jbavari@gmail.com]]></email>
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Cordova and the Safari Web Inspector]]></title>
+    <link href="http://jbavari.github.io/blog/2014/06/18/cordova-and-the-safari-web-inspector/"/>
+    <updated>2014-06-18T00:22:00-06:00</updated>
+    <id>http://jbavari.github.io/blog/2014/06/18/cordova-and-the-safari-web-inspector</id>
+    <content type="html"><![CDATA[<p>If you&rsquo;ve ever been doing some iOS development in Cordova, you may have used the Safari Web Inspector (SWI) once or twice. You&rsquo;ve also noticed that SWI closes when the app is put in the background or you switch apps.</p>
+
+<p>I found a sweet hack that allows you to keep your safari web inspector running regardless of whether or not the app is in the foreground or not. I&rsquo;d like to outline that in this post.</p>
+
+<p>I&rsquo;m not sure how I stumbled across this sweet hack, but I have to write it down before I forget how it&rsquo;s done. My system specs at the time of writing this is Mac OSX 10.8.5 (Mountain Lion).</p>
+
+<h2>Whats involved</h2>
+
+<ul>
+<li>Using a simulator or connected device</li>
+<li>Having Safari web inspector (SWI) running</li>
+</ul>
+
+
+<p>What normally happens is, when the app closes, SWI will also close. When you relaunch the app, you will need to put Safari in the foreground, click <code>Develop</code> on the menu bar, then hover <code>iPhone Simulator</code> or <code>iPhone</code>, then click the <code>index.html</code> (or your page) to connect &amp; launch SWI.</p>
+
+<p>This is very frustrating because on the app relaunching you may have a callback happening or other code you want to debug/inspect/log on app start up. This hack lets you keep SWI and running gracefully.</p>
+
+<p>Bare with me now, we&rsquo;re going to get funky.</p>
+
+<h2>Setting up a global hotkey</h2>
+
+<p>The first thing to do is to set a <a href="http://support.apple.com/kb/ph6889">global hotkey</a> &ndash; steps:</p>
+
+<ul>
+<li>Open System Preferences / Keyboard</li>
+<li>On the right panel, select <code>Application Shortcuts</code></li>
+<li>Add a hot key &ndash; use whatever keys you want (I used <code>CMD + ALT + I</code>)</li>
+<li>Have the matching key be <code>index.html</code> or whatever your cordova&rsquo;s main html file is</li>
+</ul>
+
+
+<h2>Steps to keep open SWI</h2>
+
+<ul>
+<li>Launch Cordova App</li>
+<li>Open SWI</li>
+<li>Close SWI</li>
+<li>Launch SWI with quick key as set up in global hotkey <code>Application Shortcuts</code></li>
+<li>Close App</li>
+<li>Reopen app &ndash; notice SWI is still running and continues to give us logging/debugging!</li>
+</ul>
+
+
+<p>Enjoy, friends!</p>
+]]></content>
+  </entry>
+  
+</feed>

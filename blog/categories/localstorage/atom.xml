@@ -1,0 +1,461 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: localstorage | Josh Bavari's Ramblings]]></title>
+  <link href="http://jbavari.github.io/blog/categories/localstorage/atom.xml" rel="self"/>
+  <link href="http://jbavari.github.io/"/>
+  <updated>2019-01-27T19:16:40-07:00</updated>
+  <id>http://jbavari.github.io/</id>
+  <author>
+    <name><![CDATA[Josh Bavari]]></name>
+    <email><![CDATA[jbavari@gmail.com]]></email>
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Unit Testing AngularJS Services]]></title>
+    <link href="http://jbavari.github.io/blog/2014/06/11/unit-testing-angularjs-services/"/>
+    <updated>2014-06-11T17:52:00-06:00</updated>
+    <id>http://jbavari.github.io/blog/2014/06/11/unit-testing-angularjs-services</id>
+    <content type="html"><![CDATA[<p>I&rsquo;ve been using AngularJS a lot lately. Since I do a lot of Javascript, that means I&rsquo;m prone to make a lot of runtime script errors.</p>
+
+<p>You know those silly javascript errors &ndash; like ReferenceError and ParseError? Those can always be avoided by just writing some simple unit tests with Jasmine. I&rsquo;d like to cover just how I do that.</p>
+
+<p>(NOTE &ndash; I am forever learning, not teaching or saying THIS is the way it MUST be done)</p>
+
+<p>I read through Andy Shora&rsquo;s great blog post about <a href="http://andyshora.com/unit-testing-best-practices-angularjs.html">Unit Testing Best Practices for AngularJS</a>, but I wanted to record my actual steps so I can reference this again and capture my knowledge.</p>
+
+<h2>Tools for Javascript Testing AngularJS Services</h2>
+
+<p>There&rsquo;s a few things going on here. First we need something to set up our tests and set expectations &ndash; thats Jasmine. Then we need something to run the tests in browsers (or PhantomJS) &ndash; thats Karma. We then need a task runner to go and do these tests for us in some build process, thats Grunt/Gulp. Each tool has a file that will tell it how to run.</p>
+
+<ul>
+<li><a href="http://jasmine.github.io/2.0/introduction.html">Jasmine</a> (unit testing framework)</li>
+<li><a href="http://karma-runner.github.io/0.12/index.html">Karma</a> (for multiple browsers)</li>
+<li><a href="http://http://gruntjs.com/">Grunt</a> / <a href="http://gulpjs.com/">Gulp</a> (task runners / build systems)</li>
+<li><a href="https://github.com/angular/angular.js/blob/master/src/ngMock/angular-mocks.js">Angular Mocks</a></li>
+</ul>
+
+
+<p>Jasmine takes test spec files, Karma takes a config to tell it where to find the test spec files and actual code files, and grunt or gulp will help us run karma. Lets look at how those config files look.</p>
+
+<h1>Setting up Karma / Jasmine / Gulp configs</h1>
+
+<p>I use gulp these days, that requires me to use the gulp CLI as well as the gulp-jasmine plugin. You can use Grunt as well, just exchange gulp for grunt.</p>
+
+<p>I did the following in my command shell:</p>
+
+<p><code>sh
+npm install -g gulp
+npm install -g karma
+npm install gulp-jasmine --save-dev
+npm install karma-jasmine --save-dev
+npm install karma-phantomjs-launcher --save-dev
+npm install karma-spec-reporter --save-dev
+</code></p>
+
+<h2>Setting up Karma config</h2>
+
+<p>I simply ran this in my command shell for a nice simple walk through: <code>karma init</code>. It asks a few questions about what browsers to use, to keep running, and what files to use. Pretty basic stuff.</p>
+
+<p>Interesting tidbits:</p>
+
+<ul>
+<li>files &ndash; simply and array of files and glob&rsquo;s</li>
+<li>frameworks &ndash; specify here which you want to use</li>
+<li>reporters &ndash; customize your test output</li>
+<li>browsers &ndash; list which you&rsquo;d want to actually test in</li>
+</ul>
+
+
+<p>``` js
+// Karma configuration
+// Generated on Wed Jun 11 2014 09:51:52 GMT-0500 (CDT)</p>
+
+<p>module.exports = function(config) {
+  config.set({</p>
+
+<pre><code>// base path that will be used to resolve all patterns (eg. files, exclude)
+basePath: '',
+
+
+// frameworks to use
+// available frameworks: https://npmjs.org/browse/keyword/karma-adapter
+frameworks: ['jasmine'],
+
+
+// list of files / patterns to load in the browser
+files: [
+    './www/js/moment.min.js'
+    , './www/js/controllers/*.js'
+    , './www/js/models/*.js'
+    , './www/js/services.js'
+    , './www/lib/ionic/js/angular/angular.js'
+    , './plugins/org.apache.cordova.FacebookConnect/www/angular/facebookConnect.js'
+    , './test/lib/angular-mocks.js'
+    , './test/spec/**/*.js'
+],
+
+// list of files to exclude
+exclude: [
+
+],
+
+
+// preprocess matching files before serving them to the browser
+// available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
+preprocessors: {
+
+},
+
+
+// test results reporter to use
+// possible values: 'dots', 'progress'
+// available reporters: https://npmjs.org/browse/keyword/karma-reporter
+reporters: ['spec'],
+
+
+// web server port
+port: 9876,
+
+
+// enable / disable colors in the output (reporters and logs)
+colors: true,
+
+
+// level of logging
+// possible values: config.LOG_DISABLE || config.LOG_ERROR || config.LOG_WARN || config.LOG_INFO || config.LOG_DEBUG
+logLevel: config.LOG_INFO,
+
+
+// enable / disable watching file and executing tests whenever any file changes
+autoWatch: true,
+
+
+// start these browsers
+// available browser launchers: https://npmjs.org/browse/keyword/karma-launcher
+browsers: [
+    'PhantomJS'
+    // , 'Chrome'
+    // , 'Firefox'
+    // , 'Safari'
+],
+
+
+// Continuous Integration mode
+// if true, Karma captures browsers, runs the tests and exits
+singleRun: false
+</code></pre>
+
+<p>  });
+};
+```</p>
+
+<h2>Gulpfile for running tests</h2>
+
+<p>Next I had to get a little gulpfile together to run my tests. Right away, I found a quick little SNAFU with the way the gulp task runs the source files VS how I specified them in my Karma config file. A few interesting points here:</p>
+
+<ul>
+<li>Dont actually pass in files to <code>gulp.src</code> &ndash; instead use a dummy. You specify the files in your karma config file.</li>
+<li>If you intend on running a <code>gulp.watch</code> task to autorun, dont error out your karma stream! Use <code>this.emit('end')</code> in your error handler</li>
+</ul>
+
+
+<p>The code itself:</p>
+
+<p>``` js
+var karma = require(&lsquo;gulp-karma&rsquo;);</p>
+
+<p>gulp.task(&lsquo;test&rsquo;, function() {
+  // Be sure to return the stream
+  // NOTE: Using the fake &lsquo;./foobar&rsquo; so as to run the files
+  // listed in karma.conf.js INSTEAD of what was passed to
+  // gulp.src !
+  return gulp.src(&lsquo;./foobar&rsquo;)</p>
+
+<pre><code>.pipe(karma({
+  configFile: 'karma.conf.js',
+  action: 'run'
+}))
+.on('error', function(err) {
+  // Make sure failed tests cause gulp to exit non-zero
+  console.log(err);
+  this.emit('end'); //instead of erroring the stream, end it
+});
+</code></pre>
+
+<p>});</p>
+
+<p>gulp.task(&lsquo;autotest&rsquo;, function() {
+  return gulp.watch([&lsquo;www/js/<em><em>/</em>.js&rsquo;, &lsquo;test/spec/</em>.js&rsquo;], [&lsquo;test&rsquo;]);
+});
+```
+Awesome, not much left to do as far as setting up our test environment, lets get some code to test!</p>
+
+<h2>Setting Up AngularJS Service</h2>
+
+<p>Its a pretty basic setup &ndash; an Auth service with a few methods to get a user and call a back end service to retrieve a user.</p>
+
+<p>``` js
+angular.module(&lsquo;services&rsquo;)</p>
+
+<pre><code>.factory('Auth', function Auth($http, $q) {
+    var user = null;
+
+    var readStoredUser = function readStoredUser() {
+        //Try to read in from localStorage if one exists
+        var storedUser = window.localStorage.getItem('user');
+        try {
+            if(storedUser) {
+                // Note: Using a simple user model here
+                user = new User(JSON.parse(storedUser));
+            }
+        } catch (ex) { /* Silently fail..*/ }
+    }
+
+    readStoredUser();
+
+    var currentUser = function currentUser() {
+        if(!user) {
+            readStoredUser();
+        }
+        return user;
+    }
+
+    var saveUser = function saveUser(userToSave) {
+        window.localStorage.setItem('user', JSON.stringify(userToSave));
+        user = userToSave;
+    }
+
+    var loginWithEmail = function loginWithEmail(name, email) {
+        var deferred = $q.defer();
+
+        var postPath = 'http://someurl.dev/api/v1/login';
+        var postData = { name: name, email: email };
+
+        $http.post(postPath, postData).success(function(data) {
+            if(data.success) {
+                deferred.resolve(data);
+            } else {
+                deferred.reject(data);
+            }
+        }).error(function(error) {
+            deferred.reject(error);
+        });
+
+        return deferred.promise;
+    }
+
+    return {
+        currentUser: currentUser,
+        loginWithEmail: loginWithEmail,
+        saveUser: saveUser
+    };
+})
+</code></pre>
+
+<p>```</p>
+
+<p>Thats a simple bare bones <code>Auth</code> service above. We have a few interesting parts to test:</p>
+
+<ul>
+<li>readStoredUser</li>
+<li>currentUser</li>
+<li>loginWithEmail</li>
+</ul>
+
+
+<p>The first is somewhat hard because it is private to the Auth service. How do we test that? I guess the option is to make it public via a return in the service?</p>
+
+<h2>Test Specs</h2>
+
+<p>There was a few interesting things going on my spec &ndash; first I have a beforeEach that sets up some modules I need to use. Otherwise you&rsquo;ll get some fun / weird <code>couldnt bind</code> errors.</p>
+
+<p>The second was &ndash; In my HTTP tests, I mock out the httpBackend (as provided by angular-mocks) to give me a fake version of my actual HTTP call. This way, I know for sure I&rsquo;m testing my code, not the outside world.</p>
+
+<p>``` js
+//Interesting things to test the Auth service for</p>
+
+<p>// Logging in with Facebook
+// Handling callback to server for checkuser
+// Saving user to localstorage after login
+// Logging out (removing user object as well as localstorage)</p>
+
+<p>describe(&ldquo;Auth Service Unit Tests&rdquo;, function() {</p>
+
+<p>  beforeEach(function() {</p>
+
+<pre><code>//Ensure angular modules available
+module('starter.services');
+module('ngCordova.plugins.facebookConnect');
+</code></pre>
+
+<p>  });</p>
+
+<p>   // instantiate service
+  var apiResponse = {</p>
+
+<pre><code>name: 'Josh Bavari',
+email: 'jbavari@gmail.com',
+id: '4409480064'
+</code></pre>
+
+<p>  };
+  var Auth;
+  var FB = {</p>
+
+<pre><code>init: function() {
+
+},
+login: function() {
+
+},
+api: function(url, params, callback ) {
+  return callback(apiResponse);
+}
+</code></pre>
+
+<p>  };
+  var FacebookConnect = {</p>
+
+<pre><code>login: FB.login
+</code></pre>
+
+<p>  };
+  var httpBackend = null;</p>
+
+<p>  beforeEach(inject(function (<em>Auth</em>) {</p>
+
+<pre><code>Auth = _Auth_;
+</code></pre>
+
+<p>  }));</p>
+
+<p>  it(&lsquo;should have Auth service be defined&rsquo;, function () {</p>
+
+<pre><code>expect(Auth).toBeDefined();
+</code></pre>
+
+<p>  });</p>
+
+<p>  it(&lsquo;should not have a user existing upon starting up&rsquo;, function() {</p>
+
+<pre><code>expect(Auth.currentUser()).toBe(null);
+</code></pre>
+
+<p>  });</p>
+
+<p>  it(&lsquo;should save a user&rsquo;, function() {</p>
+
+<pre><code>var user = { name: 'Josh Bavari', id: 1 };
+
+Auth.saveUser(user);
+var currUser = Auth.currentUser();
+expect(currUser.name).toBe(user.name);
+expect(currUser.id).toBe(user.id);
+</code></pre>
+
+<p>  });</p>
+
+<p>  it(&lsquo;should have a user in local storage after calling saveUser&rsquo;, function() {</p>
+
+<pre><code>var user = { name: 'Josh Bavari', id: 1 };
+
+Auth.saveUser(user);
+
+var localUser = JSON.parse(window.localStorage.getItem('user'));
+
+expect(localUser.name).toBe(user.name);
+expect(localUser.id).toBe(user.id);
+</code></pre>
+
+<p>  });</p>
+
+<p>  it(&lsquo;should remove the user from local storage after logging out&rsquo;, function() {</p>
+
+<pre><code>var user = { name: 'Josh Bavari', id: 1 };
+
+Auth.saveUser(user);
+
+var localUser = JSON.parse(window.localStorage.getItem('user'));
+
+expect(localUser.name).toBe(user.name);
+expect(localUser.id).toBe(user.id);
+
+Auth.logout();
+
+expect(Auth.currentUser()).toBe(null);
+</code></pre>
+
+<p>  });</p>
+
+<p>  describe(&lsquo;Mocked HTTP Requests&rsquo;, function() {</p>
+
+<pre><code>var $httpBackend;
+var name = 'Josh Bavari';
+var email = 'jbavari@gmail.com';
+
+beforeEach(inject(function($injector) {
+  // Set up the mock http service responses
+  $httpBackend = $injector.get('$httpBackend');
+  $httpBackend.when('POST', 'http://raisemore.dev/api/v1/user/checkuser')
+    .respond(200, {name: name, email: email, success: true});
+ }));
+
+afterEach(function() {
+ $httpBackend.verifyNoOutstandingExpectation();
+ $httpBackend.verifyNoOutstandingRequest();
+});
+
+
+it('should have sent a POST request to the checkuser API', function() {
+    var result = Auth.checkUser(name, email, 1, '4408064001', null);
+    $httpBackend.expectPOST('http://raisemore.dev/api/v1/user/checkuser');
+    $httpBackend.flush();
+});
+</code></pre>
+
+<p>  });</p>
+
+<p>});
+```</p>
+
+<p>Theres a few key points to look at in the Jasmine tests:</p>
+
+<ul>
+<li><code>beforeEach(inject(function (_Auth_) {})</code> sets our local <code>Auth</code> variable</li>
+<li>using inject($injector) to get us our mocked out <code>$httpBackend</code> to fake our HTTP requests.</li>
+</ul>
+
+
+<p>That just about covers it. In recap:</p>
+
+<ul>
+<li>Set up the testing framework Karma</li>
+<li>Got the test runners for Gulp</li>
+<li>Set up some tests with Jasmine</li>
+<li>Mocked out $http requests to return us some fake data</li>
+<li>Ensured our services called the http requests correctly</li>
+<li>Avoided any future errors from testing &ndash; as well as avoiding Parse/Reference errors along the way</li>
+</ul>
+
+
+<p>AngularJS does a lot of the heavy lifting for you. However, it still gives you just enough rope to hang yourself with.</p>
+
+<p>With just some simple tests you can also avoid any silly run time errors you may encounter.</p>
+
+<p>Hope this gives ideas on how to openly test your services as well as models.</p>
+
+<h3>References</h3>
+
+<ul>
+<li><a href="http://andyshora.com/unit-testing-best-practices-angularjs.html">Andy Shora&rsquo;s Blog post &ndash; Unit Testing Best Practices in AngularJS</a></li>
+<li><a href="http://www.benlesh.com/2013/05/angularjs-unit-testing-controllers.html">AngularJS Unit Testing Controllers</a></li>
+<li><a href="http://www.benlesh.com/2013/06/angular-js-unit-testing-services.html">AngularJS Unit Testing Services</a></li>
+</ul>
+
+]]></content>
+  </entry>
+  
+</feed>

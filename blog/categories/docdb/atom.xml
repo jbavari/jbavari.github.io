@@ -1,0 +1,331 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: docdb | Josh Bavari's Ramblings]]></title>
+  <link href="http://jbavari.github.io/blog/categories/docdb/atom.xml" rel="self"/>
+  <link href="http://jbavari.github.io/"/>
+  <updated>2019-01-27T19:16:40-07:00</updated>
+  <id>http://jbavari.github.io/</id>
+  <author>
+    <name><![CDATA[Josh Bavari]]></name>
+    <email><![CDATA[jbavari@gmail.com]]></email>
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Handling Relationships in RethinkDB]]></title>
+    <link href="http://jbavari.github.io/blog/2014/05/17/handling-relationships-in-rethinkdb/"/>
+    <updated>2014-05-17T23:06:00-06:00</updated>
+    <id>http://jbavari.github.io/blog/2014/05/17/handling-relationships-in-rethinkdb</id>
+    <content type="html"><![CDATA[<p>Lately I&rsquo;ve been playing a lot with <a href="http://rethinkdb.com">RethinkDB</a> and I&rsquo;m in love with it. Such a sweet document database, amazingly beautiful web interface, and easy to use API&rsquo;s in three different languages. I started up a side project that involves some relational data, and ran into a few bumps along the road.</p>
+
+<p>I&rsquo;m writing this post to share some of the knowledge I&rsquo;ve acquired along the way, and hopefully some will find it helpful.</p>
+
+<h2>The problem</h2>
+
+<p>I&rsquo;m using a doc db because I&rsquo;m still not sure of my database schema, and since its mostly a prototype, I need something flexible. The project is for physical therapy patients involving rehabilitation programs. Each program is comprised of several exercises, and a program is assigned to one user. A user can have multiple programs.</p>
+
+<p>Eat your ER heart out:</p>
+
+<p><img class="[pic]" src="/images/PtMotions.png" title="[250] [250] [PT Motions ER Diagram [ER Diagram]]" ></p>
+
+<h3>Technologies Used</h3>
+
+<p>I wanted to keep it light, so I chose using <a href="http://www.sinatrarb.com/">Sinatra</a> for my API and <a href="http://ionicframework.com">Ionic Framework</a> for my mobile application. BTW &ndash; when it comes to choosing a framework for Cordova, I suggest trying Ionic. They are crushing it.</p>
+
+<h2>Setting up the tables</h2>
+
+<p>First I made a dataload.rb file, which would be run on the init of my server which would set up my database, set up the tables, and dump some initial data in the tables. It looked something like this:</p>
+
+<p>``` ruby InitialData.rb
+require &lsquo;rethinkdb&rsquo;</p>
+
+<h1>We will use these settings later in the code to connect</h1>
+
+<h1>to the RethinkDB server.</h1>
+
+<p>RDB_CONFIG = {</p>
+
+<pre><code>:host =&gt; ENV['RDB_HOST'] || 'localhost', 
+:port =&gt; ENV['RDB_PORT'] || 28015,
+:db   =&gt; ENV['RDB_DB']   || 'PtMotions'
+</code></pre>
+
+<p>}</p>
+
+<h1>A friendlly shortcut for accessing ReQL functions</h1>
+
+<p>r = RethinkDB::RQL.new</p>
+
+<p>@rdb_connection = r.connect(:host => RDB_CONFIG[:host], :port => RDB_CONFIG[:port], :db => RDB_CONFIG[:db])</p>
+
+<p>@users = [</p>
+
+<pre><code>{ 
+    :clinicId =&gt; 'At Home PT',
+    :patientId =&gt; 'jbavari'
+}
+</code></pre>
+
+<p>]</p>
+
+<p>user_id = nil</p>
+
+<p>@users.each do |user|</p>
+
+<pre><code>begin
+    result = r.table('Users').insert(user).run(@rdb_connection)
+    # Grab user id from result to use later for assigning the program
+    user_id = result['generated_keys'][0]
+rescue
+    p 'Error: ' + result.to_s
+end
+</code></pre>
+
+<p>end</p>
+
+<p>@exercises = [{</p>
+
+<pre><code>      :name =&gt; 'Resisted Right Shoulder Internal/External Rotation',
+      :startingPosition =&gt; 'Lying on your back with your legs bent with your right hand holding a kettle bell.',
+      :description =&gt; 'Lift the kettle bell straight up in the air and hold. Pull your shoulder into the ground and away from your ear. Slowly rotate your arm all the way in then all the way out without letting your arm sway',
+      :whatYouFeel =&gt; 'Strengthing in your right shoulder',
+      :videoUrl =&gt; 'http://ptmotions.com/ptm_mp4_768_432/s11t02_063.mp4'
+    },
+    {
+      :name =&gt; 'Side Resisted Right Shoulder Internal/External Rotation',
+      :startingPosition =&gt; 'Lying on your left side with your right hand holding a kettle bell',
+      :description =&gt; 'Lift the kettle bell straight up in the air and hold. Pull your shoulder down away from your ear. Slowly rotate your arm all the way in, then all the way out without letting your arm sway',
+      :whatYouFeel =&gt; 'Strengthing in your right shoulder',
+      :videoUrl =&gt; 'http://ptmotions.com/ptm_mp4_768_432/s11t02_065.mp4'
+    }
+</code></pre>
+
+<p>]</p>
+
+<p>exercise_list = Array.new</p>
+
+<p>@exercises.each do |exercise|</p>
+
+<pre><code>begin
+    result = r.table('Exercises').insert(exercise).run(@rdb_connection)
+    exercise_list.push result['generated_keys'][0]
+rescue
+    p 'Error: ' + result.to_s
+end
+</code></pre>
+
+<p>end</p>
+
+<p>@joshs_program = {</p>
+
+<pre><code>:name =&gt; 'Joshs Shoulder Rehab',
+:notes =&gt; 'Focus on keeping core tight',
+:instructions =&gt; {
+    :howOften =&gt; '3 sets per day',
+    :howMany =&gt; '15 per side'
+},
+:exercises =&gt; exercise_list,
+:userId =&gt; user_id
+</code></pre>
+
+<p>}</p>
+
+<p>begin</p>
+
+<pre><code>result = r.table('Programs').insert(@joshs_program).run(@rdb_connection)
+</code></pre>
+
+<p>rescue</p>
+
+<pre><code>p 'Error: ' + result.to_s
+</code></pre>
+
+<p>end
+```</p>
+
+<p>Above you&rsquo;ll see I have a list of exercises, as they are inserted I add their ID&rsquo;s to an array. I then take that array and use that to store in <code>@joshs_program</code> so that I can set up a relationship with exercises.</p>
+
+<h2>Retrieving data</h2>
+
+<p>Now that I have programs with an array of exercises, I need to get all the exercises by the program. First &ndash; I need a query that will get me all of my exercises by program ID &ndash; so thats similar to a type of inner join, or a SQL equivalent of <code>SELECT IN</code>. Luckily, RethinkDB has awesome documentation about <a href="http://rethinkdb.com/docs/sql-to-reql/">SQL-to-RQL</a> and <a href="http://rethinkdb.com/docs/data-modeling/">data modeling</a>.</p>
+
+<p>From the documentation, they recommend doing the following:</p>
+
+<p>``` python
+r.table(&ldquo;users&rdquo;).filter(lambda doc:</p>
+
+<pre><code>r.expr(["Peter", "John"])
+    .contains(doc["name"])
+</code></pre>
+
+<p>)
+```</p>
+
+<p>However, the example is in Python, so you&rsquo;ll need to do a little more work to get it in Ruby.</p>
+
+<p>This led me to take a different path in RQL. I found out how to do a <code>SELECT IN</code> type query, and in Ruby it looks like this with <code>inner_join</code>:</p>
+
+<p>``` ruby
+@programId = params[:programId] || &lsquo;37feebf9-54ce-45f5-ba76-d13fe634b035&rsquo;
+exercises = r.table(&ldquo;Programs&rdquo;)</p>
+
+<pre><code>    .filter({'id' =&gt; @programId})
+    .inner_join( r.table("Exercises")) { |p, e| 
+        p['exercises'].contains( e['id'] ) 
+    }
+    .zip()
+    .without('exercises', 'userId')
+    .order_by(r.desc('created_at'))
+    .run(@rdb_connection)
+</code></pre>
+
+<p>```</p>
+
+<p>You&rsquo;ll see I&rsquo;m using the RQL <code>inner_join</code>, and as part of my lamba I use the table attribute <code>p['exercises']</code> which contains my array of exercise ID&rsquo;s, then using the <code>contains</code> method on my exercise table <code>e['id']</code>. It works wonderfully. I&rsquo;m not sure if it is the best way to handle this, and I&rsquo;m still a RethinkDB newbie so this was a good workout for me.</p>
+
+<h3>The API code</h3>
+
+<p>The rest of my API code relied heavily on the RethinkDB <a href="http://www.rethinkdb.com/docs/examples/sinatra-pastie/">sample app &ndash; Pastie</a>. The really interesting joins are found around line 77.</p>
+
+<p>I&rsquo;m including my own version here to help give some ideas how I&rsquo;m setting up my API:</p>
+
+<p>``` ruby server.rb
+require &lsquo;sinatra&rsquo;
+require &lsquo;rethinkdb&rsquo;
+require &lsquo;json&rsquo;</p>
+
+<p>RDB_CONFIG = {
+  :host => ENV[&lsquo;RDB_HOST&rsquo;] || &lsquo;localhost&rsquo;,
+  :port => ENV[&lsquo;RDB_PORT&rsquo;] || 28015,
+  :db   => ENV[&lsquo;RDB_DB&rsquo;]   || &lsquo;PtMotions&rsquo;
+}</p>
+
+<p>r = RethinkDB::RQL.new</p>
+
+<h1>The pattern we&rsquo;re using for managing database connections is to have <strong>a connection per request</strong>.</h1>
+
+<h1>We&rsquo;re using Sinatra&rsquo;s <code>before</code> and <code>after</code> for</h1>
+
+<h1><a href="http://www.rethinkdb.com/api/ruby/connect/">opening a database connection</a> and</h1>
+
+<h1><a href="http://www.rethinkdb.com/api/ruby/close/">closing it</a> respectively.</h1>
+
+<p>before do</p>
+
+<pre><code>headers 'Access-Control-Allow-Origin' =&gt; '*', 
+        'Access-Control-Allow-Methods' =&gt; ['OPTIONS', 'GET', 'POST']
+</code></pre>
+
+<p>  begin</p>
+
+<pre><code># When openning a connection we can also specify the database:
+@rdb_connection = r.connect(:host =&gt; RDB_CONFIG[:host], :port =&gt; RDB_CONFIG[:port], :db =&gt; settings.db)
+</code></pre>
+
+<p>  rescue Exception => err</p>
+
+<pre><code>logger.error "Cannot connect to RethinkDB database #{RDB_CONFIG[:host]}:#{RDB_CONFIG[:port]} (#{err.message})"
+halt 501, 'This page could look nicer, unfortunately the error is the same: database not available.'
+</code></pre>
+
+<p>  end
+end</p>
+
+<h1>After each request we <a href="http://www.rethinkdb.com/api/ruby/close/">close the database connection</a>.</h1>
+
+<p>after do
+  begin</p>
+
+<pre><code>@rdb_connection.close if @rdb_connection
+</code></pre>
+
+<p>  rescue</p>
+
+<pre><code>logger.warn "Couldn't close connection"
+</code></pre>
+
+<p>  end
+end</p>
+
+<p>get &lsquo;/&rsquo; do
+  @snippet = {}
+  erb :new
+end</p>
+
+<p>post &lsquo;/add&rsquo; do</p>
+
+<pre><code>@user = { :clinicId =&gt; params[:clinicId], :patientId =&gt; params[:patientId] }
+# result = r.table('Users').insert(@user).run(@rdb_connnection)
+result = r.table('Users').insert(@user).run(@rdb_connection)
+
+
+if result['inserted'] == 1
+    redirect "/#{result['generated_keys'][0]}"
+else
+    logger.error result
+    redirect '/'
+end
+</code></pre>
+
+<p>end</p>
+
+<p>get &lsquo;/programs/:userId&rsquo; do</p>
+
+<pre><code>content_type :json
+@userId = params[:userId].downcase
+max_results = params[:limit] || 10
+results = r.table('Programs').
+    filter('userId' =&gt; @userId).
+    # pluck('id', 'name', 'created_at').
+    without('userId').
+    order_by(r.desc('created_at')).
+    limit(max_results).
+    run(@rdb_connection)
+
+results.to_json
+</code></pre>
+
+<p>end</p>
+
+<p>get &lsquo;/exercises/:programId&rsquo; do</p>
+
+<pre><code>content_type :json
+
+@programId = params[:programId] || '37feebf9-54ce-45f5-ba76-d13fe634b035'
+
+exercises = r.table("Programs")
+    .filter({'id' =&gt; @programId})
+    .inner_join( r.table("Exercises")) { |p, e| 
+        p['exercises'].contains( e['id'] ) 
+    }
+    .zip()
+    .without('exercises', 'userId')
+    .order_by(r.desc('created_at'))
+    .run(@rdb_connection)
+
+exercises.to_json
+# exercise_ids.to_json
+</code></pre>
+
+<p>end</p>
+
+<p>get &lsquo;/getuser/:patientId&rsquo; do</p>
+
+<pre><code>content_type :json
+user = r.table('Users')
+    .filter({'patientId' =&gt; params[:patientId]})
+    .run(@rdb_connection)
+
+user.first.to_json
+</code></pre>
+
+<p>end
+```</p>
+
+<p>That&rsquo;s all folks! Hope this helps some in understanding how to do foreign key references in RethinkDB!</p>
+]]></content>
+  </entry>
+  
+</feed>

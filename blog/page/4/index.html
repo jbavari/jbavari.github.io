@@ -1,0 +1,2140 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Josh Bavari's Ramblings</title>
+  <meta name="author" content="Josh Bavari">
+
+  
+  <meta name="description" content="I&rsquo;ve been lucky enough to be developing with the Ionic framework lately. One issue I keep running into is &ndash; how do I manage some &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://jbavari.github.io/blog/page/4">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="Josh Bavari's Ramblings" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">Josh Bavari's Ramblings</a></h1>
+  
+    <h2>tech babbles on Ruby, Javascript, Rails, Phonegap/Cordova, Grunt, and more</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:jbavari.github.io" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+  <li><a href="/about">About</a></li>
+  <li><a href="/speaking">Speaking</a></li>
+  <li><a href="/knowledge">Knowledge</a></li>
+  <li><a href="/about/resume">Resume</a></li>
+  <li><a href="/cv">C.V.</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div class="blog-index">
+  
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/08/23/managing-environment-variables-for-your-ionic-application/">Managing Environment Variables for Your Ionic Application</a></h1>
+    
+    
+      <p class="meta">
+        <span class="reading-time">less than a 1 minute read</span>
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-08-23T20:43:00-06:00" pubdate data-updated="true">Aug 23<span>rd</span>, 2014</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>I&rsquo;ve been lucky enough to be developing with the Ionic framework lately. One issue I keep running into is &ndash; how do I manage some environment variables (base api url, debug enabled, upload url, etc) across my code, both tests and application.</p>
+
+<p>I&rsquo;d like to share a little solution I&rsquo;ve come up with. It may not be the BEST solution to take, but it has been working great for me.</p>
+
+<h2>The idea</h2>
+
+<p>I&rsquo;d like to have some files that I can preprocess &ndash; say &lsquo;AppSettings.js&rsquo; that will expose some variables for the rest of my application to use. This could contain those pesky variables that I will need to change frequently.</p>
+
+<p>I put my preprocess file templates in my root folder named <code>templates</code>. I will have that file contain my preprocess variables. I will spit out the preprocessed file as <code>www/js/appsettings.js</code> file once its been preprocessed.</p>
+
+<p>That preprocessed file will be used in both my <code>index.html</code> and my <code>karma.conf.js</code> for testing.</p>
+
+<p>I harness <a href="http://gulpjs.com/">gulp</a> a lot, however you can still use <a href="http://gruntjs.com/">Grunt</a> or just plain node.js as well.</p>
+
+<p>My <code>AppSettings.js</code> file:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="nx">AppSettings</span> <span class="o">=</span> <span class="p">{</span>
+</span><span class='line'>  <span class="c1">// @if ENV == &#39;DEVELOPMENT&#39;</span>
+</span><span class='line'>  <span class="nx">baseApiUrl</span><span class="o">:</span> <span class="s1">&#39;http://localhost:4400/&#39;</span><span class="p">,</span>
+</span><span class='line'>  <span class="nx">debug</span><span class="o">:</span> <span class="kc">true</span>
+</span><span class='line'>  <span class="c1">// @endif</span>
+</span><span class='line'>  <span class="c1">// @if ENV == &#39;TEST&#39;</span>
+</span><span class='line'>  <span class="nx">baseApiUrl</span><span class="o">:</span> <span class="s1">&#39;https://test.api-example.com/&#39;</span>
+</span><span class='line'>  <span class="c1">// @endif</span>
+</span><span class='line'>  <span class="c1">// @if ENV == &#39;PRODUCTION&#39;</span>
+</span><span class='line'>  <span class="nx">baseApiUrl</span><span class="o">:</span> <span class="s1">&#39;https://api-example.com/&#39;</span>
+</span><span class='line'>  <span class="c1">// @endif</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>In my preprocess file &ndash; you can see I have some <code>@if ENV == ''</code> statements beginning with <code>//</code> &ndash; these will be replaced if the <code>if</code> statement is true. (Duh)</p>
+
+<h2>Gulp Preprocess Task</h2>
+
+<p>I like <a href="https://www.npmjs.org/package/gulp-preprocess">gulp preproces</a>. Install with <code>npm install --save-dev gulp-preprocess</code>.</p>
+
+<p>My gulpfile contains 3 tasks &ndash; <code>dev</code> / <code>test_env</code> / and <code>prod</code>, looking like this:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">var</span> <span class="nx">preprocess</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;gulp-preprocess&#39;</span><span class="p">);</span>
+</span><span class='line'><span class="nx">gulp</span><span class="p">.</span><span class="nx">task</span><span class="p">(</span><span class="s1">&#39;dev&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>  <span class="nx">gulp</span><span class="p">.</span><span class="nx">src</span><span class="p">(</span><span class="s1">&#39;./template/appsettings.js&#39;</span><span class="p">)</span>
+</span><span class='line'>    <span class="p">.</span><span class="nx">pipe</span><span class="p">(</span><span class="nx">preprocess</span><span class="p">({</span><span class="nx">context</span><span class="o">:</span> <span class="p">{</span> <span class="nx">NODE_ENV</span><span class="o">:</span> <span class="s1">&#39;DEVELOPMENT&#39;</span><span class="p">,</span> <span class="nx">DEBUG</span><span class="o">:</span> <span class="kc">true</span><span class="p">}}))</span>
+</span><span class='line'>    <span class="p">.</span><span class="nx">pipe</span><span class="p">(</span><span class="nx">gulp</span><span class="p">.</span><span class="nx">dest</span><span class="p">(</span><span class="s1">&#39;./www/js/&#39;</span><span class="p">));</span>
+</span><span class='line'><span class="p">});</span>
+</span><span class='line'>
+</span><span class='line'><span class="nx">gulp</span><span class="p">.</span><span class="nx">task</span><span class="p">(</span><span class="s1">&#39;test_env&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>  <span class="nx">gulp</span><span class="p">.</span><span class="nx">src</span><span class="p">(</span><span class="s1">&#39;./template/appsettings.js&#39;</span><span class="p">)</span>
+</span><span class='line'>    <span class="p">.</span><span class="nx">pipe</span><span class="p">(</span><span class="nx">preprocess</span><span class="p">({</span><span class="nx">context</span><span class="o">:</span> <span class="p">{</span> <span class="nx">NODE_ENV</span><span class="o">:</span> <span class="s1">&#39;TEST&#39;</span><span class="p">,</span> <span class="nx">DEBUG</span><span class="o">:</span> <span class="kc">true</span><span class="p">}}))</span>
+</span><span class='line'>    <span class="p">.</span><span class="nx">pipe</span><span class="p">(</span><span class="nx">gulp</span><span class="p">.</span><span class="nx">dest</span><span class="p">(</span><span class="s1">&#39;./www/js/&#39;</span><span class="p">));</span>
+</span><span class='line'><span class="p">});</span>
+</span><span class='line'>
+</span><span class='line'><span class="nx">gulp</span><span class="p">.</span><span class="nx">task</span><span class="p">(</span><span class="s1">&#39;prod&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>  <span class="nx">gulp</span><span class="p">.</span><span class="nx">src</span><span class="p">(</span><span class="s1">&#39;./template/appsettings.js&#39;</span><span class="p">)</span>
+</span><span class='line'>    <span class="p">.</span><span class="nx">pipe</span><span class="p">(</span><span class="nx">preprocess</span><span class="p">({</span><span class="nx">context</span><span class="o">:</span> <span class="p">{</span> <span class="nx">NODE_ENV</span><span class="o">:</span> <span class="s1">&#39;PRODUCTION&#39;</span><span class="p">}}))</span>
+</span><span class='line'>    <span class="p">.</span><span class="nx">pipe</span><span class="p">(</span><span class="nx">gulp</span><span class="p">.</span><span class="nx">dest</span><span class="p">(</span><span class="s1">&#39;./www/js/&#39;</span><span class="p">));</span>
+</span><span class='line'><span class="p">});</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>Invocation</h2>
+
+<p>Now I just have to fire off <code>gulp dev</code> for my development settings, <code>gulp test_env</code> for test settings, and <code>gulp prod</code> for production settings.</p>
+
+<p>As I mentioned &ndash; this works great for my tests, as I include the preprocessed file in <code>karma.conf.js</code> so my tests can use <code>AppSettings.baseApiUrl</code> (make sure you have your tests call the <code>dev</code> task first!)</p>
+
+<p>I hope this helps any who may have some environment variables they need to change between environments!</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/08/14/making-rails-and-postgres-schemas-play-nice/">Making Rails Fixtures Across Postgres Schemas Play Nice</a></h1>
+    
+    
+      <p class="meta">
+        <span class="reading-time">less than a 1 minute read</span>
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-08-14T20:58:00-06:00" pubdate data-updated="true">Aug 14<span>th</span>, 2014</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>This past week or so I&rsquo;ve had another run in with using Rails to access data across Postgres schemas. I thought I would share some of my experiences I&rsquo;ve had with the two.</p>
+
+<p>I&rsquo;m going to assume you&rsquo;re comfortable with Rails (ActiveRecord with models) and Postgres (what is a schema and why you&rsquo;d want to use one).</p>
+
+<h2>The wild wild west of data</h2>
+
+<p>I had a <code>public</code> schema for most of my data (people, preferences, etc) and another schema <code>bikeshop</code> that has several entries from an external data feed, that may or may not change format along the way.</p>
+
+<h2>To ActiveRecord &ndash; or not to be</h2>
+
+<p>First I tried making some simple ActiveRecord classes, all while admitting I&rsquo;m really not that fond of ActiveRecord.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">BikeStore</span> <span class="o">&lt;</span> <span class="ss">ActiveRecord</span><span class="p">:</span><span class="ss">:Base</span>
+</span><span class='line'>  <span class="n">set_table_name</span> <span class="s1">&#39;bikes.store&#39;</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Easy right? It happens to work too, sweet.</p>
+
+<h2>Wait, I thought you wrote tests too?</h2>
+
+<p>Woops, let&rsquo;s get that set up too. First I&rsquo;ll start by setting up my fixtures (<a href="http://google.com">heres</a> a few <a href="http://googe.com">reasons</a> I still use <a href="http://google.com">minitest &amp; fixtures</a>). I started by naming my file <code>bikeshop.yml</code> and it looks like this:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='yaml'><span class='line'><span class="l-Scalar-Plain">first</span><span class="p-Indicator">:</span>
+</span><span class='line'>  <span class="l-Scalar-Plain">id</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">1</span>
+</span><span class='line'>  <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="s">&#39;Jims</span><span class="nv"> </span><span class="s">Bike</span><span class="nv"> </span><span class="s">shop&#39;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>And a quick test:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="nb">require</span> <span class="s1">&#39;test_helper&#39;</span>
+</span><span class='line'><span class="k">class</span> <span class="nc">BikeStoreTest</span> <span class="o">&lt;</span> <span class="ss">ActiveSupport</span><span class="p">:</span><span class="ss">:TestCase</span>
+</span><span class='line'>  <span class="n">before</span> <span class="k">do</span>
+</span><span class='line'>      <span class="vi">@bike_store</span> <span class="o">=</span> <span class="n">bikesstore</span><span class="p">(</span><span class="ss">:first</span><span class="p">)</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nb">test</span> <span class="s1">&#39;should get bike store name&#39;</span> <span class="k">do</span>
+</span><span class='line'>      <span class="n">refute_nil</span> <span class="vi">@bike_store</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Right away you&rsquo;ll get one of these errors:</p>
+
+<ul>
+<li>There is no table named <code>bikestore</code></li>
+<li>There is no function named bikesstore</li>
+</ul>
+
+
+<p>How do you even use or access the fixture data then?</p>
+
+<h3>Fixture naming with schemas</h3>
+
+<p>The trick is this: naming the fixture yaml file <code>schema.table.yml</code> &ndash; that properly sets up the fixture to let us get some test data. I called my file <code>bikes.store.yml</code> and that fixed things up.</p>
+
+<h3>Accessing the fixture data in a test</h3>
+
+<p>Still not sure on this one folks. Please someone comment and help the world out!</p>
+
+<p>Hope this helps</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/06/24/managing-cordova-plugins-with-package-dot-json-and-hooks/">Managing Cordova Plugins With package.json and Hooks</a></h1>
+    
+    
+      <p class="meta">
+        <span class="reading-time">less than a 1 minute read</span>
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-06-24T17:52:00-06:00" pubdate data-updated="true">Jun 24<span>th</span>, 2014</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>In a previous post, I blogged about <a href="http://jbavari.github.io/blog/2014/03/29/how-i-use-plugins-with-variables-in-phonegap-slash-cordova-applications/">how to manage plugins with variables</a>. I wanted to expand on that some more, and this time, talk about how to use your package.json to manage your plugins with versions as well as a way to reset your cordova set up.</p>
+
+<h2>The problem</h2>
+
+<p>Whenever I start a new Cordova project, I start by adding in all my plugins. Then once they are added, I&rsquo;ll then commit them all and push the repository with all the plugins.</p>
+
+<p>My workflow is usually like this:</p>
+
+<ul>
+<li>cordova create new ProjectApp</li>
+<li>cd ProjectApp</li>
+<li>cordova platform add ios</li>
+<li>cordova plugin add org.apache.cordova.camera</li>
+<li>cordova plugin add org.apache.cordova.contacts</li>
+<li>insert more plugin statements for every plugin we want</li>
+<li>cordova run ios</li>
+<li>cordova run android</li>
+</ul>
+
+
+<p>Occassionaly, I run into this issue when I&rsquo;m using plugins that require native variable hooks when installing. The prime example is the facebook plugin, it requires the <code>APP_ID</code> to be passed in with the <code>cordova plugin add</code> command with the options of <code>--variable APP_ID="some_id"</code>.</p>
+
+<h2>What I&rsquo;d rather do</h2>
+
+<p>It&rsquo;d be nice to have these plugins being saved with their version, so when the next user needs to pull the plugins, or modify the installation, they can just modify the package.json and run a command to install them all. That way, we can get some kind of versioning on our plugins.</p>
+
+<p>Ideally, I want to just type <code>cordova setup</code> &ndash; have it look at my package.json file, and just begin installing what&rsquo;s listed there.</p>
+
+<h3>Making the dream come true</h3>
+
+<p>First, lets start by putting our platforms and plugins in our package.json like so:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+</pre></td><td class='code'><pre><code class='json'><span class='line'><span class="p">{</span>
+</span><span class='line'>  <span class="nt">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;SampleApp&quot;</span><span class="p">,</span>
+</span><span class='line'>  <span class="nt">&quot;version&quot;</span><span class="p">:</span> <span class="s2">&quot;0.0.0&quot;</span><span class="p">,</span>
+</span><span class='line'>  <span class="nt">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;Sample App&quot;</span><span class="p">,</span>
+</span><span class='line'>  <span class="nt">&quot;main&quot;</span><span class="p">:</span> <span class="s2">&quot;index.js&quot;</span><span class="p">,</span>
+</span><span class='line'>  <span class="nt">&quot;scripts&quot;</span><span class="p">:</span> <span class="p">{</span>
+</span><span class='line'>    <span class="nt">&quot;test&quot;</span><span class="p">:</span> <span class="s2">&quot;echo \&quot;Error: no test specified\&quot; &amp;&amp; exit 1&quot;</span>
+</span><span class='line'>  <span class="p">},</span>
+</span><span class='line'>  <span class="nt">&quot;author&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+</span><span class='line'>  <span class="nt">&quot;license&quot;</span><span class="p">:</span> <span class="s2">&quot;ISC&quot;</span><span class="p">,</span>
+</span><span class='line'>  <span class="nt">&quot;platforms&quot;</span><span class="p">:</span> <span class="p">[</span>
+</span><span class='line'>    <span class="s2">&quot;ios&quot;</span><span class="p">,</span>
+</span><span class='line'>    <span class="s2">&quot;android&quot;</span>
+</span><span class='line'>  <span class="p">],</span>
+</span><span class='line'>  <span class="nt">&quot;plugins&quot;</span><span class="p">:</span> <span class="p">[</span>
+</span><span class='line'>    <span class="s2">&quot;org.apache.cordova.camera&quot;</span><span class="p">,</span>
+</span><span class='line'>    <span class="s2">&quot;org.apache.cordova.console&quot;</span><span class="p">,</span>
+</span><span class='line'>    <span class="s2">&quot;org.apache.cordova.contacts&quot;</span><span class="p">,</span>
+</span><span class='line'>    <span class="s2">&quot;org.apache.cordova.device&quot;</span><span class="p">,</span>
+</span><span class='line'>    <span class="s2">&quot;org.apache.cordova.dialogs&quot;</span><span class="p">,</span>
+</span><span class='line'>    <span class="s2">&quot;org.apache.cordova.file&quot;</span><span class="p">,</span>
+</span><span class='line'>    <span class="s2">&quot;org.apache.cordova.file-transfer&quot;</span><span class="p">,</span>
+</span><span class='line'>    <span class="s2">&quot;org.apache.cordova.geolocation&quot;</span><span class="p">,</span>
+</span><span class='line'>    <span class="s2">&quot;org.apache.cordova.inappbrowser&quot;</span><span class="p">,</span>
+</span><span class='line'>    <span class="s2">&quot;org.apache.cordova.media&quot;</span><span class="p">,</span>
+</span><span class='line'>    <span class="s2">&quot;org.apache.cordova.media-capture&quot;</span><span class="p">,</span>
+</span><span class='line'>    <span class="s2">&quot;org.apache.cordova.network-information&quot;</span><span class="p">,</span>
+</span><span class='line'>    <span class="s2">&quot;org.apache.cordova.splashscreen&quot;</span><span class="p">,</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>      <span class="nt">&quot;locator&quot;</span><span class="p">:</span> <span class="s2">&quot;https://github.com/jbavari/cordova-facebook-connect.git&quot;</span><span class="p">,</span>
+</span><span class='line'>      <span class="nt">&quot;variables&quot;</span><span class="p">:</span> <span class="p">{</span>
+</span><span class='line'>          <span class="nt">&quot;APP_ID&quot;</span><span class="p">:</span> <span class="s2">&quot;some_id&quot;</span><span class="p">,</span>
+</span><span class='line'>          <span class="nt">&quot;APP_NAME&quot;</span><span class="p">:</span> <span class="s2">&quot;some_name&quot;</span>
+</span><span class='line'>      <span class="p">}</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>  <span class="p">],</span>
+</span><span class='line'>  <span class="nt">&quot;devDependencies&quot;</span><span class="p">:</span> <span class="p">{</span>
+</span><span class='line'>    <span class="nt">&quot;load-grunt-tasks&quot;</span><span class="p">:</span> <span class="s2">&quot;~0.4.0&quot;</span><span class="p">,</span>
+</span><span class='line'>    <span class="nt">&quot;time-grunt&quot;</span><span class="p">:</span> <span class="s2">&quot;~0.3.1&quot;</span><span class="p">,</span>
+</span><span class='line'>    <span class="nt">&quot;grunt&quot;</span><span class="p">:</span> <span class="s2">&quot;~0.4.4&quot;</span><span class="p">,</span>
+</span><span class='line'>    <span class="nt">&quot;grunt-shell&quot;</span><span class="p">:</span> <span class="s2">&quot;~0.6.4&quot;</span>
+</span><span class='line'>  <span class="p">},</span>
+</span><span class='line'>  <span class="nt">&quot;dependencies&quot;</span><span class="p">:</span> <span class="p">{}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Automating Platforms</h3>
+
+<p>Now, we&rsquo;ll need a script that will look at our <code>package.json</code> and begin installing our platforms and plugins.</p>
+
+<p>My platform installation script is located in the <code>tasks</code> directory named <code>platforms.js</code>, and looks like so:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="err">#</span><span class="o">!</span><span class="err">/usr/bin/env node</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">//This script will add or remove all plugins listed in package.json</span>
+</span><span class='line'><span class="c1">//usage: node platforms.js [add | remove]</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">var</span> <span class="nx">command</span> <span class="o">=</span> <span class="nx">process</span><span class="p">.</span><span class="nx">argv</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">||</span> <span class="s1">&#39;add&#39;</span><span class="p">;</span>
+</span><span class='line'><span class="kd">var</span> <span class="nx">packageJson</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;../package.json&#39;</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">var</span> <span class="nx">fs</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;fs&#39;</span><span class="p">);</span>
+</span><span class='line'><span class="kd">var</span> <span class="nx">path</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;path&#39;</span><span class="p">);</span>
+</span><span class='line'><span class="kd">var</span> <span class="nx">sys</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;sys&#39;</span><span class="p">)</span>
+</span><span class='line'><span class="kd">var</span> <span class="nx">exec</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;child_process&#39;</span><span class="p">).</span><span class="nx">exec</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nx">packageJson</span><span class="p">.</span><span class="nx">platforms</span><span class="p">.</span><span class="nx">forEach</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">platform</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="kd">var</span> <span class="nx">platformCmd</span> <span class="o">=</span> <span class="s1">&#39;cordova platform &#39;</span> <span class="o">+</span> <span class="nx">command</span> <span class="o">+</span> <span class="s1">&#39; &#39;</span> <span class="o">+</span> <span class="nx">platform</span><span class="p">;</span>
+</span><span class='line'>    <span class="nx">exec</span><span class="p">(</span><span class="nx">platformCmd</span><span class="p">);</span>
+</span><span class='line'><span class="p">});</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Automating Plugins</h3>
+
+<p>My plugin installation script is also in my <code>tasks</code> directory, and named <code>plugins.js</code>:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="err">#</span><span class="o">!</span><span class="err">/usr/bin/env node</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">//This script will add or remove all plugins listed in package.json</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">//usage: node plugins.js [ add | remove ]</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">var</span> <span class="nx">command</span> <span class="o">=</span> <span class="nx">process</span><span class="p">.</span><span class="nx">argv</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">||</span> <span class="s1">&#39;add&#39;</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">var</span> <span class="nx">packageJson</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;../package.json&#39;</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">var</span> <span class="nx">fs</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;fs&#39;</span><span class="p">);</span>
+</span><span class='line'><span class="kd">var</span> <span class="nx">path</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;path&#39;</span><span class="p">);</span>
+</span><span class='line'><span class="kd">var</span> <span class="nx">sys</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;sys&#39;</span><span class="p">)</span>
+</span><span class='line'><span class="kd">var</span> <span class="nx">exec</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;child_process&#39;</span><span class="p">).</span><span class="nx">exec</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">function</span> <span class="nx">createAddRemoveStatement</span><span class="p">(</span><span class="nx">plugin</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="kd">var</span> <span class="nx">pluginCmd</span> <span class="o">=</span> <span class="s1">&#39;cordova plugin &#39;</span> <span class="o">+</span> <span class="nx">command</span> <span class="o">+</span> <span class="s1">&#39; &#39;</span><span class="p">;</span>
+</span><span class='line'>    <span class="k">if</span><span class="p">(</span><span class="k">typeof</span> <span class="nx">plugin</span> <span class="o">===</span> <span class="s1">&#39;string&#39;</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>        <span class="nx">pluginCmd</span> <span class="o">+=</span> <span class="nx">plugin</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span><span class='line'>        <span class="k">if</span><span class="p">(</span><span class="nx">command</span> <span class="o">===</span> <span class="s1">&#39;add&#39;</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>            <span class="nx">pluginCmd</span> <span class="o">+=</span> <span class="nx">plugin</span><span class="p">.</span><span class="nx">locator</span> <span class="o">+</span> <span class="s1">&#39; &#39;</span><span class="p">;</span>
+</span><span class='line'>            <span class="k">if</span><span class="p">(</span><span class="nx">plugin</span><span class="p">.</span><span class="nx">variables</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>                <span class="nb">Object</span><span class="p">.</span><span class="nx">keys</span><span class="p">(</span><span class="nx">plugin</span><span class="p">.</span><span class="nx">variables</span><span class="p">).</span><span class="nx">forEach</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">variable</span><span class="p">){</span>
+</span><span class='line'>                    <span class="nx">pluginCmd</span> <span class="o">+=</span> <span class="s1">&#39;--variable &#39;</span> <span class="o">+</span> <span class="nx">variable</span> <span class="o">+</span> <span class="s1">&#39;=&quot;&#39;</span> <span class="o">+</span> <span class="nx">plugin</span><span class="p">.</span><span class="nx">variables</span><span class="p">[</span><span class="nx">variable</span><span class="p">]</span> <span class="o">+</span> <span class="s1">&#39;&quot; &#39;</span><span class="p">;</span>
+</span><span class='line'>                <span class="p">});</span>
+</span><span class='line'>            <span class="p">}</span>
+</span><span class='line'>        <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span><span class='line'>            <span class="nx">pluginCmd</span> <span class="o">+=</span> <span class="nx">plugin</span><span class="p">.</span><span class="nx">id</span><span class="p">;</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">return</span> <span class="nx">pluginCmd</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">function</span> <span class="nx">processPlugin</span><span class="p">(</span><span class="nx">index</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">if</span><span class="p">(</span><span class="nx">index</span> <span class="o">&gt;=</span> <span class="nx">packageJson</span><span class="p">.</span><span class="nx">plugins</span><span class="p">.</span><span class="nx">length</span><span class="p">)</span>
+</span><span class='line'>        <span class="k">return</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">var</span> <span class="nx">plugin</span> <span class="o">=</span> <span class="nx">packageJson</span><span class="p">.</span><span class="nx">plugins</span><span class="p">[</span><span class="nx">index</span><span class="p">];</span>
+</span><span class='line'>    <span class="kd">var</span> <span class="nx">pluginCommand</span> <span class="o">=</span> <span class="nx">createAddRemoveStatement</span><span class="p">(</span><span class="nx">plugin</span><span class="p">);</span>
+</span><span class='line'>    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">pluginCommand</span><span class="p">);</span>
+</span><span class='line'>    <span class="nx">exec</span><span class="p">(</span><span class="nx">pluginCommand</span><span class="p">,</span> <span class="kd">function</span><span class="p">(){</span>
+</span><span class='line'>        <span class="nx">processPlugin</span><span class="p">(</span><span class="nx">index</span> <span class="o">+</span> <span class="mi">1</span><span class="p">);</span>
+</span><span class='line'>    <span class="p">});</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="nx">processPlugin</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Great. Now I don&rsquo;t really need to add all the plugins, remove them, or worry about platforms. I can just run my scripts by doing <code>node tasks/platforms.js</code> or <code>node tasks/plugins.js</code> to have it set up my project as stated in my <code>package.json</code> file.</p>
+
+<p>Easier management for teams, I&rsquo;d like to think.</p>
+
+<p>Hope this helps others.</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/06/23/angularjs-testing-http-post-data/">AngularJS - Testing HTTP Post Data</a></h1>
+    
+    
+      <p class="meta">
+        <span class="reading-time">less than a 1 minute read</span>
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-06-23T13:37:00-06:00" pubdate data-updated="true">Jun 23<span>rd</span>, 2014</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>I&rsquo;ve been doing a lot of testing lately in AngularJS, as I&rsquo;m sure you can tell from my many posts as of late.</p>
+
+<p>One thing I&rsquo;m always curious about is whether or not I&rsquo;m doing things correctly. Testing always helps reinforce this, as does publishing blogs and getting feedback from my peers.</p>
+
+<h2>Problem</h2>
+
+<p>Many times I&rsquo;ll have my AngularJS service fire off an HTTP post request to the server for a message. I can&rsquo;t even begin to tell you how much I sometimes butcher my POST request data.</p>
+
+<p>I wrote a test to verify my post data was correct for the following function:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">var</span> <span class="nx">sendPost</span> <span class="o">=</span> <span class="kd">function</span> <span class="nx">sendPost</span><span class="p">(</span><span class="nx">post</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>  <span class="kd">var</span> <span class="nx">deferred</span> <span class="o">=</span> <span class="nx">$q</span><span class="p">.</span><span class="nx">defer</span><span class="p">();</span>
+</span><span class='line'>  <span class="kd">var</span> <span class="nx">publishPostPath</span> <span class="o">=</span> <span class="s1">&#39;http://example.com/post&#39;</span><span class="p">;</span>
+</span><span class='line'>  <span class="kd">var</span> <span class="nx">postData</span> <span class="o">=</span> <span class="p">{</span>
+</span><span class='line'>      <span class="nx">event_user_id</span><span class="o">:</span> <span class="nx">Auth</span><span class="p">.</span><span class="nx">currentUser</span><span class="p">().</span><span class="nx">id</span><span class="p">,</span>
+</span><span class='line'>      <span class="nx">lat</span><span class="o">:</span> <span class="nx">location</span> <span class="o">==</span> <span class="kc">null</span> <span class="o">?</span> <span class="nx">post</span><span class="p">.</span><span class="nx">lat</span> <span class="o">:</span> <span class="mi">0</span><span class="p">,</span>
+</span><span class='line'>      <span class="nx">lon</span><span class="o">:</span> <span class="nx">location</span> <span class="o">==</span> <span class="kc">null</span> <span class="o">?</span> <span class="nx">post</span><span class="p">.</span><span class="nx">lon</span> <span class="o">:</span> <span class="mi">0</span><span class="p">,</span>
+</span><span class='line'>      <span class="nx">message</span><span class="o">:</span> <span class="nx">post</span><span class="p">.</span><span class="nx">storyMessage</span><span class="p">,</span>
+</span><span class='line'>      <span class="nx">post_fb</span><span class="o">:</span> <span class="nx">post</span><span class="p">.</span><span class="nx">postToFB</span><span class="p">,</span>
+</span><span class='line'>      <span class="nx">post_twitter</span><span class="o">:</span> <span class="nx">post</span><span class="p">.</span><span class="nx">postToTwitter</span><span class="p">,</span>
+</span><span class='line'>      <span class="nx">post_team</span><span class="o">:</span> <span class="nx">post</span><span class="p">.</span><span class="nx">postToTeam</span><span class="p">,</span>
+</span><span class='line'>      <span class="nx">tag</span><span class="o">:</span> <span class="nx">selectedTagId</span> <span class="o">==</span> <span class="kc">null</span> <span class="o">?</span> <span class="mi">0</span> <span class="o">:</span> <span class="nx">selectedTagId</span>
+</span><span class='line'>  <span class="p">};</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nx">$http</span><span class="p">.</span><span class="nx">post</span><span class="p">(</span><span class="nx">publishPostPath</span><span class="p">,</span> <span class="nx">postData</span><span class="p">).</span><span class="nx">success</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">data</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>      <span class="k">if</span><span class="p">(</span><span class="nx">data</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>          <span class="nx">deferred</span><span class="p">.</span><span class="nx">resolve</span><span class="p">(</span><span class="nx">data</span><span class="p">);</span>
+</span><span class='line'>      <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span><span class='line'>          <span class="nx">deferred</span><span class="p">.</span><span class="nx">reject</span><span class="p">(</span><span class="nx">data</span><span class="p">);</span>
+</span><span class='line'>      <span class="p">}</span>
+</span><span class='line'>  <span class="p">}).</span><span class="nx">error</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">error</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>      <span class="nx">deferred</span><span class="p">.</span><span class="nx">reject</span><span class="p">(</span><span class="nx">error</span><span class="p">);</span>
+</span><span class='line'>  <span class="p">});</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">return</span> <span class="nx">deferred</span><span class="p">.</span><span class="nx">promise</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Pretty simple, nothing too fancy.</p>
+
+<p>I want to test this bad boy and make sure its passing the correct post data parameters. Luckily for us, AngularJS gives us our friendly <code>$httpBackend</code> tool to do things like this:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="c1">// Method declaration</span>
+</span><span class='line'><span class="nx">expect</span><span class="p">(</span><span class="nx">method</span><span class="p">,</span> <span class="nx">url</span><span class="p">,</span> <span class="p">[</span><span class="nx">data</span><span class="p">],</span> <span class="p">[</span><span class="nx">headers</span><span class="p">]);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>One thing to note, is the function for <code>[data]</code> is a version of the POST data object after its been run through something like <code>JSON.stringify</code>.</p>
+
+<p>A full test looks like this:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="nx">it</span><span class="p">(</span><span class="s1">&#39;should have true returned for proper sendPost&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>  <span class="kd">var</span> <span class="nx">post</span> <span class="o">=</span> <span class="p">{</span><span class="nx">storyMessage</span><span class="o">:</span> <span class="s1">&#39;Hello&#39;</span><span class="p">,</span> <span class="nx">postToFB</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span> <span class="nx">postToTwitter</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span> <span class="nx">postToTeam</span><span class="o">:</span> <span class="kc">false</span><span class="p">};</span>
+</span><span class='line'>  <span class="nx">$httpBackend</span><span class="p">.</span><span class="nx">when</span><span class="p">(</span><span class="s1">&#39;POST&#39;</span><span class="p">,</span> <span class="s1">&#39;http://example.com/post&#39;</span><span class="p">,</span>
+</span><span class='line'>      <span class="kd">function</span><span class="p">(</span><span class="nx">postData</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>          <span class="nx">jsonData</span> <span class="o">=</span> <span class="nx">JSON</span><span class="p">.</span><span class="nx">parse</span><span class="p">(</span><span class="nx">postData</span><span class="p">);</span>
+</span><span class='line'>          <span class="nx">expect</span><span class="p">(</span><span class="nx">jsonData</span><span class="p">.</span><span class="nx">message</span><span class="p">).</span><span class="nx">toBe</span><span class="p">(</span><span class="nx">post</span><span class="p">.</span><span class="nx">storyMessage</span><span class="p">);</span>
+</span><span class='line'>          <span class="nx">expect</span><span class="p">(</span><span class="nx">jsonData</span><span class="p">.</span><span class="nx">post_fb</span><span class="p">).</span><span class="nx">toBe</span><span class="p">(</span><span class="nx">post</span><span class="p">.</span><span class="nx">postToFB</span><span class="p">);</span>
+</span><span class='line'>          <span class="nx">expect</span><span class="p">(</span><span class="nx">jsonData</span><span class="p">.</span><span class="nx">post_twitter</span><span class="p">).</span><span class="nx">toBe</span><span class="p">(</span><span class="nx">post</span><span class="p">.</span><span class="nx">postToTwitter</span><span class="p">);</span>
+</span><span class='line'>          <span class="nx">expect</span><span class="p">(</span><span class="nx">jsonData</span><span class="p">.</span><span class="nx">post_team</span><span class="p">).</span><span class="nx">toBe</span><span class="p">(</span><span class="nx">post</span><span class="p">.</span><span class="nx">postToTeam</span><span class="p">);</span>
+</span><span class='line'>          <span class="k">return</span> <span class="kc">true</span><span class="p">;</span>
+</span><span class='line'>      <span class="p">}</span>
+</span><span class='line'>  <span class="p">).</span><span class="nx">respond</span><span class="p">(</span><span class="mi">200</span><span class="p">,</span> <span class="kc">true</span> <span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nx">Feed</span><span class="p">.</span><span class="nx">sendPost</span><span class="p">(</span><span class="nx">post</span><span class="p">).</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">d</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>      <span class="nx">expect</span><span class="p">(</span><span class="nx">d</span><span class="p">).</span><span class="nx">toBeTruthy</span><span class="p">();</span>
+</span><span class='line'>  <span class="p">});</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nx">$httpBackend</span><span class="p">.</span><span class="nx">flush</span><span class="p">();</span>
+</span><span class='line'><span class="p">});</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Going forward, there should be no excuses as to why my HTTP post requests fail due to parameters being passed or set incorrectly.</p>
+
+<p>I hope this helps any others looking to test their post data parameters.</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/06/22/angularjs-project-structures/">AngularJS Project Structures</a></h1>
+    
+    
+      <p class="meta">
+        <span class="reading-time">less than a 1 minute read</span>
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-06-22T21:44:00-06:00" pubdate data-updated="true">Jun 22<span>nd</span>, 2014</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>As I&rsquo;m always trying to learn more about Angular and proper file structures, I just wanted to get a quick log of references for project layout information in AngularJS.</p>
+
+<p>I&rsquo;m particularly interested in the Ionic style layout, and how that should line up.</p>
+
+<p>So far I&rsquo;ve been reading:</p>
+
+<ul>
+<li><a href="http://blog.angularjs.org/2014/02/an-angularjs-style-guide-and-best.html">AngularJS Style Guide and Best</a></li>
+<li><a href="https://docs.google.com/document/d/1XXMvReO8-Awi1EZXAXS4PzDzdNvV6pGcuaF4Q9821Es/pub">Best Practice Recommendations for Angular App Structure</a></li>
+<li><a href="http://www.johnpapa.net/angular-growth-structure/">John Papa &ndash; Angular Growth Structure</a></li>
+<li><a href="http://www.johnpapa.net/structuring-an-angular-project/">John Papa &ndash; Structuring an Angular Project</a></li>
+<li><a href="http://cliffmeyers.com/blog/2013/4/21/code-organization-angularjs-javascript">Code Organization in Large AngularJS and JavaScript Applications</a></li>
+</ul>
+
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/06/21/pushing-jobs-to-sidekiq-from-another-server/">Pushing Jobs to Sidekiq From Another Server</a></h1>
+    
+    
+      <p class="meta">
+        <span class="reading-time">less than a 1 minute read</span>
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-06-21T00:35:00-06:00" pubdate data-updated="true">Jun 21<span>st</span>, 2014</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>We use <a href="http://sidekiq.org/">Sidekiq</a> for our background job processing for videos, social integrations, and other tasks. It works great for what it does.</p>
+
+<p>Due to some of technical decisions at work, we have a few servers set up.</p>
+
+<ul>
+<li>An API server</li>
+<li>A job processing server</li>
+<li>An analytical dashboard Rails server</li>
+</ul>
+
+
+<p>The job processing server has all the Sidekiq worker models in it, as you&rsquo;d expect. We did this to keep all processing in one central location.</p>
+
+<p>Some use cases we have for it is to have all Push notifications sent from a single location, the job server. However, we need to trigger some of those from our API or analytical dashboard.</p>
+
+<h2>The problem and solution</h2>
+
+<p>How do we get workers queued up from other servers without replicating the Worker class in other servers? Since Sidekiq uses <a href="http://redis.io">Redis</a>, we figure&rsquo;d we&rsquo;d make a simple <code>RedisJobPusher</code> class to push workers to list in Redis that Sidekiq watches. Using this class, we can now queue jobs from other servers.</p>
+
+<p>The class has a core method, <code>push_to_queue</code>, that other methods (<code>push_leg_notification</code>, etc) call to push the worker name and parameters in redis. The above class assumes it is able to connect to redis.</p>
+
+<p>It looks like this:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="nb">require</span> <span class="s1">&#39;redis&#39;</span>
+</span><span class='line'><span class="nb">require</span> <span class="s1">&#39;json&#39;</span>
+</span><span class='line'><span class="k">class</span> <span class="nc">RedisJobPusher</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">def</span> <span class="nc">self</span><span class="o">.</span><span class="nf">push_leg_notification</span><span class="p">(</span><span class="n">user_id</span><span class="p">,</span> <span class="n">event_id</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">title</span><span class="p">)</span>
+</span><span class='line'>      <span class="n">params</span> <span class="o">=</span> <span class="o">[</span><span class="n">user_id</span><span class="p">,</span> <span class="n">event_id</span><span class="p">,</span> <span class="s1">&#39;leg&#39;</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">title</span><span class="p">,</span> <span class="kp">nil</span><span class="o">]</span>
+</span><span class='line'>      <span class="no">RedisJobPusher</span><span class="o">.</span><span class="n">push_to_queue</span><span class="p">(</span><span class="s1">&#39;PushNotificationWorker&#39;</span><span class="p">,</span> <span class="n">params</span><span class="p">)</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">def</span> <span class="nc">self</span><span class="o">.</span><span class="nf">push_post_notification</span><span class="p">(</span><span class="n">user_id</span><span class="p">,</span> <span class="n">event_id</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">title</span><span class="p">,</span> <span class="n">event_user_social_id</span><span class="p">)</span>
+</span><span class='line'>      <span class="n">params</span> <span class="o">=</span> <span class="o">[</span><span class="n">user_id</span><span class="p">,</span> <span class="n">event_id</span><span class="p">,</span> <span class="s1">&#39;post&#39;</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">title</span><span class="p">,</span> <span class="n">event_user_social_id</span><span class="o">]</span>
+</span><span class='line'>      <span class="no">RedisJobPusher</span><span class="o">.</span><span class="n">push_to_queue</span><span class="p">(</span><span class="s1">&#39;PushNotificationWorker&#39;</span><span class="p">,</span> <span class="n">params</span><span class="p">)</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">def</span> <span class="nc">self</span><span class="o">.</span><span class="nf">push_to_queue</span><span class="p">(</span><span class="n">worker_name</span><span class="p">,</span> <span class="n">params</span><span class="p">)</span>
+</span><span class='line'>    <span class="c1"># using &lt;&lt;  rather than + because it cats instead of newing up string objects</span>
+</span><span class='line'>    <span class="n">redisurl</span> <span class="o">=</span> <span class="s1">&#39;redis://&#39;</span> <span class="o">&lt;&lt;</span> <span class="no">CONFIG</span><span class="o">[</span><span class="ss">:redis_server</span><span class="o">]</span> <span class="o">&lt;&lt;</span> <span class="s1">&#39;:6379&#39;</span> <span class="o">&lt;&lt;</span> <span class="s1">&#39;/&#39;</span> <span class="o">&lt;&lt;</span> <span class="no">CONFIG</span><span class="o">[</span><span class="ss">:redis_db_num</span><span class="o">]</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="n">msg</span> <span class="o">=</span> <span class="p">{</span> <span class="s1">&#39;class&#39;</span> <span class="o">=&gt;</span> <span class="n">worker_name</span><span class="p">,</span> <span class="s1">&#39;args&#39;</span> <span class="o">=&gt;</span> <span class="n">params</span><span class="p">,</span> <span class="s1">&#39;retry&#39;</span> <span class="o">=&gt;</span> <span class="kp">true</span> <span class="p">}</span>
+</span><span class='line'>      <span class="n">redis</span> <span class="o">=</span> <span class="no">Redis</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="ss">:url</span> <span class="o">=&gt;</span> <span class="n">redisurl</span><span class="p">)</span>
+</span><span class='line'>      <span class="n">redis</span><span class="o">.</span><span class="n">lpush</span><span class="p">(</span><span class="s2">&quot;raisemore_sidekiq:queue:JobWorker&quot;</span><span class="p">,</span> <span class="no">JSON</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">msg</span><span class="p">))</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>As you can see, there isn&rsquo;t a lot going on here. Simple and easy. Just connect to redis, do a quick <code>lpush</code>, and go on your day.</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/06/20/testing-interceptor-headers-in-angularjs/">Testing Interceptor Headers in AngularJS</a></h1>
+    
+    
+      <p class="meta">
+        <span class="reading-time">less than a 1 minute read</span>
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-06-20T21:22:00-06:00" pubdate data-updated="true">Jun 20<span>th</span>, 2014</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>In AngularJS, you can set up <a href="https://docs.angularjs.org/api/ng/service/$http">HTTP Interceptors</a> (middleware) to inject headers etc.</p>
+
+<p>I had a service that I wanted to intercept every http request to our API service to attach a token that we consume to verify a user. This would only happen once a token is set.</p>
+
+<p>Today I paired with <a href="https://twitter.com/jeff_french">Jeff French</a>. We figured out how to test the AngularJS interceptors properly.</p>
+
+<p>Things I want to test:</p>
+
+<ul>
+<li>Is the token only being attached when a token is set?</li>
+<li>Are the requests actually being attached via the interceptor</li>
+</ul>
+
+
+<p>The service and interceptor look like this:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="nx">angular</span><span class="p">.</span><span class="nx">moduler</span><span class="p">(</span><span class="s1">&#39;services&#39;</span><span class="p">)</span>
+</span><span class='line'><span class="p">.</span><span class="nx">factory</span><span class="p">(</span><span class="s1">&#39;RequestService&#39;</span><span class="p">,</span> <span class="kd">function</span> <span class="nx">RequestService</span><span class="p">(){</span>
+</span><span class='line'>  <span class="kd">var</span> <span class="nx">token</span> <span class="o">=</span> <span class="kc">null</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="kd">var</span> <span class="nx">setToken</span> <span class="o">=</span> <span class="kd">function</span> <span class="nx">setToken</span><span class="p">(</span><span class="nx">someToken</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>      <span class="nx">token</span> <span class="o">=</span> <span class="nx">someToken</span><span class="p">;</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="kd">var</span> <span class="nx">getToken</span> <span class="o">=</span> <span class="kd">function</span> <span class="nx">getToken</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>      <span class="k">return</span> <span class="nx">token</span><span class="p">;</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="kd">var</span> <span class="nx">request</span> <span class="o">=</span> <span class="kd">function</span> <span class="nx">request</span><span class="p">(</span><span class="nx">config</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>      <span class="k">if</span> <span class="p">(</span><span class="nx">token</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>          <span class="c1">// jqXHR.setRequestHeader(&#39;Authorization&#39;,&#39;Token token=&quot;&#39; + app.user.api_key.access_token + &#39;&quot;&#39;);</span>
+</span><span class='line'>            <span class="nx">config</span><span class="p">.</span><span class="nx">headers</span><span class="p">[</span><span class="s1">&#39;Authorization&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;Token token=&quot;&#39;</span> <span class="o">+</span> <span class="nx">token</span> <span class="o">+</span> <span class="s1">&#39;&quot;&#39;</span><span class="p">;</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>        <span class="k">return</span> <span class="nx">config</span><span class="p">;</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">return</span> <span class="p">{</span>
+</span><span class='line'>      <span class="nx">setToken</span><span class="o">:</span> <span class="nx">setToken</span><span class="p">,</span>
+</span><span class='line'>      <span class="nx">getToken</span><span class="o">:</span> <span class="nx">getToken</span><span class="p">,</span>
+</span><span class='line'>      <span class="nx">request</span><span class="o">:</span> <span class="nx">request</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="p">})</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">.</span><span class="nx">config</span><span class="p">([</span><span class="s1">&#39;$httpProvider&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">$httpProvider</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="nx">$httpProvider</span><span class="p">.</span><span class="nx">interceptors</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="s1">&#39;RequestService&#39;</span><span class="p">);</span>
+</span><span class='line'><span class="p">}]);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>With just a few simple tests, I&rsquo;m asserting a few things:</p>
+
+<ul>
+<li>I have no simple ParseError or ReferenceErrors</li>
+<li>Modules are set up correctly</li>
+<li>Interceptors are set up correctly</li>
+<li>My service is actually setting the token correctly</li>
+<li>The interceptor is attaching the header correctly</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+<span class='line-number'>67</span>
+<span class='line-number'>68</span>
+<span class='line-number'>69</span>
+<span class='line-number'>70</span>
+<span class='line-number'>71</span>
+<span class='line-number'>72</span>
+<span class='line-number'>73</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="s2">&quot;use strict&quot;</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">var</span> <span class="nx">httpProviderIt</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nx">describe</span><span class="p">(</span><span class="s2">&quot;Service Unit Tests&quot;</span><span class="p">,</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nx">beforeEach</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>    <span class="nx">module</span><span class="p">(</span><span class="s1">&#39;services&#39;</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">$httpProvider</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>      <span class="c1">//save our interceptor</span>
+</span><span class='line'>      <span class="nx">httpProviderIt</span> <span class="o">=</span> <span class="nx">$httpProvider</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">});</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nx">inject</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">_AuthService_</span><span class="p">,</span> <span class="nx">_RequestService_</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>      <span class="nx">RequestService</span> <span class="o">=</span> <span class="nx">_RequestService_</span><span class="p">;</span>
+</span><span class='line'>      <span class="nx">AuthService</span> <span class="o">=</span> <span class="nx">_AuthService_</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">})</span>
+</span><span class='line'>  <span class="p">});</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="kd">var</span> <span class="nx">RequestService</span><span class="p">,</span> <span class="nx">AuthService</span><span class="p">;</span>
+</span><span class='line'>  <span class="kd">var</span> <span class="nx">$httpBackend</span><span class="p">;</span>
+</span><span class='line'>  <span class="kd">var</span> <span class="nx">token</span> <span class="o">=</span> <span class="s1">&#39;someToken&#39;</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nx">describe</span><span class="p">(</span><span class="s1">&#39;RequestService Tests&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nx">it</span><span class="p">(</span><span class="s1">&#39;should have RequestService be defined&#39;</span><span class="p">,</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>      <span class="nx">expect</span><span class="p">(</span><span class="nx">RequestService</span><span class="p">).</span><span class="nx">toBeDefined</span><span class="p">();</span>
+</span><span class='line'>    <span class="p">});</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nx">it</span><span class="p">(</span><span class="s1">&#39;should properly set an api token&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>      <span class="nx">expect</span><span class="p">(</span><span class="nx">RequestService</span><span class="p">.</span><span class="nx">getToken</span><span class="p">()).</span><span class="nx">toBeNull</span><span class="p">();</span>
+</span><span class='line'>      <span class="nx">RequestService</span><span class="p">.</span><span class="nx">setToken</span><span class="p">(</span><span class="nx">token</span><span class="p">);</span>
+</span><span class='line'>      <span class="nx">expect</span><span class="p">(</span><span class="nx">RequestService</span><span class="p">.</span><span class="nx">getToken</span><span class="p">()).</span><span class="nx">toBe</span><span class="p">(</span><span class="nx">token</span><span class="p">);</span>
+</span><span class='line'>    <span class="p">});</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nx">it</span><span class="p">(</span><span class="s1">&#39;should save the users api token after saveUser&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>      <span class="nx">spyOn</span><span class="p">(</span><span class="nx">RequestService</span><span class="p">,</span> <span class="s1">&#39;setToken&#39;</span><span class="p">);</span>
+</span><span class='line'>      <span class="nx">Auth</span><span class="p">.</span><span class="nx">saveUser</span><span class="p">(</span><span class="nx">apiResponse</span><span class="p">);</span>
+</span><span class='line'>      <span class="nx">expect</span><span class="p">(</span><span class="nx">RequestService</span><span class="p">.</span><span class="nx">setToken</span><span class="p">).</span><span class="nx">toHaveBeenCalled</span><span class="p">();</span>
+</span><span class='line'>    <span class="p">});</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nx">it</span><span class="p">(</span><span class="s1">&#39;should have no api token upon start up&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>      <span class="kd">var</span> <span class="nx">token</span> <span class="o">=</span> <span class="nx">RequestService</span><span class="p">.</span><span class="nx">getToken</span><span class="p">();</span>
+</span><span class='line'>      <span class="nx">expect</span><span class="p">(</span><span class="nx">token</span><span class="p">).</span><span class="nx">toBeNull</span><span class="p">();</span>
+</span><span class='line'>    <span class="p">});</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nx">describe</span><span class="p">(</span><span class="s1">&#39;HTTP tests&#39;</span><span class="p">,</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="nx">it</span><span class="p">(</span><span class="s1">&#39;should have the RequestService as an interceptor&#39;</span><span class="p">,</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>          <span class="nx">expect</span><span class="p">(</span><span class="nx">httpProviderIt</span><span class="p">.</span><span class="nx">interceptors</span><span class="p">).</span><span class="nx">toContain</span><span class="p">(</span><span class="s1">&#39;RequestService&#39;</span><span class="p">);</span>
+</span><span class='line'>      <span class="p">});</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="nx">it</span><span class="p">(</span><span class="s1">&#39;should token in the headers after setting&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>        <span class="nx">RequestService</span><span class="p">.</span><span class="nx">setToken</span><span class="p">(</span><span class="nx">token</span><span class="p">);</span>
+</span><span class='line'>        <span class="nx">$httpBackend</span><span class="p">.</span><span class="nx">when</span><span class="p">(</span><span class="s1">&#39;GET&#39;</span><span class="p">,</span> <span class="s1">&#39;http://example.com&#39;</span><span class="p">,</span> <span class="kc">null</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">headers</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>          <span class="nx">expect</span><span class="p">(</span><span class="nx">headers</span><span class="p">.</span><span class="nx">Authorization</span><span class="p">).</span><span class="nx">toBe</span><span class="p">(</span><span class="nx">token</span><span class="p">);</span>
+</span><span class='line'>        <span class="p">}).</span><span class="nx">respond</span><span class="p">(</span><span class="mi">200</span><span class="p">,</span> <span class="p">{</span><span class="nx">name</span><span class="o">:</span> <span class="s1">&#39;example&#39;</span> <span class="p">});</span>
+</span><span class='line'>      <span class="p">});</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="nx">it</span><span class="p">(</span><span class="s1">&#39;should not place a token in the http request headers if no token is set&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>        <span class="kd">var</span> <span class="nx">config</span> <span class="o">=</span> <span class="nx">RequestService</span><span class="p">.</span><span class="nx">request</span><span class="p">({</span><span class="nx">headers</span><span class="o">:</span> <span class="p">{}</span> <span class="p">});</span>
+</span><span class='line'>        <span class="nx">expect</span><span class="p">(</span><span class="nx">config</span><span class="p">.</span><span class="nx">headers</span><span class="p">[</span><span class="s1">&#39;Authorization&#39;</span><span class="p">]).</span><span class="nx">toBe</span><span class="p">(</span><span class="kc">undefined</span><span class="p">);</span>
+</span><span class='line'>      <span class="p">});</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="nx">it</span><span class="p">(</span><span class="s1">&#39;should place a token in the http request headers after a token is set&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>        <span class="nx">RequestService</span><span class="p">.</span><span class="nx">setToken</span><span class="p">(</span><span class="nx">token</span><span class="p">);</span>
+</span><span class='line'>        <span class="kd">var</span> <span class="nx">config</span> <span class="o">=</span> <span class="nx">RequestService</span><span class="p">.</span><span class="nx">request</span><span class="p">({</span><span class="nx">headers</span><span class="o">:</span> <span class="p">{}</span> <span class="p">});</span>
+</span><span class='line'>        <span class="nx">expect</span><span class="p">(</span><span class="nx">config</span><span class="p">.</span><span class="nx">headers</span><span class="p">[</span><span class="s1">&#39;Authorization&#39;</span><span class="p">]).</span><span class="nx">toBe</span><span class="p">(</span><span class="s1">&#39;Token token=&quot;&#39;</span> <span class="o">+</span> <span class="nx">token</span> <span class="o">+</span> <span class="s1">&#39;&quot;&#39;</span><span class="p">);</span>
+</span><span class='line'>      <span class="p">});</span>
+</span><span class='line'>    <span class="p">});</span> <span class="c1">//Mocked HTTP Requests</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="p">});</span> <span class="c1">//RequestService tests</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">});</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Simple and sweet.</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/06/19/using-npm-scripts-for-cordova/">Using Npm Scripts for Cordova</a></h1>
+    
+    
+      <p class="meta">
+        <span class="reading-time">less than a 1 minute read</span>
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-06-19T00:25:00-06:00" pubdate data-updated="true">Jun 19<span>th</span>, 2014</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>For those of you that don&rsquo;t know, Cordova has <a href="https://github.com/apache/cordova-lib/blob/master/cordova-lib/templates/hooks-README.md">hooks</a> that can run on each of the specific build tasks that Cordova goes through. For example the task that happens after all the platform specific code is set up, the <code>after_prepare</code> hook is fired.</p>
+
+<p>Tonight I had the pleasure of collaborating with my friend <a href="https://twitter.com/MountainDoofus">Ross Martin</a> over a project he put together. The project is called <a href="https://github.com/rossmartin/cordova-uglify">cordova-uglify</a> and it focuses on uglifying/minifying JavaScript before building your Cordova app. See his comment in response to <a href="http://www.mooreds.com/wordpress/archives/1425">Dan Moore&rsquo;s Accessing more build information from your Cordova CLI hooks</a> blog for more information on why.</p>
+
+<p>The project was having an <code>after_prepare</code> hook in Cordova to uglify the application&rsquo;s JavaScript once the code is put in place for iOS/Android.</p>
+
+<p>This project Ross put together was interesting. There have been some blogs on <a href="http://www.mooreds.com/wordpress/archives/1197">using hooks in Cordova</a> as well as <a href="http://devgirl.org/2013/11/12/three-hooks-your-cordovaphonegap-project-needs/#comments">three hooks every cordova / phonegap project needs</a>. Moving forward, it&rsquo;d be nice to make some of these hooks and share them out much like we share packages on npm.</p>
+
+<p>The only problem with using them as packages, is we need to place code somewhere outside of the <code>node_modules</code> folder (where the package will be installed from <code>npm install</code>).</p>
+
+<p>This is what we&rsquo;d get if we just used npm install cordova-uglify (notice uglify.js is only in <code>node_modules</code> directory):</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>// ./CordovaProjectDirectory
+</span><span class='line'>//        /hooks
+</span><span class='line'>//        /node_modules
+</span><span class='line'>//            /cordova-uglify
+</span><span class='line'>//                /after_prepare
+</span><span class='line'>//                    /uglify.js
+</span><span class='line'>//                /scripts
+</span><span class='line'>//                    install.js
+</span><span class='line'>//                    uninstall.js
+</span><span class='line'>//        /www
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>What we actually want has our uglify.js in our <code>hooks/after_prepare</code> directory:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>// ./CordovaProjectDirectory
+</span><span class='line'>//        /hooks
+</span><span class='line'>//            /after_prepare
+</span><span class='line'>//                uglify.js
+</span><span class='line'>//        /node_modules
+</span><span class='line'>//            /cordova-uglify
+</span><span class='line'>//                /after_prepare
+</span><span class='line'>//                    uglify.js</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Then it hit me, we can use npm scripts!</p>
+
+<h2>The idea</h2>
+
+<p>Let&rsquo;s package up Cordova tools, publish on npm, and then use <a href="https://www.npmjs.org/doc/misc/npm-scripts.html">npm scripts</a> to install/uninstall them as necessary.</p>
+
+<p>npm gives its package owners the ability to run scripts on various events in the npm life cycle. The interesting ones we care about are those being <code>postinstall</code> and <code>postuninstall</code>.</p>
+
+<p>The idea is this:</p>
+
+<ul>
+<li>You run <code>npm install cordova-uglify</code></li>
+<li>After installing, npm runs the <code>postinstall</code> script to copy files into proper location</li>
+<li>Profit $$$</li>
+</ul>
+
+
+<p>Ross put me up to the challenge, so I took it up. Here&rsquo;s what I put our package.json to be:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="p">{</span>
+</span><span class='line'>  <span class="s2">&quot;name&quot;</span><span class="o">:</span> <span class="s2">&quot;cordova-uglify&quot;</span><span class="p">,</span>
+</span><span class='line'>  <span class="s2">&quot;version&quot;</span><span class="o">:</span> <span class="s2">&quot;0.0.5&quot;</span><span class="p">,</span>
+</span><span class='line'>  <span class="s2">&quot;description&quot;</span><span class="o">:</span> <span class="s2">&quot;Cordova hook that allows you to uglify or minify your apps JavaScript and CSS.&quot;</span><span class="p">,</span>
+</span><span class='line'>  <span class="s2">&quot;homepage&quot;</span><span class="o">:</span> <span class="s2">&quot;https://github.com/rossmartin/cordova-uglify&quot;</span><span class="p">,</span>
+</span><span class='line'>  <span class="s2">&quot;keywords&quot;</span><span class="o">:</span> <span class="p">[</span>
+</span><span class='line'>    <span class="s2">&quot;cordova&quot;</span><span class="p">,</span>
+</span><span class='line'>    <span class="s2">&quot;uglify&quot;</span><span class="p">,</span>
+</span><span class='line'>    <span class="s2">&quot;minify&quot;</span><span class="p">,</span>
+</span><span class='line'>    <span class="s2">&quot;hook&quot;</span><span class="p">,</span>
+</span><span class='line'>    <span class="s2">&quot;hooks&quot;</span>
+</span><span class='line'>  <span class="p">],</span>
+</span><span class='line'>  <span class="s2">&quot;peerDependencies&quot;</span> <span class="o">:</span> <span class="p">{</span>
+</span><span class='line'>    <span class="s2">&quot;yuicompressor&quot;</span> <span class="o">:</span> <span class="s2">&quot;2.4.8&quot;</span>
+</span><span class='line'>  <span class="p">},</span>
+</span><span class='line'>  <span class="s2">&quot;author&quot;</span><span class="o">:</span> <span class="s2">&quot;Ross Martin&quot;</span><span class="p">,</span>
+</span><span class='line'>  <span class="s2">&quot;license&quot;</span><span class="o">:</span> <span class="s2">&quot;MIT&quot;</span><span class="p">,</span>
+</span><span class='line'>  <span class="s2">&quot;bugs&quot;</span><span class="o">:</span> <span class="p">{</span>
+</span><span class='line'>    <span class="s2">&quot;url&quot;</span><span class="o">:</span> <span class="s2">&quot;https://github.com/rossmartin/cordova-uglify/issues&quot;</span>
+</span><span class='line'>  <span class="p">},</span>
+</span><span class='line'>  <span class="s2">&quot;readmeFilename&quot;</span><span class="o">:</span> <span class="s2">&quot;README.md&quot;</span><span class="p">,</span>
+</span><span class='line'>  <span class="s2">&quot;scripts&quot;</span><span class="o">:</span> <span class="p">{</span>
+</span><span class='line'>    <span class="s2">&quot;postinstall&quot;</span><span class="o">:</span> <span class="s2">&quot;node scripts/install.js&quot;</span><span class="p">,</span>
+</span><span class='line'>    <span class="s2">&quot;postuninstall&quot;</span><span class="o">:</span> <span class="s2">&quot;node scripts/uninstall.js&quot;</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>To which I then created a quick script to do the file copying &ndash; <code>scripts/install.js</code></p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="err">#</span><span class="o">!</span><span class="err">/usr/bin/env node</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">var</span> <span class="nx">fs</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;fs&#39;</span><span class="p">)</span>
+</span><span class='line'><span class="kd">var</span> <span class="nx">path</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;path&#39;</span><span class="p">)</span>
+</span><span class='line'><span class="kd">var</span> <span class="nx">cwd</span> <span class="o">=</span> <span class="nx">process</span><span class="p">.</span><span class="nx">cwd</span><span class="p">()</span> <span class="c1">//proj directory</span>
+</span><span class='line'><span class="kd">var</span> <span class="nx">scriptPath</span> <span class="o">=</span> <span class="nx">__dirname</span> <span class="c1">//node_modules/cordova-uglify/scripts</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">var</span> <span class="nx">paths</span> <span class="o">=</span> <span class="p">[</span> <span class="nx">path</span><span class="p">.</span><span class="nx">join</span><span class="p">(</span><span class="nx">cwd</span><span class="p">,</span> <span class="s1">&#39;../../hooks&#39;</span><span class="p">),</span> <span class="nx">path</span><span class="p">.</span><span class="nx">join</span><span class="p">(</span><span class="nx">cwd</span><span class="p">,</span> <span class="s1">&#39;../../hooks/after_prepare&#39;</span><span class="p">)</span> <span class="p">];</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">for</span><span class="p">(</span><span class="kd">var</span> <span class="nx">pathIndex</span> <span class="k">in</span> <span class="nx">paths</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>  <span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="nx">fs</span><span class="p">.</span><span class="nx">existsSync</span><span class="p">(</span><span class="nx">paths</span><span class="p">[</span><span class="nx">pathIndex</span><span class="p">]))</span> <span class="p">{</span>
+</span><span class='line'>      <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;Creating directory: &#39;</span><span class="p">,</span> <span class="nx">paths</span><span class="p">[</span><span class="nx">pathIndex</span><span class="p">])</span>
+</span><span class='line'>      <span class="nx">fs</span><span class="p">.</span><span class="nx">mkdirSync</span><span class="p">(</span><span class="nx">paths</span><span class="p">[</span><span class="nx">pathIndex</span><span class="p">]);</span>
+</span><span class='line'>  <span class="p">}</span>    
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">var</span> <span class="nx">uglifyScriptPath</span> <span class="o">=</span> <span class="nx">path</span><span class="p">.</span><span class="nx">join</span><span class="p">(</span><span class="nx">cwd</span><span class="p">,</span> <span class="s1">&#39;after_prepare&#39;</span><span class="p">,</span> <span class="s1">&#39;uglify.js&#39;</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">var</span> <span class="nx">uglifyFile</span> <span class="o">=</span> <span class="nx">fs</span><span class="p">.</span><span class="nx">readFileSync</span><span class="p">(</span><span class="nx">uglifyScriptPath</span><span class="p">);</span>
+</span><span class='line'><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;uglifyFile: &#39;</span><span class="p">,</span> <span class="nx">uglifyFile</span><span class="p">)</span>
+</span><span class='line'><span class="kd">var</span> <span class="nx">uglifyAfterPreparePath</span> <span class="o">=</span> <span class="nx">path</span><span class="p">.</span><span class="nx">join</span><span class="p">(</span><span class="nx">paths</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="s1">&#39;uglify.js&#39;</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;Creating uglify hook: &#39;</span><span class="p">,</span> <span class="nx">uglifyAfterPreparePath</span><span class="p">)</span>
+</span><span class='line'><span class="nx">fs</span><span class="p">.</span><span class="nx">writeFileSync</span><span class="p">(</span><span class="nx">uglifyAfterPreparePath</span><span class="p">,</span> <span class="nx">uglifyFile</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>As well as uninstalling it &ndash; <code>scripts/uninstall.js</code>:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="err">#</span><span class="o">!</span><span class="err">/usr/bin/env node</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">//After uninstall script to remove the uglify.js script from the users hooks/after_prepare directory</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">var</span> <span class="nx">fs</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;fs&#39;</span><span class="p">)</span>
+</span><span class='line'><span class="kd">var</span> <span class="nx">path</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;path&#39;</span><span class="p">)</span>
+</span><span class='line'><span class="kd">var</span> <span class="nx">cwd</span> <span class="o">=</span> <span class="nx">process</span><span class="p">.</span><span class="nx">cwd</span><span class="p">()</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">var</span> <span class="nx">uglifyJsPath</span> <span class="o">=</span> <span class="nx">path</span><span class="p">.</span><span class="nx">join</span><span class="p">(</span><span class="nx">cwd</span><span class="p">,</span> <span class="s1">&#39;../../&#39;</span><span class="p">,</span> <span class="s1">&#39;hooks&#39;</span><span class="p">,</span> <span class="s1">&#39;after_prepare&#39;</span><span class="p">,</span> <span class="s1">&#39;uglify.js&#39;</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="nx">fs</span><span class="p">.</span><span class="nx">unlink</span><span class="p">(</span><span class="nx">uglifyJsPath</span><span class="p">)</span>
+</span><span class='line'><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;Removed: &#39;</span><span class="p">,</span> <span class="nx">uglifyJsPath</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Simple and sweet.</p>
+
+<p>Now, is it an anti-pattern? I&rsquo;m not sure.</p>
+
+<p>Does it make it easier for other developers to get started and using it? Yes.</p>
+
+<p>That&rsquo;s exactly what I was going for.</p>
+
+<p>Thanks Ross for planting the idea in my head, and more importantly, for the challenge to learn.</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/06/18/cordova-and-the-safari-web-inspector/">Cordova and the Safari Web Inspector</a></h1>
+    
+    
+      <p class="meta">
+        <span class="reading-time">less than a 1 minute read</span>
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-06-18T00:22:00-06:00" pubdate data-updated="true">Jun 18<span>th</span>, 2014</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>If you&rsquo;ve ever been doing some iOS development in Cordova, you may have used the Safari Web Inspector (SWI) once or twice. You&rsquo;ve also noticed that SWI closes when the app is put in the background or you switch apps.</p>
+
+<p>I found a sweet hack that allows you to keep your safari web inspector running regardless of whether or not the app is in the foreground or not. I&rsquo;d like to outline that in this post.</p>
+
+<p>I&rsquo;m not sure how I stumbled across this sweet hack, but I have to write it down before I forget how it&rsquo;s done. My system specs at the time of writing this is Mac OSX 10.8.5 (Mountain Lion).</p>
+
+<h2>Whats involved</h2>
+
+<ul>
+<li>Using a simulator or connected device</li>
+<li>Having Safari web inspector (SWI) running</li>
+</ul>
+
+
+<p>What normally happens is, when the app closes, SWI will also close. When you relaunch the app, you will need to put Safari in the foreground, click <code>Develop</code> on the menu bar, then hover <code>iPhone Simulator</code> or <code>iPhone</code>, then click the <code>index.html</code> (or your page) to connect &amp; launch SWI.</p>
+
+<p>This is very frustrating because on the app relaunching you may have a callback happening or other code you want to debug/inspect/log on app start up. This hack lets you keep SWI and running gracefully.</p>
+
+<p>Bare with me now, we&rsquo;re going to get funky.</p>
+
+<h2>Setting up a global hotkey</h2>
+
+<p>The first thing to do is to set a <a href="http://support.apple.com/kb/ph6889">global hotkey</a> &ndash; steps:</p>
+
+<ul>
+<li>Open System Preferences / Keyboard</li>
+<li>On the right panel, select <code>Application Shortcuts</code></li>
+<li>Add a hot key &ndash; use whatever keys you want (I used <code>CMD + ALT + I</code>)</li>
+<li>Have the matching key be <code>index.html</code> or whatever your cordova&rsquo;s main html file is</li>
+</ul>
+
+
+<h2>Steps to keep open SWI</h2>
+
+<ul>
+<li>Launch Cordova App</li>
+<li>Open SWI</li>
+<li>Close SWI</li>
+<li>Launch SWI with quick key as set up in global hotkey <code>Application Shortcuts</code></li>
+<li>Close App</li>
+<li>Reopen app &ndash; notice SWI is still running and continues to give us logging/debugging!</li>
+</ul>
+
+
+<p>Enjoy, friends!</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/06/17/building-a-chat-client-with-ionic/">Building a Chat Client With Ionic / Socket.io / Redis / Node.js</a></h1>
+    
+    
+      <p class="meta">
+        <span class="reading-time">less than a 1 minute read</span>
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-06-17T00:09:00-06:00" pubdate data-updated="true">Jun 17<span>th</span>, 2014</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>I wanted a fun challenge to push myself and cross a few things off my ever so growing <code>I want to play with this</code> type of lists. I love learning, and there are so many awesome tools / utilities / libraries out there to evaluate its hard to justify incorporating them into every project at work without having some knowledge of the tools.</p>
+
+<p>DISCLAIMER: I may use some tools incorrectly, but the main purpose of this fun little project was to learn and have fun.</p>
+
+<p>The list was this:</p>
+
+<ul>
+<li><a href="http://ionicframework.com">Ionic Framework</a></li>
+<li><a href="http://socket.io">Socket.io</a></li>
+<li><a href="http://redis.io">Redis</a></li>
+<li><a href="https://github.com/mranney/node_redis">Node.js Redis client</a></li>
+</ul>
+
+
+<h2>The Idea</h2>
+
+<p>I wanted to build a chat client that would have messages that disappear after a certain time, much like SnapChat. The idea also included the ability to create channels that also disappear after a certain time like messages.</p>
+
+<p>In future versions, I&rsquo;d love to include location to join channels that are near you.</p>
+
+<p>Users can join existing channels, or create their own. All users can see channels, and join any.</p>
+
+<h2>Tech details &ndash; using Redis / Node.js</h2>
+
+<p>At first, I wanted to create messages some how and have them each have <code>expire</code> times. After failing miserably, I got the amazing chance to pair up with <a href="https://twitter.com/michaelgorsuch">Michael Gorsuch</a> to give me some alternative ideas. (Shameless plug &ndash; if you need to do some server monitoring, check out his project <a href="http://canary.io/">Canary.io</a>, it&rsquo;s AWESOME).</p>
+
+<p>The concept is &ndash; instead of using separate keys with ezxpire times &ndash; use Redis&#8217; sorted sets with scores of the times in UNIX format and the member being a JSON encoded string. I had my channels keys in the format of <code>messages:ChannelName</code>.</p>
+
+<p>Something like:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>//ZADD key score member [score member ...]
+</span><span class='line'>zadd messages:RedisChat 10581098019 '{"name": "Josh", "id": "5"}'</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Now, when we want to get all messages for a channel, its simply:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>//ZRANGEBYSCORE key min max [WITHSCORES] [LIMIT offset count]
+</span><span class='line'>zrangebyscore messages:RedisChat 0 10924019840</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Since I was using Node.js &ndash; I simply used <code>setInterval</code> to have a function be run that removes all old posts named <code>removeKeys</code>, and looked as such:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="c1">//NOTE: Using Moment.js, as well as having channelWatchList being populated</span>
+</span><span class='line'><span class="kd">var</span> <span class="nx">channelWatchList</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Lobby&#39;</span><span class="p">,</span> <span class="s1">&#39;RedisChat&#39;</span><span class="p">];</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">function</span> <span class="nx">removeKeys</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;We are removing old messages&#39;</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">for</span><span class="p">(</span><span class="kd">var</span> <span class="nx">channelIndex</span> <span class="k">in</span> <span class="nx">channelWatchList</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="kd">var</span> <span class="nx">channel</span> <span class="o">=</span> <span class="nx">channelWatchList</span><span class="p">[</span><span class="nx">channelIndex</span><span class="p">];</span>
+</span><span class='line'>    <span class="kd">var</span> <span class="nx">messageChannel</span> <span class="o">=</span> <span class="s1">&#39;messages:&#39;</span> <span class="o">+</span> <span class="nx">channel</span><span class="p">;</span>
+</span><span class='line'>    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;message channel&#39;</span><span class="p">,</span> <span class="nx">messageChannel</span><span class="p">)</span>
+</span><span class='line'>    <span class="kd">var</span> <span class="nx">timeToRemove</span> <span class="o">=</span> <span class="nx">moment</span><span class="p">().</span><span class="nx">subtract</span><span class="p">(</span><span class="s1">&#39;m&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">).</span><span class="nx">unix</span><span class="p">();</span> <span class="c1">//Remove messages before min ago</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nx">redisClient</span><span class="p">.</span><span class="nx">zrangebyscore</span><span class="p">(</span><span class="nx">messageChannel</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="nx">timeToRemove</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">result</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>      <span class="k">if</span><span class="p">(</span><span class="nx">result</span> <span class="o">&amp;&amp;</span> <span class="nx">result</span><span class="p">.</span><span class="nx">length</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>        <span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">resultIndex</span> <span class="k">in</span> <span class="nx">result</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>          <span class="kd">var</span> <span class="nx">message</span> <span class="o">=</span> <span class="nx">JSON</span><span class="p">.</span><span class="nx">parse</span><span class="p">(</span><span class="nx">result</span><span class="p">[</span><span class="nx">resultIndex</span><span class="p">]);</span>
+</span><span class='line'>          <span class="c1">//NOTE: Using socket.io</span>
+</span><span class='line'>          <span class="nx">io</span><span class="p">.</span><span class="nx">emit</span><span class="p">(</span><span class="s1">&#39;message:remove:channel:&#39;</span> <span class="o">+</span> <span class="nx">channel</span><span class="p">,</span> <span class="p">{</span> <span class="nx">message</span><span class="o">:</span> <span class="nx">message</span><span class="p">,</span> <span class="nx">channel</span><span class="o">:</span> <span class="nx">channel</span> <span class="p">});</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>      <span class="p">}</span>
+</span><span class='line'>    <span class="p">});</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nx">redisClient</span><span class="p">.</span><span class="nx">zremrangebyscore</span><span class="p">(</span><span class="nx">messageChannel</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="nx">timeToRemove</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">result</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>      <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;Removed &#39;</span><span class="p">,</span> <span class="nx">result</span><span class="p">,</span> <span class="s1">&#39; messages&#39;</span><span class="p">);</span>
+</span><span class='line'>    <span class="p">});</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>The client &ndash; Ionic</h2>
+
+<p>This was by far the easy part. First I just used the Ionic CLI to create a basic app.</p>
+
+<p>I started by modifying the index.html file to include Socket.io. Nothing too fancy: <code>&lt;script src="js/socket.io.js"&gt;&lt;/script&gt;</code>.</p>
+
+<p>Next, I used some AngularJS <a href="https://github.com/jbavari/ionic-socket.io-redis-chat/blob/master/client/RedisChat/www/js/services.js">services</a> for socket.io:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="nx">angular</span><span class="p">.</span><span class="nx">module</span><span class="p">(</span><span class="s1">&#39;services&#39;</span><span class="p">,</span> <span class="p">[])</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">.</span><span class="nx">factory</span><span class="p">(</span><span class="s1">&#39;socket&#39;</span><span class="p">,</span> <span class="kd">function</span> <span class="nx">socket</span><span class="p">(</span><span class="nx">$rootScope</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>  <span class="kd">var</span> <span class="nx">socket</span> <span class="o">=</span> <span class="nx">io</span><span class="p">.</span><span class="nx">connect</span><span class="p">(</span><span class="nx">baseUrl</span><span class="p">);</span>
+</span><span class='line'>  <span class="k">return</span> <span class="p">{</span>
+</span><span class='line'>    <span class="nx">on</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">eventName</span><span class="p">,</span> <span class="nx">callback</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>      <span class="nx">socket</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="nx">eventName</span><span class="p">,</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>        <span class="kd">var</span> <span class="nx">args</span> <span class="o">=</span> <span class="nx">arguments</span><span class="p">;</span>
+</span><span class='line'>        <span class="nx">$rootScope</span><span class="p">.</span><span class="nx">$apply</span><span class="p">(</span><span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>          <span class="nx">callback</span><span class="p">.</span><span class="nx">apply</span><span class="p">(</span><span class="nx">socket</span><span class="p">,</span> <span class="nx">args</span><span class="p">);</span>
+</span><span class='line'>        <span class="p">});</span>
+</span><span class='line'>      <span class="p">});</span>
+</span><span class='line'>    <span class="p">},</span>
+</span><span class='line'>    <span class="nx">emit</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">eventName</span><span class="p">,</span> <span class="nx">data</span><span class="p">,</span> <span class="nx">callback</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>      <span class="nx">socket</span><span class="p">.</span><span class="nx">emit</span><span class="p">(</span><span class="nx">eventName</span><span class="p">,</span> <span class="nx">data</span><span class="p">,</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>        <span class="kd">var</span> <span class="nx">args</span> <span class="o">=</span> <span class="nx">arguments</span><span class="p">;</span>
+</span><span class='line'>        <span class="nx">$rootScope</span><span class="p">.</span><span class="nx">$apply</span><span class="p">(</span><span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>          <span class="k">if</span> <span class="p">(</span><span class="nx">callback</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>            <span class="nx">callback</span><span class="p">.</span><span class="nx">apply</span><span class="p">(</span><span class="nx">socket</span><span class="p">,</span> <span class="nx">args</span><span class="p">);</span>
+</span><span class='line'>          <span class="p">}</span>
+</span><span class='line'>        <span class="p">});</span>
+</span><span class='line'>      <span class="p">})</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>  <span class="p">};</span>
+</span><span class='line'><span class="p">})</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Then, I constructed my <code>AppCtrl</code> to handle my <a href="https://github.com/jbavari/ionic-socket.io-redis-chat/blob/master/client/RedisChat/www/js/controllers.js">controllers</a> interaction with Socket.io:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+<span class='line-number'>67</span>
+<span class='line-number'>68</span>
+<span class='line-number'>69</span>
+<span class='line-number'>70</span>
+<span class='line-number'>71</span>
+<span class='line-number'>72</span>
+<span class='line-number'>73</span>
+<span class='line-number'>74</span>
+<span class='line-number'>75</span>
+<span class='line-number'>76</span>
+<span class='line-number'>77</span>
+<span class='line-number'>78</span>
+<span class='line-number'>79</span>
+<span class='line-number'>80</span>
+<span class='line-number'>81</span>
+<span class='line-number'>82</span>
+<span class='line-number'>83</span>
+<span class='line-number'>84</span>
+<span class='line-number'>85</span>
+<span class='line-number'>86</span>
+<span class='line-number'>87</span>
+<span class='line-number'>88</span>
+<span class='line-number'>89</span>
+<span class='line-number'>90</span>
+<span class='line-number'>91</span>
+<span class='line-number'>92</span>
+<span class='line-number'>93</span>
+<span class='line-number'>94</span>
+<span class='line-number'>95</span>
+<span class='line-number'>96</span>
+<span class='line-number'>97</span>
+<span class='line-number'>98</span>
+<span class='line-number'>99</span>
+<span class='line-number'>100</span>
+<span class='line-number'>101</span>
+<span class='line-number'>102</span>
+<span class='line-number'>103</span>
+<span class='line-number'>104</span>
+<span class='line-number'>105</span>
+<span class='line-number'>106</span>
+<span class='line-number'>107</span>
+<span class='line-number'>108</span>
+<span class='line-number'>109</span>
+<span class='line-number'>110</span>
+<span class='line-number'>111</span>
+<span class='line-number'>112</span>
+<span class='line-number'>113</span>
+<span class='line-number'>114</span>
+<span class='line-number'>115</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="nx">angular</span><span class="p">.</span><span class="nx">module</span><span class="p">(</span><span class="s1">&#39;starter.controllers&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;services&#39;</span><span class="p">])</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">.</span><span class="nx">controller</span><span class="p">(</span><span class="s1">&#39;AppCtrl&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">$scope</span><span class="p">,</span> <span class="nx">$state</span><span class="p">,</span> <span class="nx">$filter</span><span class="p">,</span> <span class="nx">socket</span><span class="p">,</span> <span class="nx">Auth</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>  <span class="c1">//Ensure they are authed first.</span>
+</span><span class='line'>  <span class="k">if</span><span class="p">(</span><span class="nx">Auth</span><span class="p">.</span><span class="nx">currentUser</span><span class="p">()</span> <span class="o">==</span> <span class="kc">null</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>      <span class="nx">$state</span><span class="p">.</span><span class="nx">go</span><span class="p">(</span><span class="s1">&#39;login&#39;</span><span class="p">);</span>
+</span><span class='line'>      <span class="k">return</span><span class="p">;</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="c1">//input models</span>
+</span><span class='line'>  <span class="nx">$scope</span><span class="p">.</span><span class="nx">draft</span> <span class="o">=</span> <span class="p">{</span> <span class="nx">message</span><span class="o">:</span> <span class="s1">&#39;&#39;</span> <span class="p">};</span>
+</span><span class='line'>  <span class="nx">$scope</span><span class="p">.</span><span class="nx">channel</span> <span class="o">=</span> <span class="p">{</span> <span class="nx">name</span><span class="o">:</span> <span class="s1">&#39;&#39;</span> <span class="p">};</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="c1">//App info</span>
+</span><span class='line'>  <span class="nx">$scope</span><span class="p">.</span><span class="nx">channels</span> <span class="o">=</span> <span class="p">[];</span>
+</span><span class='line'>  <span class="nx">$scope</span><span class="p">.</span><span class="nx">listeningChannels</span> <span class="o">=</span> <span class="p">[];</span>
+</span><span class='line'>  <span class="nx">$scope</span><span class="p">.</span><span class="nx">activeChannel</span> <span class="o">=</span> <span class="kc">null</span><span class="p">;</span>
+</span><span class='line'>  <span class="nx">$scope</span><span class="p">.</span><span class="nx">userName</span> <span class="o">=</span> <span class="nx">Auth</span><span class="p">.</span><span class="nx">currentUser</span><span class="p">().</span><span class="nx">name</span><span class="p">;</span>
+</span><span class='line'>  <span class="nx">$scope</span><span class="p">.</span><span class="nx">messages</span> <span class="o">=</span> <span class="p">[];</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">///////////////////////////////////////////////////////////////////////</span>
+</span><span class='line'><span class="c1">///////////////////////////////////////////////////////////////////////</span>
+</span><span class='line'><span class="c1">//Socket.io listeners</span>
+</span><span class='line'><span class="c1">///////////////////////////////////////////////////////////////////////</span>
+</span><span class='line'><span class="c1">///////////////////////////////////////////////////////////////////////</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nx">socket</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">&#39;channels&#39;</span><span class="p">,</span> <span class="kd">function</span> <span class="nx">channels</span><span class="p">(</span><span class="nx">channels</span><span class="p">){</span>
+</span><span class='line'>      <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;channels&#39;</span><span class="p">,</span> <span class="nx">channels</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">channels</span><span class="p">);</span>
+</span><span class='line'>      <span class="nx">$scope</span><span class="p">.</span><span class="nx">channels</span> <span class="o">=</span> <span class="nx">channels</span><span class="p">;</span>
+</span><span class='line'>  <span class="p">});</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nx">socket</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">&#39;message:received&#39;</span><span class="p">,</span> <span class="kd">function</span> <span class="nx">messageReceived</span><span class="p">(</span><span class="nx">message</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>      <span class="nx">$scope</span><span class="p">.</span><span class="nx">messages</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">message</span><span class="p">);</span>
+</span><span class='line'>  <span class="p">});</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nx">socket</span><span class="p">.</span><span class="nx">emit</span><span class="p">(</span><span class="s1">&#39;user:joined&#39;</span><span class="p">,</span> <span class="p">{</span><span class="nx">name</span><span class="o">:</span> <span class="nx">Auth</span><span class="p">.</span><span class="nx">currentUser</span><span class="p">().</span><span class="nx">name</span><span class="p">});</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nx">socket</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">&#39;user:joined&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">user</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>      <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;user:joined&#39;</span><span class="p">);</span>
+</span><span class='line'>      <span class="nx">$scope</span><span class="p">.</span><span class="nx">messages</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">user</span><span class="p">);</span>
+</span><span class='line'>  <span class="p">});</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nx">$scope</span><span class="p">.</span><span class="nx">listenChannel</span> <span class="o">=</span> <span class="kd">function</span> <span class="nx">listenChannel</span> <span class="p">(</span><span class="nx">channel</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>      <span class="nx">socket</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">&#39;messages:channel:&#39;</span> <span class="o">+</span> <span class="nx">channel</span><span class="p">,</span> <span class="kd">function</span> <span class="nx">messages</span><span class="p">(</span><span class="nx">messages</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>          <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;got messages: &#39;</span><span class="p">,</span> <span class="nx">messages</span><span class="p">);</span>
+</span><span class='line'>          <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">messages</span><span class="p">.</span><span class="nx">length</span><span class="p">);</span>
+</span><span class='line'>          <span class="k">for</span><span class="p">(</span><span class="kd">var</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="nx">j</span> <span class="o">=</span> <span class="nx">messages</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">j</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>              <span class="kd">var</span> <span class="nx">message</span> <span class="o">=</span> <span class="nx">messages</span><span class="p">[</span><span class="nx">i</span><span class="p">];</span>
+</span><span class='line'>              <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;message&#39;</span><span class="p">);</span>
+</span><span class='line'>              <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">message</span><span class="p">);</span>
+</span><span class='line'>                  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;apply with function&#39;</span><span class="p">);</span>
+</span><span class='line'>              <span class="nx">$scope</span><span class="p">.</span><span class="nx">messages</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">message</span><span class="p">);</span>
+</span><span class='line'>          <span class="p">}</span>
+</span><span class='line'>      <span class="p">});</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="nx">socket</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">&#39;message:channel:&#39;</span> <span class="o">+</span> <span class="nx">channel</span><span class="p">,</span> <span class="kd">function</span> <span class="nx">message</span><span class="p">(</span><span class="nx">message</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>          <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;got message: &#39;</span> <span class="o">+</span> <span class="nx">message</span><span class="p">);</span>
+</span><span class='line'>          <span class="k">if</span><span class="p">(</span><span class="nx">channel</span> <span class="o">!=</span> <span class="nx">$scope</span><span class="p">.</span><span class="nx">activeChannel</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>              <span class="k">return</span><span class="p">;</span>
+</span><span class='line'>          <span class="p">}</span>
+</span><span class='line'>          <span class="nx">$scope</span><span class="p">.</span><span class="nx">messages</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">message</span><span class="p">);</span>
+</span><span class='line'>      <span class="p">});</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="nx">socket</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">&#39;message:remove:channel:&#39;</span> <span class="o">+</span> <span class="nx">channel</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">removalInfo</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>          <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;removalInfo to remove: &#39;</span><span class="p">,</span> <span class="nx">removalInfo</span><span class="p">);</span>
+</span><span class='line'>          <span class="kd">var</span> <span class="nx">expires</span> <span class="o">=</span> <span class="nx">removalInfo</span><span class="p">.</span><span class="nx">message</span><span class="p">.</span><span class="nx">expires</span><span class="p">;</span>
+</span><span class='line'>          <span class="kd">var</span> <span class="nx">expireMessageIndex</span> <span class="o">=</span> <span class="nx">$filter</span><span class="p">(</span><span class="s1">&#39;messageByExpires&#39;</span><span class="p">)(</span><span class="nx">$scope</span><span class="p">.</span><span class="nx">messages</span><span class="p">,</span> <span class="nx">expires</span><span class="p">);</span>
+</span><span class='line'>          <span class="k">if</span><span class="p">(</span><span class="nx">expireMessageIndex</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>              <span class="nx">$scope</span><span class="p">.</span><span class="nx">messages</span><span class="p">.</span><span class="nx">splice</span><span class="p">(</span><span class="nx">expireMessageIndex</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span>
+</span><span class='line'>          <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="p">});</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="nx">$scope</span><span class="p">.</span><span class="nx">listeningChannels</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">channel</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">///////////////////////////////////////////////////////////////////////</span>
+</span><span class='line'><span class="c1">///////////////////////////////////////////////////////////////////////</span>
+</span><span class='line'><span class="c1">// Controller methods</span>
+</span><span class='line'><span class="c1">///////////////////////////////////////////////////////////////////////</span>
+</span><span class='line'><span class="c1">///////////////////////////////////////////////////////////////////////</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nx">$scope</span><span class="p">.</span><span class="nx">joinChannel</span> <span class="o">=</span> <span class="kd">function</span> <span class="nx">joinChannel</span><span class="p">(</span><span class="nx">channel</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>      <span class="nx">$scope</span><span class="p">.</span><span class="nx">activeChannel</span> <span class="o">=</span> <span class="nx">channel</span><span class="p">;</span>
+</span><span class='line'>      <span class="nx">$scope</span><span class="p">.</span><span class="nx">messages</span> <span class="o">=</span> <span class="p">[];</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="nx">$scope</span><span class="p">.</span><span class="nx">channel</span><span class="p">.</span><span class="nx">name</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="c1">//Listen to channel if we dont have it already.</span>
+</span><span class='line'>      <span class="k">if</span><span class="p">(</span><span class="nx">$scope</span><span class="p">.</span><span class="nx">listeningChannels</span><span class="p">.</span><span class="nx">indexOf</span><span class="p">(</span><span class="nx">channel</span><span class="p">)</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>          <span class="nx">$scope</span><span class="p">.</span><span class="nx">listenChannel</span><span class="p">(</span><span class="nx">channel</span><span class="p">);</span>     
+</span><span class='line'>      <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="nx">socket</span><span class="p">.</span><span class="nx">emit</span><span class="p">(</span><span class="s1">&#39;channel:join&#39;</span><span class="p">,</span> <span class="p">{</span> <span class="nx">channel</span><span class="o">:</span> <span class="nx">channel</span><span class="p">,</span> <span class="nx">name</span><span class="o">:</span> <span class="nx">Auth</span><span class="p">.</span><span class="nx">currentUser</span><span class="p">().</span><span class="nx">name</span> <span class="p">});</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nx">$scope</span><span class="p">.</span><span class="nx">sendMessage</span> <span class="o">=</span> <span class="kd">function</span> <span class="nx">sendMessage</span><span class="p">(</span><span class="nx">draft</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>      <span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="nx">draft</span><span class="p">.</span><span class="nx">message</span> <span class="o">||</span> <span class="nx">draft</span><span class="p">.</span><span class="nx">message</span> <span class="o">==</span> <span class="kc">null</span> <span class="o">||</span> <span class="k">typeof</span> <span class="nx">draft</span> <span class="o">==</span> <span class="s1">&#39;undefined&#39;</span> <span class="o">||</span> <span class="nx">draft</span><span class="p">.</span><span class="nx">length</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>          <span class="k">return</span><span class="p">;</span>
+</span><span class='line'>      <span class="p">}</span>
+</span><span class='line'>      <span class="nx">socket</span><span class="p">.</span><span class="nx">emit</span><span class="p">(</span><span class="s1">&#39;message:send&#39;</span><span class="p">,</span> <span class="p">{</span> <span class="nx">message</span><span class="o">:</span> <span class="nx">draft</span><span class="p">.</span><span class="nx">message</span><span class="p">,</span> <span class="nx">name</span><span class="o">:</span> <span class="nx">Auth</span><span class="p">.</span><span class="nx">currentUser</span><span class="p">().</span><span class="nx">name</span><span class="p">,</span> <span class="nx">channel</span><span class="o">:</span> <span class="nx">$scope</span><span class="p">.</span><span class="nx">activeChannel</span> <span class="p">});</span>
+</span><span class='line'>      <span class="nx">$scope</span><span class="p">.</span><span class="nx">draft</span><span class="p">.</span><span class="nx">message</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">;</span>
+</span><span class='line'>  <span class="p">};</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nx">$scope</span><span class="p">.</span><span class="nx">logout</span> <span class="o">=</span> <span class="kd">function</span> <span class="nx">logout</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>      <span class="nx">Auth</span><span class="p">.</span><span class="nx">logout</span><span class="p">();</span>
+</span><span class='line'>      <span class="nx">$state</span><span class="p">.</span><span class="nx">go</span><span class="p">(</span><span class="s1">&#39;login&#39;</span><span class="p">);</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="c1">//Auto join the lobby</span>
+</span><span class='line'>  <span class="nx">$scope</span><span class="p">.</span><span class="nx">joinChannel</span><span class="p">(</span><span class="s1">&#39;Lobby&#39;</span><span class="p">);</span>
+</span><span class='line'><span class="p">})</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>All of the code can be found on <a href="https://github.com/jbavari/ionic-socket.io-redis-chat">github here</a>.</p>
+
+<h3>Things to improve</h3>
+
+<ul>
+<li>Testing &ndash; for sure. I definitely failed in getting tests first</li>
+<li>Removing the inline functions from Socket.io callbacks &ndash; not sure I like how I handled that to be honest</li>
+<li>Improve the UI</li>
+<li>Actually make the channels expire over time &ndash; and alert the user</li>
+<li>Have some kind of location tracking to pull local channels near you</li>
+</ul>
+
+
+<p>Enjoy! Hope this helps any others learn some tips for developing in any of these technologies used!</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  <div class="pagination">
+    
+      <a class="prev" href="/blog/page/5/">&larr; Older</a>
+    
+    <a href="/blog/archives">Blog Archives</a>
+    
+    <a class="next" href="/blog/page/3/">Newer &rarr;</a>
+    
+  </div>
+</div>
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2017/04/16/puppet-a-testing-handbook/">Puppet: A Testing Handbook</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2017/03/13/test-coverage-reports-in-elixir/">Test Coverage Reports in Elixir</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/12/29/multicast-service-discovery-in-electron/">Multicast Service Discovery in Electron</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/03/11/using-erlang-observer-on-a-remote-elixir-server/">Using Erlang Observer on a Remote Elixir Server</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/01/24/custom-json-encoding-in-phoenix/">Custom JSON Encoding in Phoenix</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating&#8230;</li>
+  </ul>
+  
+  <a href="https://github.com/jbavari">@jbavari</a> on GitHub
+  
+  <script type="text/javascript">
+    $(document).ready(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'jbavari',
+            count: 0,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+
+
+
+  
+</aside>
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2019 - Josh Bavari -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+  <script src="//static.getclicky.com/js" type="text/javascript"></script>
+  <script type="text/javascript">try{ clicky.init(100896582); }catch(e){}</script>
+  <noscript><p><img alt="Clicky" width="1" height="1" src="//in.getclicky.com/100896582ns.gif" /></p></noscript>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'joshbavari';
+      
+        
+        var disqus_script = 'count.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

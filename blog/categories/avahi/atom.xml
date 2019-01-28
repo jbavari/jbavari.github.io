@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: avahi | Josh Bavari's Ramblings]]></title>
+  <link href="http://jbavari.github.io/blog/categories/avahi/atom.xml" rel="self"/>
+  <link href="http://jbavari.github.io/"/>
+  <updated>2019-01-27T19:16:40-07:00</updated>
+  <id>http://jbavari.github.io/</id>
+  <author>
+    <name><![CDATA[Josh Bavari]]></name>
+    <email><![CDATA[jbavari@gmail.com]]></email>
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Multicast Service Discovery in Electron]]></title>
+    <link href="http://jbavari.github.io/blog/2016/12/29/multicast-service-discovery-in-electron/"/>
+    <updated>2016-12-29T14:01:00-07:00</updated>
+    <id>http://jbavari.github.io/blog/2016/12/29/multicast-service-discovery-in-electron</id>
+    <content type="html"><![CDATA[<p>I’ve been playing around with mDNS lately for broadcasting some services for applications to auto-connect with.</p>
+
+<p>The first experiment I had was setting up a server that broadcasts a TCP endpoint for an Electron application to discover and connect for the application data.</p>
+
+<p>This was so easily done that I challenged myself to see how fast I can whip out a blog post.</p>
+
+<p>First, get an Ubuntu server up (I used a Vagrant VM).</p>
+
+<p>Run the commands:</p>
+
+<p><code>
+sudo apt-get install avahi-utils
+</code></p>
+
+<p>From here, the service for avahi (mdns) should be auto-started. Edit the configuration to enable broadcasting:</p>
+
+<p><code>vim /etc/avahi/avahi-daemon.conf</code> – here’s a config that’s minimally broadcasting only the IPv4 address:</p>
+
+<p>```
+[server]
+host-name=webserver
+domain-name=local
+use-ipv4=yes
+use-ipv6=no
+allow-interfaces=eth1
+deny-interfaces=eth0
+ratelimit-interval-usec=1000000
+ratelimit-burst=1000</p>
+
+<p>[wide-area]
+enable-wide-area=yes</p>
+
+<p>[publish]
+publish-addresses=yes
+publish-hinfo=yes
+publish-workstation=no
+publish-domain=yes
+```</p>
+
+<p>Now, create a service configuration: <code>vim /etc/avahi/services/mywebserver.service</code>, with this contents:</p>
+
+<p>```
+&lt;service-group>
+  <name>Webserver</name>
+  <service></p>
+
+<pre><code>&lt;type&gt;_http._tcp&lt;/type&gt;
+&lt;port&gt;80&lt;/port&gt;
+</code></pre>
+
+<p>  </service>
+&lt;/service-group>
+```</p>
+
+<p>Simple as that. Just restart the avahi-daemon – <code>sudo service avahi-daemon restart</code>.</p>
+
+<p>This should now have your server broadcasting that it has a webserver running at port 80, named <code>Webserver</code>.</p>
+
+<p>To check the service is broadcasting, run <code>avahi-browse _http._tcp -tr</code> – this should show your server as servername.local, with <code>Webserver</code>, pointing to its IP and port.</p>
+
+<p>Example:</p>
+
+<p><code>
++   eth1 IPv4 webserver                              Web Site             local
+=   eth1 IPv4 webserver                              Web Site             local
+   hostname = [webserver.local]
+   address = [192.168.0.101]
+   port = [80]
+   txt = []
+</code></p>
+
+<p>Now for the electron portion, in your application, install the node mdns module: <code>npm install --save mdns</code>.</p>
+
+<p>This will add the node module to your project, but since it has native compilation steps, you must build it with <code>electron-rebuild</code>. Do this: <code>npm install --save-dev electron-rebuild</code>.</p>
+
+<p>Then run: <code>./node_modules/.bin/electron-rebuild</code> – this will rebuild the mdns module for your electron node version correctly.</p>
+
+<p>To do the DNS lookups, simply run the steps from the node mdns <code>README</code>. Set the discovery type to <code>http</code> and it will find your service. From there, you can grab the address and then get the data from the web server (or html page redirection) as you so wish!</p>
+
+<p>Happy coding!</p>
+]]></content>
+  </entry>
+  
+</feed>

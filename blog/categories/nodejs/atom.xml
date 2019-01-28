@@ -1,0 +1,1016 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: nodejs | Josh Bavari's Ramblings]]></title>
+  <link href="http://jbavari.github.io/blog/categories/nodejs/atom.xml" rel="self"/>
+  <link href="http://jbavari.github.io/"/>
+  <updated>2019-01-27T19:16:40-07:00</updated>
+  <id>http://jbavari.github.io/</id>
+  <author>
+    <name><![CDATA[Josh Bavari]]></name>
+    <email><![CDATA[jbavari@gmail.com]]></email>
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Multicast Service Discovery in Electron]]></title>
+    <link href="http://jbavari.github.io/blog/2016/12/29/multicast-service-discovery-in-electron/"/>
+    <updated>2016-12-29T14:01:00-07:00</updated>
+    <id>http://jbavari.github.io/blog/2016/12/29/multicast-service-discovery-in-electron</id>
+    <content type="html"><![CDATA[<p>I’ve been playing around with mDNS lately for broadcasting some services for applications to auto-connect with.</p>
+
+<p>The first experiment I had was setting up a server that broadcasts a TCP endpoint for an Electron application to discover and connect for the application data.</p>
+
+<p>This was so easily done that I challenged myself to see how fast I can whip out a blog post.</p>
+
+<p>First, get an Ubuntu server up (I used a Vagrant VM).</p>
+
+<p>Run the commands:</p>
+
+<p><code>
+sudo apt-get install avahi-utils
+</code></p>
+
+<p>From here, the service for avahi (mdns) should be auto-started. Edit the configuration to enable broadcasting:</p>
+
+<p><code>vim /etc/avahi/avahi-daemon.conf</code> – here’s a config that’s minimally broadcasting only the IPv4 address:</p>
+
+<p>```
+[server]
+host-name=webserver
+domain-name=local
+use-ipv4=yes
+use-ipv6=no
+allow-interfaces=eth1
+deny-interfaces=eth0
+ratelimit-interval-usec=1000000
+ratelimit-burst=1000</p>
+
+<p>[wide-area]
+enable-wide-area=yes</p>
+
+<p>[publish]
+publish-addresses=yes
+publish-hinfo=yes
+publish-workstation=no
+publish-domain=yes
+```</p>
+
+<p>Now, create a service configuration: <code>vim /etc/avahi/services/mywebserver.service</code>, with this contents:</p>
+
+<p>```
+&lt;service-group>
+  <name>Webserver</name>
+  <service></p>
+
+<pre><code>&lt;type&gt;_http._tcp&lt;/type&gt;
+&lt;port&gt;80&lt;/port&gt;
+</code></pre>
+
+<p>  </service>
+&lt;/service-group>
+```</p>
+
+<p>Simple as that. Just restart the avahi-daemon – <code>sudo service avahi-daemon restart</code>.</p>
+
+<p>This should now have your server broadcasting that it has a webserver running at port 80, named <code>Webserver</code>.</p>
+
+<p>To check the service is broadcasting, run <code>avahi-browse _http._tcp -tr</code> – this should show your server as servername.local, with <code>Webserver</code>, pointing to its IP and port.</p>
+
+<p>Example:</p>
+
+<p><code>
++   eth1 IPv4 webserver                              Web Site             local
+=   eth1 IPv4 webserver                              Web Site             local
+   hostname = [webserver.local]
+   address = [192.168.0.101]
+   port = [80]
+   txt = []
+</code></p>
+
+<p>Now for the electron portion, in your application, install the node mdns module: <code>npm install --save mdns</code>.</p>
+
+<p>This will add the node module to your project, but since it has native compilation steps, you must build it with <code>electron-rebuild</code>. Do this: <code>npm install --save-dev electron-rebuild</code>.</p>
+
+<p>Then run: <code>./node_modules/.bin/electron-rebuild</code> – this will rebuild the mdns module for your electron node version correctly.</p>
+
+<p>To do the DNS lookups, simply run the steps from the node mdns <code>README</code>. Set the discovery type to <code>http</code> and it will find your service. From there, you can grab the address and then get the data from the web server (or html page redirection) as you so wish!</p>
+
+<p>Happy coding!</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Using npm scripts for Cordova]]></title>
+    <link href="http://jbavari.github.io/blog/2014/06/19/using-npm-scripts-for-cordova/"/>
+    <updated>2014-06-19T00:25:00-06:00</updated>
+    <id>http://jbavari.github.io/blog/2014/06/19/using-npm-scripts-for-cordova</id>
+    <content type="html"><![CDATA[<p>For those of you that don&rsquo;t know, Cordova has <a href="https://github.com/apache/cordova-lib/blob/master/cordova-lib/templates/hooks-README.md">hooks</a> that can run on each of the specific build tasks that Cordova goes through. For example the task that happens after all the platform specific code is set up, the <code>after_prepare</code> hook is fired.</p>
+
+<p>Tonight I had the pleasure of collaborating with my friend <a href="https://twitter.com/MountainDoofus">Ross Martin</a> over a project he put together. The project is called <a href="https://github.com/rossmartin/cordova-uglify">cordova-uglify</a> and it focuses on uglifying/minifying JavaScript before building your Cordova app. See his comment in response to <a href="http://www.mooreds.com/wordpress/archives/1425">Dan Moore&rsquo;s Accessing more build information from your Cordova CLI hooks</a> blog for more information on why.</p>
+
+<p>The project was having an <code>after_prepare</code> hook in Cordova to uglify the application&rsquo;s JavaScript once the code is put in place for iOS/Android.</p>
+
+<p>This project Ross put together was interesting. There have been some blogs on <a href="http://www.mooreds.com/wordpress/archives/1197">using hooks in Cordova</a> as well as <a href="http://devgirl.org/2013/11/12/three-hooks-your-cordovaphonegap-project-needs/#comments">three hooks every cordova / phonegap project needs</a>. Moving forward, it&rsquo;d be nice to make some of these hooks and share them out much like we share packages on npm.</p>
+
+<p>The only problem with using them as packages, is we need to place code somewhere outside of the <code>node_modules</code> folder (where the package will be installed from <code>npm install</code>).</p>
+
+<p>This is what we&rsquo;d get if we just used npm install cordova-uglify (notice uglify.js is only in <code>node_modules</code> directory):</p>
+
+<p>```
+// ./CordovaProjectDirectory
+//      /hooks
+//      /node_modules
+//          /cordova-uglify
+//              /after_prepare
+//                  /uglify.js
+//              /scripts
+//                  install.js
+//                  uninstall.js
+//      /www</p>
+
+<p>```</p>
+
+<p>What we actually want has our uglify.js in our <code>hooks/after_prepare</code> directory:</p>
+
+<p><code>
+// ./CordovaProjectDirectory
+//      /hooks
+//          /after_prepare
+//              uglify.js
+//      /node_modules
+//          /cordova-uglify
+//              /after_prepare
+//                  uglify.js
+</code></p>
+
+<p>Then it hit me, we can use npm scripts!</p>
+
+<h2>The idea</h2>
+
+<p>Let&rsquo;s package up Cordova tools, publish on npm, and then use <a href="https://www.npmjs.org/doc/misc/npm-scripts.html">npm scripts</a> to install/uninstall them as necessary.</p>
+
+<p>npm gives its package owners the ability to run scripts on various events in the npm life cycle. The interesting ones we care about are those being <code>postinstall</code> and <code>postuninstall</code>.</p>
+
+<p>The idea is this:</p>
+
+<ul>
+<li>You run <code>npm install cordova-uglify</code></li>
+<li>After installing, npm runs the <code>postinstall</code> script to copy files into proper location</li>
+<li>Profit $$$</li>
+</ul>
+
+
+<p>Ross put me up to the challenge, so I took it up. Here&rsquo;s what I put our package.json to be:</p>
+
+<p>``` js
+{
+  &ldquo;name&rdquo;: &ldquo;cordova-uglify&rdquo;,
+  &ldquo;version&rdquo;: &ldquo;0.0.5&rdquo;,
+  &ldquo;description&rdquo;: &ldquo;Cordova hook that allows you to uglify or minify your apps JavaScript and CSS.&rdquo;,
+  &ldquo;homepage&rdquo;: &ldquo;<a href="https://github.com/rossmartin/cordova-uglify">https://github.com/rossmartin/cordova-uglify</a>&rdquo;,
+  &ldquo;keywords&rdquo;: [</p>
+
+<pre><code>"cordova",
+"uglify",
+"minify",
+"hook",
+"hooks"
+</code></pre>
+
+<p>  ],
+  &ldquo;peerDependencies&rdquo; : {</p>
+
+<pre><code>"yuicompressor" : "2.4.8"
+</code></pre>
+
+<p>  },
+  &ldquo;author&rdquo;: &ldquo;Ross Martin&rdquo;,
+  &ldquo;license&rdquo;: &ldquo;MIT&rdquo;,
+  &ldquo;bugs&rdquo;: {</p>
+
+<pre><code>"url": "https://github.com/rossmartin/cordova-uglify/issues"
+</code></pre>
+
+<p>  },
+  &ldquo;readmeFilename&rdquo;: &ldquo;README.md&rdquo;,
+  &ldquo;scripts&rdquo;: {</p>
+
+<pre><code>"postinstall": "node scripts/install.js",
+"postuninstall": "node scripts/uninstall.js"
+</code></pre>
+
+<p>  }
+}
+```</p>
+
+<p>To which I then created a quick script to do the file copying &ndash; <code>scripts/install.js</code></p>
+
+<p>``` js</p>
+
+<h1>!/usr/bin/env node</h1>
+
+<p>var fs = require(&lsquo;fs&rsquo;)
+var path = require(&lsquo;path&rsquo;)
+var cwd = process.cwd() //proj directory
+var scriptPath = __dirname //node_modules/cordova-uglify/scripts</p>
+
+<p>var paths = [ path.join(cwd, &lsquo;../../hooks&rsquo;), path.join(cwd, &lsquo;../../hooks/after_prepare&rsquo;) ];</p>
+
+<p>for(var pathIndex in paths) {</p>
+
+<pre><code>if(!fs.existsSync(paths[pathIndex])) {
+    console.log('Creating directory: ', paths[pathIndex])
+    fs.mkdirSync(paths[pathIndex]);
+}   
+</code></pre>
+
+<p>}</p>
+
+<p>var uglifyScriptPath = path.join(cwd, &lsquo;after_prepare&rsquo;, &lsquo;uglify.js&rsquo;);</p>
+
+<p>var uglifyFile = fs.readFileSync(uglifyScriptPath);
+console.log(&lsquo;uglifyFile: &rsquo;, uglifyFile)
+var uglifyAfterPreparePath = path.join(paths[1], &lsquo;uglify.js&rsquo;)</p>
+
+<p>console.log(&lsquo;Creating uglify hook: &rsquo;, uglifyAfterPreparePath)
+fs.writeFileSync(uglifyAfterPreparePath, uglifyFile);</p>
+
+<p>```</p>
+
+<p>As well as uninstalling it &ndash; <code>scripts/uninstall.js</code>:</p>
+
+<p>``` js</p>
+
+<h1>!/usr/bin/env node</h1>
+
+<p>//After uninstall script to remove the uglify.js script from the users hooks/after_prepare directory</p>
+
+<p>var fs = require(&lsquo;fs&rsquo;)
+var path = require(&lsquo;path&rsquo;)
+var cwd = process.cwd()</p>
+
+<p>var uglifyJsPath = path.join(cwd, &lsquo;../../&rsquo;, &lsquo;hooks&rsquo;, &lsquo;after_prepare&rsquo;, &lsquo;uglify.js&rsquo;)</p>
+
+<p>fs.unlink(uglifyJsPath)
+console.log(&lsquo;Removed: &rsquo;, uglifyJsPath)
+```</p>
+
+<p>Simple and sweet.</p>
+
+<p>Now, is it an anti-pattern? I&rsquo;m not sure.</p>
+
+<p>Does it make it easier for other developers to get started and using it? Yes.</p>
+
+<p>That&rsquo;s exactly what I was going for.</p>
+
+<p>Thanks Ross for planting the idea in my head, and more importantly, for the challenge to learn.</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Building a chat client with Ionic / Socket.io / Redis / Node.js]]></title>
+    <link href="http://jbavari.github.io/blog/2014/06/17/building-a-chat-client-with-ionic/"/>
+    <updated>2014-06-17T00:09:00-06:00</updated>
+    <id>http://jbavari.github.io/blog/2014/06/17/building-a-chat-client-with-ionic</id>
+    <content type="html"><![CDATA[<p>I wanted a fun challenge to push myself and cross a few things off my ever so growing <code>I want to play with this</code> type of lists. I love learning, and there are so many awesome tools / utilities / libraries out there to evaluate its hard to justify incorporating them into every project at work without having some knowledge of the tools.</p>
+
+<p>DISCLAIMER: I may use some tools incorrectly, but the main purpose of this fun little project was to learn and have fun.</p>
+
+<p>The list was this:</p>
+
+<ul>
+<li><a href="http://ionicframework.com">Ionic Framework</a></li>
+<li><a href="http://socket.io">Socket.io</a></li>
+<li><a href="http://redis.io">Redis</a></li>
+<li><a href="https://github.com/mranney/node_redis">Node.js Redis client</a></li>
+</ul>
+
+
+<h2>The Idea</h2>
+
+<p>I wanted to build a chat client that would have messages that disappear after a certain time, much like SnapChat. The idea also included the ability to create channels that also disappear after a certain time like messages.</p>
+
+<p>In future versions, I&rsquo;d love to include location to join channels that are near you.</p>
+
+<p>Users can join existing channels, or create their own. All users can see channels, and join any.</p>
+
+<h2>Tech details &ndash; using Redis / Node.js</h2>
+
+<p>At first, I wanted to create messages some how and have them each have <code>expire</code> times. After failing miserably, I got the amazing chance to pair up with <a href="https://twitter.com/michaelgorsuch">Michael Gorsuch</a> to give me some alternative ideas. (Shameless plug &ndash; if you need to do some server monitoring, check out his project <a href="http://canary.io/">Canary.io</a>, it&rsquo;s AWESOME).</p>
+
+<p>The concept is &ndash; instead of using separate keys with ezxpire times &ndash; use Redis' sorted sets with scores of the times in UNIX format and the member being a JSON encoded string. I had my channels keys in the format of <code>messages:ChannelName</code>.</p>
+
+<p>Something like:</p>
+
+<p><code>
+//ZADD key score member [score member ...]
+zadd messages:RedisChat 10581098019 '{"name": "Josh", "id": "5"}'
+</code></p>
+
+<p>Now, when we want to get all messages for a channel, its simply:</p>
+
+<p><code>
+//ZRANGEBYSCORE key min max [WITHSCORES] [LIMIT offset count]
+zrangebyscore messages:RedisChat 0 10924019840
+</code></p>
+
+<p>Since I was using Node.js &ndash; I simply used <code>setInterval</code> to have a function be run that removes all old posts named <code>removeKeys</code>, and looked as such:</p>
+
+<p>``` js
+//NOTE: Using Moment.js, as well as having channelWatchList being populated
+var channelWatchList = [&lsquo;Lobby&rsquo;, &lsquo;RedisChat&rsquo;];</p>
+
+<p>function removeKeys() {
+  console.log(&lsquo;We are removing old messages&rsquo;);</p>
+
+<p>  for(var channelIndex in channelWatchList) {</p>
+
+<pre><code>var channel = channelWatchList[channelIndex];
+var messageChannel = 'messages:' + channel;
+console.log('message channel', messageChannel)
+var timeToRemove = moment().subtract('m', 1).unix(); //Remove messages before min ago
+
+redisClient.zrangebyscore(messageChannel, 0, timeToRemove, function(err, result) {
+  if(result &amp;&amp; result.length &gt; 0) {
+    for (var resultIndex in result) {
+      var message = JSON.parse(result[resultIndex]);
+      //NOTE: Using socket.io
+      io.emit('message:remove:channel:' + channel, { message: message, channel: channel });
+    }
+  }
+});
+
+redisClient.zremrangebyscore(messageChannel, 0, timeToRemove, function(err, result) {
+  console.log('Removed ', result, ' messages');
+});
+</code></pre>
+
+<p>  }
+}
+```</p>
+
+<h2>The client &ndash; Ionic</h2>
+
+<p>This was by far the easy part. First I just used the Ionic CLI to create a basic app.</p>
+
+<p>I started by modifying the index.html file to include Socket.io. Nothing too fancy: <code>&lt;script src="js/socket.io.js"&gt;&lt;/script&gt;</code>.</p>
+
+<p>Next, I used some AngularJS <a href="https://github.com/jbavari/ionic-socket.io-redis-chat/blob/master/client/RedisChat/www/js/services.js">services</a> for socket.io:</p>
+
+<p>```
+angular.module(&lsquo;services&rsquo;, [])</p>
+
+<p>.factory(&lsquo;socket&rsquo;, function socket($rootScope) {
+  var socket = io.connect(baseUrl);
+  return {</p>
+
+<pre><code>on: function (eventName, callback) {
+  socket.on(eventName, function () {  
+    var args = arguments;
+    $rootScope.$apply(function () {
+      callback.apply(socket, args);
+    });
+  });
+},
+emit: function (eventName, data, callback) {
+  socket.emit(eventName, data, function () {
+    var args = arguments;
+    $rootScope.$apply(function () {
+      if (callback) {
+        callback.apply(socket, args);
+      }
+    });
+  })
+}
+</code></pre>
+
+<p>  };
+})
+```</p>
+
+<p>Then, I constructed my <code>AppCtrl</code> to handle my <a href="https://github.com/jbavari/ionic-socket.io-redis-chat/blob/master/client/RedisChat/www/js/controllers.js">controllers</a> interaction with Socket.io:</p>
+
+<p>``` js
+angular.module(&lsquo;starter.controllers&rsquo;, [&lsquo;services&rsquo;])</p>
+
+<p>.controller(&lsquo;AppCtrl&rsquo;, function($scope, $state, $filter, socket, Auth) {</p>
+
+<pre><code>//Ensure they are authed first.
+if(Auth.currentUser() == null) {
+    $state.go('login');
+    return;
+}
+
+//input models
+$scope.draft = { message: '' };
+$scope.channel = { name: '' };
+
+//App info
+$scope.channels = [];
+$scope.listeningChannels = [];
+$scope.activeChannel = null;
+$scope.userName = Auth.currentUser().name;
+$scope.messages = [];
+</code></pre>
+
+<p>///////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////
+//Socket.io listeners
+///////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////</p>
+
+<pre><code>socket.on('channels', function channels(channels){
+    console.log('channels', channels);
+
+    console.log(channels);
+    $scope.channels = channels;
+});
+
+socket.on('message:received', function messageReceived(message) {
+    $scope.messages.push(message);
+});
+
+socket.emit('user:joined', {name: Auth.currentUser().name});
+
+socket.on('user:joined', function(user) {
+    console.log('user:joined');
+    $scope.messages.push(user);
+});
+
+$scope.listenChannel = function listenChannel (channel) {
+    socket.on('messages:channel:' + channel, function messages(messages) {
+        console.log('got messages: ', messages);
+        console.log(messages.length);
+        for(var i = 0, j = messages.length; i &lt; j; i++) {
+            var message = messages[i];
+            console.log('message');
+            console.log(message);
+                console.log('apply with function');
+            $scope.messages.push(message);
+        }
+    });
+
+    socket.on('message:channel:' + channel, function message(message) {
+        console.log('got message: ' + message);
+        if(channel != $scope.activeChannel) {
+            return;
+        }
+        $scope.messages.push(message);
+    });
+
+    socket.on('message:remove:channel:' + channel, function(removalInfo) {
+        console.log('removalInfo to remove: ', removalInfo);
+        var expires = removalInfo.message.expires;
+        var expireMessageIndex = $filter('messageByExpires')($scope.messages, expires);
+        if(expireMessageIndex) {
+            $scope.messages.splice(expireMessageIndex, 1);
+        }
+
+    });
+
+    $scope.listeningChannels.push(channel);
+
+}
+</code></pre>
+
+<p>///////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////
+// Controller methods
+///////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////</p>
+
+<pre><code>$scope.joinChannel = function joinChannel(channel) {
+    $scope.activeChannel = channel;
+    $scope.messages = [];
+
+    $scope.channel.name = '';
+
+    //Listen to channel if we dont have it already.
+    if($scope.listeningChannels.indexOf(channel) == -1) {
+        $scope.listenChannel(channel);      
+    }
+
+    socket.emit('channel:join', { channel: channel, name: Auth.currentUser().name });
+}
+
+$scope.sendMessage = function sendMessage(draft) {
+    if(!draft.message || draft.message == null || typeof draft == 'undefined' || draft.length == 0) {
+        return;
+    }
+    socket.emit('message:send', { message: draft.message, name: Auth.currentUser().name, channel: $scope.activeChannel });
+    $scope.draft.message = '';
+};
+
+$scope.logout = function logout() {
+    Auth.logout();
+    $state.go('login');
+}
+
+//Auto join the lobby
+$scope.joinChannel('Lobby');
+</code></pre>
+
+<p>})
+```</p>
+
+<p>All of the code can be found on <a href="https://github.com/jbavari/ionic-socket.io-redis-chat">github here</a>.</p>
+
+<h3>Things to improve</h3>
+
+<ul>
+<li>Testing &ndash; for sure. I definitely failed in getting tests first</li>
+<li>Removing the inline functions from Socket.io callbacks &ndash; not sure I like how I handled that to be honest</li>
+<li>Improve the UI</li>
+<li>Actually make the channels expire over time &ndash; and alert the user</li>
+<li>Have some kind of location tracking to pull local channels near you</li>
+</ul>
+
+
+<p>Enjoy! Hope this helps any others learn some tips for developing in any of these technologies used!</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Unit Testing AngularJS Services]]></title>
+    <link href="http://jbavari.github.io/blog/2014/06/11/unit-testing-angularjs-services/"/>
+    <updated>2014-06-11T17:52:00-06:00</updated>
+    <id>http://jbavari.github.io/blog/2014/06/11/unit-testing-angularjs-services</id>
+    <content type="html"><![CDATA[<p>I&rsquo;ve been using AngularJS a lot lately. Since I do a lot of Javascript, that means I&rsquo;m prone to make a lot of runtime script errors.</p>
+
+<p>You know those silly javascript errors &ndash; like ReferenceError and ParseError? Those can always be avoided by just writing some simple unit tests with Jasmine. I&rsquo;d like to cover just how I do that.</p>
+
+<p>(NOTE &ndash; I am forever learning, not teaching or saying THIS is the way it MUST be done)</p>
+
+<p>I read through Andy Shora&rsquo;s great blog post about <a href="http://andyshora.com/unit-testing-best-practices-angularjs.html">Unit Testing Best Practices for AngularJS</a>, but I wanted to record my actual steps so I can reference this again and capture my knowledge.</p>
+
+<h2>Tools for Javascript Testing AngularJS Services</h2>
+
+<p>There&rsquo;s a few things going on here. First we need something to set up our tests and set expectations &ndash; thats Jasmine. Then we need something to run the tests in browsers (or PhantomJS) &ndash; thats Karma. We then need a task runner to go and do these tests for us in some build process, thats Grunt/Gulp. Each tool has a file that will tell it how to run.</p>
+
+<ul>
+<li><a href="http://jasmine.github.io/2.0/introduction.html">Jasmine</a> (unit testing framework)</li>
+<li><a href="http://karma-runner.github.io/0.12/index.html">Karma</a> (for multiple browsers)</li>
+<li><a href="http://http://gruntjs.com/">Grunt</a> / <a href="http://gulpjs.com/">Gulp</a> (task runners / build systems)</li>
+<li><a href="https://github.com/angular/angular.js/blob/master/src/ngMock/angular-mocks.js">Angular Mocks</a></li>
+</ul>
+
+
+<p>Jasmine takes test spec files, Karma takes a config to tell it where to find the test spec files and actual code files, and grunt or gulp will help us run karma. Lets look at how those config files look.</p>
+
+<h1>Setting up Karma / Jasmine / Gulp configs</h1>
+
+<p>I use gulp these days, that requires me to use the gulp CLI as well as the gulp-jasmine plugin. You can use Grunt as well, just exchange gulp for grunt.</p>
+
+<p>I did the following in my command shell:</p>
+
+<p><code>sh
+npm install -g gulp
+npm install -g karma
+npm install gulp-jasmine --save-dev
+npm install karma-jasmine --save-dev
+npm install karma-phantomjs-launcher --save-dev
+npm install karma-spec-reporter --save-dev
+</code></p>
+
+<h2>Setting up Karma config</h2>
+
+<p>I simply ran this in my command shell for a nice simple walk through: <code>karma init</code>. It asks a few questions about what browsers to use, to keep running, and what files to use. Pretty basic stuff.</p>
+
+<p>Interesting tidbits:</p>
+
+<ul>
+<li>files &ndash; simply and array of files and glob&rsquo;s</li>
+<li>frameworks &ndash; specify here which you want to use</li>
+<li>reporters &ndash; customize your test output</li>
+<li>browsers &ndash; list which you&rsquo;d want to actually test in</li>
+</ul>
+
+
+<p>``` js
+// Karma configuration
+// Generated on Wed Jun 11 2014 09:51:52 GMT-0500 (CDT)</p>
+
+<p>module.exports = function(config) {
+  config.set({</p>
+
+<pre><code>// base path that will be used to resolve all patterns (eg. files, exclude)
+basePath: '',
+
+
+// frameworks to use
+// available frameworks: https://npmjs.org/browse/keyword/karma-adapter
+frameworks: ['jasmine'],
+
+
+// list of files / patterns to load in the browser
+files: [
+    './www/js/moment.min.js'
+    , './www/js/controllers/*.js'
+    , './www/js/models/*.js'
+    , './www/js/services.js'
+    , './www/lib/ionic/js/angular/angular.js'
+    , './plugins/org.apache.cordova.FacebookConnect/www/angular/facebookConnect.js'
+    , './test/lib/angular-mocks.js'
+    , './test/spec/**/*.js'
+],
+
+// list of files to exclude
+exclude: [
+
+],
+
+
+// preprocess matching files before serving them to the browser
+// available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
+preprocessors: {
+
+},
+
+
+// test results reporter to use
+// possible values: 'dots', 'progress'
+// available reporters: https://npmjs.org/browse/keyword/karma-reporter
+reporters: ['spec'],
+
+
+// web server port
+port: 9876,
+
+
+// enable / disable colors in the output (reporters and logs)
+colors: true,
+
+
+// level of logging
+// possible values: config.LOG_DISABLE || config.LOG_ERROR || config.LOG_WARN || config.LOG_INFO || config.LOG_DEBUG
+logLevel: config.LOG_INFO,
+
+
+// enable / disable watching file and executing tests whenever any file changes
+autoWatch: true,
+
+
+// start these browsers
+// available browser launchers: https://npmjs.org/browse/keyword/karma-launcher
+browsers: [
+    'PhantomJS'
+    // , 'Chrome'
+    // , 'Firefox'
+    // , 'Safari'
+],
+
+
+// Continuous Integration mode
+// if true, Karma captures browsers, runs the tests and exits
+singleRun: false
+</code></pre>
+
+<p>  });
+};
+```</p>
+
+<h2>Gulpfile for running tests</h2>
+
+<p>Next I had to get a little gulpfile together to run my tests. Right away, I found a quick little SNAFU with the way the gulp task runs the source files VS how I specified them in my Karma config file. A few interesting points here:</p>
+
+<ul>
+<li>Dont actually pass in files to <code>gulp.src</code> &ndash; instead use a dummy. You specify the files in your karma config file.</li>
+<li>If you intend on running a <code>gulp.watch</code> task to autorun, dont error out your karma stream! Use <code>this.emit('end')</code> in your error handler</li>
+</ul>
+
+
+<p>The code itself:</p>
+
+<p>``` js
+var karma = require(&lsquo;gulp-karma&rsquo;);</p>
+
+<p>gulp.task(&lsquo;test&rsquo;, function() {
+  // Be sure to return the stream
+  // NOTE: Using the fake &lsquo;./foobar&rsquo; so as to run the files
+  // listed in karma.conf.js INSTEAD of what was passed to
+  // gulp.src !
+  return gulp.src(&lsquo;./foobar&rsquo;)</p>
+
+<pre><code>.pipe(karma({
+  configFile: 'karma.conf.js',
+  action: 'run'
+}))
+.on('error', function(err) {
+  // Make sure failed tests cause gulp to exit non-zero
+  console.log(err);
+  this.emit('end'); //instead of erroring the stream, end it
+});
+</code></pre>
+
+<p>});</p>
+
+<p>gulp.task(&lsquo;autotest&rsquo;, function() {
+  return gulp.watch([&lsquo;www/js/<em><em>/</em>.js&rsquo;, &lsquo;test/spec/</em>.js&rsquo;], [&lsquo;test&rsquo;]);
+});
+```
+Awesome, not much left to do as far as setting up our test environment, lets get some code to test!</p>
+
+<h2>Setting Up AngularJS Service</h2>
+
+<p>Its a pretty basic setup &ndash; an Auth service with a few methods to get a user and call a back end service to retrieve a user.</p>
+
+<p>``` js
+angular.module(&lsquo;services&rsquo;)</p>
+
+<pre><code>.factory('Auth', function Auth($http, $q) {
+    var user = null;
+
+    var readStoredUser = function readStoredUser() {
+        //Try to read in from localStorage if one exists
+        var storedUser = window.localStorage.getItem('user');
+        try {
+            if(storedUser) {
+                // Note: Using a simple user model here
+                user = new User(JSON.parse(storedUser));
+            }
+        } catch (ex) { /* Silently fail..*/ }
+    }
+
+    readStoredUser();
+
+    var currentUser = function currentUser() {
+        if(!user) {
+            readStoredUser();
+        }
+        return user;
+    }
+
+    var saveUser = function saveUser(userToSave) {
+        window.localStorage.setItem('user', JSON.stringify(userToSave));
+        user = userToSave;
+    }
+
+    var loginWithEmail = function loginWithEmail(name, email) {
+        var deferred = $q.defer();
+
+        var postPath = 'http://someurl.dev/api/v1/login';
+        var postData = { name: name, email: email };
+
+        $http.post(postPath, postData).success(function(data) {
+            if(data.success) {
+                deferred.resolve(data);
+            } else {
+                deferred.reject(data);
+            }
+        }).error(function(error) {
+            deferred.reject(error);
+        });
+
+        return deferred.promise;
+    }
+
+    return {
+        currentUser: currentUser,
+        loginWithEmail: loginWithEmail,
+        saveUser: saveUser
+    };
+})
+</code></pre>
+
+<p>```</p>
+
+<p>Thats a simple bare bones <code>Auth</code> service above. We have a few interesting parts to test:</p>
+
+<ul>
+<li>readStoredUser</li>
+<li>currentUser</li>
+<li>loginWithEmail</li>
+</ul>
+
+
+<p>The first is somewhat hard because it is private to the Auth service. How do we test that? I guess the option is to make it public via a return in the service?</p>
+
+<h2>Test Specs</h2>
+
+<p>There was a few interesting things going on my spec &ndash; first I have a beforeEach that sets up some modules I need to use. Otherwise you&rsquo;ll get some fun / weird <code>couldnt bind</code> errors.</p>
+
+<p>The second was &ndash; In my HTTP tests, I mock out the httpBackend (as provided by angular-mocks) to give me a fake version of my actual HTTP call. This way, I know for sure I&rsquo;m testing my code, not the outside world.</p>
+
+<p>``` js
+//Interesting things to test the Auth service for</p>
+
+<p>// Logging in with Facebook
+// Handling callback to server for checkuser
+// Saving user to localstorage after login
+// Logging out (removing user object as well as localstorage)</p>
+
+<p>describe(&ldquo;Auth Service Unit Tests&rdquo;, function() {</p>
+
+<p>  beforeEach(function() {</p>
+
+<pre><code>//Ensure angular modules available
+module('starter.services');
+module('ngCordova.plugins.facebookConnect');
+</code></pre>
+
+<p>  });</p>
+
+<p>   // instantiate service
+  var apiResponse = {</p>
+
+<pre><code>name: 'Josh Bavari',
+email: 'jbavari@gmail.com',
+id: '4409480064'
+</code></pre>
+
+<p>  };
+  var Auth;
+  var FB = {</p>
+
+<pre><code>init: function() {
+
+},
+login: function() {
+
+},
+api: function(url, params, callback ) {
+  return callback(apiResponse);
+}
+</code></pre>
+
+<p>  };
+  var FacebookConnect = {</p>
+
+<pre><code>login: FB.login
+</code></pre>
+
+<p>  };
+  var httpBackend = null;</p>
+
+<p>  beforeEach(inject(function (<em>Auth</em>) {</p>
+
+<pre><code>Auth = _Auth_;
+</code></pre>
+
+<p>  }));</p>
+
+<p>  it(&lsquo;should have Auth service be defined&rsquo;, function () {</p>
+
+<pre><code>expect(Auth).toBeDefined();
+</code></pre>
+
+<p>  });</p>
+
+<p>  it(&lsquo;should not have a user existing upon starting up&rsquo;, function() {</p>
+
+<pre><code>expect(Auth.currentUser()).toBe(null);
+</code></pre>
+
+<p>  });</p>
+
+<p>  it(&lsquo;should save a user&rsquo;, function() {</p>
+
+<pre><code>var user = { name: 'Josh Bavari', id: 1 };
+
+Auth.saveUser(user);
+var currUser = Auth.currentUser();
+expect(currUser.name).toBe(user.name);
+expect(currUser.id).toBe(user.id);
+</code></pre>
+
+<p>  });</p>
+
+<p>  it(&lsquo;should have a user in local storage after calling saveUser&rsquo;, function() {</p>
+
+<pre><code>var user = { name: 'Josh Bavari', id: 1 };
+
+Auth.saveUser(user);
+
+var localUser = JSON.parse(window.localStorage.getItem('user'));
+
+expect(localUser.name).toBe(user.name);
+expect(localUser.id).toBe(user.id);
+</code></pre>
+
+<p>  });</p>
+
+<p>  it(&lsquo;should remove the user from local storage after logging out&rsquo;, function() {</p>
+
+<pre><code>var user = { name: 'Josh Bavari', id: 1 };
+
+Auth.saveUser(user);
+
+var localUser = JSON.parse(window.localStorage.getItem('user'));
+
+expect(localUser.name).toBe(user.name);
+expect(localUser.id).toBe(user.id);
+
+Auth.logout();
+
+expect(Auth.currentUser()).toBe(null);
+</code></pre>
+
+<p>  });</p>
+
+<p>  describe(&lsquo;Mocked HTTP Requests&rsquo;, function() {</p>
+
+<pre><code>var $httpBackend;
+var name = 'Josh Bavari';
+var email = 'jbavari@gmail.com';
+
+beforeEach(inject(function($injector) {
+  // Set up the mock http service responses
+  $httpBackend = $injector.get('$httpBackend');
+  $httpBackend.when('POST', 'http://raisemore.dev/api/v1/user/checkuser')
+    .respond(200, {name: name, email: email, success: true});
+ }));
+
+afterEach(function() {
+ $httpBackend.verifyNoOutstandingExpectation();
+ $httpBackend.verifyNoOutstandingRequest();
+});
+
+
+it('should have sent a POST request to the checkuser API', function() {
+    var result = Auth.checkUser(name, email, 1, '4408064001', null);
+    $httpBackend.expectPOST('http://raisemore.dev/api/v1/user/checkuser');
+    $httpBackend.flush();
+});
+</code></pre>
+
+<p>  });</p>
+
+<p>});
+```</p>
+
+<p>Theres a few key points to look at in the Jasmine tests:</p>
+
+<ul>
+<li><code>beforeEach(inject(function (_Auth_) {})</code> sets our local <code>Auth</code> variable</li>
+<li>using inject($injector) to get us our mocked out <code>$httpBackend</code> to fake our HTTP requests.</li>
+</ul>
+
+
+<p>That just about covers it. In recap:</p>
+
+<ul>
+<li>Set up the testing framework Karma</li>
+<li>Got the test runners for Gulp</li>
+<li>Set up some tests with Jasmine</li>
+<li>Mocked out $http requests to return us some fake data</li>
+<li>Ensured our services called the http requests correctly</li>
+<li>Avoided any future errors from testing &ndash; as well as avoiding Parse/Reference errors along the way</li>
+</ul>
+
+
+<p>AngularJS does a lot of the heavy lifting for you. However, it still gives you just enough rope to hang yourself with.</p>
+
+<p>With just some simple tests you can also avoid any silly run time errors you may encounter.</p>
+
+<p>Hope this gives ideas on how to openly test your services as well as models.</p>
+
+<h3>References</h3>
+
+<ul>
+<li><a href="http://andyshora.com/unit-testing-best-practices-angularjs.html">Andy Shora&rsquo;s Blog post &ndash; Unit Testing Best Practices in AngularJS</a></li>
+<li><a href="http://www.benlesh.com/2013/05/angularjs-unit-testing-controllers.html">AngularJS Unit Testing Controllers</a></li>
+<li><a href="http://www.benlesh.com/2013/06/angular-js-unit-testing-services.html">AngularJS Unit Testing Services</a></li>
+</ul>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[How I use npm link]]></title>
+    <link href="http://jbavari.github.io/blog/2014/04/03/how-i-use-npm-link/"/>
+    <updated>2014-04-03T10:04:00-06:00</updated>
+    <id>http://jbavari.github.io/blog/2014/04/03/how-i-use-npm-link</id>
+    <content type="html"><![CDATA[<p>Throughout the last few months, I&rsquo;ve began helping out the <a href="http://cordova.apache.orc">Cordova</a> team with a few bug fixes that I come across and want to contribute back.</p>
+
+<p>Cordova is a host of different <a href="https://issues.apache.org/jira/browse/CB/?selectedTab=com.atlassian.jira.jira-projects-plugin:components-panel">components</a>, many of which rely on node.js modules from npm.</p>
+
+<p>When I first started wantint go help, I didnt know how to make changes to the cordova code to use globally, and I didnt want to just go modify the code in the global node_modules/cordova-cli folder. This post covers on how to get started modifying existing node modules you may use from npm.</p>
+
+<h2>Why?</h2>
+
+<p>Recently, I came across <a href="https://groups.google.com/forum/#!topic/phonegap/ahzIwbUqr4A">a small bug</a> in Cordova CLI 3.4. To begin to poke around the code to find a fix in the cordova-cli project.</p>
+
+<p>When I first started, I had to figure out how to get access to the verion pulled from the repo on Github to use my code instead of the globally installed cordova.</p>
+
+<h2>How I use npm-link</h2>
+
+<ul>
+<li>Uninstalled the currently used cordova cli, <code>npm uninstall -g cordova</code></li>
+<li>Forked the <a href="https://github.com/apache/cordova-cli">cordova-cli repo from github</a></li>
+<li><code>git clone git@github.com:jbavari/cordova-cli.git</code></li>
+<li>Changed directory to the repo I just cloned</li>
+<li>Ran <code>npm link</code></li>
+</ul>
+
+
+<p>After running npm link, I can now run <code>cordova create HelloWorld</code> from any directory, and it will use the code that I just <code>npm link</code>&rsquo;d.</p>
+
+<p>Now, when I make changes to that repo that I cloned on my machine, I can run it immediately instead of having to push or update the package in npm.</p>
+
+<p>Hope this helps others in trying to get started contributing to any projects that they might use from npm! (Or contributing to the Cordova project!)</p>
+]]></content>
+  </entry>
+  
+</feed>

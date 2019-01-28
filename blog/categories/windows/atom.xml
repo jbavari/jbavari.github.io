@@ -1,0 +1,270 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: windows | Josh Bavari's Ramblings]]></title>
+  <link href="http://jbavari.github.io/blog/categories/windows/atom.xml" rel="self"/>
+  <link href="http://jbavari.github.io/"/>
+  <updated>2019-01-27T19:16:40-07:00</updated>
+  <id>http://jbavari.github.io/</id>
+  <author>
+    <name><![CDATA[Josh Bavari]]></name>
+    <email><![CDATA[jbavari@gmail.com]]></email>
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Windows and Webpack with TypeScript and Babel]]></title>
+    <link href="http://jbavari.github.io/blog/2015/10/20/windows-and-webpack-with-typescript-and-babel/"/>
+    <updated>2015-10-20T21:46:00-06:00</updated>
+    <id>http://jbavari.github.io/blog/2015/10/20/windows-and-webpack-with-typescript-and-babel</id>
+    <content type="html"><![CDATA[<p>I&rsquo;ve recently been diving into the land of <a href="https://webpack.github.io">Webpack</a> to handle all the heavy lifting of using <a href="https://babeljs.io">Babel</a> to compile my <a href="www.typescriptlang.org">TypeScript</a> and <a href="http://es6-features.org">ES6</a> into ES5 JavaScript to be used in <a href="http://ionic.io/2">Ionic 2</a>.</p>
+
+<p>The current set up I&rsquo;m working with involves having Webpack use the <a href="https://github.com/s-panferov/awesome-typescript-loader">awesome-typescript-loader</a> to load up TypeScript and compile the TypeScript files, as well as load up Babel and compile the ES6 JavaScript using Babel.</p>
+
+<h2>The set up</h2>
+
+<p>The file structure looks like this:</p>
+
+<p>```
+./
+  ./www</p>
+
+<pre><code>./app
+  ./components
+    ./datepipe.js
+    ./app.ts
+</code></pre>
+
+<p>```</p>
+
+<p>This worked great on my Mac. However, one thing I ran into on my Windows machine was this particular error:</p>
+
+<p><code>Cannot find module "./www/app/app.js"</code></p>
+
+<p>Take a look at the <a href="https://github.com/driftyco/ionic-conference-app/blob/master/webpack.config.js">webpack.config.js</a> in the <a href="https://github.com/driftyco/ionic-conference-app/">ionic-conference-app</a>, with a portion of it below:</p>
+
+<p>```js
+/<em> snipped </em>/
+  module: {</p>
+
+<pre><code>loaders: [
+  {
+    test: /\.js$/,
+    loader: "awesome-typescript-loader?doTypeCheck=false&amp;useBabel=true&amp;useWebpackText=true",
+    include: /www\/app\//,
+    exclude: /node_modules/
+  },
+  {
+    test: /\.ts$/,
+    loader: "awesome-typescript-loader",
+    include: /www\/app\//,
+    exclude: /node_modules/
+   }
+]
+</code></pre>
+
+<p>  },
+/<em> snipped </em>/
+```</p>
+
+<p>Webpack uses loaders to take the files and add them to the final build output. It knows where to get these files from the webpack config module loaders array, where each loader specifies the <code>include</code> paths, as per the <a href="https://webpack.github.io/docs/configuration.html#module-loaders">webpack docs</a>:</p>
+
+<blockquote><p>include: A condition that must be met</p>
+
+<p>A condition may be a RegExp, a string containing the absolute path, a function(absPath): bool, or an array of one of these combined with “and”.</p></blockquote>
+
+<p>Take note of the include line we had at first: <code>include: /www\/app\//,</code>, line 7 and 13 in the pasted snipped above.</p>
+
+<p>Sure this will work in a Unix based runtime. If you&rsquo;re running on a Windows machine, these paths may be a problem. As it doesn&rsquo;t understand the <code>/</code>. This tip came from Edward McLeod-Jones, who pointed out <a href="https://github.com/RisingStack/react-way-getting-started/issues/8#issue-94592829">this issue</a>.</p>
+
+<p>You might want to try to make RegEx fun, by doing this:</p>
+
+<p><code>js
+include: /www(\/|\\)app(\/|\\)/,  // &lt;--- Change the regex to support either type of folder separator`
+</code></p>
+
+<p>However, since we&rsquo;re doing Node.js, it provides APIs to help us out with cross-platform changes like this with the <code>path</code> module.</p>
+
+<p>Do this instead:</p>
+
+<p>```js
+var path = require(&lsquo;path&rsquo;);
+var wwwPath = path.resolve(__dirname, &lsquo;www&rsquo;);
+var outputPath = path.join(wwwPath, &lsquo;build&rsquo;, &lsquo;js&rsquo;);
+var appPath = path.join(wwwPath, &lsquo;app&rsquo;);
+var appJsPath = path.join(appPath, &lsquo;app.js&rsquo;);</p>
+
+<p>/<em> snip </em>/
+  module: {</p>
+
+<pre><code>loaders: [
+  {
+    test: /\.js$/,
+    loader: "awesome-typescript-loader?doTypeCheck=false&amp;useBabel=true&amp;useWebpackText=true",
+    include: [wwwPath],
+    // include: /www(\/|\\)app(\/|\\)/,
+    exclude: /node_modules/
+  },
+  {
+    test: /\.ts$/,
+    loader: "awesome-typescript-loader",
+    // include: /www(\/|\\)app(\/|\\)/,
+    include: [wwwPath],
+    exclude: /node_modules/
+   }
+]
+</code></pre>
+
+<p>  },
+/<em> snip </em>/
+```</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Releasing Electron for Windows]]></title>
+    <link href="http://jbavari.github.io/blog/2015/09/09/releasing-electron-for-windows/"/>
+    <updated>2015-09-09T18:50:00-06:00</updated>
+    <id>http://jbavari.github.io/blog/2015/09/09/releasing-electron-for-windows</id>
+    <content type="html"><![CDATA[<p>Releasing Electron applications on Windows can be a tricky issue. Especially if you mainly use a Mac (like me). And you have to think about that pesky <a href="https://msdn.microsoft.com/en-us/library/ms537361%28v=vs.85%29.aspx">code signing</a> thing you have to do to avoid the annoying &lsquo;SmartScreen&rsquo; filter users may get.</p>
+
+<p>Thankfully, there&rsquo;s a great tool called Squirrel made by <a href="https://twitter.com/paulcbetts">Paul Betts</a> that does a ton of the heavy lifting for you. Codesigning and all.</p>
+
+<p>I really got a ton of knowledge from the blog post, <a href="http://www.mylifeforthecode.com/creating-a-windows-distribution-of-an-electron-app-using-squirrel/">Creating a Windows Distribution of an Electron App using Squirrel</a> and <a href="http://www.mylifeforthecode.com/using-electron-packager-to-package-an-electron-app/">Using Electron Packager to Package an Electron App</a>.</p>
+
+<p>I wanted to curate a ton of knowledge in one place, so here we go.</p>
+
+<p>I use a few tools to get this done on my Mac:</p>
+
+<ul>
+<li><a href="https://github.com/maxogden/electron-packager">Electron Packager</a></li>
+<li><a href="https://www.winehq.org/">Wine</a></li>
+<li><a href="http://wiki.winehq.org/winetricks">Winetricks</a></li>
+<li><a href="http://www.nuget.org/nuget.exe">nuget cli</a></li>
+<li><a href="https://github.com/Squirrel/Squirrel.Windows/releases">Squirrel.Windows</a></li>
+</ul>
+
+
+<p>First, let&rsquo;s look at the project layout:</p>
+
+<h2>Project Layout</h2>
+
+<p>``` sh
+/build # Installers go here
+  /osx
+  /resources # Icons, iconset, images, etc
+  /win # Binaries to build, Package.nuspec file to specify configurations
+  packager.json # File used by electron-builder to build OSX DMG file.
+/dist # Distributions go here (.app, .exe, .dmg)
+  /osx
+  /win
+/docs # Docs about project.
+/node_modules # Modules used for building/packaging/testing
+/scss # Sass for CSS compilation in www
+/spec # Tests
+  AppCtrl.spec.js
+www # Source code for the application
+  /css
+  /data
+  /img
+  /js
+  /lib
+  /node_modules # Modules here used by the application itself.
+  /templates</p>
+
+<p>karma.conf.js # Configuration for tests.
+livereload.js # Dev script to set up live reload in Electron
+package.json # Main package.json with scripts/dependencies to package/build.
+```</p>
+
+<h2>Process</h2>
+
+<p>First we&rsquo;ll need to make the exe and associated files to a <code>dist</code> folder. From there, we take the win <code>dist</code> files and pack them into the <code>Setup.exe</code> file, where Squirrel will do the heavy lifting to pack all this into a one step process.</p>
+
+<h2>npm Scripts</h2>
+
+<p>We&rsquo;ll use the npm script <code>pack:win</code> task to put all our <code>www</code> files into a nice package (resources, exe, etc) and output to the <code>dist</code> folder.</p>
+
+<p><code>pack:win</code> step will just execute <code>electron-packager</code> with some relevant information. Please note the <code>asar=true</code>, this is recommended because sometimes <code>node_modules</code> can get nested a few times and the file paths will be too long for certain Windows platforms.</p>
+
+<p>Script:</p>
+
+<p>```js
+{
+  &ldquo;scripts&rdquo;: {</p>
+
+<pre><code>"pack:win": "electron-packager ./www \"Project\" --out=dist/win --platform=win32 --arch=ia32 --version=0.29.1 --icon=build/resources/icon.ico --version-string.CompanyName=\"My Company\" --version-string.ProductName=\"Project\" --version-string.FileDescription=\"Project\" --asar=true"
+</code></pre>
+
+<p>  }
+```</p>
+
+<h2>Electron Build script</h2>
+
+<p>I used a simple build script in node to assist in some of the heavy lifting. I recommend getting an Extended Validation certificate from <a href="http://blogs.msdn.com/b/ie/archive/2012/08/14/microsoft-smartscreen-amp-extended-validation-ev-code-signing-certificates.aspx">this blog post</a>.</p>
+
+<p>This will take the windows package in <code>dist/win</code> and create <code>dist/win/Setup.exe</code>.</p>
+
+<p>```js</p>
+
+<h1>!/usr/bin/env node</h1>
+
+<p>// File is in root/build/win/build.js
+// First call nuget pack Package.nuspec
+// Then you&rsquo;ll have Project.<version>.nupkg
+// Run Squirrel.exe &mdash;releaseify Project.<version>.nupkg &mdash;icon iconPath &mdash;loadingGif loadingGifPath
+// resources in build/resources/</p>
+
+<p>//Need to get around weird command line passes with windows paths
+function addWindowsPathFix(path) {
+  return [&lsquo;&ldquo;&rsquo;, path, &lsquo;&rdquo;&rsquo;].join(&lsquo;&rsquo;);
+}</p>
+
+<p>var childProcess = require(&lsquo;child_process&rsquo;),
+  path = require(&lsquo;path&rsquo;),
+  packageJsonPath = path.join(<strong>dirname, &lsquo;..&rsquo;, &lsquo;..&rsquo;, &lsquo;package.json&rsquo;),
+  packageJson = require(packageJsonPath),
+  loadingGifPath = path.join(</strong>dirname, &lsquo;..&rsquo;, &lsquo;resources&rsquo;, &lsquo;windows-loader.png&rsquo;),
+  nugetPackageSpecPath = path.join(<strong>dirname, &lsquo;Package.nuspec&rsquo;),
+  nugetPackageOutputPath = path.join(</strong>dirname),
+  nugetPackageName = [&lsquo;Project&rsquo;, &lsquo;.1.0.0&rsquo;, &lsquo;.nupkg&rsquo;].join(&lsquo;&rsquo;),
+  // nugetPackageName = [&lsquo;Project&rsquo;, packageJson.version, &lsquo;.nupkg&rsquo;].join(&lsquo;&rsquo;),
+  nugetPackagePath = path.join(nugetPackageOutputPath, nugetPackageName),
+  nugetExePath = path.join(<strong>dirname, &lsquo;nuget.exe&rsquo;),
+  setupIconPath = path.join(</strong>dirname, &lsquo;..&rsquo;, &lsquo;resources&rsquo;, &lsquo;icon.ico&rsquo;),
+  setupReleasePath = path.join(<strong>dirname, &lsquo;..&rsquo;, &lsquo;..&rsquo;, &lsquo;dist&rsquo;, &lsquo;win&rsquo;),
+  signatureCertificatePath = path.join(</strong>dirname, &lsquo;Certificate.pfx&rsquo;),
+  signParams = [&lsquo;&ldquo;/a /f &rdquo;&rsquo;, addWindowsPathFix(signatureCertificatePath), &lsquo;&ldquo; /p &rsquo;, process.env.PRIVATE_CERT_PASSWORD, &lsquo;&rdquo;&rsquo;].join(&lsquo;&rsquo;),
+  squirrelExePath = path.join(__dirname, &lsquo;Squirrel.exe&rsquo;);</p>
+
+<p>  console.log(&lsquo;sign params&rsquo;, signParams);</p>
+
+<p>var createNugetPackageCommand = [addWindowsPathFix(nugetExePath), &lsquo;pack&rsquo;, addWindowsPathFix(nugetPackageSpecPath), &lsquo;-OutputDirectory&rsquo;, addWindowsPathFix(nugetPackageOutputPath)].join(&lsquo; &rsquo;);
+var createSetupCommand = [</p>
+
+<pre><code>          addWindowsPathFix(squirrelExePath), 
+          '--releasify', addWindowsPathFix(nugetPackagePath), 
+          '--loadingGif', addWindowsPathFix(loadingGifPath), 
+          '--icon', addWindowsPathFix(setupIconPath), 
+          '--releaseDir', addWindowsPathFix(setupReleasePath), 
+          '--signWithParams', signParams
+        ].join(' ');
+</code></pre>
+
+<p>console.log(&lsquo;Creating nuget package from nuget spec file:&rsquo;, nugetPackageSpecPath);
+// console.log(createNugetPackageCommand);
+childProcess.execSync(createNugetPackageCommand);
+console.log(&lsquo;Created nuget package&rsquo;);</p>
+
+<p>console.log(&lsquo;Building Setup.exe&rsquo;);
+// console.log(createSetupCommand);
+childProcess.execSync(createSetupCommand);
+console.log(&lsquo;Built Setup.exe&rsquo;);
+```</p>
+
+<p>Hope this helps!</p>
+]]></content>
+  </entry>
+  
+</feed>

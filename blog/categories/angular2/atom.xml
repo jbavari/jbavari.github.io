@@ -1,0 +1,808 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: angular2 | Josh Bavari's Ramblings]]></title>
+  <link href="http://jbavari.github.io/blog/categories/angular2/atom.xml" rel="self"/>
+  <link href="http://jbavari.github.io/"/>
+  <updated>2019-01-27T19:16:40-07:00</updated>
+  <id>http://jbavari.github.io/</id>
+  <author>
+    <name><![CDATA[Josh Bavari]]></name>
+    <email><![CDATA[jbavari@gmail.com]]></email>
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Scoreboard forms in React and Angular 2]]></title>
+    <link href="http://jbavari.github.io/blog/2015/12/15/scoreboard-forms-in-react-and-angular-2/"/>
+    <updated>2015-12-15T23:01:00-07:00</updated>
+    <id>http://jbavari.github.io/blog/2015/12/15/scoreboard-forms-in-react-and-angular-2</id>
+    <content type="html"><![CDATA[<p>As a developer, you should be focused on spending some of your own time learning and staying up to date with technology that is always moving.</p>
+
+<p>I wanted to find a reason to hop into some of the &lsquo;newer&rsquo; front-end frameworks, React and Angular 2, as well as some of the module bundlers <a href="http://browserify.org/">browserify</a> and <a href="https://webpack.github.io/">webpack</a>.</p>
+
+<p>I had the opportunity to try out Angular 2 while it was still in alpha. With the recent announcement of Angular 2 going out in Beta, I wanted to build a Scoreboard form that went along with my Scoreboard project to evaluate the two frameworks.</p>
+
+<p>This post will aim to build a simple scoreboard form in both frameworks, so you can see the same DOM interactions and the code it takes to form them.</p>
+
+<p>Please also note, I&rsquo;m still very much learning, and some code may not be &lsquo;ideal&rsquo;.</p>
+
+<p>We&rsquo;ll cover:</p>
+
+<ul>
+<li>The scoreboard form idea</li>
+<li>Learning the ideas behind the frameworks</li>
+<li>The bundling systems</li>
+<li>Angular 2 implementation (TypeScript)</li>
+<li>React implementation (ES6)</li>
+<li>The differences between the two</li>
+<li>Pros and Cons of each (in my eyes)</li>
+</ul>
+
+
+<p>All of the source code is available on my Github profile in the <a href="https://github.com/jbavari/scoreboard-form">scoreboard-form</a> repository.</p>
+
+<h1>The Scoreboard Form</h1>
+
+<p>A scoreboard is simple &ndash; you&rsquo;ll enter the two team names, then specify a touchdown or field goal for either team.</p>
+
+<p>That means we will need a few components: a scoreboard and a team.</p>
+
+<p>The idea will be to build these components in React and Angular2, having them use similar templates to render to the equivalent DOM structures.</p>
+
+<h2>Learning the ideas behind the frameworks</h2>
+
+<p>Both frameworks aim to contain all of the functionality and display into a component.</p>
+
+<p>The idea will be to build a team component, that displays teams, and a scoreboard component, that will display both of those teams and have a submit method to post that data to our scoreboard API server.</p>
+
+<p>The main difference we will see between the two frameworks is adapting to <a href="http://es6-features.org/">ES6</a> or <a href="http://www.typescriptlang.org/">TypeScript</a>.</p>
+
+<p>In either framework, we will create a class for the component in ES6/TypeScript, and then connect the template to it, and finally attach it in the DOM.</p>
+
+<h1>The bundling systems</h1>
+
+<p>We will use Browserify to pack up React into a single module, while using webpack to bundle up Angular 2 into a single bundle.</p>
+
+<p>What is bundling you say? It&rsquo;s taking all the source for our components and bundling them up with the framework code to have one JavaScript file to load the entire bundle. That way, we only need one JavaScript file instead of a whole load of <code>&lt;script&gt;</code> tags.</p>
+
+<h1>Angular 2 implementation</h1>
+
+<p>Angular 2 is built in TypeScript, which is a superset of JavaScript that allows types to have a &lsquo;stronger type&rsquo; to work with. We will build our component in TypeScript, and transpile it down to ES5 JavaScript.</p>
+
+<h2>Building the Team component</h2>
+
+<p>In Angular 2, we need to use a decorator (<a href="https://www.sitepen.com/blog/2015/10/20/typescript-decorators/">see this blog post about TypeScript decorators</a>) to specify a Team as a component that will render.</p>
+
+<p>We will import the Decorator, <code>Component</code>, and then apply it to our class. The <code>Component</code> decorator specifies which DOM element it will attach to (in this case, <code>team</code>), any inputs our control may have, what template it will use (specified as the <code>template</code> key), and what other directives will be used to parse our template.</p>
+
+<p>Then, we have our class that defines the component itself with a name and score, methods to increase score (<code>touchdown</code> and <code>fieldGoal</code>), a <code>toJson</code> method, and finally callbacks to update itself from the parent component.</p>
+
+<p>The team component:</p>
+
+<p>```
+import {Component, EventEmitter, Output} from &lsquo;angular2/core&rsquo;;
+import {NgFor, NgIf, NgModel} from &lsquo;angular2/common&rsquo;;</p>
+
+<p>@Component({
+  directives: [NgFor, NgIf, NgModel],
+  selector: &lsquo;team&rsquo;,
+  template: `</p>
+
+<pre><code>&lt;div *ngIf="name == ''"&gt;
+  &lt;h3&gt;No team set&lt;/h3&gt;
+  &lt;input type="text" [(ngModel)]="nameInput" placeholder="Enter a name"/&gt;
+  &lt;button type="submit" (click)="setName()"&gt;Set name&lt;/button&gt;
+&lt;/div&gt;
+&lt;div *ngIf="name != ''"&gt;
+  &lt;h3&gt;&lt;/h3&gt;
+  &lt;button (click)="touchdown($event)"&gt;Touchdown&lt;/button&gt;
+  &lt;button (click)="fieldGoal($event)"&gt;Field Goal&lt;/button&gt;
+  &lt;h4&gt;Score: &lt;/h4&gt;
+&lt;/div&gt;
+`
+}
+</code></pre>
+
+<p>})
+export class Team {
+  @Output() updateTeam = new EventEmitter<Team>();
+  constructor() {</p>
+
+<pre><code>this.nameInput = '';
+this.name = '';
+this.score = 0;
+</code></pre>
+
+<p>  }</p>
+
+<p>  fieldGoal(e) {</p>
+
+<pre><code>e.preventDefault();
+this.score += 3;
+</code></pre>
+
+<p>  }</p>
+
+<p>  touchdown(e) {</p>
+
+<pre><code>e.preventDefault();
+this.score += 7;
+</code></pre>
+
+<p>  }</p>
+
+<p>  setName(nameInput) {</p>
+
+<pre><code>this.name = this.nameInput;
+this.nameInput = '';
+if(this.updateTeam) {
+  this.updateTeam.next(this);
+}
+</code></pre>
+
+<p>  }</p>
+
+<p>  toJson() {</p>
+
+<pre><code>return { name: this.name, score: this.score };
+</code></pre>
+
+<p>  }
+}</p>
+
+<p>```</p>
+
+<h2>Defining the scoreboard component</h2>
+
+<p>Now we need to displays these teams in a side by side manner, a callback to update information from the team component, and a method to submit the scores to the API.</p>
+
+<p>We&rsquo;ll define the component as follows:</p>
+
+<p>```
+import {Component} from &lsquo;angular2/core&rsquo;;
+import {Team} from &lsquo;../team/team&rsquo;;</p>
+
+<p>@Component({
+  directives: [Team],
+  selector: &lsquo;scoreboard&rsquo;,
+  template: `</p>
+
+<pre><code>&lt;form (ngSubmit)="submitScore()"&gt;
+  &lt;div class="row"&gt;
+    &lt;div class="col-md-6"&gt;
+      &lt;h2&gt;Home Team&lt;/h2&gt;
+      &lt;team (updateTeam)="updateHomeTeam($event)" home="true"&gt;&lt;/team&gt;
+    &lt;/div&gt;
+    &lt;div class="col-md-6"&gt;
+      &lt;h2&gt;Visitor Team&lt;/h2&gt;
+      &lt;team (updateTeam)="updateVisitorTeam($event)"&gt;&lt;/team&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+  &lt;div class="row"&gt;
+    &lt;button type="submit"&gt;Submit&lt;/button&gt;
+  &lt;/div&gt;
+  &lt;div *ngIf="submitted"&gt;
+    JSON payload: 
+  &lt;/div&gt;
+&lt;/form&gt;  
+</code></pre>
+
+<p>  `
+})
+export class Scoreboard {
+  homeTeam: Team = new Team();
+  visitorTeam: Team = new Team();
+  submitted: boolean = false;
+  jsonPayload: string = null;</p>
+
+<p>  constuctor() {
+  }</p>
+
+<p>  submitScore() {</p>
+
+<pre><code>this.submitted = true;
+this.jsonPayload = JSON.stringify({ homeTeam: this.homeTeam.toJson(), visitorTeam: this.visitorTeam.toJson()});
+</code></pre>
+
+<p>  }</p>
+
+<p>  updateHomeTeam(team: Team) {</p>
+
+<pre><code>this.homeTeam = team;
+</code></pre>
+
+<p>  }</p>
+
+<p>  updateVisitorTeam(team: Team) {</p>
+
+<pre><code>this.visitorTeam = team;
+</code></pre>
+
+<p>  }
+}</p>
+
+<p>```</p>
+
+<h2>Pros and Cons</h2>
+
+<h3>Pros</h3>
+
+<h3>Cons</h3>
+
+<ul>
+<li>Angular 2 &ndash; docs are all over the place.</li>
+<li>Main blogs that are linked from docs site are using old kabob style (e.g. <code>*ng-if</code> instead of <code>*ngIf</code>).</li>
+<li>Webpack configuration &ndash; I didn&rsquo;t include zone.js in my entries, and I could not get any DOM updates coming from my components changing.</li>
+<li>When to use two-way bindings, and one-way bindings was good enough.</li>
+<li>No &lsquo;why&rsquo; to what im doing &ndash; it aims to just follow the same &lsquo;idea&rsquo; as Angular.js.</li>
+<li>Plunkers aren&rsquo;t up to date.</li>
+</ul>
+
+
+<h1>React implementation (ES6)</h1>
+
+<p>Now that we have the basic idea of the team and scoreboard, you&rsquo;ll see React is very similiar. Instead of having a decorator specify the template and DOM elements to attach to, we&rsquo;ll specify a class that extends <code>React.Component</code>, a method that will render the markup, and finally, some bootstrap code to attach our class to a DOM element.</p>
+
+<h2>Defining the team component</h2>
+
+<p>```
+import React from &lsquo;react&rsquo;;</p>
+
+<p>export default class Team extends React.Component {
+  constructor(props) {</p>
+
+<pre><code>super(props);
+this.props = props;
+this.name = props.name;
+this.score = props.score || 0;
+this.setName = this.setName.bind(this);
+// this.state = {name: this.name, score: this.score};
+this.touchdown = this.touchdown.bind(this);
+this.fieldGoal = this.fieldGoal.bind(this);
+</code></pre>
+
+<p>  }</p>
+
+<p>  fieldGoal(e) {</p>
+
+<pre><code>e.preventDefault();
+this.score += 3;
+this.setState(this);
+</code></pre>
+
+<p>  }</p>
+
+<p>  touchdown(e) {</p>
+
+<pre><code>e.preventDefault();
+this.score += 7;
+this.setState(this);
+</code></pre>
+
+<p>  }</p>
+
+<p>  setName(e) {</p>
+
+<pre><code>e.preventDefault();
+this.name = this.refs.teamName.value;
+this.setState(this);
+this.props.update(this);
+</code></pre>
+
+<p>  }</p>
+
+<p>  toJson() {</p>
+
+<pre><code>return { name: this.name, score: this.score };
+</code></pre>
+
+<p>  }</p>
+
+<p>  render() {</p>
+
+<pre><code>if (!this.name) {
+  return (
+    &lt;div&gt;
+      &lt;h3&gt;No team set&lt;/h3&gt;
+      &lt;input type="text" ref="teamName" placeholder="Enter a name.." value={this.props.name}/&gt;
+      &lt;button onClick={this.setName}&gt;Set Name&lt;/button&gt;
+    &lt;/div&gt;
+  );
+} else {
+  return (
+    &lt;div&gt;
+      &lt;h3&gt;{this.name}&lt;/h3&gt;
+      &lt;button onClick={this.touchdown}&gt;Touch Down&lt;/button&gt;
+      &lt;button onClick={this.fieldGoal}&gt;Field Goal&lt;/button&gt;
+      &lt;h4&gt;Score: {this.score}&lt;/h4&gt;
+    &lt;/div&gt;
+  );
+}
+</code></pre>
+
+<p>  }
+}
+```</p>
+
+<h2>Defining the Scoreboard component</h2>
+
+<p>```
+import Team from &lsquo;./team.jsx&rsquo;;
+import React from &lsquo;react&rsquo;;</p>
+
+<p>export default class Scoreboard extends React.Component {
+  constructor(props) {</p>
+
+<pre><code>super(props);
+this.homeTeam = {};
+this.visitorTeam = {};
+this.url = this.props.url;
+this.submit = this.submit.bind(this);
+this.updateTeam = this.updateTeam.bind(this);
+this.submitted = false;
+this.jsonPayload = null;
+</code></pre>
+
+<p>  }</p>
+
+<p>  submit(event) {</p>
+
+<pre><code>event.preventDefault();
+this.submitted = true;
+this.setState(this);
+this.jsonPayload = JSON.stringify({ homeTeam: this.homeTeam.toJson(), visitorTeam: this.visitorTeam.toJson()});
+</code></pre>
+
+<p>  }</p>
+
+<p>  updateTeam(team) {</p>
+
+<pre><code>if (team.props.home) {
+  this.homeTeam = team;
+} else {
+  this.visitorTeam = team;
+}
+</code></pre>
+
+<p>  }</p>
+
+<p>  render() {</p>
+
+<pre><code>var jsonInformation = this.submitted ? (&lt;div&gt;JSON payload: {this.jsonPayload}&lt;/div&gt;) : null;
+return (
+  &lt;form onSubmit={this.submit}&gt;
+    &lt;div className="row"&gt;
+      &lt;div className="col-md-6"&gt;
+        &lt;h2&gt;Home Team&lt;/h2&gt;
+        &lt;Team home="true" update={this.updateTeam}&gt;&lt;/Team&gt;
+      &lt;/div&gt;
+      &lt;div className="col-md-6"&gt;
+        &lt;h2&gt;Visitor Team&lt;/h2&gt;
+        &lt;Team update={this.updateTeam}&gt;&lt;/Team&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+    &lt;div className="row"&gt;
+      &lt;button type="submit"&gt;Submit&lt;/button&gt;
+    &lt;/div&gt;
+    {jsonInformation}
+  &lt;/form&gt;
+)
+</code></pre>
+
+<p>  }
+}
+```</p>
+
+<p>Now you&rsquo;ll see, theres no way we tell React to attach to a DOM node to attach our components to the browser DOM.</p>
+
+<p>This happens by the bootstrapping code:</p>
+
+<p>```
+import React from &lsquo;react&rsquo;;
+import ReactDOM from &lsquo;react-dom&rsquo;;
+import Scoreboard from &lsquo;../component/scoreboard.jsx&rsquo;;</p>
+
+<p>window.app = (function() {
+  return ReactDOM.render(<Scoreboard/>, document.getElementById(&lsquo;react-scoreboard&rsquo;));
+})();
+```</p>
+
+<p>Now, React knows to use our <code>Scoreboard</code> component (the one that was imported) to attach it to the <code>react-scoreboard</code> DOM element with an id of <code>react-scoreboard</code>. Internally for the Scoreboard, it specifies it&rsquo;s render method:</p>
+
+<p>```
+import Team from &lsquo;./team.jsx&rsquo;;
+// .. snipped code ..
+render() {
+  var jsonInformation = this.submitted ? (<div>JSON payload: {this.jsonPayload}</div>) : null;
+  return (</p>
+
+<pre><code>&lt;form onSubmit={this.submit}&gt;
+  &lt;div className="row"&gt;
+    &lt;div className="col-md-6"&gt;
+      &lt;h2&gt;Home Team&lt;/h2&gt;
+      &lt;Team home="true" update={this.updateTeam}&gt;&lt;/Team&gt;
+    &lt;/div&gt;
+    &lt;div className="col-md-6"&gt;
+      &lt;h2&gt;Visitor Team&lt;/h2&gt;
+      &lt;Team update={this.updateTeam}&gt;&lt;/Team&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+  &lt;div className="row"&gt;
+    &lt;button type="submit"&gt;Submit&lt;/button&gt;
+  &lt;/div&gt;
+  {jsonInformation}
+&lt;/form&gt;
+</code></pre>
+
+<p>  )
+}
+```</p>
+
+<h2>Pros and Cons</h2>
+
+<h3>Pros</h3>
+
+<p><a href="https://chrome.google.com/webstore/detail/react-developer-tools/fmkadmapgofadopljbjfkapdkoienihi?hl=en">React Dev tools</a> &ndash; inspect react components, super handy.
+Dev docs talk about how to think in react &ndash; giving the why before the what, really helped understand the concepts.</p>
+
+<h3>Cons</h3>
+
+<p>Dev tooling is not straight forward &ndash; you have to decide yourself.
+Figuring how to plug in rendering steps between state changes. <code>this.setState({})</code> with some state information.</p>
+
+<h1>Differences between the two</h1>
+
+<p>The main difference I can see if how Angular 2 specifies its <code>selector</code> to find out how it attaches to a DOM element you specify.</p>
+
+<p>React just follows using JSX to specify the component, which you can pass in properties.</p>
+
+<p>Angular 2 takes the approach of keeping state and doing stateful checks from its Virtual DOM diff'ing. However, the templating directives you can use, like <code>*ngIf</code> requires handling a template of some sort, where as React, you can just use JavaScript conditionals to render your DOM.</p>
+
+<h1>Conclusions</h1>
+
+<p>I really like the approach React takes. I also feel like it is a year early to the Virtual DOM party, and Angular 2 is really trying to keep up.</p>
+
+<p>As far as intuition and ease of development goes, React was definitely easier. Even with my previous Angular 2 knowledge, it still took me longer to get up and going.</p>
+
+<p>To give Angular 2 a fair shot, it is still in Beta. However, if I were to start a project today, it would be in React, due to the huge community that is building, the tooling available, and being backed by Facebook, one of the utmost leaders in User inface design and performance.</p>
+
+<p>I hope this short write up helps! If you have any questions, please drop a comment and we&rsquo;ll clear things up!</p>
+
+<p>As a reminder, <a href="https://github.com/jbavari/scoreboard-form">here is all of the code</a> is available on Github, feel free to open an issue.</p>
+
+<p>Cheers!</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Angular 2 and ng-model]]></title>
+    <link href="http://jbavari.github.io/blog/2015/10/21/angular-2-and-ng-model/"/>
+    <updated>2015-10-21T23:00:00-06:00</updated>
+    <id>http://jbavari.github.io/blog/2015/10/21/angular-2-and-ng-model</id>
+    <content type="html"><![CDATA[<p>Angular 2 introduces <code>ng-model</code> from Angular 1 in a completely different manner. Due to this, I wanted to make a quick post on how to use Angular 2&rsquo;s <code>ng-model</code> to build components that alert its parents app/component of changes.</p>
+
+<p>I&rsquo;m going to use the <a href="https://github.com/driftyco/ionic-conference-app">Ionic 2 conference app</a> as an example.</p>
+
+<p>In this post, we&rsquo;ll look at the schedule page in the app and see how it uses the <code>ion-search-bar</code> to update its <code>searchQuery</code> to filter out sessions from the schedule when the user changes the search input.</p>
+
+<h2>The set up</h2>
+
+<p>On the <a href="https://github.com/driftyco/ionic-conference-app/blob/master/www/app/schedule/schedule.js#L24">schedule component</a>, we set up the search query as a simple string, as such: <code>this.searchQuery = '';</code>.</p>
+
+<p>Then in our <a href="https://github.com/driftyco/ionic-conference-app/blob/master/www/app/schedule/schedule.html#L21">schedule page template</a>, we tell the <code>ion-search-bar</code> to use the <code>ng-model</code> directive and tell it to two-way bind using the schedule component&rsquo;s <code>searchQuery</code> variable.</p>
+
+<p>The template is like this:</p>
+
+<p><code>html
+&lt;ion-search-bar [(ng-model)]="searchQuery" placeholder="Search"&gt;&lt;/ion-search-bar&gt;
+</code></p>
+
+<p>Now, in the search bar, we need to take that <code>searchQuery</code> as an ngModel, and ensure the search-bar has a <a href="https://github.com/angular/angular/blob/master/modules/angular2/src/core/forms/directives/ng_control.ts#L14">value accessor</a> implemented, so that we may tell the schedule component of when things change to update its shadow DOM if need be.</p>
+
+<p>The <a href="https://github.com/driftyco/ionic2/blob/master/ionic/components/search-bar/search-bar.ts#L46-L62">ion-search-bar</a> will take an <code>ngControl</code> as part of it&rsquo;s injection, and sets up the <a href="https://github.com/driftyco/ionic2/blob/master/ionic/components/search-bar/search-bar.ts#L61">value accessor</a> to itself, like so:</p>
+
+<p>```js
+constructor(
+  elementRef: ElementRef,
+  config: Config,
+  ngControl: NgControl,
+  renderer: Renderer
+) {
+  super(elementRef, config);
+  this.renderer = renderer;
+  this.elementRef = elementRef;
+  if(!ngControl) {</p>
+
+<pre><code>// They don't want to do anything that works, so we won't do anything that breaks
+return;
+</code></pre>
+
+<p>  }</p>
+
+<p>  this.ngControl = ngControl;
+  this.ngControl.valueAccessor = this;
+}
+```</p>
+
+<p>NOTE: <code>ngModel</code> extends the <code>ngControl</code> class in angular (<a href="https://github.com/angular/angular/blob/master/modules/angular2/src/core/forms/directives/ng_model.ts#L44">source code</a>). The <a href="https://github.com/angular/angular/blob/master/modules/angular2/src/core/forms/directives/ng_control.ts#L14"><code>valueAccessor</code></a> is a <a href="https://github.com/angular/angular/blob/master/modules/angular2/src/core/forms/directives/control_value_accessor.ts">ControlValueAccessor</a> is an interface that provides certain methods, like so:</p>
+
+<p><code>js
+export interface ControlValueAccessor {
+  writeValue(obj: any): void;
+  registerOnChange(fn: any): void;
+  registerOnTouched(fn: any): void;
+}
+</code></p>
+
+<p>The <code>ControlValueAccessor</code> gives us a method to write the new value, a method to register to listen to the changes, and the register on touched function to allow components to use.</p>
+
+<p>Those are implemented in the search-bar, as seen <a href="https://github.com/driftyco/ionic2/blob/master/ionic/components/search-bar/search-bar.ts#L82-L92">here</a>.</p>
+
+<p>You can see that the <code>writeValue</code> method on <code>search-bar</code> updates it&rsquo;s local <code>value</code>, so that it&rsquo;s internal <code>&lt;input&gt;</code> element can update its value it shows. When that internal input is changed, it calls the <a href="https://github.com/driftyco/ionic2/blob/master/ionic/components/search-bar/search-bar.ts#L94-L98">inputChanged</a> event on the <code>search-bar</code>, which alerts other components that it has changed, as well as updating its current value.</p>
+
+<p>```js
+  inputChanged(event) {</p>
+
+<pre><code>this.writeValue(event.target.value);
+this.onChange(event.target.value);
+</code></pre>
+
+<p>  }
+```</p>
+
+<h3>Filtering out sessions</h3>
+
+<p>Since the <code>onChange</code> event is called, the <code>schedule</code> component will see this and cause re-evaluation on its <code>searchQuery</code> variable, and filters the code.</p>
+
+<p>That makes our filtering method super easy, <a href="https://github.com/driftyco/ionic-conference-app/blob/master/www/app/schedule/schedule.js#L54">as seen here</a>, copied below for convenience:</p>
+
+<p>`&ldquo;js
+getSessionsForTheDay() {
+  if (!this.searchQuery || this.searchQuery.trim() == &rdquo;) {</p>
+
+<pre><code>return this.sessionsForTheDay;
+</code></pre>
+
+<p>  }
+  var talks = [];
+  this.sessionsForTheDay.forEach((session) => {</p>
+
+<pre><code>var matched = session.talks.filter((v) =&gt; {
+  if(v.name.toLowerCase().indexOf(this.searchQuery.toLowerCase()) &gt;= 0) {
+    return true;
+  }
+  return false;
+});
+if (matched.length &gt; 0) {
+  session.talks = matched;
+  talks.push(session);
+}
+</code></pre>
+
+<p>  });
+  return talks;
+}
+```</p>
+
+<p>When the schedule component&rsquo;s variable for <code>searchQuery</code> is updated, this method will be auto-magically re-evaluated, which causes the list to update.</p>
+
+<p>Hope this helps you understand Angular 2 and ng-models better! Enjoy!</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Angular 2 Injectables]]></title>
+    <link href="http://jbavari.github.io/blog/2015/10/19/angular-2-injectables/"/>
+    <updated>2015-10-19T16:34:00-06:00</updated>
+    <id>http://jbavari.github.io/blog/2015/10/19/angular-2-injectables</id>
+    <content type="html"><![CDATA[<p>I&rsquo;ve been fortunate enough to be working on Angular 2 while being on the Ionic team.</p>
+
+<p>I really enjoyed Pascal Precht&rsquo;s post about <a href="http://blog.thoughtram.io/angular/2015/05/18/dependency-injection-in-angular-2.html">Dependency injection in Angular 2</a>. One thing that I want to shed some more light on is how dependency injection works in an Angular 2 application using the <code>@Injectable</code> metadata thats passed for a class that&rsquo;s to be injected.</p>
+
+<p>Quick tip: take a quick look at the <a href="https://angular.io/docs/ts/latest/guide/cheatsheet.html">Angular 2 cheat sheet</a> to see some more of these Angular 2 syntax and API.</p>
+
+<h2>The basics of Depdendency injection</h2>
+
+<p>The gist of it we need:</p>
+
+<p>1) A class with <code>@Injectable</code> to tell angular 2 that its to be injected &ndash; DataService<br/>
+2) A class with a constructor that accepts a type to be injected</p>
+
+<p>A solid example, DataService marked as <code>@Injectable</code> that also needs <code>Http</code> to be injected for its use:</p>
+
+<p>```js
+import {Injectable, bind} from &lsquo;angular2/core&rsquo;;
+import {Http} from &lsquo;angular2/http&rsquo;;</p>
+
+<p>@Injectable() /<em> This is #1 </em>/
+export class DataService {
+  constructor(<a href="http:">http:</a> Http /<em> This is #2 </em>/ ) {</p>
+
+<pre><code>this.http = http;
+</code></pre>
+
+<p>  }
+}
+```</p>
+
+<p>What we have in the example above is a class, DataService, that needs Http to do what it needs to be done.</p>
+
+<h2>An example scenario</h2>
+
+<p>Let&rsquo;s say we have the following scenario, an angular 2 application with an app, a page for sessions, session details, speakers, and a data service that provides the data for those pages.</p>
+
+<p>We&rsquo;d want the app instance to instantiate the data service, then have a component <code>schedule</code> that can use the data service as provided by the app instance. From there, we&rsquo;d have the session detail that also gets the schedule data from the data service.</p>
+
+<p>The hierarchy would look like this:</p>
+
+<p>```bash</p>
+
+<pre><code>          App 
+           |  
+  |.............|...............|
+  |             |               |
+</code></pre>
+
+<p>   Schedule      Speakers     Session-detail</p>
+
+<pre><code>  |
+  |
+</code></pre>
+
+<p>  Schedule-list
+```</p>
+
+<p>All of these components will need the instance of data service.</p>
+
+<p>We&rsquo;ll need:</p>
+
+<ul>
+<li>A data serviced marked with <code>@Injectable</code>.</li>
+<li>A schedule page</li>
+<li>A schedule-list component</li>
+<li>A speakers page</li>
+</ul>
+
+
+<p>Say you have the following:</p>
+
+<p>In <code>www/app/service/data.js</code>:</p>
+
+<p>```js
+import {Injectable} from &lsquo;angular2/core&rsquo;;
+import {Http} from &lsquo;angular2/http&rsquo;;</p>
+
+<p>@Injectable()
+export class DataService {
+  constructor(<a href="http:">http:</a> Http) {</p>
+
+<pre><code>this.http = http;
+this.data = null;
+console.log('DataService constructor');
+</code></pre>
+
+<p>  }</p>
+
+<p>  retrieveData() {</p>
+
+<pre><code>this.http.get('api/data/data.json')
+.map(res =&gt; res.json())
+.subscribe(data =&gt; {
+  this.data = data;
+});
+</code></pre>
+
+<p>  }
+}
+```</p>
+
+<p>We&rsquo;d also have our Application object, <code>www/app/app.js</code>:</p>
+
+<p>```js
+import {App, Platform, StatusBar} from &lsquo;ionic/ionic&rsquo;;
+import {DataService} from &lsquo;./service/data&rsquo;;
+import {AboutPage} from &lsquo;./about/about&rsquo;;
+import {MapPage} from &lsquo;./map/map&rsquo;;
+import {SchedulePage} from &lsquo;./schedule/schedule&rsquo;;
+import {SpeakersPage} from &lsquo;./speakers/speakers&rsquo;;</p>
+
+<p>@App({
+  templateUrl: &lsquo;app/app.html&rsquo;,
+  providers: [DataService]
+  /*</p>
+
+<pre><code>Here we're saying, please include an instance of 
+DataService for all my children components,
+in this case being sessions, speakers, 
+and session detail.
+</code></pre>
+
+<p>  */
+})
+class ConferenceApp {
+  constructor(platform: Platform, data: DataService) {</p>
+
+<pre><code>data.retrieveData();
+</code></pre>
+
+<p>  }
+}</p>
+
+<p>```</p>
+
+<p>Then we&rsquo;d have our speakers component, <code>www/app/speakers/speakers.js</code>:</p>
+
+<p>```js
+import {Page} from &lsquo;ionic/ionic&rsquo;;
+import {DataService} from &lsquo;../service/data&rsquo;;
+import {SpeakerDetailPage} from &lsquo;../speaker-detail/speaker-detail&rsquo;;
+import {SessionDetailPage} from &lsquo;../session-detail/session-detail&rsquo;;</p>
+
+<p>@Page({
+  templateUrl: &lsquo;app/speakers/speakers.html&rsquo;
+})
+export class SpeakersPage {
+  constructor(nav: NavController, data: DataService) {</p>
+
+<pre><code>this.nav = nav;
+this.speakers = null;
+this.dataService = data;
+</code></pre>
+
+<p>  }</p>
+
+<p>  onInit() {</p>
+
+<pre><code>this.speakers = this.dataService.getSchedule();
+</code></pre>
+
+<p>  }
+}</p>
+
+<p>```</p>
+
+<p>Now I want to point something out above. If we had the <code>SpeakersPage</code> to also have a <code>providers: [DataService]</code>, we are telling angular 2 to create an instance of DataService to make it available for <code>SpeakersPage</code>&rsquo;s children, <strong>instead of</strong> using the DataService that <code>ConferenceApp</code> provided.</p>
+
+<p>I repeat, we&rsquo;d have two instances of <code>DataService</code> with this:</p>
+
+<p>```js
+import {Page} from &lsquo;ionic/ionic&rsquo;;
+import {DataService} from &lsquo;../service/data&rsquo;;
+import {SpeakerDetailPage} from &lsquo;../speaker-detail/speaker-detail&rsquo;;
+import {SessionDetailPage} from &lsquo;../session-detail/session-detail&rsquo;;</p>
+
+<p>@Page({
+  templateUrl: &lsquo;app/speakers/speakers.html&rsquo;,
+  providers: [DataService]
+  // This will instantiate a new DataService for its children
+})
+export class SpeakersPage {
+  constructor(nav: NavController, data: DataService) {</p>
+
+<pre><code>this.nav = nav;
+this.speakers = null;
+this.dataService = data;
+</code></pre>
+
+<p>  }</p>
+
+<p>  onInit() {</p>
+
+<pre><code>this.speakers = this.dataService.getSchedule();
+</code></pre>
+
+<p>  }
+}
+```</p>
+
+<p>This is very important. If we had a <code>console.log</code> statement in the <code>DataService</code> constructor, we&rsquo;d see it run twice with the <code>providers: [DataService]</code> being specified.</p>
+
+<p>One thing to remember, if at the root application you specify a provider, it will be available to all children components that it contains, unless you specify a <code>providers</code> that then will initialize a new instance of that provided class.</p>
+
+<p>I hope this post helps clear up dependency injection in Angular 2. Now get back to coding!</p>
+]]></content>
+  </entry>
+  
+</feed>

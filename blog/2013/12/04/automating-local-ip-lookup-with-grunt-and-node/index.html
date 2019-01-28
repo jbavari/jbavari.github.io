@@ -1,0 +1,407 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Automating Local IP Lookup With Grunt and Node - Josh Bavari's Ramblings</title>
+  <meta name="author" content="Josh Bavari">
+
+  
+  <meta name="description" content="In the last few write-ups I&rsquo;ve done lately (see the servers post and the phonegap builds post), I&rsquo;ve been requiring the user to pass in &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://jbavari.github.io/blog/2013/12/04/automating-local-ip-lookup-with-grunt-and-node">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="Josh Bavari's Ramblings" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">Josh Bavari's Ramblings</a></h1>
+  
+    <h2>tech babbles on Ruby, Javascript, Rails, Phonegap/Cordova, Grunt, and more</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:jbavari.github.io" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+  <li><a href="/about">About</a></li>
+  <li><a href="/speaking">Speaking</a></li>
+  <li><a href="/knowledge">Knowledge</a></li>
+  <li><a href="/about/resume">Resume</a></li>
+  <li><a href="/cv">C.V.</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Automating Local IP Lookup With Grunt and Node</h1>
+    
+    
+      <p class="meta">
+        <span class="reading-time">about a 2 minute read</span>
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-12-04T15:18:00-07:00" pubdate data-updated="true">Dec 4<span>th</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>In the last few write-ups I&rsquo;ve done lately (see <a href="/blog/2013/12/02/automating-underlying-mobile-infrastructure-with-grunt">the servers post</a> and the <a href="/blog/2013/11/30/automating-phonegap-builds-with-grunt">phonegap builds post</a>), I&rsquo;ve been requiring the user to pass in the IP or the host in the command line. That works and all, but I usually have to go look up that ip using the good ol &lsquo;ifconfig&rsquo; command.</p>
+
+<p>Since I&rsquo;m obsesed with automation, I&rsquo;d rather be lazy and just have the IP Address look up be automatic.</p>
+
+<h2>Why am I writing this?</h2>
+
+<p>I work in a dozen of different places. At any given time I may be at home, work, a coffee shop, etc. Most times my ip address will be different. I really just want to boot the servers up to my current IP and have the mobile app point at that IP. (The actual device can&rsquo;t understand localhost or a local 0.0.0.0 IP address over wifi)</p>
+
+<p>Have you guessed it yet? I want to automatically set that ip address / hostname to my local IP without having to go look it up every time.</p>
+
+<p>I found this post on <a href="http://stackoverflow.com/questions/3653065/get-local-ip-address-in-node-js">stackoverflow</a> that pointed me at this <a href="http://nodejs.org/api/os.html#os_os_networkinterfaces">Node.js documentation</a> to look up the network interfaces. This lets us dig deeper with Grunt to get the IP Address, especially since grunt sits on Node.js.</p>
+
+<h3>Simple and (too) easy</h3>
+
+<p>There&rsquo;s a Node.js call that puts all of the config settings into nice JSON for you to work with.</p>
+
+<figure class='code'><figcaption><span>Node.js command for getting network interfaces</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="c1">//Gets a JSON much like running &#39;ifconfig&#39;</span>
+</span><span class='line'><span class="kd">var</span> <span class="nx">ifaces</span> <span class="o">=</span> <span class="nx">os</span><span class="p">.</span><span class="nx">networkInterfaces</span><span class="p">();</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The next key is to go through all the interfaces, and get the current local IP from the device from ethernet or wifi.</p>
+
+<p>My grunt config looks something like this:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">module</span><span class="p">.</span><span class="nx">exports</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">grunt</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="kd">var</span> <span class="nx">os</span><span class="o">=</span><span class="nx">require</span><span class="p">(</span><span class="s1">&#39;os&#39;</span><span class="p">);</span>
+</span><span class='line'>  <span class="kd">var</span> <span class="nx">ifaces</span><span class="o">=</span><span class="nx">os</span><span class="p">.</span><span class="nx">networkInterfaces</span><span class="p">();</span>
+</span><span class='line'>  <span class="kd">var</span> <span class="nx">lookupIpAddress</span> <span class="o">=</span> <span class="kc">null</span><span class="p">;</span>
+</span><span class='line'>  <span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">dev</span> <span class="k">in</span> <span class="nx">ifaces</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>      <span class="k">if</span><span class="p">(</span><span class="nx">dev</span> <span class="o">!=</span> <span class="s2">&quot;en1&quot;</span> <span class="o">&amp;&amp;</span> <span class="nx">dev</span> <span class="o">!=</span> <span class="s2">&quot;en0&quot;</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>          <span class="k">continue</span><span class="p">;</span>
+</span><span class='line'>      <span class="p">}</span>
+</span><span class='line'>      <span class="nx">ifaces</span><span class="p">[</span><span class="nx">dev</span><span class="p">].</span><span class="nx">forEach</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">details</span><span class="p">){</span>
+</span><span class='line'>        <span class="k">if</span> <span class="p">(</span><span class="nx">details</span><span class="p">.</span><span class="nx">family</span><span class="o">==</span><span class="s1">&#39;IPv4&#39;</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>          <span class="nx">lookupIpAddress</span> <span class="o">=</span> <span class="nx">details</span><span class="p">.</span><span class="nx">address</span><span class="p">;</span>
+</span><span class='line'>          <span class="k">break</span><span class="p">;</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>      <span class="p">});</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="c1">//If an IP Address is passed</span>
+</span><span class='line'>  <span class="c1">//we&#39;re going to use the ip/host from the param</span>
+</span><span class='line'>  <span class="c1">//passed over the command line </span>
+</span><span class='line'>  <span class="c1">//over the ip addressed that was looked up</span>
+</span><span class='line'>  <span class="kd">var</span> <span class="nx">ipAddress</span> <span class="o">=</span> <span class="nx">grunt</span><span class="p">.</span><span class="nx">option</span><span class="p">(</span><span class="s1">&#39;host&#39;</span><span class="p">)</span> <span class="o">||</span> <span class="nx">lookupIpAddress</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nx">grunt</span><span class="p">.</span><span class="nx">initConfig</span><span class="p">({</span>
+</span><span class='line'>      <span class="nx">bgShell</span><span class="o">:</span> <span class="p">{</span>
+</span><span class='line'>          <span class="nx">weinre</span><span class="o">:</span> <span class="p">{</span>
+</span><span class='line'>              <span class="nx">cmd</span><span class="o">:</span> <span class="s1">&#39;weinre --httpPort 8080 --boundHost=&#39;</span> <span class="o">+</span> <span class="nx">ipAddress</span><span class="p">,</span>
+</span><span class='line'>              <span class="nx">bg</span><span class="o">:</span> <span class="kc">false</span>
+</span><span class='line'>          <span class="p">},</span>
+</span><span class='line'>          <span class="nx">rails</span><span class="o">:</span> <span class="p">{</span>
+</span><span class='line'>              <span class="nx">cmd</span><span class="o">:</span> <span class="s1">&#39;cd ../raisemore_web &amp;&amp; rails s -p 3000 -b &#39;</span> <span class="o">+</span> <span class="nx">ipAddress</span>
+</span><span class='line'>          <span class="p">}</span>
+</span><span class='line'>      <span class="p">}</span>
+</span><span class='line'>  <span class="p">});</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="c1">//Load in the preprocess tasks</span>
+</span><span class='line'>  <span class="nx">grunt</span><span class="p">.</span><span class="nx">loadTasks</span><span class="p">(</span><span class="s1">&#39;preprocess&#39;</span><span class="p">);</span>
+</span><span class='line'>  <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;load-grunt-tasks&#39;</span><span class="p">)(</span><span class="nx">grunt</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="c1">//Tasks to have both servers at local ip and app at local ip</span>
+</span><span class='line'>  <span class="nx">grunt</span><span class="p">.</span><span class="nx">registerTask</span><span class="p">(</span><span class="s1">&#39;servers&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;env:dev&#39;</span><span class="p">,</span> <span class="s1">&#39;preprocess:dev&#39;</span><span class="p">,</span> <span class="s1">&#39;bgShell:weinre&#39;</span><span class="p">,</span> <span class="s1">&#39;bgShell:rails&#39;</span><span class="p">]);</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="c1">//Task to set up app files pointing at stage ip</span>
+</span><span class='line'>  <span class="c1">//and setting up weinre at current local ip</span>
+</span><span class='line'>  <span class="nx">grunt</span><span class="p">.</span><span class="nx">registerTask</span><span class="p">(</span><span class="s1">&#39;debug&#39;</span><span class="p">,</span> <span class="p">[</span> <span class="s1">&#39;env:stage&#39;</span><span class="p">,</span> <span class="s1">&#39;preprocess:stage&#39;</span><span class="p">,</span> <span class="s1">&#39;bgShell:weinre&#39;</span><span class="p">]);</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Now we can just do &lsquo;grunt servers&rsquo; to have both servers up at my current local ip or &lsquo;grunt debug&rsquo; to get app accessing the stage server and having weinre run locally to debug the app.</p>
+
+<p>Not much to it &ndash; call networkInterfaces(), go through JSON, get ipAddress &ndash; assign it to the option unless one was passed in. You&rsquo;re done.</p>
+
+<p>Cheers.</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Josh Bavari</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-12-04T15:18:00-07:00" pubdate data-updated="true">Dec 4<span>th</span>, 2013</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/automation/'>automation</a>, <a class='category' href='/blog/categories/gruntjs/'>gruntjs</a>, <a class='category' href='/blog/categories/iplookup/'>iplookup</a>, <a class='category' href='/blog/categories/nodejs/'>nodejs</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://jbavari.github.io/blog/2013/12/04/automating-local-ip-lookup-with-grunt-and-node/" data-via="jbavari" data-counturl="http://jbavari.github.io/blog/2013/12/04/automating-local-ip-lookup-with-grunt-and-node/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2013/12/03/automating-jasmine-tests-with-grunt-karma/" title="Previous Post: Automating Jasmine Tests With Grunt Karma">&laquo; Automating Jasmine Tests With Grunt Karma</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2013/12/17/dont-be-a-grunt/" title="Next Post: Dont be a grunt">Dont be a grunt &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2017/04/16/puppet-a-testing-handbook/">Puppet: A Testing Handbook</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2017/03/13/test-coverage-reports-in-elixir/">Test Coverage Reports in Elixir</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/12/29/multicast-service-discovery-in-electron/">Multicast Service Discovery in Electron</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/03/11/using-erlang-observer-on-a-remote-elixir-server/">Using Erlang Observer on a Remote Elixir Server</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/01/24/custom-json-encoding-in-phoenix/">Custom JSON Encoding in Phoenix</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/jbavari">@jbavari</a> on GitHub
+  
+  <script type="text/javascript">
+    $(document).ready(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'jbavari',
+            count: 0,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2019 - Josh Bavari -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+  <script src="//static.getclicky.com/js" type="text/javascript"></script>
+  <script type="text/javascript">try{ clicky.init(100896582); }catch(e){}</script>
+  <noscript><p><img alt="Clicky" width="1" height="1" src="//in.getclicky.com/100896582ns.gif" /></p></noscript>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'joshbavari';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://jbavari.github.io/blog/2013/12/04/automating-local-ip-lookup-with-grunt-and-node/';
+        var disqus_url = 'http://jbavari.github.io/blog/2013/12/04/automating-local-ip-lookup-with-grunt-and-node/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

@@ -1,0 +1,370 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Properly using Plugins with variables in Phonegap / Cordova applications - Josh Bavari's Ramblings</title>
+  <meta name="author" content="Josh Bavari">
+
+  
+  <meta name="description" content="In the past week I&rsquo;ve been working on upgrading our mobile application from PhoneGap 2.9 to Cordova 3.4. (There is no real reason for going &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://jbavari.github.io/blog/2014/03/29/how-i-use-plugins-with-variables-in-phonegap-slash-cordova-applications">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="Josh Bavari's Ramblings" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">Josh Bavari's Ramblings</a></h1>
+  
+    <h2>tech babbles on Ruby, Javascript, Rails, Phonegap/Cordova, Grunt, and more</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:jbavari.github.io" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+  <li><a href="/about">About</a></li>
+  <li><a href="/speaking">Speaking</a></li>
+  <li><a href="/knowledge">Knowledge</a></li>
+  <li><a href="/about/resume">Resume</a></li>
+  <li><a href="/cv">C.V.</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Properly Using Plugins With Variables in Phonegap / Cordova Applications</h1>
+    
+    
+      <p class="meta">
+        <span class="reading-time">about a 2 minute read</span>
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-03-29T02:14:00-06:00" pubdate data-updated="true">Mar 29<span>th</span>, 2014</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>In the past week I&rsquo;ve been working on upgrading our mobile application from PhoneGap 2.9 to Cordova 3.4. (There is no real reason for going from PhoneGap to Cordova, just that I&rsquo;ve been actively committing to the Cordova project).</p>
+
+<p>I&rsquo;ve come in contact with a weird bug with the Cordova CLI when using plugins that require variables to install them.</p>
+
+<p>Currently <a href="http://devgirl.org/2013/11/12/three-hooks-your-cordovaphonegap-project-needs/">Holly Schinsky and Dan Moore</a> recommend using the <a href="https://github.com/apache/cordova-cli/blob/master/templates/hooks-README.md">Cordova Hook</a> <code>after_platform_add</code> to add in the plugins via a plugin list. While I too think this is a great idea, there is a small problem with it as of Phonegap/Cordova 3.4 when you use plugins with variables.</p>
+
+<p>Before we go further, lets just get a quick intro to the platform hook calls that the <a href="https://github.com/apache/cordova-cli/blob/master/src/platform.js#l56">Cordova CLI</a> gives us. First it will fire off the scripts in the <code>/app/hooks/before_platform_add</code> (or <code>/app/.cordova/hooks/before_platform_add</code> if you&rsquo;re on PhoneGap/Cordova &lt;= 3.3) folder.</p>
+
+<p>Next, Cordova CLI will go through some configs and eventually use a function named <code>call_into_create</code> that will do some housecleaning, but most importantly will <a href="https://github.com/apache/cordova-cli/blob/master/src/platform.js#l378">re-install currently installed plugins</a>.</p>
+
+<p>Certain plugins will require variables for them to be installed. Take a look at the Phonegap Facebook Connect plugin, for example: <code>cordova plugin add https://github.com/phonegap/phonegap-facebook-plugin.git --variable APP_ID='appId' --variable APP_NAME='appName'</code>. Using Holly and Dan&rsquo;s solution, you an add that inline as well, like so:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>var pluginlist = [
+</span><span class='line'>    "https://github.com/phonegap/phonegap-facebook-plugin.git --variable APP_ID='" + appId + "' --variable APP_NAME='" + appName + "'",
+</span><span class='line'>    "org.apache.cordova.camera",
+</span><span class='line'>    "org.apache.cordova.console",
+</span><span class='line'>    "org.apache.cordova.contacts"];
+</span><span class='line'>
+</span><span class='line'>var fs = require('fs');
+</span><span class='line'>var path = require('path');
+</span><span class='line'>var sys = require('sys')
+</span><span class='line'>var exec = require('child_process').exec;
+</span><span class='line'> 
+</span><span class='line'>function puts(error, stdout, stderr) {
+</span><span class='line'>    sys.puts(stdout)
+</span><span class='line'>}
+</span><span class='line'> 
+</span><span class='line'>pluginlist.forEach(function(plug) {
+</span><span class='line'>    exec("cordova plugin add " + plug, puts);
+</span><span class='line'>});
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The problem is, when Cordova CLI goes through to reinstall the plugins, it isn&rsquo;t passing in the variables and will fail to install them, but it will still add the folder to the plugins directory and json file. In fact, after adding the plugins, it will then call the hook (as seen above) and try to install plug-ins yet a second time. And by fail, I mean it will still fail with the facebook plugin &ndash; cordova CLI failed therefore it&rsquo;s half installed, so the hook will fail. (I hope this is clear)</p>
+
+<p>To recap, here&rsquo;s the flow of how to reproduce the problem:</p>
+
+<ul>
+<li>Create new project with <code>cordova create</code></li>
+<li>Add platform for ios</li>
+<li>Add plugin with variables &ndash; <code>cordova plugin add https://github.com/phonegap/phonegap-facebook-plugin.git --variable APP_ID='appId' --variable APP_NAME='appName'</code></li>
+<li>Add platform for android</li>
+</ul>
+
+
+<p>That&rsquo;s when you&rsquo;ll see:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>Installing com.phonegap.plugins.facebookconnect (android)
+</span><span class='line'>Error: Variable(s) missing: APP_ID, APP_NAME
+</span><span class='line'>    at /usr/local/lib/node_modules/cordova/node_modules/plugman/src/install.js:252:29
+</span><span class='line'>    at _fulfilled (/usr/local/lib/node_modules/cordova/node_modules/q/q.js:798:54)
+</span><span class='line'>    at self.promiseDispatch.done (/usr/local/lib/node_modules/cordova/node_modules/q/q.js:827:30)
+</span><span class='line'>    at Promise.promise.promiseDispatch (/usr/local/lib/node_modules/cordova/node_modules/q/q.js:760:13)
+</span><span class='line'>    at /usr/local/lib/node_modules/cordova/node_modules/q/q.js:574:44
+</span><span class='line'>    at flush (/usr/local/lib/node_modules/cordova/node_modules/q/q.js:108:17)
+</span><span class='line'>    at process._tickCallback (node.js:415:13)</span></code></pre></td></tr></table></div></figure>
+
+
+<p>You&rsquo;re probably wondering &ndash; why not add both of the platforms first, then add the plugin? That&rsquo;s what I recommend doing now.</p>
+
+<p>However, going back to Holly and Dan&rsquo;s post, I highly recommend if you have any plugins with variables that you do a little clean-up of plugin&rsquo;s before adding them. And by clean-up, I mean, remove the plugins before adding them.</p>
+
+<p>This should only be an issue until the awesome Cordova team fixes the issue of adding plugins correctly.</p>
+
+<p>Hope this helps!</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Josh Bavari</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-03-29T02:14:00-06:00" pubdate data-updated="true">Mar 29<span>th</span>, 2014</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/cordova/'>cordova</a>, <a class='category' href='/blog/categories/phonegap/'>phonegap</a>, <a class='category' href='/blog/categories/plugins/'>plugins</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://jbavari.github.io/blog/2014/03/29/how-i-use-plugins-with-variables-in-phonegap-slash-cordova-applications/" data-via="jbavari" data-counturl="http://jbavari.github.io/blog/2014/03/29/how-i-use-plugins-with-variables-in-phonegap-slash-cordova-applications/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2014/03/19/rethinkdb-the-importing-json-process/" title="Previous Post: RethinkDB the importing json process">&laquo; RethinkDB the importing json process</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2014/04/03/how-i-use-npm-link/" title="Next Post: How I use npm link">How I use npm link &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2017/04/16/puppet-a-testing-handbook/">Puppet: A Testing Handbook</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2017/03/13/test-coverage-reports-in-elixir/">Test Coverage Reports in Elixir</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/12/29/multicast-service-discovery-in-electron/">Multicast Service Discovery in Electron</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/03/11/using-erlang-observer-on-a-remote-elixir-server/">Using Erlang Observer on a Remote Elixir Server</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/01/24/custom-json-encoding-in-phoenix/">Custom JSON Encoding in Phoenix</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/jbavari">@jbavari</a> on GitHub
+  
+  <script type="text/javascript">
+    $(document).ready(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'jbavari',
+            count: 0,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2019 - Josh Bavari -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+  <script src="//static.getclicky.com/js" type="text/javascript"></script>
+  <script type="text/javascript">try{ clicky.init(100896582); }catch(e){}</script>
+  <noscript><p><img alt="Clicky" width="1" height="1" src="//in.getclicky.com/100896582ns.gif" /></p></noscript>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'joshbavari';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://jbavari.github.io/blog/2014/03/29/how-i-use-plugins-with-variables-in-phonegap-slash-cordova-applications/';
+        var disqus_url = 'http://jbavari.github.io/blog/2014/03/29/how-i-use-plugins-with-variables-in-phonegap-slash-cordova-applications/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

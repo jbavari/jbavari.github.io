@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: plugins | Josh Bavari's Ramblings]]></title>
+  <link href="http://jbavari.github.io/blog/categories/plugins/atom.xml" rel="self"/>
+  <link href="http://jbavari.github.io/"/>
+  <updated>2019-01-27T19:16:40-07:00</updated>
+  <id>http://jbavari.github.io/</id>
+  <author>
+    <name><![CDATA[Josh Bavari]]></name>
+    <email><![CDATA[jbavari@gmail.com]]></email>
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Moving Forward with Phonegap / Cordova Plugins]]></title>
+    <link href="http://jbavari.github.io/blog/2014/05/17/moving-forward-with-phonegap-slash-cordova-plugins/"/>
+    <updated>2014-05-17T15:24:00-06:00</updated>
+    <id>http://jbavari.github.io/blog/2014/05/17/moving-forward-with-phonegap-slash-cordova-plugins</id>
+    <content type="html"><![CDATA[<p>I spoke about how plugins work and how to create plugins in Cordova at KCDC. I wanted to make sure my slides are available to any who wanted to view them.</p>
+
+<p>The slides are located <a href="http://jbavari.github.io/MovingForwardWithCordovaPlugins/">here</a>.</p>
+
+<p>I hope this is helpful for some out there,
+Enjoy!</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Properly using Plugins with variables in Phonegap / Cordova applications]]></title>
+    <link href="http://jbavari.github.io/blog/2014/03/29/how-i-use-plugins-with-variables-in-phonegap-slash-cordova-applications/"/>
+    <updated>2014-03-29T02:14:00-06:00</updated>
+    <id>http://jbavari.github.io/blog/2014/03/29/how-i-use-plugins-with-variables-in-phonegap-slash-cordova-applications</id>
+    <content type="html"><![CDATA[<p>In the past week I&rsquo;ve been working on upgrading our mobile application from PhoneGap 2.9 to Cordova 3.4. (There is no real reason for going from PhoneGap to Cordova, just that I&rsquo;ve been actively committing to the Cordova project).</p>
+
+<p>I&rsquo;ve come in contact with a weird bug with the Cordova CLI when using plugins that require variables to install them.</p>
+
+<p>Currently <a href="http://devgirl.org/2013/11/12/three-hooks-your-cordovaphonegap-project-needs/">Holly Schinsky and Dan Moore</a> recommend using the <a href="https://github.com/apache/cordova-cli/blob/master/templates/hooks-README.md">Cordova Hook</a> <code>after_platform_add</code> to add in the plugins via a plugin list. While I too think this is a great idea, there is a small problem with it as of Phonegap/Cordova 3.4 when you use plugins with variables.</p>
+
+<p>Before we go further, lets just get a quick intro to the platform hook calls that the <a href="https://github.com/apache/cordova-cli/blob/master/src/platform.js#l56">Cordova CLI</a> gives us. First it will fire off the scripts in the <code>/app/hooks/before_platform_add</code> (or <code>/app/.cordova/hooks/before_platform_add</code> if you&rsquo;re on PhoneGap/Cordova &lt;= 3.3) folder.</p>
+
+<p>Next, Cordova CLI will go through some configs and eventually use a function named <code>call_into_create</code> that will do some housecleaning, but most importantly will <a href="https://github.com/apache/cordova-cli/blob/master/src/platform.js#l378">re-install currently installed plugins</a>.</p>
+
+<p>Certain plugins will require variables for them to be installed. Take a look at the Phonegap Facebook Connect plugin, for example: <code>cordova plugin add https://github.com/phonegap/phonegap-facebook-plugin.git --variable APP_ID='appId' --variable APP_NAME='appName'</code>. Using Holly and Dan&rsquo;s solution, you an add that inline as well, like so:</p>
+
+<p>```
+var pluginlist = [</p>
+
+<pre><code>"https://github.com/phonegap/phonegap-facebook-plugin.git --variable APP_ID='" + appId + "' --variable APP_NAME='" + appName + "'",
+"org.apache.cordova.camera",
+"org.apache.cordova.console",
+"org.apache.cordova.contacts"];
+</code></pre>
+
+<p>var fs = require(&lsquo;fs&rsquo;);
+var path = require(&lsquo;path&rsquo;);
+var sys = require(&lsquo;sys&rsquo;)
+var exec = require(&lsquo;child_process&rsquo;).exec;</p>
+
+<p>function puts(error, stdout, stderr) {</p>
+
+<pre><code>sys.puts(stdout)
+</code></pre>
+
+<p>}</p>
+
+<p>pluginlist.forEach(function(plug) {</p>
+
+<pre><code>exec("cordova plugin add " + plug, puts);
+</code></pre>
+
+<p>});</p>
+
+<p>```</p>
+
+<p>The problem is, when Cordova CLI goes through to reinstall the plugins, it isn&rsquo;t passing in the variables and will fail to install them, but it will still add the folder to the plugins directory and json file. In fact, after adding the plugins, it will then call the hook (as seen above) and try to install plug-ins yet a second time. And by fail, I mean it will still fail with the facebook plugin &ndash; cordova CLI failed therefore it&rsquo;s half installed, so the hook will fail. (I hope this is clear)</p>
+
+<p>To recap, here&rsquo;s the flow of how to reproduce the problem:</p>
+
+<ul>
+<li>Create new project with <code>cordova create</code></li>
+<li>Add platform for ios</li>
+<li>Add plugin with variables &ndash; <code>cordova plugin add https://github.com/phonegap/phonegap-facebook-plugin.git --variable APP_ID='appId' --variable APP_NAME='appName'</code></li>
+<li>Add platform for android</li>
+</ul>
+
+
+<p>That&rsquo;s when you&rsquo;ll see:</p>
+
+<p>```
+Installing com.phonegap.plugins.facebookconnect (android)
+Error: Variable(s) missing: APP_ID, APP_NAME</p>
+
+<pre><code>at /usr/local/lib/node_modules/cordova/node_modules/plugman/src/install.js:252:29
+at _fulfilled (/usr/local/lib/node_modules/cordova/node_modules/q/q.js:798:54)
+at self.promiseDispatch.done (/usr/local/lib/node_modules/cordova/node_modules/q/q.js:827:30)
+at Promise.promise.promiseDispatch (/usr/local/lib/node_modules/cordova/node_modules/q/q.js:760:13)
+at /usr/local/lib/node_modules/cordova/node_modules/q/q.js:574:44
+at flush (/usr/local/lib/node_modules/cordova/node_modules/q/q.js:108:17)
+at process._tickCallback (node.js:415:13)
+</code></pre>
+
+<p>```</p>
+
+<p>You&rsquo;re probably wondering &ndash; why not add both of the platforms first, then add the plugin? That&rsquo;s what I recommend doing now.</p>
+
+<p>However, going back to Holly and Dan&rsquo;s post, I highly recommend if you have any plugins with variables that you do a little clean-up of plugin&rsquo;s before adding them. And by clean-up, I mean, remove the plugins before adding them.</p>
+
+<p>This should only be an issue until the awesome Cordova team fixes the issue of adding plugins correctly.</p>
+
+<p>Hope this helps!</p>
+]]></content>
+  </entry>
+  
+</feed>

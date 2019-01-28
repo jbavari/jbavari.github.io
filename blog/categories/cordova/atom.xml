@@ -1,0 +1,711 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: cordova | Josh Bavari's Ramblings]]></title>
+  <link href="http://jbavari.github.io/blog/categories/cordova/atom.xml" rel="self"/>
+  <link href="http://jbavari.github.io/"/>
+  <updated>2019-01-27T19:16:40-07:00</updated>
+  <id>http://jbavari.github.io/</id>
+  <author>
+    <name><![CDATA[Josh Bavari]]></name>
+    <email><![CDATA[jbavari@gmail.com]]></email>
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Managing Cordova Plugins with package.json and hooks]]></title>
+    <link href="http://jbavari.github.io/blog/2014/06/24/managing-cordova-plugins-with-package-dot-json-and-hooks/"/>
+    <updated>2014-06-24T17:52:00-06:00</updated>
+    <id>http://jbavari.github.io/blog/2014/06/24/managing-cordova-plugins-with-package-dot-json-and-hooks</id>
+    <content type="html"><![CDATA[<p>In a previous post, I blogged about <a href="http://jbavari.github.io/blog/2014/03/29/how-i-use-plugins-with-variables-in-phonegap-slash-cordova-applications/">how to manage plugins with variables</a>. I wanted to expand on that some more, and this time, talk about how to use your package.json to manage your plugins with versions as well as a way to reset your cordova set up.</p>
+
+<h2>The problem</h2>
+
+<p>Whenever I start a new Cordova project, I start by adding in all my plugins. Then once they are added, I&rsquo;ll then commit them all and push the repository with all the plugins.</p>
+
+<p>My workflow is usually like this:</p>
+
+<ul>
+<li>cordova create new ProjectApp</li>
+<li>cd ProjectApp</li>
+<li>cordova platform add ios</li>
+<li>cordova plugin add org.apache.cordova.camera</li>
+<li>cordova plugin add org.apache.cordova.contacts</li>
+<li>insert more plugin statements for every plugin we want</li>
+<li>cordova run ios</li>
+<li>cordova run android</li>
+</ul>
+
+
+<p>Occassionaly, I run into this issue when I&rsquo;m using plugins that require native variable hooks when installing. The prime example is the facebook plugin, it requires the <code>APP_ID</code> to be passed in with the <code>cordova plugin add</code> command with the options of <code>--variable APP_ID="some_id"</code>.</p>
+
+<h2>What I&rsquo;d rather do</h2>
+
+<p>It&rsquo;d be nice to have these plugins being saved with their version, so when the next user needs to pull the plugins, or modify the installation, they can just modify the package.json and run a command to install them all. That way, we can get some kind of versioning on our plugins.</p>
+
+<p>Ideally, I want to just type <code>cordova setup</code> &ndash; have it look at my package.json file, and just begin installing what&rsquo;s listed there.</p>
+
+<h3>Making the dream come true</h3>
+
+<p>First, lets start by putting our platforms and plugins in our package.json like so:</p>
+
+<p>``` json
+{
+  &ldquo;name&rdquo;: &ldquo;SampleApp&rdquo;,
+  &ldquo;version&rdquo;: &ldquo;0.0.0&rdquo;,
+  &ldquo;description&rdquo;: &ldquo;Sample App&rdquo;,
+  &ldquo;main&rdquo;: &ldquo;index.js&rdquo;,
+  &ldquo;scripts&rdquo;: {</p>
+
+<pre><code>"test": "echo \"Error: no test specified\" &amp;&amp; exit 1"
+</code></pre>
+
+<p>  },
+  &ldquo;author&rdquo;: &ldquo;&rdquo;,
+  &ldquo;license&rdquo;: &ldquo;ISC&rdquo;,
+  &ldquo;platforms&rdquo;: [</p>
+
+<pre><code>"ios",
+"android"
+</code></pre>
+
+<p>  ],
+  &ldquo;plugins&rdquo;: [</p>
+
+<pre><code>"org.apache.cordova.camera",
+"org.apache.cordova.console",
+"org.apache.cordova.contacts",
+"org.apache.cordova.device",
+"org.apache.cordova.dialogs",
+"org.apache.cordova.file",
+"org.apache.cordova.file-transfer",
+"org.apache.cordova.geolocation",
+"org.apache.cordova.inappbrowser",
+"org.apache.cordova.media",
+"org.apache.cordova.media-capture",
+"org.apache.cordova.network-information",
+"org.apache.cordova.splashscreen",
+{
+    "locator": "https://github.com/jbavari/cordova-facebook-connect.git",
+    "variables": {
+        "APP_ID": "some_id",
+        "APP_NAME": "some_name"
+    }
+}
+</code></pre>
+
+<p>  ],
+  &ldquo;devDependencies&rdquo;: {</p>
+
+<pre><code>"load-grunt-tasks": "~0.4.0",
+"time-grunt": "~0.3.1",
+"grunt": "~0.4.4",
+"grunt-shell": "~0.6.4"
+</code></pre>
+
+<p>  },
+  &ldquo;dependencies&rdquo;: {}
+}</p>
+
+<p>```</p>
+
+<h3>Automating Platforms</h3>
+
+<p>Now, we&rsquo;ll need a script that will look at our <code>package.json</code> and begin installing our platforms and plugins.</p>
+
+<p>My platform installation script is located in the <code>tasks</code> directory named <code>platforms.js</code>, and looks like so:</p>
+
+<p>``` js</p>
+
+<h1>!/usr/bin/env node</h1>
+
+<p>//This script will add or remove all plugins listed in package.json
+//usage: node platforms.js [add | remove]</p>
+
+<p>var command = process.argv[2] || &lsquo;add&rsquo;;
+var packageJson = require(&lsquo;../package.json&rsquo;);</p>
+
+<p>var fs = require(&lsquo;fs&rsquo;);
+var path = require(&lsquo;path&rsquo;);
+var sys = require(&lsquo;sys&rsquo;)
+var exec = require(&lsquo;child_process&rsquo;).exec;</p>
+
+<p>packageJson.platforms.forEach(function(platform) {</p>
+
+<pre><code>var platformCmd = 'cordova platform ' + command + ' ' + platform;
+exec(platformCmd);
+</code></pre>
+
+<p>});
+```</p>
+
+<h3>Automating Plugins</h3>
+
+<p>My plugin installation script is also in my <code>tasks</code> directory, and named <code>plugins.js</code>:</p>
+
+<p>``` js</p>
+
+<h1>!/usr/bin/env node</h1>
+
+<p>//This script will add or remove all plugins listed in package.json</p>
+
+<p>//usage: node plugins.js [ add | remove ]</p>
+
+<p>var command = process.argv[2] || &lsquo;add&rsquo;;</p>
+
+<p>var packageJson = require(&lsquo;../package.json&rsquo;);</p>
+
+<p>var fs = require(&lsquo;fs&rsquo;);
+var path = require(&lsquo;path&rsquo;);
+var sys = require(&lsquo;sys&rsquo;)
+var exec = require(&lsquo;child_process&rsquo;).exec;</p>
+
+<p>function createAddRemoveStatement(plugin) {</p>
+
+<pre><code>var pluginCmd = 'cordova plugin ' + command + ' ';
+if(typeof plugin === 'string') {
+    pluginCmd += plugin;
+} else {
+    if(command === 'add') {
+        pluginCmd += plugin.locator + ' ';
+        if(plugin.variables) {
+            Object.keys(plugin.variables).forEach(function(variable){
+                pluginCmd += '--variable ' + variable + '="' + plugin.variables[variable] + '" ';
+            });
+        }
+    } else {
+        pluginCmd += plugin.id;
+    }
+}
+
+return pluginCmd;
+</code></pre>
+
+<p>}</p>
+
+<p>function processPlugin(index) {</p>
+
+<pre><code>if(index &gt;= packageJson.plugins.length)
+    return;
+
+var plugin = packageJson.plugins[index];
+var pluginCommand = createAddRemoveStatement(plugin);
+console.log(pluginCommand);
+exec(pluginCommand, function(){
+    processPlugin(index + 1);
+});
+</code></pre>
+
+<p>}</p>
+
+<p>processPlugin(0);
+```</p>
+
+<p>Great. Now I don&rsquo;t really need to add all the plugins, remove them, or worry about platforms. I can just run my scripts by doing <code>node tasks/platforms.js</code> or <code>node tasks/plugins.js</code> to have it set up my project as stated in my <code>package.json</code> file.</p>
+
+<p>Easier management for teams, I&rsquo;d like to think.</p>
+
+<p>Hope this helps others.</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Using npm scripts for Cordova]]></title>
+    <link href="http://jbavari.github.io/blog/2014/06/19/using-npm-scripts-for-cordova/"/>
+    <updated>2014-06-19T00:25:00-06:00</updated>
+    <id>http://jbavari.github.io/blog/2014/06/19/using-npm-scripts-for-cordova</id>
+    <content type="html"><![CDATA[<p>For those of you that don&rsquo;t know, Cordova has <a href="https://github.com/apache/cordova-lib/blob/master/cordova-lib/templates/hooks-README.md">hooks</a> that can run on each of the specific build tasks that Cordova goes through. For example the task that happens after all the platform specific code is set up, the <code>after_prepare</code> hook is fired.</p>
+
+<p>Tonight I had the pleasure of collaborating with my friend <a href="https://twitter.com/MountainDoofus">Ross Martin</a> over a project he put together. The project is called <a href="https://github.com/rossmartin/cordova-uglify">cordova-uglify</a> and it focuses on uglifying/minifying JavaScript before building your Cordova app. See his comment in response to <a href="http://www.mooreds.com/wordpress/archives/1425">Dan Moore&rsquo;s Accessing more build information from your Cordova CLI hooks</a> blog for more information on why.</p>
+
+<p>The project was having an <code>after_prepare</code> hook in Cordova to uglify the application&rsquo;s JavaScript once the code is put in place for iOS/Android.</p>
+
+<p>This project Ross put together was interesting. There have been some blogs on <a href="http://www.mooreds.com/wordpress/archives/1197">using hooks in Cordova</a> as well as <a href="http://devgirl.org/2013/11/12/three-hooks-your-cordovaphonegap-project-needs/#comments">three hooks every cordova / phonegap project needs</a>. Moving forward, it&rsquo;d be nice to make some of these hooks and share them out much like we share packages on npm.</p>
+
+<p>The only problem with using them as packages, is we need to place code somewhere outside of the <code>node_modules</code> folder (where the package will be installed from <code>npm install</code>).</p>
+
+<p>This is what we&rsquo;d get if we just used npm install cordova-uglify (notice uglify.js is only in <code>node_modules</code> directory):</p>
+
+<p>```
+// ./CordovaProjectDirectory
+//      /hooks
+//      /node_modules
+//          /cordova-uglify
+//              /after_prepare
+//                  /uglify.js
+//              /scripts
+//                  install.js
+//                  uninstall.js
+//      /www</p>
+
+<p>```</p>
+
+<p>What we actually want has our uglify.js in our <code>hooks/after_prepare</code> directory:</p>
+
+<p><code>
+// ./CordovaProjectDirectory
+//      /hooks
+//          /after_prepare
+//              uglify.js
+//      /node_modules
+//          /cordova-uglify
+//              /after_prepare
+//                  uglify.js
+</code></p>
+
+<p>Then it hit me, we can use npm scripts!</p>
+
+<h2>The idea</h2>
+
+<p>Let&rsquo;s package up Cordova tools, publish on npm, and then use <a href="https://www.npmjs.org/doc/misc/npm-scripts.html">npm scripts</a> to install/uninstall them as necessary.</p>
+
+<p>npm gives its package owners the ability to run scripts on various events in the npm life cycle. The interesting ones we care about are those being <code>postinstall</code> and <code>postuninstall</code>.</p>
+
+<p>The idea is this:</p>
+
+<ul>
+<li>You run <code>npm install cordova-uglify</code></li>
+<li>After installing, npm runs the <code>postinstall</code> script to copy files into proper location</li>
+<li>Profit $$$</li>
+</ul>
+
+
+<p>Ross put me up to the challenge, so I took it up. Here&rsquo;s what I put our package.json to be:</p>
+
+<p>``` js
+{
+  &ldquo;name&rdquo;: &ldquo;cordova-uglify&rdquo;,
+  &ldquo;version&rdquo;: &ldquo;0.0.5&rdquo;,
+  &ldquo;description&rdquo;: &ldquo;Cordova hook that allows you to uglify or minify your apps JavaScript and CSS.&rdquo;,
+  &ldquo;homepage&rdquo;: &ldquo;<a href="https://github.com/rossmartin/cordova-uglify">https://github.com/rossmartin/cordova-uglify</a>&rdquo;,
+  &ldquo;keywords&rdquo;: [</p>
+
+<pre><code>"cordova",
+"uglify",
+"minify",
+"hook",
+"hooks"
+</code></pre>
+
+<p>  ],
+  &ldquo;peerDependencies&rdquo; : {</p>
+
+<pre><code>"yuicompressor" : "2.4.8"
+</code></pre>
+
+<p>  },
+  &ldquo;author&rdquo;: &ldquo;Ross Martin&rdquo;,
+  &ldquo;license&rdquo;: &ldquo;MIT&rdquo;,
+  &ldquo;bugs&rdquo;: {</p>
+
+<pre><code>"url": "https://github.com/rossmartin/cordova-uglify/issues"
+</code></pre>
+
+<p>  },
+  &ldquo;readmeFilename&rdquo;: &ldquo;README.md&rdquo;,
+  &ldquo;scripts&rdquo;: {</p>
+
+<pre><code>"postinstall": "node scripts/install.js",
+"postuninstall": "node scripts/uninstall.js"
+</code></pre>
+
+<p>  }
+}
+```</p>
+
+<p>To which I then created a quick script to do the file copying &ndash; <code>scripts/install.js</code></p>
+
+<p>``` js</p>
+
+<h1>!/usr/bin/env node</h1>
+
+<p>var fs = require(&lsquo;fs&rsquo;)
+var path = require(&lsquo;path&rsquo;)
+var cwd = process.cwd() //proj directory
+var scriptPath = __dirname //node_modules/cordova-uglify/scripts</p>
+
+<p>var paths = [ path.join(cwd, &lsquo;../../hooks&rsquo;), path.join(cwd, &lsquo;../../hooks/after_prepare&rsquo;) ];</p>
+
+<p>for(var pathIndex in paths) {</p>
+
+<pre><code>if(!fs.existsSync(paths[pathIndex])) {
+    console.log('Creating directory: ', paths[pathIndex])
+    fs.mkdirSync(paths[pathIndex]);
+}   
+</code></pre>
+
+<p>}</p>
+
+<p>var uglifyScriptPath = path.join(cwd, &lsquo;after_prepare&rsquo;, &lsquo;uglify.js&rsquo;);</p>
+
+<p>var uglifyFile = fs.readFileSync(uglifyScriptPath);
+console.log(&lsquo;uglifyFile: &rsquo;, uglifyFile)
+var uglifyAfterPreparePath = path.join(paths[1], &lsquo;uglify.js&rsquo;)</p>
+
+<p>console.log(&lsquo;Creating uglify hook: &rsquo;, uglifyAfterPreparePath)
+fs.writeFileSync(uglifyAfterPreparePath, uglifyFile);</p>
+
+<p>```</p>
+
+<p>As well as uninstalling it &ndash; <code>scripts/uninstall.js</code>:</p>
+
+<p>``` js</p>
+
+<h1>!/usr/bin/env node</h1>
+
+<p>//After uninstall script to remove the uglify.js script from the users hooks/after_prepare directory</p>
+
+<p>var fs = require(&lsquo;fs&rsquo;)
+var path = require(&lsquo;path&rsquo;)
+var cwd = process.cwd()</p>
+
+<p>var uglifyJsPath = path.join(cwd, &lsquo;../../&rsquo;, &lsquo;hooks&rsquo;, &lsquo;after_prepare&rsquo;, &lsquo;uglify.js&rsquo;)</p>
+
+<p>fs.unlink(uglifyJsPath)
+console.log(&lsquo;Removed: &rsquo;, uglifyJsPath)
+```</p>
+
+<p>Simple and sweet.</p>
+
+<p>Now, is it an anti-pattern? I&rsquo;m not sure.</p>
+
+<p>Does it make it easier for other developers to get started and using it? Yes.</p>
+
+<p>That&rsquo;s exactly what I was going for.</p>
+
+<p>Thanks Ross for planting the idea in my head, and more importantly, for the challenge to learn.</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Cordova and the Safari Web Inspector]]></title>
+    <link href="http://jbavari.github.io/blog/2014/06/18/cordova-and-the-safari-web-inspector/"/>
+    <updated>2014-06-18T00:22:00-06:00</updated>
+    <id>http://jbavari.github.io/blog/2014/06/18/cordova-and-the-safari-web-inspector</id>
+    <content type="html"><![CDATA[<p>If you&rsquo;ve ever been doing some iOS development in Cordova, you may have used the Safari Web Inspector (SWI) once or twice. You&rsquo;ve also noticed that SWI closes when the app is put in the background or you switch apps.</p>
+
+<p>I found a sweet hack that allows you to keep your safari web inspector running regardless of whether or not the app is in the foreground or not. I&rsquo;d like to outline that in this post.</p>
+
+<p>I&rsquo;m not sure how I stumbled across this sweet hack, but I have to write it down before I forget how it&rsquo;s done. My system specs at the time of writing this is Mac OSX 10.8.5 (Mountain Lion).</p>
+
+<h2>Whats involved</h2>
+
+<ul>
+<li>Using a simulator or connected device</li>
+<li>Having Safari web inspector (SWI) running</li>
+</ul>
+
+
+<p>What normally happens is, when the app closes, SWI will also close. When you relaunch the app, you will need to put Safari in the foreground, click <code>Develop</code> on the menu bar, then hover <code>iPhone Simulator</code> or <code>iPhone</code>, then click the <code>index.html</code> (or your page) to connect &amp; launch SWI.</p>
+
+<p>This is very frustrating because on the app relaunching you may have a callback happening or other code you want to debug/inspect/log on app start up. This hack lets you keep SWI and running gracefully.</p>
+
+<p>Bare with me now, we&rsquo;re going to get funky.</p>
+
+<h2>Setting up a global hotkey</h2>
+
+<p>The first thing to do is to set a <a href="http://support.apple.com/kb/ph6889">global hotkey</a> &ndash; steps:</p>
+
+<ul>
+<li>Open System Preferences / Keyboard</li>
+<li>On the right panel, select <code>Application Shortcuts</code></li>
+<li>Add a hot key &ndash; use whatever keys you want (I used <code>CMD + ALT + I</code>)</li>
+<li>Have the matching key be <code>index.html</code> or whatever your cordova&rsquo;s main html file is</li>
+</ul>
+
+
+<h2>Steps to keep open SWI</h2>
+
+<ul>
+<li>Launch Cordova App</li>
+<li>Open SWI</li>
+<li>Close SWI</li>
+<li>Launch SWI with quick key as set up in global hotkey <code>Application Shortcuts</code></li>
+<li>Close App</li>
+<li>Reopen app &ndash; notice SWI is still running and continues to give us logging/debugging!</li>
+</ul>
+
+
+<p>Enjoy, friends!</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Building a chat client with Ionic / Socket.io / Redis / Node.js]]></title>
+    <link href="http://jbavari.github.io/blog/2014/06/17/building-a-chat-client-with-ionic/"/>
+    <updated>2014-06-17T00:09:00-06:00</updated>
+    <id>http://jbavari.github.io/blog/2014/06/17/building-a-chat-client-with-ionic</id>
+    <content type="html"><![CDATA[<p>I wanted a fun challenge to push myself and cross a few things off my ever so growing <code>I want to play with this</code> type of lists. I love learning, and there are so many awesome tools / utilities / libraries out there to evaluate its hard to justify incorporating them into every project at work without having some knowledge of the tools.</p>
+
+<p>DISCLAIMER: I may use some tools incorrectly, but the main purpose of this fun little project was to learn and have fun.</p>
+
+<p>The list was this:</p>
+
+<ul>
+<li><a href="http://ionicframework.com">Ionic Framework</a></li>
+<li><a href="http://socket.io">Socket.io</a></li>
+<li><a href="http://redis.io">Redis</a></li>
+<li><a href="https://github.com/mranney/node_redis">Node.js Redis client</a></li>
+</ul>
+
+
+<h2>The Idea</h2>
+
+<p>I wanted to build a chat client that would have messages that disappear after a certain time, much like SnapChat. The idea also included the ability to create channels that also disappear after a certain time like messages.</p>
+
+<p>In future versions, I&rsquo;d love to include location to join channels that are near you.</p>
+
+<p>Users can join existing channels, or create their own. All users can see channels, and join any.</p>
+
+<h2>Tech details &ndash; using Redis / Node.js</h2>
+
+<p>At first, I wanted to create messages some how and have them each have <code>expire</code> times. After failing miserably, I got the amazing chance to pair up with <a href="https://twitter.com/michaelgorsuch">Michael Gorsuch</a> to give me some alternative ideas. (Shameless plug &ndash; if you need to do some server monitoring, check out his project <a href="http://canary.io/">Canary.io</a>, it&rsquo;s AWESOME).</p>
+
+<p>The concept is &ndash; instead of using separate keys with ezxpire times &ndash; use Redis' sorted sets with scores of the times in UNIX format and the member being a JSON encoded string. I had my channels keys in the format of <code>messages:ChannelName</code>.</p>
+
+<p>Something like:</p>
+
+<p><code>
+//ZADD key score member [score member ...]
+zadd messages:RedisChat 10581098019 '{"name": "Josh", "id": "5"}'
+</code></p>
+
+<p>Now, when we want to get all messages for a channel, its simply:</p>
+
+<p><code>
+//ZRANGEBYSCORE key min max [WITHSCORES] [LIMIT offset count]
+zrangebyscore messages:RedisChat 0 10924019840
+</code></p>
+
+<p>Since I was using Node.js &ndash; I simply used <code>setInterval</code> to have a function be run that removes all old posts named <code>removeKeys</code>, and looked as such:</p>
+
+<p>``` js
+//NOTE: Using Moment.js, as well as having channelWatchList being populated
+var channelWatchList = [&lsquo;Lobby&rsquo;, &lsquo;RedisChat&rsquo;];</p>
+
+<p>function removeKeys() {
+  console.log(&lsquo;We are removing old messages&rsquo;);</p>
+
+<p>  for(var channelIndex in channelWatchList) {</p>
+
+<pre><code>var channel = channelWatchList[channelIndex];
+var messageChannel = 'messages:' + channel;
+console.log('message channel', messageChannel)
+var timeToRemove = moment().subtract('m', 1).unix(); //Remove messages before min ago
+
+redisClient.zrangebyscore(messageChannel, 0, timeToRemove, function(err, result) {
+  if(result &amp;&amp; result.length &gt; 0) {
+    for (var resultIndex in result) {
+      var message = JSON.parse(result[resultIndex]);
+      //NOTE: Using socket.io
+      io.emit('message:remove:channel:' + channel, { message: message, channel: channel });
+    }
+  }
+});
+
+redisClient.zremrangebyscore(messageChannel, 0, timeToRemove, function(err, result) {
+  console.log('Removed ', result, ' messages');
+});
+</code></pre>
+
+<p>  }
+}
+```</p>
+
+<h2>The client &ndash; Ionic</h2>
+
+<p>This was by far the easy part. First I just used the Ionic CLI to create a basic app.</p>
+
+<p>I started by modifying the index.html file to include Socket.io. Nothing too fancy: <code>&lt;script src="js/socket.io.js"&gt;&lt;/script&gt;</code>.</p>
+
+<p>Next, I used some AngularJS <a href="https://github.com/jbavari/ionic-socket.io-redis-chat/blob/master/client/RedisChat/www/js/services.js">services</a> for socket.io:</p>
+
+<p>```
+angular.module(&lsquo;services&rsquo;, [])</p>
+
+<p>.factory(&lsquo;socket&rsquo;, function socket($rootScope) {
+  var socket = io.connect(baseUrl);
+  return {</p>
+
+<pre><code>on: function (eventName, callback) {
+  socket.on(eventName, function () {  
+    var args = arguments;
+    $rootScope.$apply(function () {
+      callback.apply(socket, args);
+    });
+  });
+},
+emit: function (eventName, data, callback) {
+  socket.emit(eventName, data, function () {
+    var args = arguments;
+    $rootScope.$apply(function () {
+      if (callback) {
+        callback.apply(socket, args);
+      }
+    });
+  })
+}
+</code></pre>
+
+<p>  };
+})
+```</p>
+
+<p>Then, I constructed my <code>AppCtrl</code> to handle my <a href="https://github.com/jbavari/ionic-socket.io-redis-chat/blob/master/client/RedisChat/www/js/controllers.js">controllers</a> interaction with Socket.io:</p>
+
+<p>``` js
+angular.module(&lsquo;starter.controllers&rsquo;, [&lsquo;services&rsquo;])</p>
+
+<p>.controller(&lsquo;AppCtrl&rsquo;, function($scope, $state, $filter, socket, Auth) {</p>
+
+<pre><code>//Ensure they are authed first.
+if(Auth.currentUser() == null) {
+    $state.go('login');
+    return;
+}
+
+//input models
+$scope.draft = { message: '' };
+$scope.channel = { name: '' };
+
+//App info
+$scope.channels = [];
+$scope.listeningChannels = [];
+$scope.activeChannel = null;
+$scope.userName = Auth.currentUser().name;
+$scope.messages = [];
+</code></pre>
+
+<p>///////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////
+//Socket.io listeners
+///////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////</p>
+
+<pre><code>socket.on('channels', function channels(channels){
+    console.log('channels', channels);
+
+    console.log(channels);
+    $scope.channels = channels;
+});
+
+socket.on('message:received', function messageReceived(message) {
+    $scope.messages.push(message);
+});
+
+socket.emit('user:joined', {name: Auth.currentUser().name});
+
+socket.on('user:joined', function(user) {
+    console.log('user:joined');
+    $scope.messages.push(user);
+});
+
+$scope.listenChannel = function listenChannel (channel) {
+    socket.on('messages:channel:' + channel, function messages(messages) {
+        console.log('got messages: ', messages);
+        console.log(messages.length);
+        for(var i = 0, j = messages.length; i &lt; j; i++) {
+            var message = messages[i];
+            console.log('message');
+            console.log(message);
+                console.log('apply with function');
+            $scope.messages.push(message);
+        }
+    });
+
+    socket.on('message:channel:' + channel, function message(message) {
+        console.log('got message: ' + message);
+        if(channel != $scope.activeChannel) {
+            return;
+        }
+        $scope.messages.push(message);
+    });
+
+    socket.on('message:remove:channel:' + channel, function(removalInfo) {
+        console.log('removalInfo to remove: ', removalInfo);
+        var expires = removalInfo.message.expires;
+        var expireMessageIndex = $filter('messageByExpires')($scope.messages, expires);
+        if(expireMessageIndex) {
+            $scope.messages.splice(expireMessageIndex, 1);
+        }
+
+    });
+
+    $scope.listeningChannels.push(channel);
+
+}
+</code></pre>
+
+<p>///////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////
+// Controller methods
+///////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////</p>
+
+<pre><code>$scope.joinChannel = function joinChannel(channel) {
+    $scope.activeChannel = channel;
+    $scope.messages = [];
+
+    $scope.channel.name = '';
+
+    //Listen to channel if we dont have it already.
+    if($scope.listeningChannels.indexOf(channel) == -1) {
+        $scope.listenChannel(channel);      
+    }
+
+    socket.emit('channel:join', { channel: channel, name: Auth.currentUser().name });
+}
+
+$scope.sendMessage = function sendMessage(draft) {
+    if(!draft.message || draft.message == null || typeof draft == 'undefined' || draft.length == 0) {
+        return;
+    }
+    socket.emit('message:send', { message: draft.message, name: Auth.currentUser().name, channel: $scope.activeChannel });
+    $scope.draft.message = '';
+};
+
+$scope.logout = function logout() {
+    Auth.logout();
+    $state.go('login');
+}
+
+//Auto join the lobby
+$scope.joinChannel('Lobby');
+</code></pre>
+
+<p>})
+```</p>
+
+<p>All of the code can be found on <a href="https://github.com/jbavari/ionic-socket.io-redis-chat">github here</a>.</p>
+
+<h3>Things to improve</h3>
+
+<ul>
+<li>Testing &ndash; for sure. I definitely failed in getting tests first</li>
+<li>Removing the inline functions from Socket.io callbacks &ndash; not sure I like how I handled that to be honest</li>
+<li>Improve the UI</li>
+<li>Actually make the channels expire over time &ndash; and alert the user</li>
+<li>Have some kind of location tracking to pull local channels near you</li>
+</ul>
+
+
+<p>Enjoy! Hope this helps any others learn some tips for developing in any of these technologies used!</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Moving Forward with Phonegap / Cordova Plugins]]></title>
+    <link href="http://jbavari.github.io/blog/2014/05/17/moving-forward-with-phonegap-slash-cordova-plugins/"/>
+    <updated>2014-05-17T15:24:00-06:00</updated>
+    <id>http://jbavari.github.io/blog/2014/05/17/moving-forward-with-phonegap-slash-cordova-plugins</id>
+    <content type="html"><![CDATA[<p>I spoke about how plugins work and how to create plugins in Cordova at KCDC. I wanted to make sure my slides are available to any who wanted to view them.</p>
+
+<p>The slides are located <a href="http://jbavari.github.io/MovingForwardWithCordovaPlugins/">here</a>.</p>
+
+<p>I hope this is helpful for some out there,
+Enjoy!</p>
+]]></content>
+  </entry>
+  
+</feed>

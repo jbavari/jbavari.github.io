@@ -1,0 +1,331 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Puppet: A Testing Handbook - Josh Bavari's Ramblings</title>
+  <meta name="author" content="Josh Bavari">
+
+  
+  <meta name="description" content="Explain why the post &ndash; job required, growing pains, need for stability and health of the repo
+Why to test
+What to test
+How to test Lint &ndash &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://jbavari.github.io/blog/2017/04/16/puppet-a-testing-handbook">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="Josh Bavari's Ramblings" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">Josh Bavari's Ramblings</a></h1>
+  
+    <h2>tech babbles on Ruby, Javascript, Rails, Phonegap/Cordova, Grunt, and more</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:jbavari.github.io" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+  <li><a href="/about">About</a></li>
+  <li><a href="/speaking">Speaking</a></li>
+  <li><a href="/knowledge">Knowledge</a></li>
+  <li><a href="/about/resume">Resume</a></li>
+  <li><a href="/cv">C.V.</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Puppet: A Testing Handbook</h1>
+    
+    
+      <p class="meta">
+        <span class="reading-time">about a 1 minute read</span>
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2017-04-16T13:09:00-06:00" pubdate data-updated="true">Apr 16<span>th</span>, 2017</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><ul>
+<li>Explain why the post &ndash; job required, growing pains, need for stability and health of the repo</li>
+<li>Why to test</li>
+<li>What to test</li>
+<li>How to test
+<strong> Lint &ndash; Rake file
+</strong> Parser &ndash; rake file with globbing to run easier
+<strong> Rspec &ndash; spec type tests to run on puppet code (syntax mainly)
+</strong> Beaker &ndash; run tests on provisioned VM to ensure correct</li>
+</ul>
+
+
+<p>Cover:</p>
+
+<p>puppet-lint
+puppet parser validate &lt;manifest.pp>
+puppet-rspec &ndash; A gem that runs rspec unit tests on a module (Based on compiled catalog)
+Beaker</p>
+
+<hr />
+
+<p>Part of my role at work is managing a fleet of robots, servers, and other
+infrastructure responsible for running our business. Due to the nature of our
+business, we run within customer warehouses.</p>
+
+<p>Being a one man operation, one of my main concerns is keeping all the systems
+stable and proper working conditions. I am not the only developer touching our
+puppet code, but I&rsquo;m the one responsible for the system(s).</p>
+
+<p>As I embarked on the journey to add reliability to our infrastructure, something
+very clear came up: there&rsquo;s a lot of information about testing puppet, but most
+of it is fractured, out of date, or hard to understand. <a href="https://www.slideshare.net/PuppetLabs/puppetconf-2016-the-future-of-testing-puppet-code-gareth-rushgrove-puppet?qid=eee7d5c2-f52e-4ceb-8000-42e4fc174721&amp;v=&amp;b=&amp;from_search=2">See this slideshow from 2016 about the state of testing puppet</a>.</p>
+
+<p>I&rsquo;m writing this post up to act as a handbook of sorts for testing puppet, as
+well as a &lsquo;repository&rsquo; for testing puppet.</p>
+
+<h1>Testing resources</h1>
+
+<ul>
+<li><a href="http://puppet-lint.com/">Puppet-lint</a> &ndash; Useful for linting your puppet code</li>
+<li><a href="http://rspec-puppet.com/">Rspec Puppet</a> &ndash; Rspec tests for puppet code</li>
+<li><a href="https://docs.puppet.com/puppet/4.10/tests_smoke.html">Puppet: module smoke testing</a></li>
+<li><a href="http://www.example42.com/tutorials/PuppetTutorial/#slide-80">Slideshow about all things puppet</a></li>
+<li><a href="https://www.safaribooksonline.com/library/view/extending-puppet-/9781785885686/">Extending Puppet &ndash; Second Edition</a></li>
+<li><a href="https://github.com/puppetlabs/beaker/">Beaker</a></li>
+<li><a href="http://www.xkyle.com/getting-started-puppet-acceptance-tests-with-beaker/">Getting Started Puppet Acceptance Tests With Beaker</a></li>
+<li><a href="https://github.com/puppetlabs/puppetlabs-mysql/tree/master/spec">Great example of testing &ndash; Puppet MySQL module</a></li>
+<li><a href="https://github.com/puppetlabs/puppetlabs_spec_helper">Puppetlabs Spec Helper</a></li>
+<li><a href="https://www.puppetcookbook.com/posts/simple-syntax-check-manifests.html">Puppet Cookbook &ndash; Simple Syntax Check</a></li>
+<li><a href="http://www.cakesolutions.net/teamblogs/testing-puppet">Testing Puppet</a></li>
+</ul>
+
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Josh Bavari</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2017-04-16T13:09:00-06:00" pubdate data-updated="true">Apr 16<span>th</span>, 2017</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/puppet/'>puppet</a>, <a class='category' href='/blog/categories/testing/'>testing</a>, <a class='category' href='/blog/categories/vagrant/'>vagrant</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://jbavari.github.io/blog/2017/04/16/puppet-a-testing-handbook/" data-via="jbavari" data-counturl="http://jbavari.github.io/blog/2017/04/16/puppet-a-testing-handbook/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2017/03/13/test-coverage-reports-in-elixir/" title="Previous Post: Test Coverage Reports in Elixir">&laquo; Test Coverage Reports in Elixir</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2017/04/16/puppet-a-testing-handbook/">Puppet: A Testing Handbook</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2017/03/13/test-coverage-reports-in-elixir/">Test Coverage Reports in Elixir</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/12/29/multicast-service-discovery-in-electron/">Multicast Service Discovery in Electron</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/03/11/using-erlang-observer-on-a-remote-elixir-server/">Using Erlang Observer on a Remote Elixir Server</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/01/24/custom-json-encoding-in-phoenix/">Custom JSON Encoding in Phoenix</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/jbavari">@jbavari</a> on GitHub
+  
+  <script type="text/javascript">
+    $(document).ready(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'jbavari',
+            count: 0,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2019 - Josh Bavari -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+  <script src="//static.getclicky.com/js" type="text/javascript"></script>
+  <script type="text/javascript">try{ clicky.init(100896582); }catch(e){}</script>
+  <noscript><p><img alt="Clicky" width="1" height="1" src="//in.getclicky.com/100896582ns.gif" /></p></noscript>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'joshbavari';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://jbavari.github.io/blog/2017/04/16/puppet-a-testing-handbook/';
+        var disqus_url = 'http://jbavari.github.io/blog/2017/04/16/puppet-a-testing-handbook/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

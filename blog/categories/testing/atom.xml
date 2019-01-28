@@ -1,0 +1,487 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: testing | Josh Bavari's Ramblings]]></title>
+  <link href="http://jbavari.github.io/blog/categories/testing/atom.xml" rel="self"/>
+  <link href="http://jbavari.github.io/"/>
+  <updated>2019-01-27T19:16:40-07:00</updated>
+  <id>http://jbavari.github.io/</id>
+  <author>
+    <name><![CDATA[Josh Bavari]]></name>
+    <email><![CDATA[jbavari@gmail.com]]></email>
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Puppet: A Testing Handbook]]></title>
+    <link href="http://jbavari.github.io/blog/2017/04/16/puppet-a-testing-handbook/"/>
+    <updated>2017-04-16T13:09:00-06:00</updated>
+    <id>http://jbavari.github.io/blog/2017/04/16/puppet-a-testing-handbook</id>
+    <content type="html"><![CDATA[<ul>
+<li>Explain why the post &ndash; job required, growing pains, need for stability and health of the repo</li>
+<li>Why to test</li>
+<li>What to test</li>
+<li>How to test
+<strong> Lint &ndash; Rake file
+</strong> Parser &ndash; rake file with globbing to run easier
+<strong> Rspec &ndash; spec type tests to run on puppet code (syntax mainly)
+</strong> Beaker &ndash; run tests on provisioned VM to ensure correct</li>
+</ul>
+
+
+<p>Cover:</p>
+
+<p>puppet-lint
+puppet parser validate &lt;manifest.pp>
+puppet-rspec &ndash; A gem that runs rspec unit tests on a module (Based on compiled catalog)
+Beaker</p>
+
+<hr />
+
+<p>Part of my role at work is managing a fleet of robots, servers, and other
+infrastructure responsible for running our business. Due to the nature of our
+business, we run within customer warehouses.</p>
+
+<p>Being a one man operation, one of my main concerns is keeping all the systems
+stable and proper working conditions. I am not the only developer touching our
+puppet code, but I&rsquo;m the one responsible for the system(s).</p>
+
+<p>As I embarked on the journey to add reliability to our infrastructure, something
+very clear came up: there&rsquo;s a lot of information about testing puppet, but most
+of it is fractured, out of date, or hard to understand. <a href="https://www.slideshare.net/PuppetLabs/puppetconf-2016-the-future-of-testing-puppet-code-gareth-rushgrove-puppet?qid=eee7d5c2-f52e-4ceb-8000-42e4fc174721&amp;v=&amp;b=&amp;from_search=2">See this slideshow from 2016 about the state of testing puppet</a>.</p>
+
+<p>I&rsquo;m writing this post up to act as a handbook of sorts for testing puppet, as
+well as a &lsquo;repository&rsquo; for testing puppet.</p>
+
+<h1>Testing resources</h1>
+
+<ul>
+<li><a href="http://puppet-lint.com/">Puppet-lint</a> &ndash; Useful for linting your puppet code</li>
+<li><a href="http://rspec-puppet.com/">Rspec Puppet</a> &ndash; Rspec tests for puppet code</li>
+<li><a href="https://docs.puppet.com/puppet/4.10/tests_smoke.html">Puppet: module smoke testing</a></li>
+<li><a href="http://www.example42.com/tutorials/PuppetTutorial/#slide-80">Slideshow about all things puppet</a></li>
+<li><a href="https://www.safaribooksonline.com/library/view/extending-puppet-/9781785885686/">Extending Puppet &ndash; Second Edition</a></li>
+<li><a href="https://github.com/puppetlabs/beaker/">Beaker</a></li>
+<li><a href="http://www.xkyle.com/getting-started-puppet-acceptance-tests-with-beaker/">Getting Started Puppet Acceptance Tests With Beaker</a></li>
+<li><a href="https://github.com/puppetlabs/puppetlabs-mysql/tree/master/spec">Great example of testing &ndash; Puppet MySQL module</a></li>
+<li><a href="https://github.com/puppetlabs/puppetlabs_spec_helper">Puppetlabs Spec Helper</a></li>
+<li><a href="https://www.puppetcookbook.com/posts/simple-syntax-check-manifests.html">Puppet Cookbook &ndash; Simple Syntax Check</a></li>
+<li><a href="http://www.cakesolutions.net/teamblogs/testing-puppet">Testing Puppet</a></li>
+</ul>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Writing Unit Tests for Electron and AngularJS]]></title>
+    <link href="http://jbavari.github.io/blog/2015/08/12/writing-unit-tests-for-electron-and-angularjs/"/>
+    <updated>2015-08-12T19:53:00-06:00</updated>
+    <id>http://jbavari.github.io/blog/2015/08/12/writing-unit-tests-for-electron-and-angularjs</id>
+    <content type="html"><![CDATA[<p>Unit testing is something most of us dev&rsquo;s don&rsquo;t think much of. Until we encounter some simple to solve bugs or have regressions in code that drives us crazy.</p>
+
+<p>JavaScript testing itself is hard with no clear cut path to take. Most times, you&rsquo;ll have to decide important things for yourself as far as which testing framework to use and the tools to do them.</p>
+
+<p>I enjoy Jasmine testing framework right now. For my node projects, I like to use the node package <a href="https://github.com/mhevery/jasmine-node">jasmine-node</a>. However, Electron is basically a web browser with node conveniences, so we want to test browser related things.</p>
+
+<p>Since Electron applications take a unique approach to combining elements from the browser with conveniences from node, such as <code>require</code>, <code>__dirname</code>, <code>global</code> and other keywords specific to node, testing gets a little more complicated.</p>
+
+<p>I&rsquo;m going to outline a few of the approaches I took. I&rsquo;m sure they are not perfect, I&rsquo;m still learning and I&rsquo;m outlining that here.</p>
+
+<h2>Tools of the trade</h2>
+
+<p>I outlined <a href="http://jbavari.github.io/blog/2014/06/11/unit-testing-angularjs-services/">some things I did to test AngularJS</a> in a previous post. I pretty much use the same tools and set up:</p>
+
+<p><code>sh
+npm install -g karma karma-jasmine karma-phantomjs-launcher karma-spec-reporter phantomjs
+</code></p>
+
+<p>Now I&rsquo;ve got my <code>karma.config.js</code> file:</p>
+
+<p><code>js
+//..snip..
+// list of files / patterns to load in the browser
+files: [
+  'www/lib/angular/angular.min.js',
+  'node_modules/angular-mocks/angular-mocks.js',
+  'www/js/**/*.js',
+  'spec/**/*.js'
+]
+//..snip..
+</code></p>
+
+<p>Now we&rsquo;re set up to do some testing!</p>
+
+<h2>Exposing <code>require</code> to AngularJS service</h2>
+
+<p>I first wanted a one stop shop for all my node conveniences in one angular js service to contain what Electron provides.</p>
+
+<p>Here&rsquo;s my service:</p>
+
+<p>``` js
+angular.module(&lsquo;app.services&rsquo;)
+.factory(&lsquo;NodeService&rsquo;, function() {
+  var fixPath = require(&lsquo;fix-path&rsquo;),</p>
+
+<pre><code>  fs = require('fs'),
+  ipc = require('ipc'),
+  opn = require('opn'),
+  path = require('path'),
+  shell = require('shell');
+</code></pre>
+
+<p>  //Fixes the path issue with node being run outside of this GUI<br/>
+  fixPath();
+  process.env.PATH = process.env.PATH + &lsquo;:/usr/local/bin&rsquo;;</p>
+
+<p>  //Path from root &ndash;> &lsquo;www&rsquo;
+  //<strong>dirname == &lsquo;www&rsquo; dir
+  var appJsonPath = path.join(</strong>dirname, &lsquo;package.json&rsquo;);
+  var appJson = require(appJsonPath);</p>
+
+<p>  return {</p>
+
+<pre><code>appJson: appJson,
+fixPath: fixPath,
+fs: fs,
+ipc: ipc,
+opn: opn,
+path: path;
+</code></pre>
+
+<p>  };
+});
+```</p>
+
+<h2>Test set up for Service</h2>
+
+<p>Now, hopefully I have all my node conveniences in one place (<code>require</code>, <code>__dirname</code>, etc).</p>
+
+<p>Let&rsquo;s get a simple test up:</p>
+
+<p>``` js
+describe(&lsquo;#NodeService&rsquo;, function() {
+  var NodeService;</p>
+
+<p>  beforeEach(function() {</p>
+
+<pre><code>  //Ensure angular modules available
+module('app.services');
+</code></pre>
+
+<p>  });</p>
+
+<p>  beforeEach(inject(function(<em>NodeService</em>) {</p>
+
+<pre><code>NodeService = _NodeService_;
+</code></pre>
+
+<p>  }));</p>
+
+<p>  it(&lsquo;should have node service defined&rsquo;, function() {</p>
+
+<pre><code>expect(NodeService).toBeDefined();
+</code></pre>
+
+<p>  });
+});
+```</p>
+
+<p>If we run this test without anything else, we&rsquo;ll see immediately a problem:</p>
+
+<p><code>sh
+ReferenceError: Can't find variable: require
+</code></p>
+
+<p>My approach to this is simple &ndash; create a faked out global variable that represents <code>require</code> and does what you want, such as:</p>
+
+<p>``` js
+var fakePackageJson = { name: &ldquo;Fake package.json name&rdquo; };
+window.require = function(requirePath) {
+  console.log(&lsquo;Requiring:&rsquo;, requirePath);
+  switch(requirePath) {</p>
+
+<pre><code>case 'ipc':
+  return ipcSpy;
+case 'fs':
+  return fsSpy;
+case '/spec/package.json':
+  return fakePackageJson;
+</code></pre>
+
+<p>  }
+};
+window.__dirname = &lsquo;/some/fake/path&rsquo;;
+```</p>
+
+<h2>Package.json test setup</h2>
+
+<p>Let&rsquo;s define some quick <code>scripts</code> to run from our package.json to help others run our tests:</p>
+
+<p>``` json
+//..snip..
+  &ldquo;scripts&rdquo;: {</p>
+
+<pre><code>"test": "karma start"
+</code></pre>
+
+<p>  }
+//..snip
+```</p>
+
+<p>Now when we run our tests, we&rsquo;ll have the faked out node modules passed back.</p>
+
+<p>This is just one approach to take to setting up some faking out for node modules using Electron, Angular JS, and Jasmine.</p>
+
+<p>Hope this helps.</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[AngularJS - testing HTTP Post Data]]></title>
+    <link href="http://jbavari.github.io/blog/2014/06/23/angularjs-testing-http-post-data/"/>
+    <updated>2014-06-23T13:37:00-06:00</updated>
+    <id>http://jbavari.github.io/blog/2014/06/23/angularjs-testing-http-post-data</id>
+    <content type="html"><![CDATA[<p>I&rsquo;ve been doing a lot of testing lately in AngularJS, as I&rsquo;m sure you can tell from my many posts as of late.</p>
+
+<p>One thing I&rsquo;m always curious about is whether or not I&rsquo;m doing things correctly. Testing always helps reinforce this, as does publishing blogs and getting feedback from my peers.</p>
+
+<h2>Problem</h2>
+
+<p>Many times I&rsquo;ll have my AngularJS service fire off an HTTP post request to the server for a message. I can&rsquo;t even begin to tell you how much I sometimes butcher my POST request data.</p>
+
+<p>I wrote a test to verify my post data was correct for the following function:</p>
+
+<p>``` js
+var sendPost = function sendPost(post) {</p>
+
+<pre><code>var deferred = $q.defer();
+var publishPostPath = 'http://example.com/post';
+var postData = { 
+    event_user_id: Auth.currentUser().id,
+    lat: location == null ? post.lat : 0,
+    lon: location == null ? post.lon : 0,
+    message: post.storyMessage,
+    post_fb: post.postToFB, 
+    post_twitter: post.postToTwitter,
+    post_team: post.postToTeam,
+    tag: selectedTagId == null ? 0 : selectedTagId
+};
+
+$http.post(publishPostPath, postData).success(function(data) {
+    if(data) {
+        deferred.resolve(data);
+    } else {
+        deferred.reject(data);
+    }
+}).error(function(error) {
+    deferred.reject(error);
+});
+
+return deferred.promise;
+</code></pre>
+
+<p>}
+```</p>
+
+<p>Pretty simple, nothing too fancy.</p>
+
+<p>I want to test this bad boy and make sure its passing the correct post data parameters. Luckily for us, AngularJS gives us our friendly <code>$httpBackend</code> tool to do things like this:</p>
+
+<p><code>js
+// Method declaration
+expect(method, url, [data], [headers]);
+</code></p>
+
+<p>One thing to note, is the function for <code>[data]</code> is a version of the POST data object after its been run through something like <code>JSON.stringify</code>.</p>
+
+<p>A full test looks like this:</p>
+
+<p>``` js
+it(&lsquo;should have true returned for proper sendPost&rsquo;, function() {</p>
+
+<pre><code>var post = {storyMessage: 'Hello', postToFB: true, postToTwitter: true, postToTeam: false};
+$httpBackend.when('POST', 'http://example.com/post',
+    function(postData) {
+        jsonData = JSON.parse(postData);
+        expect(jsonData.message).toBe(post.storyMessage);
+        expect(jsonData.post_fb).toBe(post.postToFB);
+        expect(jsonData.post_twitter).toBe(post.postToTwitter);
+        expect(jsonData.post_team).toBe(post.postToTeam);
+        return true;
+    }
+).respond(200, true );
+
+Feed.sendPost(post).then(function(d) {
+    expect(d).toBeTruthy();
+});
+
+$httpBackend.flush();
+</code></pre>
+
+<p>});
+```</p>
+
+<p>Going forward, there should be no excuses as to why my HTTP post requests fail due to parameters being passed or set incorrectly.</p>
+
+<p>I hope this helps any others looking to test their post data parameters.</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Testing Interceptor Headers in AngularJS]]></title>
+    <link href="http://jbavari.github.io/blog/2014/06/20/testing-interceptor-headers-in-angularjs/"/>
+    <updated>2014-06-20T21:22:00-06:00</updated>
+    <id>http://jbavari.github.io/blog/2014/06/20/testing-interceptor-headers-in-angularjs</id>
+    <content type="html"><![CDATA[<p>In AngularJS, you can set up <a href="https://docs.angularjs.org/api/ng/service/$http">HTTP Interceptors</a> (middleware) to inject headers etc.</p>
+
+<p>I had a service that I wanted to intercept every http request to our API service to attach a token that we consume to verify a user. This would only happen once a token is set.</p>
+
+<p>Today I paired with <a href="https://twitter.com/jeff_french">Jeff French</a>. We figured out how to test the AngularJS interceptors properly.</p>
+
+<p>Things I want to test:</p>
+
+<ul>
+<li>Is the token only being attached when a token is set?</li>
+<li>Are the requests actually being attached via the interceptor</li>
+</ul>
+
+
+<p>The service and interceptor look like this:</p>
+
+<p>``` js
+angular.moduler(&lsquo;services&rsquo;)
+.factory(&lsquo;RequestService&rsquo;, function RequestService(){</p>
+
+<pre><code>var token = null;
+
+var setToken = function setToken(someToken) {
+    token = someToken;
+}
+
+var getToken = function getToken() {
+    return token;
+}
+
+var request = function request(config) {
+    if (token) {
+        // jqXHR.setRequestHeader('Authorization','Token token="' + app.user.api_key.access_token + '"');
+        config.headers['Authorization'] = 'Token token="' + token + '"';
+    }
+    return config;
+}
+
+return {
+    setToken: setToken,
+    getToken: getToken,
+    request: request
+}
+</code></pre>
+
+<p>})</p>
+
+<p>.config([&lsquo;$httpProvider&rsquo;, function($httpProvider) {</p>
+
+<pre><code>$httpProvider.interceptors.push('RequestService');
+</code></pre>
+
+<p>}]);</p>
+
+<p>```</p>
+
+<p>With just a few simple tests, I&rsquo;m asserting a few things:</p>
+
+<ul>
+<li>I have no simple ParseError or ReferenceErrors</li>
+<li>Modules are set up correctly</li>
+<li>Interceptors are set up correctly</li>
+<li>My service is actually setting the token correctly</li>
+<li>The interceptor is attaching the header correctly</li>
+</ul>
+
+
+<p>``` js
+&ldquo;use strict&rdquo;;</p>
+
+<p>var httpProviderIt;</p>
+
+<p>describe(&ldquo;Service Unit Tests&rdquo;, function() {</p>
+
+<p>  beforeEach(function() {</p>
+
+<pre><code>module('services', function ($httpProvider) {
+  //save our interceptor
+  httpProviderIt = $httpProvider;
+});
+
+inject(function (_AuthService_, _RequestService_) {
+  RequestService = _RequestService_;
+  AuthService = _AuthService_;
+})
+</code></pre>
+
+<p>  });</p>
+
+<p>  var RequestService, AuthService;
+  var $httpBackend;
+  var token = &lsquo;someToken&rsquo;;</p>
+
+<p>  describe(&lsquo;RequestService Tests&rsquo;, function() {</p>
+
+<pre><code>it('should have RequestService be defined', function () {
+  expect(RequestService).toBeDefined();
+});
+
+it('should properly set an api token', function() {
+  expect(RequestService.getToken()).toBeNull();
+  RequestService.setToken(token);
+  expect(RequestService.getToken()).toBe(token);
+});
+
+it('should save the users api token after saveUser', function() {
+  spyOn(RequestService, 'setToken');
+  Auth.saveUser(apiResponse);
+  expect(RequestService.setToken).toHaveBeenCalled();
+});
+
+it('should have no api token upon start up', function() {
+  var token = RequestService.getToken();
+  expect(token).toBeNull();
+});
+
+describe('HTTP tests', function () {
+
+  it('should have the RequestService as an interceptor', function () {
+      expect(httpProviderIt.interceptors).toContain('RequestService');
+  });
+
+  it('should token in the headers after setting', function() {
+    RequestService.setToken(token);
+    $httpBackend.when('GET', 'http://example.com', null, function(headers) {
+      expect(headers.Authorization).toBe(token);
+    }).respond(200, {name: 'example' });
+  });
+
+  it('should not place a token in the http request headers if no token is set', function() {
+    var config = RequestService.request({headers: {} });
+    expect(config.headers['Authorization']).toBe(undefined);
+  });
+
+  it('should place a token in the http request headers after a token is set', function() {
+    RequestService.setToken(token);
+    var config = RequestService.request({headers: {} });
+    expect(config.headers['Authorization']).toBe('Token token="' + token + '"');
+  });
+}); //Mocked HTTP Requests
+</code></pre>
+
+<p>  }); //RequestService tests</p>
+
+<p>});
+```</p>
+
+<p>Simple and sweet.</p>
+]]></content>
+  </entry>
+  
+</feed>

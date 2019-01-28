@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: snapsvg | Josh Bavari's Ramblings]]></title>
+  <link href="http://jbavari.github.io/blog/categories/snapsvg/atom.xml" rel="self"/>
+  <link href="http://jbavari.github.io/"/>
+  <updated>2019-01-27T19:16:40-07:00</updated>
+  <id>http://jbavari.github.io/</id>
+  <author>
+    <name><![CDATA[Josh Bavari]]></name>
+    <email><![CDATA[jbavari@gmail.com]]></email>
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[A field guide to Snap.svg]]></title>
+    <link href="http://jbavari.github.io/blog/2014/10/23/a-field-guide-to-snap-dot-svg/"/>
+    <updated>2014-10-23T12:31:00-06:00</updated>
+    <id>http://jbavari.github.io/blog/2014/10/23/a-field-guide-to-snap-dot-svg</id>
+    <content type="html"><![CDATA[<p>This last weekend I spent a little time on a fun little side project to learn how to use <a href="http://snapsvg.io/">Snap.svg</a>. I was trying to take my friend Rob&rsquo;s datachomp character and make it a little interactive.</p>
+
+<p>After trying to do what I thought was a few simple little hacks with his PNG image, it turned out to be a great way to fully learn and understand SVG and the Snap.svg library.</p>
+
+<p>I have to admit I did not fully understand what SVG was and what it was composed of. I wanted to compile a list of thoughts, links, blogs, and tutorials that helped me learn along the way.</p>
+
+<h2>What SVG is and what it isnt</h2>
+
+<p>First of all, I had to learn that there are two image types &ndash; ones that scale (vector), and ones that are defined with strict sizes (bitmaps). For the longest time, I admit I thought they were basically the same.</p>
+
+<p>Vectors are mainly svg, while bitmap types are jpeg, png, gif, to name a few.</p>
+
+<p>You&rsquo;d want to use an svg element when you need an image that can grow without looking skewed. You&rsquo;d want to use a bitmap type when the size can remain the same.</p>
+
+<p>One thing to note is, svg&rsquo;s can contain bitmap images as well, as in this example:</p>
+
+<p>``` html
+<html>
+  <body></p>
+
+<pre><code>&lt;svg id="svg-node"&gt;
+  &lt;circle id="svg-element"&gt;
+  &lt;image id="datachomp-arm" sketch:type="MSBitmapLayer" x="0" y="0" width="269" height="209" xlink:href="img/datachomp/arm.png"&gt;&lt;/image&gt;
+&lt;/svg&gt;
+</code></pre>
+
+<p>  </body>
+</html>
+```</p>
+
+<h2>Svg editors vs bitmap editors</h2>
+
+<p>My undertanding is that most bitmap editors can&rsquo;t do svg. GIMP, photoshop, and other editors like these are bitmap editors. Although they can create paths and export them, for the most part, they cannot do svg type modifications.</p>
+
+<p>Some svg editors are illustrator, inkscape, and fireworks, to name a few.</p>
+
+<p>Most vector editors can import bitmap images and use them as an svg element. My understanding is, they cant really modify them other than stretch/skewing them. However, I could and probably am wrong about this. (I dont pretend to be an expert at this!)</p>
+
+<h2>Svg understanding</h2>
+
+<p>To start, Mozilla Developer Network had a great set of documents to help understand SVG: what it is, what elements it&rsquo;s composed of, and how to define shapes, paths, and transforms.</p>
+
+<p><a href="https://developer.mozilla.org/en-US/docs/Web/SVG/Tutorial/Introduction">MDN SVG tutorial</a></p>
+
+<p>From the article:
+<code>
+Scalable Vector Graphics (SVG) is an XML markup language for describing two-dimensional vector graphics. SVG is essentially to graphics what XHTML is to text.
+</code></p>
+
+<p>That being said, you&rsquo;d be interested to know that inside of a root <code>svg</code> element, it contains other elements. Here&rsquo;s a <a href="https://developer.mozilla.org/en-US/docs/Web/SVG/Element">list of those elements available</a>.</p>
+
+<h2>Using Snap.svg to make svg elements look alive</h2>
+
+<h3>Modifying svg element attributes</h3>
+
+<p>You can access and modify any attribute on any element from Snap.svg. Examples could be the stroke, the width of the stroke, the x/y coordinates of the element, and many other <a href="https://developer.mozilla.org/en-US/docs/Web/SVG/Attribute">attributes</a>.</p>
+
+<p>First, select the element (using Snap), then do a call to <code>elem.attr({})</code>:</p>
+
+<p>Html:</p>
+
+<p>``` html
+<html>
+  <body></p>
+
+<pre><code>&lt;svg id="svg-node"&gt;
+  &lt;circle id="svg-element"&gt;
+&lt;/svg&gt;
+</code></pre>
+
+<p>  </body>
+</html>
+```</p>
+
+<p>JavaScript:</p>
+
+<p>``` js
+var svgNode = Snap.select(&lsquo;#svg-node&rsquo;),</p>
+
+<pre><code>svgElement = svgNode.select('#svg-element');
+</code></pre>
+
+<p>svgElement.attr({</p>
+
+<pre><code>fill: "#bada55",
+stroke: "#000",
+strokeWidth: 5,
+x: 50,
+y: 100
+</code></pre>
+
+<p>});
+```</p>
+
+<h3>Transforms</h3>
+
+<p><a href="http://snapsvg.io/docs/#Element.transform">Snap.svg</a> defines some methods to help you transform your svg elements. It looks like this:</p>
+
+<p>``` js
+var arm = datachomp = Snap.select(&ldquo;#datachomp&rdquo;),</p>
+
+<pre><code>  arm = datachomp.select("#datachomp-arm");
+</code></pre>
+
+<p>var elementTransform = &ldquo;t0,-80r360t-30,0r360t-30,30t-10,10&rdquo;;
+arm.animate({transform: tAmt}, 500, mina.elastic);
+```</p>
+
+<p>However, I was having some trouble understanding the transform string syntax. The author also created <a href="http://raphaeljs.com/">Raphael.js</a> and provides some additional documentation on how to <a href="http://raphaeljs.com/reference.html#Element.transform">understand transform strings here</a>.</p>
+
+<p>Taken from the Raphael reference:</p>
+
+<p>``
+Each letter is a command. There are four commands: t is for translate, r is for rotate, s is for scale and m is for matrix.</p>
+
+<p>There are also alternative &lsquo;absolute&rsquo; translation, rotation and scale: T, R and S. They will not take previous transformation into account. For example, &hellip;T100,0 will always move element 100 px horisontally, while &hellip;t100,0 could move it vertically if there is r90 before. Just compare results of r90t100,0 and r90T100,0.</p>
+
+<p>So, the example line above could be read like &lsquo;translate by 100, 100; rotate 30° around 100, 100; scale twice around 100, 100; rotate 45° around centre; scale 1.5 times relative to centre&rsquo;. As you can see rotate and scale commands have origin coordinates as optional parameters, the default is the centre point of the element. Matrix accepts six parameters.
+``</p>
+
+<h3>Paths</h3>
+
+<p>Again I admit I knew very little about how to define a path. <a href="https://developer.mozilla.org/en-US/docs/Web/SVG/Tutorial/Paths">This document</a> helped tremendously in the different types of paths and how to define them.</p>
+
+<p>One task I wanted to do was make an svg element follow along a path. <a href="http://codepen.io/mattsince87/pen/snqLy">This CodePen</a> helped tremendously with figuring out how to make an element follow along with a path.</p>
+
+<p>Out of <a href="https://groups.google.com/forum/#!topic/snapsvg/TOYtCQvLNHA">this google group thread</a>, a code snippit comes up that helps:</p>
+
+<p>``` js
+//Snap.svg helper method to make an element trace a defined path</p>
+
+<p>function animateAlongPath( path, element, start, dur ) {</p>
+
+<pre><code>var len = Snap.path.getTotalLength( path );
+Snap.animate( start, len, function( value ) {
+        var movePoint = Snap.path.getPointAtLength( path, value );
+        element.attr({ x: movePoint.x, y: movePoint.y });
+}, dur);
+</code></pre>
+
+<p>};
+```</p>
+
+<p>I found a blog post with a demo that helped show some additional paths and how to use tools to create them, <a href="http://dropthebit.com/592/pathanimator-moving-along-an-svg-path/">found here</a>.</p>
+
+<p>I found another little hack on how to create paths using <a href="http://www.gimp.org/">GIMP</a>. First, start to create your path with the path tool. When you&rsquo;re done, select your path you created from the toolbar (under the &lsquo;paths&rsquo; tab), right click it, and select <code>export path</code>. That should give you an svg file with the path inside of it.</p>
+
+<h2>Svg vs Canvas</h2>
+
+<p>A question came up, when would you want to use svg over something like the canvas?</p>
+
+<p>After reading <a href="http://www.htmlgoodies.com/html5/other/html5-canvas-vs.-svg-choose-the-best-tool-for-the-job.html#fbid=9b7MQgV-6i0">this article</a>, the author makes a point for which you&rsquo;d want to use:</p>
+
+<p><code>
+SVG Relies on Files, Canvas Uses Pure Scripting
+SVG images are defined in XML. As a result, every SVG element is appended to the Document Object Model (DOM) and can be manipulated using a combination of JavaScript and CSS. Moreover, you can attach an event handlers to a SVG element or update its properties based on another document event. Canvas, on the other hand, is a simple graphics API. It draws pixels (extremely well I might add) and nothing more. Hence, there's no way to alter existing drawings or react to events. If you want to update the Canvas image, you have to redraw it.
+</code></p>
+
+<p>I&rsquo;ll continue updating this post as I learn more. I hope this helps others learn these svg topics with ease.</p>
+]]></content>
+  </entry>
+  
+</feed>

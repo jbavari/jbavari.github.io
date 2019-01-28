@@ -1,0 +1,468 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Exploring Best Practices with Docker for older libraries - Josh Bavari's Ramblings</title>
+  <meta name="author" content="Josh Bavari">
+
+  
+  <meta name="description" content="I am not pretending to be an expert about what&rsquo;s in this post, but merely a talking point to learn upon. Problem: I need to reassemble an old C &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://jbavari.github.io/blog/2014/10/21/exploring-best-practices-with-docker-for-older-libraries">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="Josh Bavari's Ramblings" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">Josh Bavari's Ramblings</a></h1>
+  
+    <h2>tech babbles on Ruby, Javascript, Rails, Phonegap/Cordova, Grunt, and more</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:jbavari.github.io" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+  <li><a href="/about">About</a></li>
+  <li><a href="/speaking">Speaking</a></li>
+  <li><a href="/knowledge">Knowledge</a></li>
+  <li><a href="/about/resume">Resume</a></li>
+  <li><a href="/cv">C.V.</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Exploring Best Practices With Docker for Older Libraries</h1>
+    
+    
+      <p class="meta">
+        <span class="reading-time">about a 3 minute read</span>
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-10-21T21:29:00-06:00" pubdate data-updated="true">Oct 21<span>st</span>, 2014</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>I am not pretending to be an expert about what&rsquo;s in this post, but merely a talking point to learn upon.</p>
+
+<h2>Problem: I need to reassemble an old C++ project with some old libraries and files that may not be around (or have disappeared already).</h2>
+
+<p>First theres a big chunk of files that are used strictly for rendering a video, ~560MB. Some of which had since gone missing.</p>
+
+<p>Then theres some old C++ libraries which a previous shell script was doing a <code>wget</code> request for, and the files are nowhere to be found.</p>
+
+<p>Finally, there&rsquo;s the need to rebuild the image used to render the files.</p>
+
+<p>Theres so many ways to attack this problem, I&rsquo;m just going to cover my approaches. I&rsquo;m open to new ones as well.</p>
+
+<h1>Potential solutions for rendering files</h1>
+
+<ul>
+<li>store on AWS S3</li>
+<li>put into git repo</li>
+<li>store on server somewhere</li>
+</ul>
+
+
+<h4>Lets break down the pros / cons of these</h4>
+
+<h2>Store on AWS S3</h2>
+
+<h3>PROS:</h3>
+
+<ul>
+<li>quick to add</li>
+<li>cheap to store</li>
+</ul>
+
+
+<h3>CONS:</h3>
+
+<ul>
+<li>can go missing (and did)</li>
+</ul>
+
+
+<h2>Put into git repo</h2>
+
+<h3>PROS:</h3>
+
+<ul>
+<li>versioning control with notes (none before)</li>
+<li>the files give a story in time</li>
+<li>cheap or free</li>
+</ul>
+
+
+<h3>CONS:</h3>
+
+<ul>
+<li>slow to pull repo (duh)</li>
+<li>storing binary files (derp)</li>
+</ul>
+
+
+<h2>Store on server somewhere</h2>
+
+<h3>PROS:</h3>
+
+<ul>
+<li>cheap to store</li>
+<li>fast to access (local network)</li>
+</ul>
+
+
+<h3>CONS:</h3>
+
+<ul>
+<li>can go missing (and did)</li>
+<li>no story to the files</li>
+</ul>
+
+
+<h1>Potential solutions for server image</h1>
+
+<ul>
+<li>single shell script to run for setting up image</li>
+<li>dockerfile to build up the image with <code>RUN</code> commands</li>
+<li>dockerfile to execute the single shell script</li>
+</ul>
+
+
+<p>Some of the libraries this said project was depending on are no longer where they were from a previous shell script to set them all up. That means I have to do some kind of dependency management. Whether that be forking the libraries into a git repo I know will be solid, or copying the files somewhere I can trust, or more simply committing them to my own repo (560 MB or more.. ugh).</p>
+
+<p>This is my thought process, not sure if its right:</p>
+
+<p>If your aim is to have something fully repeatable and easy to run again, go with the docker solution.</p>
+
+<p>If your aim is to just get it done quickly, go with the shell script.</p>
+
+<p>However, I still can&rsquo;t decipher what the pro/cons of the dockerfile just running a single shell script.</p>
+
+<p>Let&rsquo;s dive deeper into the pros and cons of each.</p>
+
+<h2>Single shell script</h2>
+
+<p>Steps:</p>
+
+<ul>
+<li>Create instance from Amazon AMI</li>
+<li>create / test shell script</li>
+<li>copy shell script to server</li>
+<li>run shell script on server</li>
+</ul>
+
+
+<h3>PROS:</h3>
+
+<ul>
+<li>quick to run (once completed, overall time)</li>
+<li>quick to tell you of errors</li>
+<li>works on my machine</li>
+</ul>
+
+
+<h3>CONS:</h3>
+
+<ul>
+<li>not easily repeatable</li>
+<li>may not work in another environment (things are assumed)</li>
+<li>not always easy to debug</li>
+</ul>
+
+
+<h2>Dockerfile with RUN commmands</h2>
+
+<p>Steps:</p>
+
+<ul>
+<li>install docker (if not already)</li>
+<li>create Dockerfile with RUN commands</li>
+<li>ADD dependencies to the docker container</li>
+<li>docker build image</li>
+<li>docker run image</li>
+<li>bundle image to Amazon AMI</li>
+<li>start instance</li>
+<li>profit</li>
+</ul>
+
+
+<h3>PROS:</h3>
+
+<ul>
+<li>control the starting point environment</li>
+<li>commands verified to work step by step</li>
+<li>easily repeatable</li>
+<li>quick to tell you of errors</li>
+<li>fast after first run (cache)</li>
+</ul>
+
+
+<h3>CONS:</h3>
+
+<ul>
+<li>slow start up with downloads/updates/git clones/etc</li>
+<li>costly for disk space</li>
+<li>must install docker / boot2docker / etc</li>
+</ul>
+
+
+<h2>Dockerfile to execute single shell script</h2>
+
+<p>Steps:</p>
+
+<ul>
+<li>install docker (if not already)</li>
+<li>create image from dockerfile</li>
+<li>run image</li>
+<li>create / test shell script in image</li>
+<li>modify dockerfile &ndash; ADD shell script created in previous step</li>
+</ul>
+
+
+<h3>PROS:</h3>
+
+<ul>
+<li>quick to test out your commands</li>
+</ul>
+
+
+<h3>CONS</h3>
+
+<ul>
+<li>harder to have the diffs between images when modifying shell script</li>
+</ul>
+
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Josh Bavari</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-10-21T21:29:00-06:00" pubdate data-updated="true">Oct 21<span>st</span>, 2014</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/docker/'>docker</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://jbavari.github.io/blog/2014/10/21/exploring-best-practices-with-docker-for-older-libraries/" data-via="jbavari" data-counturl="http://jbavari.github.io/blog/2014/10/21/exploring-best-practices-with-docker-for-older-libraries/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2014/08/23/managing-environment-variables-for-your-ionic-application/" title="Previous Post: Managing Environment Variables for your Ionic Application">&laquo; Managing Environment Variables for your Ionic Application</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2014/10/23/a-field-guide-to-snap-dot-svg/" title="Next Post: A field guide to Snap.svg">A field guide to Snap.svg &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2017/04/16/puppet-a-testing-handbook/">Puppet: A Testing Handbook</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2017/03/13/test-coverage-reports-in-elixir/">Test Coverage Reports in Elixir</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/12/29/multicast-service-discovery-in-electron/">Multicast Service Discovery in Electron</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/03/11/using-erlang-observer-on-a-remote-elixir-server/">Using Erlang Observer on a Remote Elixir Server</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/01/24/custom-json-encoding-in-phoenix/">Custom JSON Encoding in Phoenix</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/jbavari">@jbavari</a> on GitHub
+  
+  <script type="text/javascript">
+    $(document).ready(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'jbavari',
+            count: 0,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2019 - Josh Bavari -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+  <script src="//static.getclicky.com/js" type="text/javascript"></script>
+  <script type="text/javascript">try{ clicky.init(100896582); }catch(e){}</script>
+  <noscript><p><img alt="Clicky" width="1" height="1" src="//in.getclicky.com/100896582ns.gif" /></p></noscript>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'joshbavari';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://jbavari.github.io/blog/2014/10/21/exploring-best-practices-with-docker-for-older-libraries/';
+        var disqus_url = 'http://jbavari.github.io/blog/2014/10/21/exploring-best-practices-with-docker-for-older-libraries/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

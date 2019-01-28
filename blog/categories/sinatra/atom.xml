@@ -1,0 +1,729 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: sinatra | Josh Bavari's Ramblings]]></title>
+  <link href="http://jbavari.github.io/blog/categories/sinatra/atom.xml" rel="self"/>
+  <link href="http://jbavari.github.io/"/>
+  <updated>2019-01-27T19:16:40-07:00</updated>
+  <id>http://jbavari.github.io/</id>
+  <author>
+    <name><![CDATA[Josh Bavari]]></name>
+    <email><![CDATA[jbavari@gmail.com]]></email>
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[The Scoreboard Project]]></title>
+    <link href="http://jbavari.github.io/blog/2015/12/04/the-scoreboard-project/"/>
+    <updated>2015-12-04T17:22:00-07:00</updated>
+    <id>http://jbavari.github.io/blog/2015/12/04/the-scoreboard-project</id>
+    <content type="html"><![CDATA[<p>Lately I&rsquo;ve been wanting to dig more into some technologies I&rsquo;ve been wanting to explore and gain more experience. Not only this, but I wanted to make sure my dev workflow was still improving, my tools were getting sharpened, and I was re-establishing the best practices as much as I could.</p>
+
+<p>Those specific technologies I wanted to dig into was:</p>
+
+<ul>
+<li>Building a CLI in Ruby, using <a href="https://github.com/erikhuda/thor">Thor</a></li>
+<li>A <a href="http://sinatrarb.com">Sinatra</a> Modular API</li>
+<li>Solifying <a href="https://github.com/jeremyevans/sequel">Sequel</a> Model usage and JSON serialization</li>
+<li>Building a dashboard using <a href="https://github.com/Shopify/dashing">Dashing</a></li>
+<li>Diving more into <a href="https://github.com/bbatsov/rubocop">Rubocop</a> for Ruby static code analysis</li>
+<li>Automated Code Review using <a href="http://codeclimate.com">CodeClimate</a></li>
+</ul>
+
+
+<p>I found a way to connect all the dots in what I&rsquo;m calling the scoreboard project. I chose these technologies because it would let me shine up my ruby/sql skills without a framework carrying me the way. (Although they mostly did anyway!)</p>
+
+<p>This blog post will go over the idea of making an API around scoreboards. There will be a simple CLI tool to gather scores on &lsquo;games&rsquo;. Those scores will be sent to the API, to store in Postgres. The dashboard project will then pull these values from postgres and display them in an easy to view manner.</p>
+
+<h2>This post</h2>
+
+<p>With this post, i&rsquo;ll go over the individual pieces of the project, the interesting tidbits of each one, and finally go over a short retrospective over the entire project.</p>
+
+<p>In entire time, the project took about a day and a half. It was fun, and I really enjoyed the experience over all.</p>
+
+<h2>The pieces</h2>
+
+<ul>
+<li><a href="https://github.com/jbavari/scoreboard-cli">Scoreboard CLI</a></li>
+<li><a href="https://github.com/jbavari/scoreboard-api">Scoreboard API</a></li>
+<li><a href="https://github.com/jbavari/scoreboard-dashboard">Scoreboard Dashboard</a></li>
+<li>Scoreboard Mobile App (coming soon)</li>
+</ul>
+
+
+<p>All of the projects are listed on my github profile. I&rsquo;ve been trying to keep most issues in the github repo&rsquo;s issue page for each respective project.</p>
+
+<p>All of the projects are checked by CodeClimate, and I&rsquo;ve been trying to keep up with rubocop&rsquo;s rules on these as I go.</p>
+
+<h2>Scoreboard CLI</h2>
+
+<p>The idea for the CLI was to prompt the user for a home team and visitor team, then collect data about getting a touch down for the home team, for example: <code>h:td</code>.</p>
+
+<p>It would keep prompting for more scoring plays until the user gives a SIGTERM or hits CTRL+D.</p>
+
+<p>First I started by reading up on Thor, which was an absolute pleasure to work with. You can download it via <code>gem install scoreboard</code>.</p>
+
+<p>To make it available via command line, I added this:</p>
+
+<p><code>ruby
+  spec.bindir        = "bin"
+  spec.executables   = spec.files.grep(%r{^bin/}) { |f| File.basename(f) }
+</code></p>
+
+<p>Then in <code>bin/scoreboard</code> <a href="https://github.com/jbavari/scoreboard-cli/blob/master/bin/scoreboard">link</a>, we just require in our CLI and run it with the arguments:</p>
+
+<p>``` ruby</p>
+
+<h1>!/usr/bin/env ruby</h1>
+
+<p>require_relative &ldquo;../lib/scoreboard/cli&rdquo;</p>
+
+<p>begin
+  cli = Scoreboard::Cli.new
+  cli.start(ARGV)
+rescue => e
+  raise e if $DEBUG
+  STDERR.puts e.message
+  STDERR.puts e.backtrace.join(&ldquo;\n&rdquo;)
+  exit 1
+end
+```</p>
+
+<h3>A note on the SIGTERM exception handling</h3>
+
+<p>If you see in my <code>STDIN.each_line</code> loop where I read in scoring entries, <a href="https://github.com/jbavari/scoreboard-cli/blob/master/lib/scoreboard/cli.rb#L47">you will see</a> I rescue all Exception. This could be improved to find the exact SIGTERM exception is being thrown, but for simplicity, I left it catching the general exception.</p>
+
+<h2>Scoreboard API</h2>
+
+<p>The API has a few paths, based on the <code>/api/v1</code> namespace for requests.</p>
+
+<p>You can access its teams or the entire scoreboard, via <code>GET /api/v1/teams</code> or <code>GET /api/v1/scores</code>. You can see the core <a href="https://github.com/jbavari/scoreboard-api/blob/master/application.rb">Sinatra Application</a> on github.</p>
+
+<p>It was absolutely easy to set up the <a href="https://github.com/jbavari/scoreboard-api/tree/master/migrations">Sequel migrations</a> to define the team table and the scoreboard table in postgres.</p>
+
+<p>The main tying point was getting the Sequel models to serialize, which was solved in another blog post.</p>
+
+<h2>Scoreboard Dashboard</h2>
+
+<p>Dashing was really easy to get started, a project set up, and out the gate.</p>
+
+<p>First I had to include Sequel to get me my data, which I included an <code>Api</code> model to ease the SQL bridge for me.</p>
+
+<p>The main point here was the <code>scoreboard.rb</code> file which was scheduled to run every 5 seconds, gather data from some crafty queries, and send that data to the dashboard. Other than the HTML markup, this was the chunky part of it:</p>
+
+<p>``` ruby
+require &lsquo;sequel&rsquo;</p>
+
+<p>DB = Sequel.connect(&lsquo;postgres://localhost/scoreboard&rsquo;)
+scoreboard = DB[:scoreboard]
+team = DB[:team]</p>
+
+<p>send_event(&lsquo;games-played&rsquo;, { value: scoreboard.count })</p>
+
+<p>def teams_played
+  DB[&lt;&lt;-eos</p>
+
+<pre><code>  select
+    sum(value)::int as value,
+    label
+  from (
+    select count(home_id) as value, name as label from team inner join scoreboard on team.id = scoreboard.home_id group by scoreboard.home_id, team.name
+
+    UNION ALL
+
+    select count(visitor_id) as value, name as label from team inner join scoreboard on team.id = scoreboard.visitor_id group by scoreboard.visitor_id, team.name
+  ) sub
+  group by value, label
+  order by value desc
+eos
+</code></pre>
+
+<p>  ]</p>
+
+<p>end</p>
+
+<p>def team_scoreboard
+  DB[&lt;&lt;-eos</p>
+
+<pre><code>  select 
+    s.id,
+    t.name as home_team, 
+    t2.name as visitor_team, 
+    home_score, 
+    visitor_score 
+  from team t 
+  inner join scoreboard s on s.home_id = t.id 
+  inner join team t2 on t2.id = s.visitor_id
+  limit 10;
+eos
+</code></pre>
+
+<p>  ]
+end</p>
+
+<p>SCHEDULER.every &lsquo;5s&rsquo; do
+  teams = teams_played.map do |item|</p>
+
+<pre><code>{:label =&gt; item[:label], :value =&gt; item[:value]}
+</code></pre>
+
+<p>  end
+  send_event(&lsquo;games-played&rsquo;, { value: scoreboard.count })
+  send_event(&lsquo;teams&rsquo;, { items: teams })
+  puts &ldquo;Scoreboard: #{team_scoreboard.to_a}&rdquo;</p>
+
+<p>  send_event(&lsquo;scoreboard&rsquo;, { items: team_scoreboard.to_a })
+end
+```</p>
+
+<h1>Retrospective</h1>
+
+<ul>
+<li>What went right</li>
+<li>What went wrong</li>
+<li>What could be improved</li>
+</ul>
+
+
+<h2>What went right</h2>
+
+<ul>
+<li>The CLI came together smoothly. Thor was easy to get running.</li>
+<li>Getting data to post to the API was a breeze</li>
+<li>Sinatra and Sequel were easy to hoist up a simple API to take POST data and serve GET requests as JSON</li>
+<li>Getting data into the dashboard was SUPER easy with Sequel, no need to do the ORM dance</li>
+<li>Dashing was easy to create my own scoreboard component, using the <code>data-</code> type DOM attributes</li>
+</ul>
+
+
+<h2>What went wrong</h2>
+
+<ul>
+<li>Had some issues handling SIGTERM in CLI</li>
+<li>CLI still doesnt validate input</li>
+<li>API for Sinatra was a little difficult to get JSON serialization off the bat</li>
+<li>Dashing is very &lsquo;opinionated&rsquo; and doesnt give you more room to fit into an existing app</li>
+<li>No tests were made</li>
+<li>Nothing is deployed to servers yet</li>
+</ul>
+
+
+<h2>What could be improved</h2>
+
+<ul>
+<li>Minitest suite for CLI, API, and the Dashboard</li>
+<li>Dashboard process tasks could be broken out to be more DRY</li>
+<li>CLI needs to check and validate input</li>
+<li>API needs to add in rollbar, new relic, or other metrics to help find errors</li>
+<li>Deploy all the things!</li>
+</ul>
+
+
+<h1>Future plans</h1>
+
+<p>The plan is to keep working on this project and continue improving tooling and getting other best practices in place. Finally, ship it to digital ocean and enjoy the conveniences they provide.</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Using JSON serializers in Sinatra]]></title>
+    <link href="http://jbavari.github.io/blog/2015/12/04/using-json-serializers-in-sinatra/"/>
+    <updated>2015-12-04T11:17:00-07:00</updated>
+    <id>http://jbavari.github.io/blog/2015/12/04/using-json-serializers-in-sinatra</id>
+    <content type="html"><![CDATA[<p>I ran into a quick little issue with serializing some of my <a href="https://github.com/jeremyevans/sequel">Sequel</a> models.</p>
+
+<p>The <a href="http://sequel.jeremyevans.net/rdoc-plugins/classes/Sequel/Plugins/JsonSerializer.html">official JSON serializer docs</a> are great, I just wanted to shine more light on the issue.</p>
+
+<p>If you&rsquo;re using Sequel models, just throw in the quick line of <code>plugin :json_serializer</code>.</p>
+
+<p>``` ruby</p>
+
+<h1>Get our database connection</h1>
+
+<p>require_relative &ldquo;./db&rdquo;
+module ScoreboardApi
+  class Team &lt; Sequel::Model(:team)</p>
+
+<pre><code>plugin :json_serializer
+serialize_attributes :json, :name
+</code></pre>
+
+<p>  end
+end
+```</p>
+
+<p>Then, you just use the Sinatra contrib gem to have it json serializer attach:</p>
+
+<p>```</p>
+
+<h1>Web framework</h1>
+
+<p>gem &ldquo;sinatra&rdquo;, &ldquo;1.4.6&rdquo;, require: &ldquo;sinatra/base&rdquo;</p>
+
+<h1>Sinatra addons &ndash; JSON, Namespace</h1>
+
+<p>gem &ldquo;sinatra-contrib&rdquo;, &ldquo;1.4.6&rdquo;
+```</p>
+
+<p>Set up your API routes and spit out JSON:</p>
+
+<p>```
+require &ldquo;bundler&rdquo;
+require &ldquo;sinatra/base&rdquo;
+require &ldquo;sinatra/json&rdquo;
+require &ldquo;sinatra/namespace&rdquo;</p>
+
+<p>require &ldquo;./models/scoreboard&rdquo;
+require &ldquo;./models/team&rdquo;</p>
+
+<p>Bundler.require</p>
+
+<p>module ScoreboardApi
+  class App &lt; Sinatra::Application</p>
+
+<pre><code>register Sinatra::Namespace
+configure do
+  disable :method_override
+  disable :static
+
+  set :sessions,
+      :httponly     =&gt; true,
+      :secure       =&gt; production?,
+      :expire_after =&gt; 31557600, # 1 year
+      :secret       =&gt; ENV["SESSION_SECRET"]
+end
+
+use Rack::Deflater
+
+namespace "/api/v1" do
+  get "/scores" do
+    json :scoreboard =&gt; Scoreboard.all
+  end
+
+  get "/teams" do
+    json :teams =&gt; Team.all
+  end
+end
+</code></pre>
+
+<p>  end
+end</p>
+
+<p>```</p>
+
+<p>That"s all folks!</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Pushing Jobs to Sidekiq From Another Server]]></title>
+    <link href="http://jbavari.github.io/blog/2014/06/21/pushing-jobs-to-sidekiq-from-another-server/"/>
+    <updated>2014-06-21T00:35:00-06:00</updated>
+    <id>http://jbavari.github.io/blog/2014/06/21/pushing-jobs-to-sidekiq-from-another-server</id>
+    <content type="html"><![CDATA[<p>We use <a href="http://sidekiq.org/">Sidekiq</a> for our background job processing for videos, social integrations, and other tasks. It works great for what it does.</p>
+
+<p>Due to some of technical decisions at work, we have a few servers set up.</p>
+
+<ul>
+<li>An API server</li>
+<li>A job processing server</li>
+<li>An analytical dashboard Rails server</li>
+</ul>
+
+
+<p>The job processing server has all the Sidekiq worker models in it, as you&rsquo;d expect. We did this to keep all processing in one central location.</p>
+
+<p>Some use cases we have for it is to have all Push notifications sent from a single location, the job server. However, we need to trigger some of those from our API or analytical dashboard.</p>
+
+<h2>The problem and solution</h2>
+
+<p>How do we get workers queued up from other servers without replicating the Worker class in other servers? Since Sidekiq uses <a href="http://redis.io">Redis</a>, we figure&rsquo;d we&rsquo;d make a simple <code>RedisJobPusher</code> class to push workers to list in Redis that Sidekiq watches. Using this class, we can now queue jobs from other servers.</p>
+
+<p>The class has a core method, <code>push_to_queue</code>, that other methods (<code>push_leg_notification</code>, etc) call to push the worker name and parameters in redis. The above class assumes it is able to connect to redis.</p>
+
+<p>It looks like this:</p>
+
+<p>``` ruby
+require &lsquo;redis&rsquo;
+require &lsquo;json&rsquo;
+class RedisJobPusher</p>
+
+<pre><code>def self.push_leg_notification(user_id, event_id, message, title)
+    params = [user_id, event_id, 'leg', message, title, nil]
+    RedisJobPusher.push_to_queue('PushNotificationWorker', params)
+end
+
+def self.push_post_notification(user_id, event_id, message, title, event_user_social_id)
+    params = [user_id, event_id, 'post', message, title, event_user_social_id]
+    RedisJobPusher.push_to_queue('PushNotificationWorker', params)
+end
+
+def self.push_to_queue(worker_name, params)
+# using &lt;&lt;  rather than + because it cats instead of newing up string objects
+redisurl = 'redis://' &lt;&lt; CONFIG[:redis_server] &lt;&lt; ':6379' &lt;&lt; '/' &lt;&lt; CONFIG[:redis_db_num]
+
+    msg = { 'class' =&gt; worker_name, 'args' =&gt; params, 'retry' =&gt; true }
+    redis = Redis.new(:url =&gt; redisurl)
+    redis.lpush("raisemore_sidekiq:queue:JobWorker", JSON.dump(msg))
+end
+</code></pre>
+
+<p>end
+```</p>
+
+<p>As you can see, there isn&rsquo;t a lot going on here. Simple and easy. Just connect to redis, do a quick <code>lpush</code>, and go on your day.</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Handling Relationships in RethinkDB]]></title>
+    <link href="http://jbavari.github.io/blog/2014/05/17/handling-relationships-in-rethinkdb/"/>
+    <updated>2014-05-17T23:06:00-06:00</updated>
+    <id>http://jbavari.github.io/blog/2014/05/17/handling-relationships-in-rethinkdb</id>
+    <content type="html"><![CDATA[<p>Lately I&rsquo;ve been playing a lot with <a href="http://rethinkdb.com">RethinkDB</a> and I&rsquo;m in love with it. Such a sweet document database, amazingly beautiful web interface, and easy to use API&rsquo;s in three different languages. I started up a side project that involves some relational data, and ran into a few bumps along the road.</p>
+
+<p>I&rsquo;m writing this post to share some of the knowledge I&rsquo;ve acquired along the way, and hopefully some will find it helpful.</p>
+
+<h2>The problem</h2>
+
+<p>I&rsquo;m using a doc db because I&rsquo;m still not sure of my database schema, and since its mostly a prototype, I need something flexible. The project is for physical therapy patients involving rehabilitation programs. Each program is comprised of several exercises, and a program is assigned to one user. A user can have multiple programs.</p>
+
+<p>Eat your ER heart out:</p>
+
+<p><img class="[pic]" src="/images/PtMotions.png" title="[250] [250] [PT Motions ER Diagram [ER Diagram]]" ></p>
+
+<h3>Technologies Used</h3>
+
+<p>I wanted to keep it light, so I chose using <a href="http://www.sinatrarb.com/">Sinatra</a> for my API and <a href="http://ionicframework.com">Ionic Framework</a> for my mobile application. BTW &ndash; when it comes to choosing a framework for Cordova, I suggest trying Ionic. They are crushing it.</p>
+
+<h2>Setting up the tables</h2>
+
+<p>First I made a dataload.rb file, which would be run on the init of my server which would set up my database, set up the tables, and dump some initial data in the tables. It looked something like this:</p>
+
+<p>``` ruby InitialData.rb
+require &lsquo;rethinkdb&rsquo;</p>
+
+<h1>We will use these settings later in the code to connect</h1>
+
+<h1>to the RethinkDB server.</h1>
+
+<p>RDB_CONFIG = {</p>
+
+<pre><code>:host =&gt; ENV['RDB_HOST'] || 'localhost', 
+:port =&gt; ENV['RDB_PORT'] || 28015,
+:db   =&gt; ENV['RDB_DB']   || 'PtMotions'
+</code></pre>
+
+<p>}</p>
+
+<h1>A friendlly shortcut for accessing ReQL functions</h1>
+
+<p>r = RethinkDB::RQL.new</p>
+
+<p>@rdb_connection = r.connect(:host => RDB_CONFIG[:host], :port => RDB_CONFIG[:port], :db => RDB_CONFIG[:db])</p>
+
+<p>@users = [</p>
+
+<pre><code>{ 
+    :clinicId =&gt; 'At Home PT',
+    :patientId =&gt; 'jbavari'
+}
+</code></pre>
+
+<p>]</p>
+
+<p>user_id = nil</p>
+
+<p>@users.each do |user|</p>
+
+<pre><code>begin
+    result = r.table('Users').insert(user).run(@rdb_connection)
+    # Grab user id from result to use later for assigning the program
+    user_id = result['generated_keys'][0]
+rescue
+    p 'Error: ' + result.to_s
+end
+</code></pre>
+
+<p>end</p>
+
+<p>@exercises = [{</p>
+
+<pre><code>      :name =&gt; 'Resisted Right Shoulder Internal/External Rotation',
+      :startingPosition =&gt; 'Lying on your back with your legs bent with your right hand holding a kettle bell.',
+      :description =&gt; 'Lift the kettle bell straight up in the air and hold. Pull your shoulder into the ground and away from your ear. Slowly rotate your arm all the way in then all the way out without letting your arm sway',
+      :whatYouFeel =&gt; 'Strengthing in your right shoulder',
+      :videoUrl =&gt; 'http://ptmotions.com/ptm_mp4_768_432/s11t02_063.mp4'
+    },
+    {
+      :name =&gt; 'Side Resisted Right Shoulder Internal/External Rotation',
+      :startingPosition =&gt; 'Lying on your left side with your right hand holding a kettle bell',
+      :description =&gt; 'Lift the kettle bell straight up in the air and hold. Pull your shoulder down away from your ear. Slowly rotate your arm all the way in, then all the way out without letting your arm sway',
+      :whatYouFeel =&gt; 'Strengthing in your right shoulder',
+      :videoUrl =&gt; 'http://ptmotions.com/ptm_mp4_768_432/s11t02_065.mp4'
+    }
+</code></pre>
+
+<p>]</p>
+
+<p>exercise_list = Array.new</p>
+
+<p>@exercises.each do |exercise|</p>
+
+<pre><code>begin
+    result = r.table('Exercises').insert(exercise).run(@rdb_connection)
+    exercise_list.push result['generated_keys'][0]
+rescue
+    p 'Error: ' + result.to_s
+end
+</code></pre>
+
+<p>end</p>
+
+<p>@joshs_program = {</p>
+
+<pre><code>:name =&gt; 'Joshs Shoulder Rehab',
+:notes =&gt; 'Focus on keeping core tight',
+:instructions =&gt; {
+    :howOften =&gt; '3 sets per day',
+    :howMany =&gt; '15 per side'
+},
+:exercises =&gt; exercise_list,
+:userId =&gt; user_id
+</code></pre>
+
+<p>}</p>
+
+<p>begin</p>
+
+<pre><code>result = r.table('Programs').insert(@joshs_program).run(@rdb_connection)
+</code></pre>
+
+<p>rescue</p>
+
+<pre><code>p 'Error: ' + result.to_s
+</code></pre>
+
+<p>end
+```</p>
+
+<p>Above you&rsquo;ll see I have a list of exercises, as they are inserted I add their ID&rsquo;s to an array. I then take that array and use that to store in <code>@joshs_program</code> so that I can set up a relationship with exercises.</p>
+
+<h2>Retrieving data</h2>
+
+<p>Now that I have programs with an array of exercises, I need to get all the exercises by the program. First &ndash; I need a query that will get me all of my exercises by program ID &ndash; so thats similar to a type of inner join, or a SQL equivalent of <code>SELECT IN</code>. Luckily, RethinkDB has awesome documentation about <a href="http://rethinkdb.com/docs/sql-to-reql/">SQL-to-RQL</a> and <a href="http://rethinkdb.com/docs/data-modeling/">data modeling</a>.</p>
+
+<p>From the documentation, they recommend doing the following:</p>
+
+<p>``` python
+r.table(&ldquo;users&rdquo;).filter(lambda doc:</p>
+
+<pre><code>r.expr(["Peter", "John"])
+    .contains(doc["name"])
+</code></pre>
+
+<p>)
+```</p>
+
+<p>However, the example is in Python, so you&rsquo;ll need to do a little more work to get it in Ruby.</p>
+
+<p>This led me to take a different path in RQL. I found out how to do a <code>SELECT IN</code> type query, and in Ruby it looks like this with <code>inner_join</code>:</p>
+
+<p>``` ruby
+@programId = params[:programId] || &lsquo;37feebf9-54ce-45f5-ba76-d13fe634b035&rsquo;
+exercises = r.table(&ldquo;Programs&rdquo;)</p>
+
+<pre><code>    .filter({'id' =&gt; @programId})
+    .inner_join( r.table("Exercises")) { |p, e| 
+        p['exercises'].contains( e['id'] ) 
+    }
+    .zip()
+    .without('exercises', 'userId')
+    .order_by(r.desc('created_at'))
+    .run(@rdb_connection)
+</code></pre>
+
+<p>```</p>
+
+<p>You&rsquo;ll see I&rsquo;m using the RQL <code>inner_join</code>, and as part of my lamba I use the table attribute <code>p['exercises']</code> which contains my array of exercise ID&rsquo;s, then using the <code>contains</code> method on my exercise table <code>e['id']</code>. It works wonderfully. I&rsquo;m not sure if it is the best way to handle this, and I&rsquo;m still a RethinkDB newbie so this was a good workout for me.</p>
+
+<h3>The API code</h3>
+
+<p>The rest of my API code relied heavily on the RethinkDB <a href="http://www.rethinkdb.com/docs/examples/sinatra-pastie/">sample app &ndash; Pastie</a>. The really interesting joins are found around line 77.</p>
+
+<p>I&rsquo;m including my own version here to help give some ideas how I&rsquo;m setting up my API:</p>
+
+<p>``` ruby server.rb
+require &lsquo;sinatra&rsquo;
+require &lsquo;rethinkdb&rsquo;
+require &lsquo;json&rsquo;</p>
+
+<p>RDB_CONFIG = {
+  :host => ENV[&lsquo;RDB_HOST&rsquo;] || &lsquo;localhost&rsquo;,
+  :port => ENV[&lsquo;RDB_PORT&rsquo;] || 28015,
+  :db   => ENV[&lsquo;RDB_DB&rsquo;]   || &lsquo;PtMotions&rsquo;
+}</p>
+
+<p>r = RethinkDB::RQL.new</p>
+
+<h1>The pattern we&rsquo;re using for managing database connections is to have <strong>a connection per request</strong>.</h1>
+
+<h1>We&rsquo;re using Sinatra&rsquo;s <code>before</code> and <code>after</code> for</h1>
+
+<h1><a href="http://www.rethinkdb.com/api/ruby/connect/">opening a database connection</a> and</h1>
+
+<h1><a href="http://www.rethinkdb.com/api/ruby/close/">closing it</a> respectively.</h1>
+
+<p>before do</p>
+
+<pre><code>headers 'Access-Control-Allow-Origin' =&gt; '*', 
+        'Access-Control-Allow-Methods' =&gt; ['OPTIONS', 'GET', 'POST']
+</code></pre>
+
+<p>  begin</p>
+
+<pre><code># When openning a connection we can also specify the database:
+@rdb_connection = r.connect(:host =&gt; RDB_CONFIG[:host], :port =&gt; RDB_CONFIG[:port], :db =&gt; settings.db)
+</code></pre>
+
+<p>  rescue Exception => err</p>
+
+<pre><code>logger.error "Cannot connect to RethinkDB database #{RDB_CONFIG[:host]}:#{RDB_CONFIG[:port]} (#{err.message})"
+halt 501, 'This page could look nicer, unfortunately the error is the same: database not available.'
+</code></pre>
+
+<p>  end
+end</p>
+
+<h1>After each request we <a href="http://www.rethinkdb.com/api/ruby/close/">close the database connection</a>.</h1>
+
+<p>after do
+  begin</p>
+
+<pre><code>@rdb_connection.close if @rdb_connection
+</code></pre>
+
+<p>  rescue</p>
+
+<pre><code>logger.warn "Couldn't close connection"
+</code></pre>
+
+<p>  end
+end</p>
+
+<p>get &lsquo;/&rsquo; do
+  @snippet = {}
+  erb :new
+end</p>
+
+<p>post &lsquo;/add&rsquo; do</p>
+
+<pre><code>@user = { :clinicId =&gt; params[:clinicId], :patientId =&gt; params[:patientId] }
+# result = r.table('Users').insert(@user).run(@rdb_connnection)
+result = r.table('Users').insert(@user).run(@rdb_connection)
+
+
+if result['inserted'] == 1
+    redirect "/#{result['generated_keys'][0]}"
+else
+    logger.error result
+    redirect '/'
+end
+</code></pre>
+
+<p>end</p>
+
+<p>get &lsquo;/programs/:userId&rsquo; do</p>
+
+<pre><code>content_type :json
+@userId = params[:userId].downcase
+max_results = params[:limit] || 10
+results = r.table('Programs').
+    filter('userId' =&gt; @userId).
+    # pluck('id', 'name', 'created_at').
+    without('userId').
+    order_by(r.desc('created_at')).
+    limit(max_results).
+    run(@rdb_connection)
+
+results.to_json
+</code></pre>
+
+<p>end</p>
+
+<p>get &lsquo;/exercises/:programId&rsquo; do</p>
+
+<pre><code>content_type :json
+
+@programId = params[:programId] || '37feebf9-54ce-45f5-ba76-d13fe634b035'
+
+exercises = r.table("Programs")
+    .filter({'id' =&gt; @programId})
+    .inner_join( r.table("Exercises")) { |p, e| 
+        p['exercises'].contains( e['id'] ) 
+    }
+    .zip()
+    .without('exercises', 'userId')
+    .order_by(r.desc('created_at'))
+    .run(@rdb_connection)
+
+exercises.to_json
+# exercise_ids.to_json
+</code></pre>
+
+<p>end</p>
+
+<p>get &lsquo;/getuser/:patientId&rsquo; do</p>
+
+<pre><code>content_type :json
+user = r.table('Users')
+    .filter({'patientId' =&gt; params[:patientId]})
+    .run(@rdb_connection)
+
+user.first.to_json
+</code></pre>
+
+<p>end
+```</p>
+
+<p>That&rsquo;s all folks! Hope this helps some in understanding how to do foreign key references in RethinkDB!</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Pow and weird starting issues]]></title>
+    <link href="http://jbavari.github.io/blog/2014/05/07/pow-and-weird-starting-issues/"/>
+    <updated>2014-05-07T14:56:00-06:00</updated>
+    <id>http://jbavari.github.io/blog/2014/05/07/pow-and-weird-starting-issues</id>
+    <content type="html"><![CDATA[<p>Lately I&rsquo;ve been getting this weird error from Pow in Rails 4:</p>
+
+<p><code>Bundler::GemNotFound: Could not find rake-10.3.1 in any of the sources</code></p>
+
+<p>Read more below to see what I did.</p>
+
+<p>In boot.rb:</p>
+
+<p>```
+require &lsquo;rubygems&rsquo;</p>
+
+<h1>Set up gems listed in the Gemfile.</h1>
+
+<p>ENV[&lsquo;BUNDLE_GEMFILE&rsquo;] ||= File.expand_path(&lsquo;../../Gemfile&rsquo;, <strong>FILE</strong>)</p>
+
+<p>require &lsquo;bundler/setup&rsquo; if File.exists?(ENV[&lsquo;BUNDLE_GEMFILE&rsquo;])</p>
+
+<p>```</p>
+
+<p>In config.ru:</p>
+
+<p><code>
+require ::File.expand_path('../config/environment',  __FILE__)
+run Rails.application
+</code></p>
+
+<p>Hope this helps.</p>
+]]></content>
+  </entry>
+  
+</feed>

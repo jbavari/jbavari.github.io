@@ -1,0 +1,711 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Handling Relationships in RethinkDB - Josh Bavari's Ramblings</title>
+  <meta name="author" content="Josh Bavari">
+
+  
+  <meta name="description" content="Lately I&rsquo;ve been playing a lot with RethinkDB and I&rsquo;m in love with it. Such a sweet document database, amazingly beautiful web interface &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://jbavari.github.io/blog/2014/05/17/handling-relationships-in-rethinkdb">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="Josh Bavari's Ramblings" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">Josh Bavari's Ramblings</a></h1>
+  
+    <h2>tech babbles on Ruby, Javascript, Rails, Phonegap/Cordova, Grunt, and more</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:jbavari.github.io" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+  <li><a href="/about">About</a></li>
+  <li><a href="/speaking">Speaking</a></li>
+  <li><a href="/knowledge">Knowledge</a></li>
+  <li><a href="/about/resume">Resume</a></li>
+  <li><a href="/cv">C.V.</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Handling Relationships in RethinkDB</h1>
+    
+    
+      <p class="meta">
+        <span class="reading-time">about a 6 minute read</span>
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-05-17T23:06:00-06:00" pubdate data-updated="true">May 17<span>th</span>, 2014</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>Lately I&rsquo;ve been playing a lot with <a href="http://rethinkdb.com">RethinkDB</a> and I&rsquo;m in love with it. Such a sweet document database, amazingly beautiful web interface, and easy to use API&rsquo;s in three different languages. I started up a side project that involves some relational data, and ran into a few bumps along the road.</p>
+
+<p>I&rsquo;m writing this post to share some of the knowledge I&rsquo;ve acquired along the way, and hopefully some will find it helpful.</p>
+
+<h2>The problem</h2>
+
+<p>I&rsquo;m using a doc db because I&rsquo;m still not sure of my database schema, and since its mostly a prototype, I need something flexible. The project is for physical therapy patients involving rehabilitation programs. Each program is comprised of several exercises, and a program is assigned to one user. A user can have multiple programs.</p>
+
+<p>Eat your ER heart out:</p>
+
+<p><img class="[pic]" src="/images/PtMotions.png" title="[250] [250] [PT Motions ER Diagram [ER Diagram]]" ></p>
+
+<h3>Technologies Used</h3>
+
+<p>I wanted to keep it light, so I chose using <a href="http://www.sinatrarb.com/">Sinatra</a> for my API and <a href="http://ionicframework.com">Ionic Framework</a> for my mobile application. BTW &ndash; when it comes to choosing a framework for Cordova, I suggest trying Ionic. They are crushing it.</p>
+
+<h2>Setting up the tables</h2>
+
+<p>First I made a dataload.rb file, which would be run on the init of my server which would set up my database, set up the tables, and dump some initial data in the tables. It looked something like this:</p>
+
+<figure class='code'><figcaption><span>InitialData.rb</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+<span class='line-number'>67</span>
+<span class='line-number'>68</span>
+<span class='line-number'>69</span>
+<span class='line-number'>70</span>
+<span class='line-number'>71</span>
+<span class='line-number'>72</span>
+<span class='line-number'>73</span>
+<span class='line-number'>74</span>
+<span class='line-number'>75</span>
+<span class='line-number'>76</span>
+<span class='line-number'>77</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="nb">require</span> <span class="s1">&#39;rethinkdb&#39;</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1"># We will use these settings later in the code to connect </span>
+</span><span class='line'><span class="c1"># to the RethinkDB server.</span>
+</span><span class='line'><span class="no">RDB_CONFIG</span> <span class="o">=</span> <span class="p">{</span>
+</span><span class='line'>  <span class="ss">:host</span> <span class="o">=&gt;</span> <span class="no">ENV</span><span class="o">[</span><span class="s1">&#39;RDB_HOST&#39;</span><span class="o">]</span> <span class="o">||</span> <span class="s1">&#39;localhost&#39;</span><span class="p">,</span>
+</span><span class='line'>  <span class="ss">:port</span> <span class="o">=&gt;</span> <span class="no">ENV</span><span class="o">[</span><span class="s1">&#39;RDB_PORT&#39;</span><span class="o">]</span> <span class="o">||</span> <span class="mi">28015</span><span class="p">,</span>
+</span><span class='line'>  <span class="ss">:db</span>   <span class="o">=&gt;</span> <span class="no">ENV</span><span class="o">[</span><span class="s1">&#39;RDB_DB&#39;</span><span class="o">]</span>   <span class="o">||</span> <span class="s1">&#39;PtMotions&#39;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1"># A friendlly shortcut for accessing ReQL functions</span>
+</span><span class='line'><span class="n">r</span> <span class="o">=</span> <span class="ss">RethinkDB</span><span class="p">:</span><span class="ss">:RQL</span><span class="o">.</span><span class="n">new</span>
+</span><span class='line'>
+</span><span class='line'><span class="vi">@rdb_connection</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="ss">:host</span> <span class="o">=&gt;</span> <span class="no">RDB_CONFIG</span><span class="o">[</span><span class="ss">:host</span><span class="o">]</span><span class="p">,</span> <span class="ss">:port</span> <span class="o">=&gt;</span> <span class="no">RDB_CONFIG</span><span class="o">[</span><span class="ss">:port</span><span class="o">]</span><span class="p">,</span> <span class="ss">:db</span> <span class="o">=&gt;</span> <span class="no">RDB_CONFIG</span><span class="o">[</span><span class="ss">:db</span><span class="o">]</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="vi">@users</span> <span class="o">=</span> <span class="o">[</span>
+</span><span class='line'>  <span class="p">{</span>
+</span><span class='line'>      <span class="ss">:clinicId</span> <span class="o">=&gt;</span> <span class="s1">&#39;At Home PT&#39;</span><span class="p">,</span>
+</span><span class='line'>      <span class="ss">:patientId</span> <span class="o">=&gt;</span> <span class="s1">&#39;jbavari&#39;</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="o">]</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">user_id</span> <span class="o">=</span> <span class="kp">nil</span>
+</span><span class='line'>
+</span><span class='line'><span class="vi">@users</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">user</span><span class="o">|</span>
+</span><span class='line'>  <span class="k">begin</span>
+</span><span class='line'>      <span class="n">result</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">table</span><span class="p">(</span><span class="s1">&#39;Users&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">user</span><span class="p">)</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="vi">@rdb_connection</span><span class="p">)</span>
+</span><span class='line'>      <span class="c1"># Grab user id from result to use later for assigning the program</span>
+</span><span class='line'>      <span class="n">user_id</span> <span class="o">=</span> <span class="n">result</span><span class="o">[</span><span class="s1">&#39;generated_keys&#39;</span><span class="o">][</span><span class="mi">0</span><span class="o">]</span>
+</span><span class='line'>  <span class="k">rescue</span>
+</span><span class='line'>      <span class="nb">p</span> <span class="s1">&#39;Error: &#39;</span> <span class="o">+</span> <span class="n">result</span><span class="o">.</span><span class="n">to_s</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="vi">@exercises</span> <span class="o">=</span> <span class="o">[</span><span class="p">{</span>
+</span><span class='line'>          <span class="ss">:name</span> <span class="o">=&gt;</span> <span class="s1">&#39;Resisted Right Shoulder Internal/External Rotation&#39;</span><span class="p">,</span>
+</span><span class='line'>          <span class="ss">:startingPosition</span> <span class="o">=&gt;</span> <span class="s1">&#39;Lying on your back with your legs bent with your right hand holding a kettle bell.&#39;</span><span class="p">,</span>
+</span><span class='line'>          <span class="ss">:description</span> <span class="o">=&gt;</span> <span class="s1">&#39;Lift the kettle bell straight up in the air and hold. Pull your shoulder into the ground and away from your ear. Slowly rotate your arm all the way in then all the way out without letting your arm sway&#39;</span><span class="p">,</span>
+</span><span class='line'>          <span class="ss">:whatYouFeel</span> <span class="o">=&gt;</span> <span class="s1">&#39;Strengthing in your right shoulder&#39;</span><span class="p">,</span>
+</span><span class='line'>          <span class="ss">:videoUrl</span> <span class="o">=&gt;</span> <span class="s1">&#39;http://ptmotions.com/ptm_mp4_768_432/s11t02_063.mp4&#39;</span>
+</span><span class='line'>        <span class="p">},</span>
+</span><span class='line'>        <span class="p">{</span>
+</span><span class='line'>          <span class="ss">:name</span> <span class="o">=&gt;</span> <span class="s1">&#39;Side Resisted Right Shoulder Internal/External Rotation&#39;</span><span class="p">,</span>
+</span><span class='line'>          <span class="ss">:startingPosition</span> <span class="o">=&gt;</span> <span class="s1">&#39;Lying on your left side with your right hand holding a kettle bell&#39;</span><span class="p">,</span>
+</span><span class='line'>          <span class="ss">:description</span> <span class="o">=&gt;</span> <span class="s1">&#39;Lift the kettle bell straight up in the air and hold. Pull your shoulder down away from your ear. Slowly rotate your arm all the way in, then all the way out without letting your arm sway&#39;</span><span class="p">,</span>
+</span><span class='line'>          <span class="ss">:whatYouFeel</span> <span class="o">=&gt;</span> <span class="s1">&#39;Strengthing in your right shoulder&#39;</span><span class="p">,</span>
+</span><span class='line'>          <span class="ss">:videoUrl</span> <span class="o">=&gt;</span> <span class="s1">&#39;http://ptmotions.com/ptm_mp4_768_432/s11t02_065.mp4&#39;</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'><span class="o">]</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">exercise_list</span> <span class="o">=</span> <span class="nb">Array</span><span class="o">.</span><span class="n">new</span>
+</span><span class='line'>
+</span><span class='line'><span class="vi">@exercises</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">exercise</span><span class="o">|</span>
+</span><span class='line'>  <span class="k">begin</span>
+</span><span class='line'>      <span class="n">result</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">table</span><span class="p">(</span><span class="s1">&#39;Exercises&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">exercise</span><span class="p">)</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="vi">@rdb_connection</span><span class="p">)</span>
+</span><span class='line'>      <span class="n">exercise_list</span><span class="o">.</span><span class="n">push</span> <span class="n">result</span><span class="o">[</span><span class="s1">&#39;generated_keys&#39;</span><span class="o">][</span><span class="mi">0</span><span class="o">]</span>
+</span><span class='line'>  <span class="k">rescue</span>
+</span><span class='line'>      <span class="nb">p</span> <span class="s1">&#39;Error: &#39;</span> <span class="o">+</span> <span class="n">result</span><span class="o">.</span><span class="n">to_s</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="vi">@joshs_program</span> <span class="o">=</span> <span class="p">{</span>
+</span><span class='line'>  <span class="ss">:name</span> <span class="o">=&gt;</span> <span class="s1">&#39;Joshs Shoulder Rehab&#39;</span><span class="p">,</span>
+</span><span class='line'>  <span class="ss">:notes</span> <span class="o">=&gt;</span> <span class="s1">&#39;Focus on keeping core tight&#39;</span><span class="p">,</span>
+</span><span class='line'>  <span class="ss">:instructions</span> <span class="o">=&gt;</span> <span class="p">{</span>
+</span><span class='line'>      <span class="ss">:howOften</span> <span class="o">=&gt;</span> <span class="s1">&#39;3 sets per day&#39;</span><span class="p">,</span>
+</span><span class='line'>      <span class="ss">:howMany</span> <span class="o">=&gt;</span> <span class="s1">&#39;15 per side&#39;</span>
+</span><span class='line'>  <span class="p">},</span>
+</span><span class='line'>  <span class="ss">:exercises</span> <span class="o">=&gt;</span> <span class="n">exercise_list</span><span class="p">,</span>
+</span><span class='line'>  <span class="ss">:userId</span> <span class="o">=&gt;</span> <span class="n">user_id</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">begin</span>
+</span><span class='line'>  <span class="n">result</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">table</span><span class="p">(</span><span class="s1">&#39;Programs&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="vi">@joshs_program</span><span class="p">)</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="vi">@rdb_connection</span><span class="p">)</span>
+</span><span class='line'><span class="k">rescue</span>
+</span><span class='line'>  <span class="nb">p</span> <span class="s1">&#39;Error: &#39;</span> <span class="o">+</span> <span class="n">result</span><span class="o">.</span><span class="n">to_s</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Above you&rsquo;ll see I have a list of exercises, as they are inserted I add their ID&rsquo;s to an array. I then take that array and use that to store in <code>@joshs_program</code> so that I can set up a relationship with exercises.</p>
+
+<h2>Retrieving data</h2>
+
+<p>Now that I have programs with an array of exercises, I need to get all the exercises by the program. First &ndash; I need a query that will get me all of my exercises by program ID &ndash; so thats similar to a type of inner join, or a SQL equivalent of <code>SELECT IN</code>. Luckily, RethinkDB has awesome documentation about <a href="http://rethinkdb.com/docs/sql-to-reql/">SQL-to-RQL</a> and <a href="http://rethinkdb.com/docs/data-modeling/">data modeling</a>.</p>
+
+<p>From the documentation, they recommend doing the following:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="n">r</span><span class="o">.</span><span class="n">table</span><span class="p">(</span><span class="s">&quot;users&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">doc</span><span class="p">:</span>
+</span><span class='line'>    <span class="n">r</span><span class="o">.</span><span class="n">expr</span><span class="p">([</span><span class="s">&quot;Peter&quot;</span><span class="p">,</span> <span class="s">&quot;John&quot;</span><span class="p">])</span>
+</span><span class='line'>        <span class="o">.</span><span class="n">contains</span><span class="p">(</span><span class="n">doc</span><span class="p">[</span><span class="s">&quot;name&quot;</span><span class="p">])</span>
+</span><span class='line'><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>However, the example is in Python, so you&rsquo;ll need to do a little more work to get it in Ruby.</p>
+
+<p>This led me to take a different path in RQL. I found out how to do a <code>SELECT IN</code> type query, and in Ruby it looks like this with <code>inner_join</code>:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="vi">@programId</span> <span class="o">=</span> <span class="n">params</span><span class="o">[</span><span class="ss">:programId</span><span class="o">]</span> <span class="o">||</span> <span class="s1">&#39;37feebf9-54ce-45f5-ba76-d13fe634b035&#39;</span>
+</span><span class='line'><span class="n">exercises</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">table</span><span class="p">(</span><span class="s2">&quot;Programs&quot;</span><span class="p">)</span>
+</span><span class='line'>      <span class="o">.</span><span class="n">filter</span><span class="p">({</span><span class="s1">&#39;id&#39;</span> <span class="o">=&gt;</span> <span class="vi">@programId</span><span class="p">})</span>
+</span><span class='line'>      <span class="o">.</span><span class="n">inner_join</span><span class="p">(</span> <span class="n">r</span><span class="o">.</span><span class="n">table</span><span class="p">(</span><span class="s2">&quot;Exercises&quot;</span><span class="p">))</span> <span class="p">{</span> <span class="o">|</span><span class="nb">p</span><span class="p">,</span> <span class="n">e</span><span class="o">|</span>
+</span><span class='line'>          <span class="nb">p</span><span class="o">[</span><span class="s1">&#39;exercises&#39;</span><span class="o">].</span><span class="n">contains</span><span class="p">(</span> <span class="n">e</span><span class="o">[</span><span class="s1">&#39;id&#39;</span><span class="o">]</span> <span class="p">)</span>
+</span><span class='line'>      <span class="p">}</span>
+</span><span class='line'>      <span class="o">.</span><span class="n">zip</span><span class="p">()</span>
+</span><span class='line'>      <span class="o">.</span><span class="n">without</span><span class="p">(</span><span class="s1">&#39;exercises&#39;</span><span class="p">,</span> <span class="s1">&#39;userId&#39;</span><span class="p">)</span>
+</span><span class='line'>      <span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">desc</span><span class="p">(</span><span class="s1">&#39;created_at&#39;</span><span class="p">))</span>
+</span><span class='line'>      <span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="vi">@rdb_connection</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>You&rsquo;ll see I&rsquo;m using the RQL <code>inner_join</code>, and as part of my lamba I use the table attribute <code>p['exercises']</code> which contains my array of exercise ID&rsquo;s, then using the <code>contains</code> method on my exercise table <code>e['id']</code>. It works wonderfully. I&rsquo;m not sure if it is the best way to handle this, and I&rsquo;m still a RethinkDB newbie so this was a good workout for me.</p>
+
+<h3>The API code</h3>
+
+<p>The rest of my API code relied heavily on the RethinkDB <a href="http://www.rethinkdb.com/docs/examples/sinatra-pastie/">sample app &ndash; Pastie</a>. The really interesting joins are found around line 77.</p>
+
+<p>I&rsquo;m including my own version here to help give some ideas how I&rsquo;m setting up my API:</p>
+
+<figure class='code'><figcaption><span>server.rb</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+<span class='line-number'>67</span>
+<span class='line-number'>68</span>
+<span class='line-number'>69</span>
+<span class='line-number'>70</span>
+<span class='line-number'>71</span>
+<span class='line-number'>72</span>
+<span class='line-number'>73</span>
+<span class='line-number'>74</span>
+<span class='line-number'>75</span>
+<span class='line-number'>76</span>
+<span class='line-number'>77</span>
+<span class='line-number'>78</span>
+<span class='line-number'>79</span>
+<span class='line-number'>80</span>
+<span class='line-number'>81</span>
+<span class='line-number'>82</span>
+<span class='line-number'>83</span>
+<span class='line-number'>84</span>
+<span class='line-number'>85</span>
+<span class='line-number'>86</span>
+<span class='line-number'>87</span>
+<span class='line-number'>88</span>
+<span class='line-number'>89</span>
+<span class='line-number'>90</span>
+<span class='line-number'>91</span>
+<span class='line-number'>92</span>
+<span class='line-number'>93</span>
+<span class='line-number'>94</span>
+<span class='line-number'>95</span>
+<span class='line-number'>96</span>
+<span class='line-number'>97</span>
+<span class='line-number'>98</span>
+<span class='line-number'>99</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="nb">require</span> <span class="s1">&#39;sinatra&#39;</span>
+</span><span class='line'><span class="nb">require</span> <span class="s1">&#39;rethinkdb&#39;</span>
+</span><span class='line'><span class="nb">require</span> <span class="s1">&#39;json&#39;</span>
+</span><span class='line'>
+</span><span class='line'><span class="no">RDB_CONFIG</span> <span class="o">=</span> <span class="p">{</span>
+</span><span class='line'>  <span class="ss">:host</span> <span class="o">=&gt;</span> <span class="no">ENV</span><span class="o">[</span><span class="s1">&#39;RDB_HOST&#39;</span><span class="o">]</span> <span class="o">||</span> <span class="s1">&#39;localhost&#39;</span><span class="p">,</span>
+</span><span class='line'>  <span class="ss">:port</span> <span class="o">=&gt;</span> <span class="no">ENV</span><span class="o">[</span><span class="s1">&#39;RDB_PORT&#39;</span><span class="o">]</span> <span class="o">||</span> <span class="mi">28015</span><span class="p">,</span>
+</span><span class='line'>  <span class="ss">:db</span>   <span class="o">=&gt;</span> <span class="no">ENV</span><span class="o">[</span><span class="s1">&#39;RDB_DB&#39;</span><span class="o">]</span>   <span class="o">||</span> <span class="s1">&#39;PtMotions&#39;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">r</span> <span class="o">=</span> <span class="ss">RethinkDB</span><span class="p">:</span><span class="ss">:RQL</span><span class="o">.</span><span class="n">new</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1"># The pattern we&#39;re using for managing database connections is to have **a connection per request**. </span>
+</span><span class='line'><span class="c1"># We&#39;re using Sinatra&#39;s `before` and `after` for </span>
+</span><span class='line'><span class="c1"># [opening a database connection](http://www.rethinkdb.com/api/ruby/connect/) and </span>
+</span><span class='line'><span class="c1"># [closing it](http://www.rethinkdb.com/api/ruby/close/) respectively.</span>
+</span><span class='line'><span class="n">before</span> <span class="k">do</span>
+</span><span class='line'>  <span class="n">headers</span> <span class="s1">&#39;Access-Control-Allow-Origin&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;*&#39;</span><span class="p">,</span>
+</span><span class='line'>            <span class="s1">&#39;Access-Control-Allow-Methods&#39;</span> <span class="o">=&gt;</span> <span class="o">[</span><span class="s1">&#39;OPTIONS&#39;</span><span class="p">,</span> <span class="s1">&#39;GET&#39;</span><span class="p">,</span> <span class="s1">&#39;POST&#39;</span><span class="o">]</span>
+</span><span class='line'>  <span class="k">begin</span>
+</span><span class='line'>    <span class="c1"># When openning a connection we can also specify the database:</span>
+</span><span class='line'>    <span class="vi">@rdb_connection</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="ss">:host</span> <span class="o">=&gt;</span> <span class="no">RDB_CONFIG</span><span class="o">[</span><span class="ss">:host</span><span class="o">]</span><span class="p">,</span> <span class="ss">:port</span> <span class="o">=&gt;</span> <span class="no">RDB_CONFIG</span><span class="o">[</span><span class="ss">:port</span><span class="o">]</span><span class="p">,</span> <span class="ss">:db</span> <span class="o">=&gt;</span> <span class="n">settings</span><span class="o">.</span><span class="n">db</span><span class="p">)</span>
+</span><span class='line'>  <span class="k">rescue</span> <span class="no">Exception</span> <span class="o">=&gt;</span> <span class="n">err</span>
+</span><span class='line'>    <span class="n">logger</span><span class="o">.</span><span class="n">error</span> <span class="s2">&quot;Cannot connect to RethinkDB database </span><span class="si">#{</span><span class="no">RDB_CONFIG</span><span class="o">[</span><span class="ss">:host</span><span class="o">]</span><span class="si">}</span><span class="s2">:</span><span class="si">#{</span><span class="no">RDB_CONFIG</span><span class="o">[</span><span class="ss">:port</span><span class="o">]</span><span class="si">}</span><span class="s2"> (</span><span class="si">#{</span><span class="n">err</span><span class="o">.</span><span class="n">message</span><span class="si">}</span><span class="s2">)&quot;</span>
+</span><span class='line'>    <span class="n">halt</span> <span class="mi">501</span><span class="p">,</span> <span class="s1">&#39;This page could look nicer, unfortunately the error is the same: database not available.&#39;</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1"># After each request we [close the database connection](http://www.rethinkdb.com/api/ruby/close/).</span>
+</span><span class='line'><span class="n">after</span> <span class="k">do</span>
+</span><span class='line'>  <span class="k">begin</span>
+</span><span class='line'>    <span class="vi">@rdb_connection</span><span class="o">.</span><span class="n">close</span> <span class="k">if</span> <span class="vi">@rdb_connection</span>
+</span><span class='line'>  <span class="k">rescue</span>
+</span><span class='line'>    <span class="n">logger</span><span class="o">.</span><span class="n">warn</span> <span class="s2">&quot;Couldn&#39;t close connection&quot;</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">get</span> <span class="s1">&#39;/&#39;</span> <span class="k">do</span>
+</span><span class='line'>  <span class="vi">@snippet</span> <span class="o">=</span> <span class="p">{}</span>
+</span><span class='line'>  <span class="n">erb</span> <span class="ss">:new</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">post</span> <span class="s1">&#39;/add&#39;</span> <span class="k">do</span>
+</span><span class='line'>  <span class="vi">@user</span> <span class="o">=</span> <span class="p">{</span> <span class="ss">:clinicId</span> <span class="o">=&gt;</span> <span class="n">params</span><span class="o">[</span><span class="ss">:clinicId</span><span class="o">]</span><span class="p">,</span> <span class="ss">:patientId</span> <span class="o">=&gt;</span> <span class="n">params</span><span class="o">[</span><span class="ss">:patientId</span><span class="o">]</span> <span class="p">}</span>
+</span><span class='line'>  <span class="c1"># result = r.table(&#39;Users&#39;).insert(@user).run(@rdb_connnection)</span>
+</span><span class='line'>  <span class="n">result</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">table</span><span class="p">(</span><span class="s1">&#39;Users&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="vi">@user</span><span class="p">)</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="vi">@rdb_connection</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">if</span> <span class="n">result</span><span class="o">[</span><span class="s1">&#39;inserted&#39;</span><span class="o">]</span> <span class="o">==</span> <span class="mi">1</span>
+</span><span class='line'>      <span class="n">redirect</span> <span class="s2">&quot;/</span><span class="si">#{</span><span class="n">result</span><span class="o">[</span><span class="s1">&#39;generated_keys&#39;</span><span class="o">][</span><span class="mi">0</span><span class="o">]</span><span class="si">}</span><span class="s2">&quot;</span>
+</span><span class='line'>  <span class="k">else</span>
+</span><span class='line'>      <span class="n">logger</span><span class="o">.</span><span class="n">error</span> <span class="n">result</span>
+</span><span class='line'>      <span class="n">redirect</span> <span class="s1">&#39;/&#39;</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">get</span> <span class="s1">&#39;/programs/:userId&#39;</span> <span class="k">do</span>
+</span><span class='line'>  <span class="n">content_type</span> <span class="ss">:json</span>
+</span><span class='line'>  <span class="vi">@userId</span> <span class="o">=</span> <span class="n">params</span><span class="o">[</span><span class="ss">:userId</span><span class="o">].</span><span class="n">downcase</span>
+</span><span class='line'>  <span class="n">max_results</span> <span class="o">=</span> <span class="n">params</span><span class="o">[</span><span class="ss">:limit</span><span class="o">]</span> <span class="o">||</span> <span class="mi">10</span>
+</span><span class='line'>  <span class="n">results</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">table</span><span class="p">(</span><span class="s1">&#39;Programs&#39;</span><span class="p">)</span><span class="o">.</span>
+</span><span class='line'>      <span class="n">filter</span><span class="p">(</span><span class="s1">&#39;userId&#39;</span> <span class="o">=&gt;</span> <span class="vi">@userId</span><span class="p">)</span><span class="o">.</span>
+</span><span class='line'>      <span class="c1"># pluck(&#39;id&#39;, &#39;name&#39;, &#39;created_at&#39;).</span>
+</span><span class='line'>      <span class="n">without</span><span class="p">(</span><span class="s1">&#39;userId&#39;</span><span class="p">)</span><span class="o">.</span>
+</span><span class='line'>      <span class="n">order_by</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">desc</span><span class="p">(</span><span class="s1">&#39;created_at&#39;</span><span class="p">))</span><span class="o">.</span>
+</span><span class='line'>      <span class="n">limit</span><span class="p">(</span><span class="n">max_results</span><span class="p">)</span><span class="o">.</span>
+</span><span class='line'>      <span class="n">run</span><span class="p">(</span><span class="vi">@rdb_connection</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">results</span><span class="o">.</span><span class="n">to_json</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">get</span> <span class="s1">&#39;/exercises/:programId&#39;</span> <span class="k">do</span>
+</span><span class='line'>  <span class="n">content_type</span> <span class="ss">:json</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="vi">@programId</span> <span class="o">=</span> <span class="n">params</span><span class="o">[</span><span class="ss">:programId</span><span class="o">]</span> <span class="o">||</span> <span class="s1">&#39;37feebf9-54ce-45f5-ba76-d13fe634b035&#39;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">exercises</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">table</span><span class="p">(</span><span class="s2">&quot;Programs&quot;</span><span class="p">)</span>
+</span><span class='line'>      <span class="o">.</span><span class="n">filter</span><span class="p">({</span><span class="s1">&#39;id&#39;</span> <span class="o">=&gt;</span> <span class="vi">@programId</span><span class="p">})</span>
+</span><span class='line'>      <span class="o">.</span><span class="n">inner_join</span><span class="p">(</span> <span class="n">r</span><span class="o">.</span><span class="n">table</span><span class="p">(</span><span class="s2">&quot;Exercises&quot;</span><span class="p">))</span> <span class="p">{</span> <span class="o">|</span><span class="nb">p</span><span class="p">,</span> <span class="n">e</span><span class="o">|</span>
+</span><span class='line'>              <span class="nb">p</span><span class="o">[</span><span class="s1">&#39;exercises&#39;</span><span class="o">].</span><span class="n">contains</span><span class="p">(</span> <span class="n">e</span><span class="o">[</span><span class="s1">&#39;id&#39;</span><span class="o">]</span> <span class="p">)</span>
+</span><span class='line'>          <span class="p">}</span>
+</span><span class='line'>          <span class="o">.</span><span class="n">zip</span><span class="p">()</span>
+</span><span class='line'>          <span class="o">.</span><span class="n">without</span><span class="p">(</span><span class="s1">&#39;exercises&#39;</span><span class="p">,</span> <span class="s1">&#39;userId&#39;</span><span class="p">)</span>
+</span><span class='line'>          <span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">desc</span><span class="p">(</span><span class="s1">&#39;created_at&#39;</span><span class="p">))</span>
+</span><span class='line'>          <span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="vi">@rdb_connection</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">exercises</span><span class="o">.</span><span class="n">to_json</span>
+</span><span class='line'>  <span class="c1"># exercise_ids.to_json</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">get</span> <span class="s1">&#39;/getuser/:patientId&#39;</span> <span class="k">do</span>
+</span><span class='line'>  <span class="n">content_type</span> <span class="ss">:json</span>
+</span><span class='line'>  <span class="n">user</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">table</span><span class="p">(</span><span class="s1">&#39;Users&#39;</span><span class="p">)</span>
+</span><span class='line'>      <span class="o">.</span><span class="n">filter</span><span class="p">({</span><span class="s1">&#39;patientId&#39;</span> <span class="o">=&gt;</span> <span class="n">params</span><span class="o">[</span><span class="ss">:patientId</span><span class="o">]</span><span class="p">})</span>
+</span><span class='line'>      <span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="vi">@rdb_connection</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">user</span><span class="o">.</span><span class="n">first</span><span class="o">.</span><span class="n">to_json</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>That&rsquo;s all folks! Hope this helps some in understanding how to do foreign key references in RethinkDB!</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Josh Bavari</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-05-17T23:06:00-06:00" pubdate data-updated="true">May 17<span>th</span>, 2014</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/docdb/'>docdb</a>, <a class='category' href='/blog/categories/nosql/'>nosql</a>, <a class='category' href='/blog/categories/rethinkdb/'>rethinkdb</a>, <a class='category' href='/blog/categories/ruby/'>ruby</a>, <a class='category' href='/blog/categories/sinatra/'>sinatra</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://jbavari.github.io/blog/2014/05/17/handling-relationships-in-rethinkdb/" data-via="jbavari" data-counturl="http://jbavari.github.io/blog/2014/05/17/handling-relationships-in-rethinkdb/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2014/05/17/moving-forward-with-phonegap-slash-cordova-plugins/" title="Previous Post: Moving Forward with Phonegap / Cordova Plugins">&laquo; Moving Forward with Phonegap / Cordova Plugins</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2014/05/20/okcjs-javascript-debugging-techniques/" title="Next Post: OKCjs - Javascript Debugging Techniques">OKCjs - Javascript Debugging Techniques &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2017/04/16/puppet-a-testing-handbook/">Puppet: A Testing Handbook</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2017/03/13/test-coverage-reports-in-elixir/">Test Coverage Reports in Elixir</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/12/29/multicast-service-discovery-in-electron/">Multicast Service Discovery in Electron</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/03/11/using-erlang-observer-on-a-remote-elixir-server/">Using Erlang Observer on a Remote Elixir Server</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/01/24/custom-json-encoding-in-phoenix/">Custom JSON Encoding in Phoenix</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/jbavari">@jbavari</a> on GitHub
+  
+  <script type="text/javascript">
+    $(document).ready(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'jbavari',
+            count: 0,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2019 - Josh Bavari -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+  <script src="//static.getclicky.com/js" type="text/javascript"></script>
+  <script type="text/javascript">try{ clicky.init(100896582); }catch(e){}</script>
+  <noscript><p><img alt="Clicky" width="1" height="1" src="//in.getclicky.com/100896582ns.gif" /></p></noscript>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'joshbavari';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://jbavari.github.io/blog/2014/05/17/handling-relationships-in-rethinkdb/';
+        var disqus_url = 'http://jbavari.github.io/blog/2014/05/17/handling-relationships-in-rethinkdb/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

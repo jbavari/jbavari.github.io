@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: codesigning | Josh Bavari's Ramblings]]></title>
+  <link href="http://jbavari.github.io/blog/categories/codesigning/atom.xml" rel="self"/>
+  <link href="http://jbavari.github.io/"/>
+  <updated>2019-01-27T19:16:40-07:00</updated>
+  <id>http://jbavari.github.io/</id>
+  <author>
+    <name><![CDATA[Josh Bavari]]></name>
+    <email><![CDATA[jbavari@gmail.com]]></email>
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Codesigning Electron Applications]]></title>
+    <link href="http://jbavari.github.io/blog/2015/08/14/codesigning-electron-applications/"/>
+    <updated>2015-08-14T11:30:00-06:00</updated>
+    <id>http://jbavari.github.io/blog/2015/08/14/codesigning-electron-applications</id>
+    <content type="html"><![CDATA[<p>Lately I&rsquo;ve been busy at work creating and maintaining <a href="http://lab.ionic.io">Ionic Lab</a>. It&rsquo;s been a fun and challenging problem using HTML/CSS/JavaScript to create native OSX/Windows applications.</p>
+
+<p>I&rsquo;m going to admit &ndash; I&rsquo;ve gotten a few hybrid projects on the App store. Honestly though I had a lot of help.</p>
+
+<p>This time I was mostly on my own.</p>
+
+<p>I&rsquo;m not great at the native dev and half the problems I occur are with the platform I am dealing with. In this I mean &ndash; Android I deal with how Google does signing and releasing and how Apple does signing and releasing.</p>
+
+<p>I&rsquo;m going to cover mainly Apple policies to release an app on your own with or without the App store. With Electron, we&rsquo;re going to make a native build, so we&rsquo;ll need to know how to do this.</p>
+
+<h2>Mac&rsquo;s Gatekeeper</h2>
+
+<p>On Mac OSX, there&rsquo;s an application that checks all the applications you download and run to see if they are valid and trusted.</p>
+
+<p>Certainly you&rsquo;ve seen the message from an app you&rsquo;ve downloaded: <code>"App can't be opened because it is from an unidentified developer."</code></p>
+
+<p>If you create and app and do not codesign it with a valid Apple dev account, your users will see this. It&rsquo;s not a good thing.</p>
+
+<h2>How to codesign</h2>
+
+<p>The main tool of codesigning is the CLI tool <code>codesign</code>.</p>
+
+<p>I really found a lot of help from <a href="https://developer.apple.com/library/mac/technotes/tn2206/_index.html#//apple_ref/doc/uid/DTS40007919-CH1-TNTAG400">OSX Code Signing in Depth</a>.</p>
+
+<p>It&rsquo;s pretty clear right away what you need to run and how to verify what you need to run. I&rsquo;d like to go over how to do it with Electron, specifically.</p>
+
+<p>I posted the script below. I want to highlight the issues I ran into as a result of my ignorance.</p>
+
+<p>One issue I ran into &ndash; I was using the &ldquo;Mac Development&rdquo; certificate to sign &ndash; and when I ran the verify command (<code>codesign -vvvv -d "/path/to/MyApp.app"</code>) it gave me a good to go signal. When I ran the security CLI command (<code>spctl --assess -vvvv "/path/to/MyApp.app"</code>), it was rejected.</p>
+
+<p>My error: I thought &ldquo;Mac Development&rdquo; was a &ldquo;Developer-ID application&rdquo;.</p>
+
+<p>It&rsquo;s not. I was an account admin. In the Apple Member Center for Certificate Administration, I could only set up a &ldquo;Mac Development&rdquo; type certificate. Apple member center would not let met set up a &ldquo;Developer ID Application&rdquo; certificate. You need a &lsquo;team agent&rsquo; to set one up for you. (That or become a team agent)</p>
+
+<p>That being said &ndash; ensure you sign with a certificate type of &ldquo;Developer ID Application&rdquo; to sign with, and you&rsquo;re good to go.</p>
+
+<p>I set up my codesign script like <a href="https://github.com/nwjs/nw.js/issues/616#issuecomment-30844482">the following</a>. There&rsquo;s comments to help understand:</p>
+
+<p>```sh</p>
+
+<h1>Invoke this script with a relative <code>.app</code> path</h1>
+
+<h1>EX:</h1>
+
+<h1>codesign.sh &ldquo;dist/osx/MyApp-darwin-x64/MyApp.app&rdquo;</h1>
+
+<h1>I had better luck using the iPhoneOS codesign_allocate</h1>
+
+<p>export CODESIGN_ALLOCATE=&ldquo;/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/usr/bin/codesign_allocate&rdquo;</p>
+
+<h1>Next two are specified in Apple docs:</h1>
+
+<h1>export CODESIGN_ALLOCATE=&ldquo;/Applications/Xcode.app/Contents/Developer/usr/bin/codesign_allocate&rdquo;</h1>
+
+<h1>export CODESIGN_ALLOCATE=&ldquo;/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/codesign_allocate&rdquo;</h1>
+
+<h1>However, neither worked, and gave error:</h1>
+
+<h1>/Users/JoshBavari/Development/ionic-gui/dist/osx/MyApp-darwin-x64/MyApp.app/Contents/Frameworks/Electron Framework.framework/Electron Framework: cannot find code object on disk</h1>
+
+<h1>Run the following to get a list of certs</h1>
+
+<h1>security find-identity</h1>
+
+<p>app=&ldquo;$PWD/$1&rdquo;
+identity=&ldquo;&lt;ENTER_ID_OF_RESULT_FROM_SECURITY_FIND_IDENTITY_COMMAND>&rdquo;</p>
+
+<p>echo &ldquo;### signing frameworks&rdquo;
+codesign &mdash;deep &mdash;force &mdash;verify &mdash;verbose &mdash;sign &ldquo;$identity&rdquo; &ldquo;$app/Contents/Frameworks/Electron Framework.framework/Electron Framework&rdquo;
+codesign &mdash;deep &mdash;force &mdash;verify &mdash;verbose &mdash;sign &ldquo;$identity&rdquo; &ldquo;$app/Contents/Frameworks/Electron Framework.framework/&rdquo;
+/Versions/A"
+codesign &mdash;deep &mdash;force &mdash;verify &mdash;verbose &mdash;sign &ldquo;$identity&rdquo; &ldquo;$app/Contents/Frameworks/Electron Framework.framework/Versions/Current/Electron Framework&rdquo;
+codesign &mdash;deep &mdash;force &mdash;verify &mdash;verbose &mdash;sign &ldquo;$identity&rdquo; &ldquo;$app/Contents/Frameworks/Electron Helper EH.app/Contents/MacOS/Electron Helper EH&rdquo;
+codesign &mdash;deep &mdash;force &mdash;verify &mdash;verbose &mdash;sign &ldquo;$identity&rdquo; &ldquo;$app/Contents/Frameworks/Electron Helper NP.app/Contents/MacOS/Electron Helper NP&rdquo;
+codesign &mdash;deep &mdash;force &mdash;verify &mdash;verbose &mdash;sign &ldquo;$identity&rdquo; &ldquo;$app/Contents/Frameworks/Electron Helper NP.app/Contents/MacOS/Electron Helper NP&rdquo;
+codesign &mdash;deep &mdash;force &mdash;verify &mdash;verbose &mdash;sign &ldquo;$identity&rdquo; &ldquo;$app/Contents/Frameworks/MyApp Helper.app/Contents/MacOS/MyApp Helper&rdquo;
+codesign &mdash;deep &mdash;force &mdash;verify &mdash;verbose &mdash;sign &ldquo;$identity&rdquo; &ldquo;$app/Contents/Frameworks/Mantle.framework/Mantle&rdquo;
+codesign &mdash;deep &mdash;force &mdash;verify &mdash;verbose &mdash;sign &ldquo;$identity&rdquo; &ldquo;$app/Contents/Frameworks/Mantle.framework/Versions/A&rdquo;
+codesign &mdash;deep &mdash;force &mdash;verify &mdash;verbose &mdash;sign &ldquo;$identity&rdquo; &ldquo;$app/Contents/Frameworks/ReactiveCocoa.framework/ReactiveCocoa&rdquo;
+codesign &mdash;deep &mdash;force &mdash;verify &mdash;verbose &mdash;sign &ldquo;$identity&rdquo; &ldquo;$app/Contents/Frameworks/ReactiveCocoa.framework/Versions/A&rdquo;
+codesign &mdash;deep &mdash;force &mdash;verify &mdash;verbose &mdash;sign &ldquo;$identity&rdquo; &ldquo;$app/Contents/Frameworks/Squirrel.framework/Squirrel&rdquo;
+codesign &mdash;deep &mdash;force &mdash;verify &mdash;verbose &mdash;sign &ldquo;$identity&rdquo; &ldquo;$app/Contents/Frameworks/Squirrel.framework/Versions/A&rdquo;</p>
+
+<p>echo &ldquo;### signing app&rdquo;
+codesign &mdash;deep &mdash;force &mdash;verify &mdash;verbose &mdash;sign &ldquo;$identity&rdquo; &ldquo;$app&rdquo;</p>
+
+<p>echo &ldquo;### Zipping app&rdquo;
+ditto -c -k &mdash;sequesterRsrc &mdash;keepParent dist/osx/MyApp-darwin-x64/MyApp.app/ dist/osx/MyApp-Mac.zip</p>
+
+<p>echo &ldquo;### verifying signature&rdquo;,
+codesign -vvvv -d &ldquo;$app&rdquo;
+sudo spctl -a -vvvv &ldquo;$app&rdquo;
+```</p>
+
+<h2>Pitfalls</h2>
+
+<p>Since I wasn&rsquo;t very familiar with the Apple specifics I&rsquo;d like to high light a few pitfalls I ran into with my ignorance.</p>
+
+<p>A &lsquo;Developer-ID signed app&rsquo; means setting up a certificate (private key + cert) with &ldquo;type&rdquo; as &ldquo;Developer ID Application&rdquo;. This does <em>NOT</em> mean a &ldquo;Mac Development&rdquo; certificate. From the OSX Codesigning guide:</p>
+
+<blockquote><p>Like Gatekeeper, spctl will only accept Developer ID-signed apps and apps downloaded from the Mac App Store by default. It will reject apps signed with Mac App Store development or distribution certificates.</p></blockquote>
+
+<h1>Issues</h1>
+
+<p>Most users say to specify this environment variable:</p>
+
+<p><code>export CODESIGN_ALLOCATE="/Applications/Xcode.app/Contents/Developer/usr/bin/codesign_allocate"</code></p>
+
+<p>For some reason, I couldn&rsquo;t use the default codesign allocate as specified in the Github issue above. Instead, I had to go with this Environment variable for CODESIGN_ALLOCATE for <code>iPhoneOS.platform</code>:</p>
+
+<p><code>export CODESIGN_ALLOCATE="/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/usr/bin/codesign_allocate"</code></p>
+
+<h1>Hints</h1>
+
+<p>Only include signed code in directories that should contain signed code.
+Only include resources in directories that should contain
+resources.
+Do not use the &mdash;resource-rules flag or ResourceRules.plist. They have been obsoleted and will be rejected.</p>
+
+<h2>A little note on signing frameworks [5]:</h2>
+
+<h3>Signing Frameworks</h3>
+
+<p>When you sign frameworks, you have to sign a specific version. So, let’s say your framework is called CSMail, you’d sign CSMail.framework/Versions/A. If you try and just sign the top level folder it will silently fail, as will CSMail.framework/Versions/Current (see “Symbolic Links” below).</p>
+
+<h3>Symbolic Links</h3>
+
+<p>Any symbolic links will be silently ignored and this extends to the path you give to the codesign command line utility. I think there’s actually a problem with symbolic links: you can add them to a Resources folder and it won’t invalidate the signature (whereas you cannot add normal files). I’ve reported this to Apple (rdar://problem/6050445).</p>
+
+<h1>Helpful links</h1>
+
+<ol>
+<li><a href="https://developer.apple.com/library/mac/documentation/Security/Conceptual/CodeSigningGuide/AboutCS/AboutCS.html">Apple Code Signing Overview</a></li>
+<li><a href="https://developer.apple.com/library/mac/technotes/tn2206/_index.html#//apple_ref/doc/uid/DTS40007919-CH1-TNTAG205">Apple OS X Code Signing In Depth</a></li>
+<li><a href="https://developer.apple.com/library/mac/documentation/MacOSX/Conceptual/BPFrameworks/Concepts/FrameworkAnatomy.html">Apple Anatomy of Framework Bundles</a></li>
+<li><a href="https://developer.apple.com/library/mac/documentation/Darwin/Reference/ManPages/man1/codesign.1.html#//apple_ref/doc/man/1/codesign">Apple codesign Man Page</a></li>
+<li><a href="http://sutes.co.uk/2008/07/code-signing.html">Chris Suter&rsquo;s Blog &ndash; Code signing</a></li>
+<li><a href="http://stackoverflow.com/questions/27871099/creating-symlinks-in-osx-frameworks-inside-app-bundle">Stackoverflow &ndash; Creating Symlinks in OSX Frameworks</a></li>
+<li><a href="http://successfulsoftware.net/2012/08/30/how-to-sign-your-mac-os-x-app-for-gatekeeper/">How to sign your Mac OSX app for Gatekeeper</a></li>
+<li><a href="http://furbo.org/2013/10/17/code-signing-and-mavericks/">Codesigning and Mavericks</a>
+9 <a href="http://www.pracucci.com/atom-electron-signing-mac-app.html">Atom Electron &ndash; Signing Mac App</a></li>
+<li><a href="http://blog.hoachuck.biz/blog/2013/10/29/codesign-useful-info-in-xcode-5-dot-0-1/">Codesign &ndash; useful info in Xcode > 5.0</a></li>
+<li><a href="http://www.saschawise.com/blog/2015/08/12/electron-for-the-mac-app-store.html">Electron for the Mac App Store</a></li>
+<li><a href="https://github.com/nwjs/nw.js/issues/616#issuecomment-30844482">nw.js issue about code signing</a>.</li>
+</ol>
+
+]]></content>
+  </entry>
+  
+</feed>

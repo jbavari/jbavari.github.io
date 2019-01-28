@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: cover | Josh Bavari's Ramblings]]></title>
+  <link href="http://jbavari.github.io/blog/categories/cover/atom.xml" rel="self"/>
+  <link href="http://jbavari.github.io/"/>
+  <updated>2019-01-27T19:16:40-07:00</updated>
+  <id>http://jbavari.github.io/</id>
+  <author>
+    <name><![CDATA[Josh Bavari]]></name>
+    <email><![CDATA[jbavari@gmail.com]]></email>
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Test Coverage Reports in Elixir]]></title>
+    <link href="http://jbavari.github.io/blog/2017/03/13/test-coverage-reports-in-elixir/"/>
+    <updated>2017-03-13T18:38:00-06:00</updated>
+    <id>http://jbavari.github.io/blog/2017/03/13/test-coverage-reports-in-elixir</id>
+    <content type="html"><![CDATA[<p>Lately I&rsquo;ve been learning a ton more about Elixir and really working towards refactoring and hardening the system.</p>
+
+<p>On my current project, I&rsquo;ve got about 200 tests that exercise various parts of the system. Lately though, I&rsquo;ve been trying to analyze which parts of the system aren&rsquo;t being covered, and of course, theres tools to help with that.</p>
+
+<p>The two I looked at were <a href="https://github.com/parroty/excoveralls">Coveralls</a> and <a href="https://github.com/alfert/coverex">Coverex</a>. I&rsquo;m going to be using <code>coverex</code> in this post.</p>
+
+<p>Getting started is a breeze, check the readme for that. I&rsquo;ll cover it briefly for a bit here, my modifying our <code>mix.exs</code> file:</p>
+
+<p><code>`` elixir
+  # in</code>def project`, we add test_coverage
+  test_coverage: [</p>
+
+<pre><code>tool: Coverex.Task
+</code></pre>
+
+<p>  ],</p>
+
+<p>  # in deps, add the depedency for only test environment
+  {:coverex, &ldquo;~> 1.4.10&rdquo;, only: :test},
+```</p>
+
+<p>After setup, running <code>mix test --cover</code> generates some reports in your projects <code>./cover</code> folder &ndash; with <code>functions.html</code> and <code>modules.html</code>. These give you your standard coverage reports with lines covered / ratio covered.</p>
+
+<p>For my project, I had quite a bit of generated files using <a href="https://github.com/bitwalker/exprotobuf">exprotobuf</a>. The coverage report was getting butchered from not using these many files in my tests.</p>
+
+<p>According to the docs, we can add a keyword for <code>ignore_modules</code> in the keyword list <code>test_coverage</code> and the coverage reports will ignore those modules.</p>
+
+<p>However, for my generated list of modules, I had quite the growing list to ignore and it quickly became unwieldy to put that list of modules in my <code>mix.exs</code> file.</p>
+
+<p>Since we can&rsquo;t access other modules from our mix file, I had a quick solution. I created a <code>.coverignore</code> file in the project directory, lumped in all the modules I wanted to ignore (from the <code>modules.html</code> generated file) and put them all in the <code>.coverignore</code> file.</p>
+
+<p>I ensured all the modules I wanted to ignore were all newline delimited (<code>\n</code>).</p>
+
+<p>From there, I modified my <code>mix.exs</code> file as such:</p>
+
+<p>```elixir
+  # Near the top
+  @ignore_modules File.read!(&ldquo;./.coverignore&rdquo;) |> String.split(&ldquo;\n&rdquo;) |> Enum.map(&amp;(String.to_atom(&amp;1)))</p>
+
+<p>  # in def project
+  test_coverage: [</p>
+
+<pre><code>tool: Coverex.Task,
+ignore_modules: @ignore_modules
+</code></pre>
+
+<p>  ],
+```</p>
+
+<p>Boom, that does it! Now we&rsquo;ve got a manageable list of modules to ignore in a separate file so we can keep our mix file clean.</p>
+
+<p>All in all, <code>coverex</code> is a great module, and I would suggest using it if you do not want to ship data to coveralls.</p>
+
+<p>Hope this helps, happy coding. Cheers!</p>
+]]></content>
+  </entry>
+  
+</feed>

@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: ionic2 | Josh Bavari's Ramblings]]></title>
+  <link href="http://jbavari.github.io/blog/categories/ionic2/atom.xml" rel="self"/>
+  <link href="http://jbavari.github.io/"/>
+  <updated>2019-01-27T19:16:40-07:00</updated>
+  <id>http://jbavari.github.io/</id>
+  <author>
+    <name><![CDATA[Josh Bavari]]></name>
+    <email><![CDATA[jbavari@gmail.com]]></email>
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Angular 2 and ng-model]]></title>
+    <link href="http://jbavari.github.io/blog/2015/10/21/angular-2-and-ng-model/"/>
+    <updated>2015-10-21T23:00:00-06:00</updated>
+    <id>http://jbavari.github.io/blog/2015/10/21/angular-2-and-ng-model</id>
+    <content type="html"><![CDATA[<p>Angular 2 introduces <code>ng-model</code> from Angular 1 in a completely different manner. Due to this, I wanted to make a quick post on how to use Angular 2&rsquo;s <code>ng-model</code> to build components that alert its parents app/component of changes.</p>
+
+<p>I&rsquo;m going to use the <a href="https://github.com/driftyco/ionic-conference-app">Ionic 2 conference app</a> as an example.</p>
+
+<p>In this post, we&rsquo;ll look at the schedule page in the app and see how it uses the <code>ion-search-bar</code> to update its <code>searchQuery</code> to filter out sessions from the schedule when the user changes the search input.</p>
+
+<h2>The set up</h2>
+
+<p>On the <a href="https://github.com/driftyco/ionic-conference-app/blob/master/www/app/schedule/schedule.js#L24">schedule component</a>, we set up the search query as a simple string, as such: <code>this.searchQuery = '';</code>.</p>
+
+<p>Then in our <a href="https://github.com/driftyco/ionic-conference-app/blob/master/www/app/schedule/schedule.html#L21">schedule page template</a>, we tell the <code>ion-search-bar</code> to use the <code>ng-model</code> directive and tell it to two-way bind using the schedule component&rsquo;s <code>searchQuery</code> variable.</p>
+
+<p>The template is like this:</p>
+
+<p><code>html
+&lt;ion-search-bar [(ng-model)]="searchQuery" placeholder="Search"&gt;&lt;/ion-search-bar&gt;
+</code></p>
+
+<p>Now, in the search bar, we need to take that <code>searchQuery</code> as an ngModel, and ensure the search-bar has a <a href="https://github.com/angular/angular/blob/master/modules/angular2/src/core/forms/directives/ng_control.ts#L14">value accessor</a> implemented, so that we may tell the schedule component of when things change to update its shadow DOM if need be.</p>
+
+<p>The <a href="https://github.com/driftyco/ionic2/blob/master/ionic/components/search-bar/search-bar.ts#L46-L62">ion-search-bar</a> will take an <code>ngControl</code> as part of it&rsquo;s injection, and sets up the <a href="https://github.com/driftyco/ionic2/blob/master/ionic/components/search-bar/search-bar.ts#L61">value accessor</a> to itself, like so:</p>
+
+<p>```js
+constructor(
+  elementRef: ElementRef,
+  config: Config,
+  ngControl: NgControl,
+  renderer: Renderer
+) {
+  super(elementRef, config);
+  this.renderer = renderer;
+  this.elementRef = elementRef;
+  if(!ngControl) {</p>
+
+<pre><code>// They don't want to do anything that works, so we won't do anything that breaks
+return;
+</code></pre>
+
+<p>  }</p>
+
+<p>  this.ngControl = ngControl;
+  this.ngControl.valueAccessor = this;
+}
+```</p>
+
+<p>NOTE: <code>ngModel</code> extends the <code>ngControl</code> class in angular (<a href="https://github.com/angular/angular/blob/master/modules/angular2/src/core/forms/directives/ng_model.ts#L44">source code</a>). The <a href="https://github.com/angular/angular/blob/master/modules/angular2/src/core/forms/directives/ng_control.ts#L14"><code>valueAccessor</code></a> is a <a href="https://github.com/angular/angular/blob/master/modules/angular2/src/core/forms/directives/control_value_accessor.ts">ControlValueAccessor</a> is an interface that provides certain methods, like so:</p>
+
+<p><code>js
+export interface ControlValueAccessor {
+  writeValue(obj: any): void;
+  registerOnChange(fn: any): void;
+  registerOnTouched(fn: any): void;
+}
+</code></p>
+
+<p>The <code>ControlValueAccessor</code> gives us a method to write the new value, a method to register to listen to the changes, and the register on touched function to allow components to use.</p>
+
+<p>Those are implemented in the search-bar, as seen <a href="https://github.com/driftyco/ionic2/blob/master/ionic/components/search-bar/search-bar.ts#L82-L92">here</a>.</p>
+
+<p>You can see that the <code>writeValue</code> method on <code>search-bar</code> updates it&rsquo;s local <code>value</code>, so that it&rsquo;s internal <code>&lt;input&gt;</code> element can update its value it shows. When that internal input is changed, it calls the <a href="https://github.com/driftyco/ionic2/blob/master/ionic/components/search-bar/search-bar.ts#L94-L98">inputChanged</a> event on the <code>search-bar</code>, which alerts other components that it has changed, as well as updating its current value.</p>
+
+<p>```js
+  inputChanged(event) {</p>
+
+<pre><code>this.writeValue(event.target.value);
+this.onChange(event.target.value);
+</code></pre>
+
+<p>  }
+```</p>
+
+<h3>Filtering out sessions</h3>
+
+<p>Since the <code>onChange</code> event is called, the <code>schedule</code> component will see this and cause re-evaluation on its <code>searchQuery</code> variable, and filters the code.</p>
+
+<p>That makes our filtering method super easy, <a href="https://github.com/driftyco/ionic-conference-app/blob/master/www/app/schedule/schedule.js#L54">as seen here</a>, copied below for convenience:</p>
+
+<p>`&ldquo;js
+getSessionsForTheDay() {
+  if (!this.searchQuery || this.searchQuery.trim() == &rdquo;) {</p>
+
+<pre><code>return this.sessionsForTheDay;
+</code></pre>
+
+<p>  }
+  var talks = [];
+  this.sessionsForTheDay.forEach((session) => {</p>
+
+<pre><code>var matched = session.talks.filter((v) =&gt; {
+  if(v.name.toLowerCase().indexOf(this.searchQuery.toLowerCase()) &gt;= 0) {
+    return true;
+  }
+  return false;
+});
+if (matched.length &gt; 0) {
+  session.talks = matched;
+  talks.push(session);
+}
+</code></pre>
+
+<p>  });
+  return talks;
+}
+```</p>
+
+<p>When the schedule component&rsquo;s variable for <code>searchQuery</code> is updated, this method will be auto-magically re-evaluated, which causes the list to update.</p>
+
+<p>Hope this helps you understand Angular 2 and ng-models better! Enjoy!</p>
+]]></content>
+  </entry>
+  
+</feed>

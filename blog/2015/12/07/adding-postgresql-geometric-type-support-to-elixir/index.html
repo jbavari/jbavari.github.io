@@ -1,0 +1,621 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Adding PostgreSQL geometric type support to Elixir - Josh Bavari's Ramblings</title>
+  <meta name="author" content="Josh Bavari">
+
+  
+  <meta name="description" content="In the last week or so, I&rsquo;ve had a blast playing around with basic Postgres geometric types to do basic earth distance queries. From my &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://jbavari.github.io/blog/2015/12/07/adding-postgresql-geometric-type-support-to-elixir">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="Josh Bavari's Ramblings" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">Josh Bavari's Ramblings</a></h1>
+  
+    <h2>tech babbles on Ruby, Javascript, Rails, Phonegap/Cordova, Grunt, and more</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:jbavari.github.io" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+  <li><a href="/about">About</a></li>
+  <li><a href="/speaking">Speaking</a></li>
+  <li><a href="/knowledge">Knowledge</a></li>
+  <li><a href="/about/resume">Resume</a></li>
+  <li><a href="/cv">C.V.</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Adding PostgreSQL Geometric Type Support to Elixir</h1>
+    
+    
+      <p class="meta">
+        <span class="reading-time">about a 6 minute read</span>
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-12-07T18:04:00-07:00" pubdate data-updated="true">Dec 7<span>th</span>, 2015</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>In the last week or so, I&rsquo;ve had a blast playing around with basic Postgres <a href="http://www.postgresql.org/docs/9.4/static/datatype-geometric.html">geometric types</a> to do basic earth distance queries.</p>
+
+<p>From my favorite blog, <a href="http://datachomp.com/archives/radius-queries-in-postgres/">Datachomp shows how to use radius queries in postgres</a> to find the closest place to get a burrito fix. Since I&rsquo;ve been on an <a href="http://elixir-lang.org/">Elixir</a> kick lately, I figured it was time to contribute back to the open source world by adding first class burrito, err, geometric type support.</p>
+
+<h2>Initial reaction</h2>
+
+<p>I immediately made an Ecto model trying to use the point type in my model:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+</pre></td><td class='code'><pre><code class='elixir'><span class='line'><span class="k">defmodule</span> <span class="no">MyApp</span><span class="o">.</span><span class="no">LocationPoint</span> <span class="k">do</span>
+</span><span class='line'><span class="k">  </span><span class="kn">use</span> <span class="no">MyApp</span><span class="o">.</span><span class="no">Web</span><span class="p">,</span> <span class="ss">:model</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">schema</span> <span class="s2">&quot;location_point&quot;</span> <span class="k">do</span>
+</span><span class='line'><span class="k">    </span><span class="n">field</span> <span class="ss">:name</span><span class="p">,</span> <span class="ss">:string</span>
+</span><span class='line'>    <span class="n">field</span> <span class="ss">:date</span><span class="p">,</span> <span class="no">Ecto</span><span class="o">.</span><span class="no">DateTime</span>
+</span><span class='line'>    <span class="n">field</span> <span class="ss">:location</span><span class="p">,</span> <span class="ss">:point</span>
+</span><span class='line'>    <span class="n">timestamps</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nv">@required_fields</span> <span class="err">~</span><span class="n">w</span><span class="p">(</span><span class="n">name</span> <span class="n">date</span><span class="p">)</span>
+</span><span class='line'>  <span class="nv">@optional_fields</span> <span class="err">~</span><span class="n">w</span><span class="p">(</span><span class="n">location</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nv">@doc</span> <span class="sd">&quot;&quot;&quot;</span>
+</span><span class='line'><span class="sd">  Creates a changeset based on the `model` and `params`.</span>
+</span><span class='line'>
+</span><span class='line'><span class="sd">  If no params are provided, an invalid changeset is returned</span>
+</span><span class='line'><span class="sd">  with no validation performed.</span>
+</span><span class='line'><span class="sd">  &quot;&quot;&quot;</span>
+</span><span class='line'>  <span class="k">def</span> <span class="n">changeset</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">params</span> <span class="p">\\</span> <span class="ss">:empty</span><span class="p">)</span> <span class="k">do</span>
+</span><span class='line'><span class="k">    </span><span class="n">model</span>
+</span><span class='line'>    <span class="o">|&gt;</span> <span class="n">cast</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="nv">@required_fields</span><span class="p">,</span> <span class="nv">@optional_fields</span><span class="p">)</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Right away, when I ran the commands to retrieve this location from <code>iex</code>, it gave me some errors:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='elixir'><span class='line'><span class="err">$</span> <span class="n">iex</span> <span class="o">-</span><span class="no">S</span> <span class="n">mix</span>
+</span><span class='line'><span class="err">$</span> <span class="n">alias</span> <span class="no">MyApp</span><span class="o">.</span><span class="no">Repo</span>
+</span><span class='line'><span class="err">$</span> <span class="n">alias</span> <span class="no">MyApp</span><span class="o">.</span><span class="no">LocationPoint</span>
+</span><span class='line'><span class="err">$</span> <span class="no">Repo</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="no">LocationPoint</span><span class="p">)</span>
+</span><span class='line'><span class="err">$</span> <span class="o">**</span> <span class="p">(</span><span class="no">ArgumentError</span><span class="p">)</span> <span class="n">no</span> <span class="n">extension</span> <span class="n">found</span> <span class="n">for</span> <span class="n">oid</span> <span class="err">`</span><span class="m">600</span><span class="err">`</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Right away, I knew this mission was up to me to get point support into Postgrex.</p>
+
+<p>In this post, I&rsquo;ll outline how to add type support to Postgres via the Elixir package, <a href="https://github.com/ericmj/postgrex">postgrex</a>. We will walk through adding the <code>Point</code> data type in Postgres.</p>
+
+<p>This post will cover:</p>
+
+<ul>
+<li>How to see how postgres stores its types (built in and composite)</li>
+<li>How postgrex does its type lookups</li>
+<li>Finding the source type &ndash; adding it to postgres senders</li>
+<li>Looking up postgres source code for data mapping</li>
+<li>Adding new type <code>Point</code> type</li>
+<li>Adding built in <code>Type</code> structs</li>
+<li>Adding encode method</li>
+<li>Adding decode method</li>
+</ul>
+
+
+<h1>How Postgres stores its types</h1>
+
+<p>Postgres stores its types in a special system table called <code>pg_type</code> (<a href="http://www.postgresql.org/docs/9.4/static/catalog-pg-type.html">docs</a>). It defines a few things about the type:</p>
+
+<ul>
+<li>Its <code>typelem</code> &ndash; how the type is stored &ndash; array, or otherwise</li>
+<li>Its <code>typsend</code> &ndash; Output conversion function (binary format), or 0 if none</li>
+<li>Its <code>typarray</code> &ndash; an oid to another array type that has its send method</li>
+</ul>
+
+
+<h1>How Postgrex does type lookups</h1>
+
+<p>Postgrex at it&rsquo;s core is a simple data adapter into PostgreSQL from Elixir. It&rsquo;s an awesome library, and if you&rsquo;re using <a href="https://github.com/elixir-lang/ecto">Ecto</a>, you&rsquo;re already using it!</p>
+
+<p>First, let&rsquo;s look at how they are loading most types, by looking them up in the <code>pg_type</code> table in postgres:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+</pre></td><td class='code'><pre><code class='elixir'><span class='line'>  <span class="c1">### BOOTSTRAP TYPES AND EXTENSIONS ###</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nv">@doc</span> <span class="no">false</span>
+</span><span class='line'>  <span class="k">def</span> <span class="n">bootstrap_query</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">version</span><span class="p">)</span> <span class="k">do</span>
+</span><span class='line'><span class="k">    </span><span class="p">{</span><span class="n">rngsubtype</span><span class="p">,</span> <span class="n">join_range</span><span class="p">}</span> <span class="o">=</span>
+</span><span class='line'>      <span class="k">if</span> <span class="n">version</span> <span class="o">&gt;=</span> <span class="p">{</span><span class="m">9</span><span class="p">,</span> <span class="m">2</span><span class="p">,</span> <span class="m">0</span><span class="p">}</span> <span class="k">do</span>
+</span><span class='line'><span class="k">        </span><span class="p">{</span><span class="s2">&quot;coalesce(r.rngsubtype, 0)&quot;</span><span class="p">,</span>
+</span><span class='line'>         <span class="s2">&quot;LEFT JOIN pg_range AS r ON r.rngtypid = t.oid&quot;</span><span class="p">}</span>
+</span><span class='line'>      <span class="k">else</span>
+</span><span class='line'>        <span class="p">{</span><span class="s2">&quot;0&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">}</span>
+</span><span class='line'>      <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="sd">&quot;&quot;&quot;</span>
+</span><span class='line'><span class="sd">    SELECT t.oid, t.typname, t.typsend, t.typreceive, t.typoutput, t.typinput,</span>
+</span><span class='line'><span class="sd">           t.typelem, #{rngsubtype}, ARRAY (</span>
+</span><span class='line'><span class="sd">      SELECT a.atttypid</span>
+</span><span class='line'><span class="sd">      FROM pg_attribute AS a</span>
+</span><span class='line'><span class="sd">      WHERE a.attrelid = t.typrelid AND a.attnum &gt; 0 AND NOT a.attisdropped</span>
+</span><span class='line'><span class="sd">      ORDER BY a.attnum</span>
+</span><span class='line'><span class="sd">    )</span>
+</span><span class='line'><span class="sd">    FROM pg_type AS t</span>
+</span><span class='line'><span class="sd">    #{join_range}</span>
+</span><span class='line'><span class="sd">    WHERE</span>
+</span><span class='line'><span class="sd">      t.typname::text = ANY ((#{sql_array(m.type)})::text[]) OR</span>
+</span><span class='line'><span class="sd">      t.typsend::text = ANY ((#{sql_array(m.send)})::text[]) OR</span>
+</span><span class='line'><span class="sd">      t.typreceive::text = ANY ((#{sql_array(m.receive)})::text[]) OR</span>
+</span><span class='line'><span class="sd">      t.typoutput::text = ANY ((#{sql_array(m.output)})::text[]) OR</span>
+</span><span class='line'><span class="sd">      t.typinput::text = ANY ((#{sql_array(m.input)})::text[])</span>
+</span><span class='line'><span class="sd">    &quot;&quot;&quot;</span>
+</span><span class='line'>  <span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>You can see that under the hood, we&rsquo;re querying Postgres and asking it for it&rsquo;s types, so we can do OID lookups and call the appropriate encoder/decoder methods. From here, we can match up our newly added types encoding/decoding methods.</p>
+
+<h1>Finding the source type &ndash; adding it to postgres senders</h1>
+
+<p>Find information about the geometrics category:</p>
+
+<p><code>SELECT * from pg_type where typcategory = 'G';</code></p>
+
+<p>We will see the point type has an oid of 600, which is using a send specification of <code>point_send</code>. Other notable send types for geometries: <code>point_send lseg_send path_send box_send poly_send line_send circle_send</code>.</p>
+
+<p>Thus, we&rsquo;ll update the send types in postgrex, located in the <code>binary.ex</code> file:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='elixir'><span class='line'><span class="nv">@senders</span> <span class="err">~</span><span class="n">w</span><span class="p">(</span><span class="n">boolsend</span> <span class="n">bpcharsend</span> <span class="n">textsend</span> <span class="n">varcharsend</span> <span class="n">byteasend</span>
+</span><span class='line'>            <span class="n">int2send</span> <span class="n">int4send</span> <span class="n">int8send</span> <span class="n">float4send</span> <span class="n">float8send</span> <span class="n">numeric_send</span>
+</span><span class='line'>            <span class="n">uuid_send</span> <span class="n">date_send</span> <span class="n">time_send</span> <span class="n">timetz_send</span> <span class="n">timestamp_send</span>
+</span><span class='line'>            <span class="n">timestamptz_send</span> <span class="n">interval_send</span> <span class="n">enum_send</span> <span class="n">tidsend</span> <span class="n">unknownsend</span>
+</span><span class='line'>            <span class="n">inet_send</span> <span class="n">cidr_send</span> <span class="n">macaddr_send</span> <span class="n">point_send</span>
+</span><span class='line'>            <span class="p">)</span> <span class="o">++</span> <span class="nv">@oid_senders</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Boom, that gets us the oid to encode/decode off of!</p>
+
+<h1>Looking up postgres source code for data mapping</h1>
+
+<p>I hopped into the Postgres source code and looked up the struct type for point, <a href="https://github.com/postgres/postgres/blob/master/src/include/utils/geo_decls.h#L58-L62">found here</a>.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='c++'><span class='line'><span class="k">typedef</span> <span class="k">struct</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>  <span class="kt">double</span>    <span class="n">x</span><span class="p">,</span>
+</span><span class='line'>        <span class="n">y</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span> <span class="n">Point</span><span class="p">;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Great, its just two floats, no big deal.</p>
+
+<h1>Adding the point struct</h1>
+
+<p>Let&rsquo;s craft our Postgrex stuct type in <code>builtins.ex</code> then!</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+</pre></td><td class='code'><pre><code class='c++'><span class='line'><span class="n">defmodule</span> <span class="n">Postgrex</span><span class="p">.</span><span class="n">Point</span> <span class="k">do</span>
+</span><span class='line'>  <span class="err">@</span><span class="n">moduledoc</span> <span class="s">&quot;&quot;&quot;</span>
+</span><span class='line'>  <span class="n">Struct</span> <span class="k">for</span> <span class="n">Postgres</span> <span class="n">point</span><span class="p">.</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="err">##</span> <span class="n">Fields</span>
+</span><span class='line'>    <span class="o">*</span> <span class="err">`</span><span class="n">x</span><span class="err">`</span>
+</span><span class='line'>    <span class="o">*</span> <span class="err">`</span><span class="n">y</span><span class="err">`</span>
+</span><span class='line'>  <span class="s">&quot;&quot;&quot;</span>
+</span><span class='line'>  <span class="n">require</span> <span class="n">Decimal</span>
+</span><span class='line'>  <span class="err">@</span><span class="n">type</span> <span class="n">t</span> <span class="o">::</span> <span class="o">%</span><span class="n">__MODULE__</span><span class="p">{</span><span class="nl">x:</span> <span class="kt">float</span><span class="p">,</span> <span class="nl">y:</span> <span class="kt">float</span><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">defstruct</span> <span class="p">[</span>
+</span><span class='line'>    <span class="nl">x:</span> <span class="n">nil</span><span class="p">,</span>
+</span><span class='line'>    <span class="nl">y:</span> <span class="n">nil</span><span class="p">]</span>
+</span><span class='line'><span class="n">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h1>Adding the encode method</h1>
+
+<p>Now since we are sending PostgreSQL binary data, we need to take our data and map it to it&rsquo;s binary form, via an <code>encode</code> method.</p>
+
+<p>However, postgrex is going to do a type look up, based on the types that we used in that query above.</p>
+
+<p>We&rsquo;ll add the methods to encode, that does some pattern matching to decipher we are getting the correct sender value.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='c++'><span class='line'><span class="n">def</span> <span class="n">encode</span><span class="p">(</span><span class="o">%</span><span class="n">TypeInfo</span><span class="p">{</span><span class="nl">type:</span> <span class="s">&quot;point&quot;</span><span class="p">,</span> <span class="nl">send:</span> <span class="s">&quot;point_send&quot;</span><span class="p">},</span> <span class="o">%</span><span class="n">Postgrex</span><span class="p">.</span><span class="n">Point</span><span class="p">{}</span> <span class="o">=</span> <span class="n">point</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">),</span>
+</span><span class='line'>  <span class="k">do</span><span class="o">:</span> <span class="n">encode_point</span><span class="p">(</span><span class="n">point</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>As you can see, we are encoding, when a <code>TypeInfo</code> tuple is passed with type <code>point</code> and <code>send</code> <code>point_send</code>! Great, we just pass that to this method to parse out the two floats passed in the binary object:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='c++'><span class='line'><span class="n">defp</span> <span class="n">encode_point</span><span class="p">(</span><span class="o">%</span><span class="n">Postgrex</span><span class="p">.</span><span class="n">Point</span><span class="p">{</span><span class="nl">x:</span> <span class="n">x</span><span class="p">,</span> <span class="nl">y:</span> <span class="n">y</span><span class="p">}),</span>
+</span><span class='line'>  <span class="k">do</span><span class="o">:</span> <span class="o">&lt;&lt;</span><span class="n">x</span><span class="o">::</span><span class="n">float64</span><span class="p">,</span> <span class="n">y</span><span class="o">::</span><span class="n">float64</span><span class="o">&gt;&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>It just takes those two values, and serializes them down to their binary counterparts.</p>
+
+<p>That now handles the test we&rsquo;ve got to keep us honest:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='c++'><span class='line'><span class="n">test</span> <span class="s">&quot;encode point&quot;</span><span class="p">,</span> <span class="n">context</span> <span class="k">do</span>
+</span><span class='line'>  <span class="n">assert</span> <span class="p">[[</span><span class="o">%</span><span class="n">Postgrex</span><span class="p">.</span><span class="n">Point</span><span class="p">{</span><span class="nl">x:</span> <span class="o">-</span><span class="mi">97</span><span class="p">,</span> <span class="nl">y:</span> <span class="mi">100</span><span class="p">}]]</span> <span class="o">==</span> <span class="n">query</span><span class="p">(</span><span class="s">&quot;SELECT $1::point&quot;</span><span class="p">,</span> <span class="p">[</span><span class="o">%</span><span class="n">Postgrex</span><span class="p">.</span><span class="n">Point</span><span class="p">{</span><span class="nl">x:</span> <span class="o">-</span><span class="mi">97</span><span class="p">,</span> <span class="nl">y:</span> <span class="mi">100</span><span class="p">}])</span>
+</span><span class='line'><span class="n">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>This test as promised, takes a <code>Postgrex.Point</code> type, and encodes it to the binary form, and sends it off to Postgres. How beautiful.</p>
+
+<h1>Adding the decode method</h1>
+
+<p>Now, when we get binary values from Postgres, we need to map that to our <code>Point</code> type we&rsquo;ve created.</p>
+
+<p>Adding the functions to <code>decode</code> in <code>binary.ex</code>:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='c++'><span class='line'><span class="n">def</span> <span class="n">decode</span><span class="p">(</span><span class="o">%</span><span class="n">TypeInfo</span><span class="p">{</span><span class="nl">type:</span> <span class="s">&quot;point&quot;</span><span class="p">},</span> <span class="n">binary</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">),</span>
+</span><span class='line'>  <span class="k">do</span><span class="o">:</span> <span class="n">decode_point</span><span class="p">(</span><span class="n">binary</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="cp"># ..snip..</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">defp</span> <span class="n">decode_point</span><span class="p">(</span><span class="o">&lt;&lt;</span><span class="n">x</span><span class="o">::</span><span class="n">float64</span><span class="p">,</span> <span class="n">y</span><span class="o">::</span><span class="n">float64</span><span class="o">&gt;&gt;</span><span class="p">)</span> <span class="k">do</span>
+</span><span class='line'>  <span class="o">%</span><span class="n">Postgrex</span><span class="p">.</span><span class="n">Point</span><span class="p">{</span><span class="nl">x:</span> <span class="n">x</span><span class="p">,</span> <span class="nl">y:</span> <span class="n">y</span><span class="p">}</span>
+</span><span class='line'><span class="n">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The real meat and potatoes is, receiving our binary parameter, mapping its individual segmets as two floats, sized 8 bytes, and then with the pattern matching mapping those to our <code>Postgrex.Point</code> struct. QED.</p>
+
+<p>And the test:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='c++'><span class='line'><span class="n">test</span> <span class="s">&quot;decode point&quot;</span><span class="p">,</span> <span class="n">context</span> <span class="k">do</span>
+</span><span class='line'>  <span class="n">assert</span> <span class="p">[[</span><span class="o">%</span><span class="n">Postgrex</span><span class="p">.</span><span class="n">Point</span><span class="p">{</span><span class="nl">x:</span> <span class="o">-</span><span class="mi">97</span><span class="p">,</span> <span class="nl">y:</span> <span class="mi">100</span><span class="p">}]]</span> <span class="o">==</span> <span class="n">query</span><span class="p">(</span><span class="s">&quot;SELECT point(-97, 100)::point&quot;</span><span class="p">,</span> <span class="p">[])</span>
+</span><span class='line'>  <span class="n">assert</span> <span class="p">[[</span><span class="o">%</span><span class="n">Postgrex</span><span class="p">.</span><span class="n">Point</span><span class="p">{</span><span class="nl">x:</span> <span class="o">-</span><span class="mf">97.5</span><span class="p">,</span> <span class="nl">y:</span> <span class="mf">100.1</span><span class="p">}]]</span> <span class="o">==</span> <span class="n">query</span><span class="p">(</span><span class="s">&quot;SELECT point(-97.5, 100.1)::point&quot;</span><span class="p">,</span> <span class="p">[])</span>
+</span><span class='line'><span class="n">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h1>Conclusion</h1>
+
+<p>Once I finally figured out what pieces were what, I was able to run and create the point type, its mappings, and its senders it required, easily mapping to the struct in Elixir.</p>
+
+<p>I plan to keep working on postgrex, to add first class support for Postgres geometric types.</p>
+
+<p>Cheers!</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Josh Bavari</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-12-07T18:04:00-07:00" pubdate data-updated="true">Dec 7<span>th</span>, 2015</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/elixir/'>elixir</a>, <a class='category' href='/blog/categories/phoenix/'>phoenix</a>, <a class='category' href='/blog/categories/postgres/'>postgres</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://jbavari.github.io/blog/2015/12/07/adding-postgresql-geometric-type-support-to-elixir/" data-via="jbavari" data-counturl="http://jbavari.github.io/blog/2015/12/07/adding-postgresql-geometric-type-support-to-elixir/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2015/12/04/the-scoreboard-project/" title="Previous Post: The Scoreboard Project">&laquo; The Scoreboard Project</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2015/12/12/using-brew-to-install-old-versions/" title="Next Post: Using brew to install old versions">Using brew to install old versions &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2017/04/16/puppet-a-testing-handbook/">Puppet: A Testing Handbook</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2017/03/13/test-coverage-reports-in-elixir/">Test Coverage Reports in Elixir</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/12/29/multicast-service-discovery-in-electron/">Multicast Service Discovery in Electron</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/03/11/using-erlang-observer-on-a-remote-elixir-server/">Using Erlang Observer on a Remote Elixir Server</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/01/24/custom-json-encoding-in-phoenix/">Custom JSON Encoding in Phoenix</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/jbavari">@jbavari</a> on GitHub
+  
+  <script type="text/javascript">
+    $(document).ready(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'jbavari',
+            count: 0,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2019 - Josh Bavari -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+  <script src="//static.getclicky.com/js" type="text/javascript"></script>
+  <script type="text/javascript">try{ clicky.init(100896582); }catch(e){}</script>
+  <noscript><p><img alt="Clicky" width="1" height="1" src="//in.getclicky.com/100896582ns.gif" /></p></noscript>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'joshbavari';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://jbavari.github.io/blog/2015/12/07/adding-postgresql-geometric-type-support-to-elixir/';
+        var disqus_url = 'http://jbavari.github.io/blog/2015/12/07/adding-postgresql-geometric-type-support-to-elixir/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

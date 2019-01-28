@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: safari | Josh Bavari's Ramblings]]></title>
+  <link href="http://jbavari.github.io/blog/categories/safari/atom.xml" rel="self"/>
+  <link href="http://jbavari.github.io/"/>
+  <updated>2019-01-27T19:16:40-07:00</updated>
+  <id>http://jbavari.github.io/</id>
+  <author>
+    <name><![CDATA[Josh Bavari]]></name>
+    <email><![CDATA[jbavari@gmail.com]]></email>
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Playing with Safari 9 Force Touch API]]></title>
+    <link href="http://jbavari.github.io/blog/2015/12/03/playing-with-safari-9-force-touch-api/"/>
+    <updated>2015-12-03T10:46:00-07:00</updated>
+    <id>http://jbavari.github.io/blog/2015/12/03/playing-with-safari-9-force-touch-api</id>
+    <content type="html"><![CDATA[<p>I just got the new Macbook Pro not too long ago and noticed they had this intimately named featured called Force Touch.</p>
+
+<p>Force touch, as it sounds, lets you touch things more <em>intimately</em>. The gist is this &ndash; there are sensors on the new touch pad that let you determine how hard the touch pad is touched, and has some API into that.</p>
+
+<p>I admit, the API is kinda just for fun since only Safari 9 and new Macbooks have the feature. Still, I wanted to play more with ES6 and create a little API wrapper to make it easier and let this feature name to be a little less creepy.</p>
+
+<p>After a little googling, I found an awesome <a href="http://www.joshuakehn.com/2015/10/22/using-new-force-touch-apis-in-javascript.html">blog post by Joshua Kehn</a> that detailed more about using Force touch. I wanted to make a quick wrapper around it to do some fun effects and animations.</p>
+
+<p>The idea is &ndash; we&rsquo;ll have an API called <code>TheForce</code> that we can attach handlers to for fun visual effects.</p>
+
+<p>Joshua&rsquo;s demo had a box that when tapped and applying pressure, padding would be increased. I took <a href="https://gist.github.com/joshkehn/3ed6b535408162fe94ae">his gist</a> and turned it into an ES6 module. (See the <a href="http://www.joshuakehn.com/2015/10/22/using-new-force-touch-apis-in-javascript.html#demo">demo</a>)</p>
+
+<h2>The API</h2>
+
+<p>I wrote it up last night in a quick hurry. The gist is this:</p>
+
+<ul>
+<li>Attach to a DOM element</li>
+<li>Apply a glow to the element based applied pressure to touchpad</li>
+</ul>
+
+
+<p>Code to attach a button named <code>you</code>, and trigger it automatically:</p>
+
+<p>``` js
+var luke = TheForce.beWith(&lsquo;you&rsquo;).alter({&lsquo;boxShadow&rsquo;);</p>
+
+<!-- luke.alter('boxShadow'); -->
+
+
+<p>```</p>
+]]></content>
+  </entry>
+  
+</feed>

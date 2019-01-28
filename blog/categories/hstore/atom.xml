@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: hstore | Josh Bavari's Ramblings]]></title>
+  <link href="http://jbavari.github.io/blog/categories/hstore/atom.xml" rel="self"/>
+  <link href="http://jbavari.github.io/"/>
+  <updated>2019-01-27T19:16:40-07:00</updated>
+  <id>http://jbavari.github.io/</id>
+  <author>
+    <name><![CDATA[Josh Bavari]]></name>
+    <email><![CDATA[jbavari@gmail.com]]></email>
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[In depth dive with Postgres Hstore and Rails 4]]></title>
+    <link href="http://jbavari.github.io/blog/2014/04/26/in-depth-dive-with-postgres-hstore-and-rails-4/"/>
+    <updated>2014-04-26T12:08:00-06:00</updated>
+    <id>http://jbavari.github.io/blog/2014/04/26/in-depth-dive-with-postgres-hstore-and-rails-4</id>
+    <content type="html"><![CDATA[<p>I had a unique little situation pop up that needed a little more flexibility when it came to storing data in the db. We use Postgres at RaiseMore because we respect ourselves, so naturally, I wanted to take a swing using some Hstore options for our ever changing data schema.</p>
+
+<p>My intention is not to cover the basics of getting started with Rails 4 and <a href="http://www.postgresql.org/docs/9.3/static/hstore.html">Postgres HStore</a>, so <a href="http://tastehoneyco.com/blog/postgresql-array-and-hstore-column-reference/?utm_source=rubyweekly&amp;utm_medium=email/">read at Honey Co</a> or <a href="http://inopinatus.org/2013/07/12/using-arrays-of-hstore-with-rails-4/">here at inopinatus</a> to get started.</p>
+
+<h2>What I needed</h2>
+
+<p>Simple, to store a few bits of data about a communication &ndash; primarily the subject, message, date/time, and what networks it was sent out on. It may or may not have some of these fields, and the networks may or may not change in the future. This sounds perfect for HStore.</p>
+
+<p>First I started with a simple schema:</p>
+
+<p>```
+CREATE TABLE comm_logs (</p>
+
+<pre><code>id serial NOT NULL,
+user_id integer,
+history hstore
+</code></pre>
+
+<p>)
+```</p>
+
+<p>At first, I just wanted to store when a message was sent and on what networks. I figured I&rsquo;d just have an AR model with one hstore column and everything would fit into that. It looked like this:</p>
+
+<p>```
+class CommunicationLogging &lt; ActiveRecord::Base</p>
+
+<pre><code>def self.log(user_id, network, message, subject = nil)
+    comm = CommunicationLogging.where('user_id = ?', user_id).first
+    if comm.nil?
+        comm = CommunicationLogging.new
+        comm.user_id = user_id
+        # Storing network as an array incase they decide to send to another network after this.
+        comm.history = { 'message' =&gt; message, 'subject' =&gt; subject, 'network' =&gt; [network], 'time' =&gt; DateTime.now }}
+    else 
+        # Add history to array stored in network
+        comm.history['network'].push(network)
+    end
+    comm.history_will_change!
+    comm.save!
+end
+</code></pre>
+
+<p>end
+```</p>
+
+<p>Pretty easy right? I ran into some difficulties REAL fast. The first was from JSON serialization. When I did this:</p>
+
+<p>```</p>
+
+<h1>In Rails Console</h1>
+
+<p>CommunicationLogging.find(4).history[&lsquo;network&rsquo;]
+=> &ldquo;[\"facebook\&rdquo;, \&ldquo;twitter\&rdquo;]&ldquo;
+```</p>
+
+<p>It gave me a nice FAT serialized version of a Hash array. What good does a string do me? I want my object! BLEH!</p>
+
+<p>We still have to get this thing working, so lets proceed anyway and just do some manual converions with PostgreSQL&rsquo;s awesome <code>to_json</code> functionality.</p>
+
+<p>Our result:</p>
+
+<p><code>
+"{"c": "networks", "networks": "[\"facebook\", \"twitter\"]"}"
+</code></p>
+
+<p>Cool, so its gonna be nasty still. Ok, how about just using Rails to_json method:</p>
+
+<p><code>
+"{\"id\":11,\"event_user_id\":null,\"history\":null,\"networks\":{\"c\":\"networks\",\"networks\":\"[\\\"facebook\\\", \\\"twitter\\\"]\"}}"
+</code></p>
+
+<p>Thanks, but no thanks. I&rsquo;m pretty set on having an array of values instead of some manual labor on converting those values.</p>
+
+<p>I was learning real fast that storing arrays in hstore was going to be a challenge. The next stab I wanted to take was to simplify the storage and retrieval as well as using natural arrays.</p>
+
+<p>NOTE: I changed the way I attacked the problem here partly because I was doing it wrong. Hopefully you can learn from my mistakes? :&ndash;)</p>
+
+<p>This was my next stab, altering the table structure just a bit:</p>
+
+<p>```
+CREATE TABLE communication_logs (</p>
+
+<pre><code>id serial NOT NULL,
+user_id integer,
+history hstore[]
+networks hstore
+</code></pre>
+
+<p>)
+```</p>
+
+<p>What I did here was harness the awesome power of PostgreSQL&rsquo;s arrays and hstore. Taking this thing to the limit. I did this for two reasons:</p>
+
+<ul>
+<li>Constraints changed, we could send multiple communications out on multiple networks at any given time</li>
+<li>I wanted a log of history with whatever pieces of data may or may not be there</li>
+<li>Be able to quickly get the networks sent out per user</li>
+</ul>
+
+
+<p>Now my AR model is decorated with <a href="http://api.rubyonrails.org/classes/ActiveRecord/Store.html">store_accessor</a> to give me model attributes for the networks. It also stores the log of messages in an array naturally through the model, and accessed as a real HSTORE with array values (instead of json, yay).</p>
+
+<p>```
+class CommunicationLogging &lt; ActiveRecord::Base</p>
+
+<pre><code>store_accessor :networks, :facebook, :twitter, :email, :sms, :push
+
+def set_network(network)
+    # for brevity only one listed
+    case network.downcase
+    when 'twitter'
+        self.twitter = true
+    end
+end
+
+def self.log(user_id, network, message, subject = nil)
+    comm = CommunicationLogging.where('user_id = ?', user_id).first
+    if comm.nil?
+        comm = CommunicationLogging.new
+        comm.user_id = user_id
+    end
+
+    comm.set_network(network)
+
+    history_log = { 'message' =&gt; message, 'subject' =&gt; subject, 'network' =&gt; network, 'time' =&gt; DateTime.now }
+    comm.history.push(history_log)
+
+
+    comm.networks_will_change!
+    comm.history_will_change!
+    comm.save!
+end
+</code></pre>
+
+<p>end
+```</p>
+
+<p>So what happens when I to_json my fields now in PostgreSQL?</p>
+
+<p>```
+// Networks
+&ldquo;{"twitter&rdquo;: &ldquo;true&rdquo;}"</p>
+
+<p>// History
+&ldquo;[{"time&rdquo;: &ldquo;2014-04-27T10:15:50-05:00&rdquo;, &ldquo;message&rdquo;: &ldquo;asf&rdquo;, &ldquo;network&rdquo;: &ldquo;twitter&rdquo;, &ldquo;subject&rdquo;: &ldquo;asd&rdquo;}]&ldquo;
+```</p>
+
+<p>And rails?</p>
+
+<p>```</p>
+
+<h1>Networks</h1>
+
+<p>&ldquo;{"twitter&rdquo;:\&ldquo;true&rdquo;}"</p>
+
+<h1>History</h1>
+
+<p>&ldquo;[{"time&rdquo;:&ldquo;2014-04-27T10:15:50-05:00&rdquo;,&ldquo;message&rdquo;:&ldquo;asf&rdquo;,&ldquo;network&rdquo;:&ldquo;twitter&rdquo;,&ldquo;subject&rdquo;:&ldquo;asd&rdquo;}]&ldquo;
+```</p>
+
+<p>Beautiful.</p>
+
+<p>I had a lot of fun using PostgreSQL and Rails 4. I didn&rsquo;t find a lot of in-depth knowledge on it so I wanted to shed some light on the topic and hope this would push someone else who might be considering to try it out to give it a go.</p>
+
+<p>I&rsquo;d like to follow up this post with another article on how to search these bad boys.</p>
+
+<p>In closing:</p>
+
+<ul>
+<li>I will definitely use hstore more in the future. I like the freedom to just store whatever I want</li>
+<li>I need to reach out to the Rails team and see what I can do about improving the array support in Active Record</li>
+<li>I hope you try it out as well</li>
+</ul>
+
+
+<h3>Additional Resources</h3>
+
+<ul>
+<li><a href="http://postgresguide.com/sexy/hstore.html">Postgres Guide on HStore</a></li>
+<li><a href="http://mikecoutermarsh.com/using-hstore-with-rails-4/">Mike Countermash&rsquo;s guide to Hstore with Rails 4</a></li>
+<li><a href="http://platformonrails.wordpress.com/2013/03/17/enabling-postgresql-hstore-with-rails-4/">Platform on Rails &ndash; Enabling PostgreSQL Hstore in Rails 4</a></li>
+<li><a href="http://blog.remarkablelabs.com/2012/12/a-love-affair-with-postgresql-rails-4-countdown-to-2013">RemarkableLabs &ndash; A love affair with PostgreSQL [Rails 4 Countdown to 2013]</a></li>
+</ul>
+
+]]></content>
+  </entry>
+  
+</feed>

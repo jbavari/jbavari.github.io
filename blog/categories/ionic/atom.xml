@@ -1,0 +1,641 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: ionic | Josh Bavari's Ramblings]]></title>
+  <link href="http://jbavari.github.io/blog/categories/ionic/atom.xml" rel="self"/>
+  <link href="http://jbavari.github.io/"/>
+  <updated>2019-01-27T19:16:40-07:00</updated>
+  <id>http://jbavari.github.io/</id>
+  <author>
+    <name><![CDATA[Josh Bavari]]></name>
+    <email><![CDATA[jbavari@gmail.com]]></email>
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Ionic 2.0 Generators - Services]]></title>
+    <link href="http://jbavari.github.io/blog/2015/11/06/ionic-2-dot-0-generators-services/"/>
+    <updated>2015-11-06T01:23:00-07:00</updated>
+    <id>http://jbavari.github.io/blog/2015/11/06/ionic-2-dot-0-generators-services</id>
+    <content type="html"><![CDATA[<p>This is the second post in a series covering the new Ionic Generators in Ionic 2.0. In the <a href="http://jbavari.github.io/blog/2015/11/05/using-ionic-2-dot-0-generators/">first post</a>, we discussed generating pages, let&rsquo;s focus now on generating some services to consume some JSON data via an http request.</p>
+
+<h2>Get the tools</h2>
+
+<p>Run this to get started:</p>
+
+<p><code>bash Install Ionic CLI and start an Ionic application
+npm install -g ionic@alpha
+ionic start MyIonic2App tabs --v2
+cd MyIonic2App
+</code></p>
+
+<h2>Generate the service</h2>
+
+<p><code>ionic g injectable MyDataService</code></p>
+
+<p>You should see the service:</p>
+
+<p><code>bash Run generate command
+~/Development/testing/MyIonic2App$ ionic g injectable MyDataService
+√ Create www/app/my-data-service/my-data-service.js
+</code></p>
+
+<p>The basic blueprint of the generated service is as follows:</p>
+
+<p>``` javascript Generated Data Service
+import {Injectable} from &lsquo;angular2/angular2&rsquo;;
+import {Http} from &lsquo;angular2/http&rsquo;;</p>
+
+<p>@Injectable()
+export class MyDataService {
+  constructor(<a href="http:">http:</a> Http) {</p>
+
+<pre><code>this.http = http;
+this.data = null;
+</code></pre>
+
+<p>  }</p>
+
+<p>  retrieveData() {</p>
+
+<pre><code>//Here, we're going to get a JSON data file, use the `map` call to parse json
+// and finally subscribe to the observable and set our data
+//to the value it provides once the http request is complete.
+this.http.get('path/to/data.json')
+  .map(res =&gt; res.json())
+  .subscribe(data =&gt; {
+    this.data = data;
+  }, error =&gt; {
+    console.log('Error with http.get: ', error);
+  });
+</code></pre>
+
+<p>  }
+}</p>
+
+<p>```</p>
+
+<h2>Wiring it in to be used</h2>
+
+<p>Adjust <code>www/app/app.js</code> to import the data service, as well as provide it for all of its components:</p>
+
+<p>```js www/app/app.js
+import {MyDataService} from &lsquo;./my-data-service/my-data-service&rsquo;;</p>
+
+<p>@App({
+  template: &lsquo;&lt;ion-nav [root]=&ldquo;root&rdquo;>&lt;/ion-nav>&rsquo;,
+  providers: [Friends, MyDataService]
+})
+```</p>
+
+<h2>Use the service</h2>
+
+<p>We&rsquo;ll use the tabs starter dashboard page to pull data.</p>
+
+<p>Let&rsquo;s modify <code>www/app/dash/dash.ts</code> &ndash; adding an import for <code>MyDataService</code>, adding <code>MyDataService</code> to the constructore as an injected dependency, and finally adding the call to <code>retrieveData</code> in the constructore method.</p>
+
+<p>``` js www/app/dash/dash.ts
+import {Page, NavController, ViewController} from &lsquo;ionic/ionic&rsquo;;
+import {MyDataService} from &lsquo;../my-data-service/my-data-service&rsquo;;
+import {About} from &lsquo;../about/about&rsquo;;</p>
+
+<p>@Page({
+  templateUrl: &lsquo;app/dash/dash.html&rsquo;,
+})
+export class Dash {
+  constructor(nav: NavController, view: ViewController, data: MyDataService) {</p>
+
+<pre><code>this.nav = nav;
+this.view = view;
+data.retrieveData();
+</code></pre>
+
+<p>  }</p>
+
+<p>  goToAboutPage() {</p>
+
+<pre><code>this.nav.push(About);
+</code></pre>
+
+<p>  }</p>
+
+<p>}
+```</p>
+
+<h2>Additional information</h2>
+
+<p>If you&rsquo;ve used Angular 1, you&rsquo;re probably familiar with promises to return your data from http requests.</p>
+
+<p>Under the hood of Angular 2 lies <a href="https://github.com/Reactive-Extensions/RxJS">RxJs</a> that builds on promises, focusing on being repeatable.</p>
+
+<p>Enjoy!</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Using Ionic 2.0 Generators]]></title>
+    <link href="http://jbavari.github.io/blog/2015/11/05/using-ionic-2-dot-0-generators/"/>
+    <updated>2015-11-05T21:49:00-07:00</updated>
+    <id>http://jbavari.github.io/blog/2015/11/05/using-ionic-2-dot-0-generators</id>
+    <content type="html"><![CDATA[<p>At the time of writing this, Ionic 2.0 is still in alpha.</p>
+
+<p>Ionic 2.0 builds on a ton of new technologies, such as Angular v2, TypeScript (with decorators), and ES6. If you&rsquo;ve never dabbled in these technologies, you can use the generators available in the <a href="http://npmjs.org/package/ionic"><code>ionic-cli</code></a> to get ramped up quickly!</p>
+
+<h2>Getting started</h2>
+
+<p>First, install the <code>alpha</code> version of the Ionic CLI: <code>npm install -g ionic@alpha</code>, currently version 2.0.0-alpha.19.</p>
+
+<p>Start an app with the tabs template: <code>ionic start MyIonic2App tabs --v2</code>.</p>
+
+<p>Change directories and serve the app in the browser: <code>cd MyIonic2App &amp;&amp; ionic serve</code>.</p>
+
+<p>You&rsquo;ll see, we&rsquo;ve got a basic tabs starter now avilable at <code>MyIonic2App</code> directory.</p>
+
+<h2>Generating a few pages</h2>
+
+<p>Let&rsquo;s say we want to link to a new page, &lsquo;About&rsquo;, from one of the tabs. First, let&rsquo;s generate our page with this command: <code>ionic generate page About</code>. NOTE: You can also use the generate alias, <code>ionic g</code>.</p>
+
+<p>You&rsquo;ll see a few files added:</p>
+
+<p><code>bash
+~/Development/testing/MyIonic2App$ ionic g page About
+√ Create www/app/about/about.html
+√ Create www/app/about/about.js
+√ Create www/app/about/about.scss
+</code></p>
+
+<h2>Adding link on view to the About page</h2>
+
+<p>Let&rsquo;s add the link to the main tab page in <code>www/app/dash/dash.html</code>, via the <code>(click)</code> handler on an anchor, like so:</p>
+
+<p>```
+&lt;ion-card>
+  &lt;ion-card-header></p>
+
+<pre><code>Go to about page
+</code></pre>
+
+<p>  &lt;/ion-card-header>
+  &lt;ion-card-content></p>
+
+<pre><code>&lt;button (click)="goToAboutPage()"&gt;About this&lt;/button&gt;
+</code></pre>
+
+<p>  &lt;/ion-card-content>
+&lt;/ion-card>
+```</p>
+
+<h2>Navigating to the page</h2>
+
+<p>Modify the Dashboard TypeScript file (<code>www/app/dash/dash.ts</code>) to import our new about page, add the click event handler, and push the page on the nav controller, all like so:</p>
+
+<p>```js
+import {Page, NavController} from &lsquo;ionic/ionic&rsquo;;
+import {About} from &lsquo;../about/about&rsquo;;</p>
+
+<p>@Page({
+  templateUrl: &lsquo;app/dash/dash.html&rsquo;,
+})
+export class Dash {
+  constructor(nav: NavController, view: ViewController) {</p>
+
+<pre><code>this.nav = nav;
+this.view = view;
+</code></pre>
+
+<p>  }</p>
+
+<p>  goToAboutPage() {</p>
+
+<pre><code>this.nav.push(About);
+</code></pre>
+
+<p>  }</p>
+
+<p>}
+```</p>
+
+<h2>Try it out!</h2>
+
+<p>Look in your browser, you should have an anchor available to click/tap that will then navigate you to the About page, fresh for you to get working!</p>
+
+<p>Here&rsquo;s a GIF of what it looks like:</p>
+
+<p><img class="[pic]" src="/images/IonicV2Generators.gif" title="[250] [250] [Ionic 2.0- Page generator example]" ></p>
+
+<p>I&rsquo;d like to also note, Ionic 2 is much smoother than a GIF would allow.</p>
+
+<h2>Wiring up sass</h2>
+
+<p>If you want to use the custom sass styles on the about page, first wire in the <code>about.scss</code> page in your <code>www/app/app.scss</code> sass file, like so: <code>@import 'about/about';</code>.</p>
+
+<h2>A quick note on naming conventions</h2>
+
+<p>For Ionic 2.0, we&rsquo;ve contributed to a <a href="https://en.wikipedia.org/wiki/Naming_convention_%28programming%29#Multiple-word_identifiers">naming convention</a> of kabob-casing for file names (my-about-page.html) and css classes (.my-about-page), and using PascalCasing for JavaScript classes in ES6 / TypeScript (MyAboutPage).</p>
+
+<h2>Other generators</h2>
+
+<p>Check out all the generators available: <code>ionic g --list</code></p>
+
+<p><code>bash
+~/Development/testing/MyIonic2App$ ionic g --list
+Available generators:
+ * component
+ * directive
+ * injectable
+ * page
+ * page-login
+ * page-sidemenu
+ * page-signup
+ * pipe
+ * tabs
+</code></p>
+
+<h1>Final words</h1>
+
+<p>We hope you find the generators help you get started with ramping up quickly and building some awesome Ionic applications! Enjoy.</p>
+
+<p>We&rsquo;d love your feedback, drop us a line at <a href="https://github.com/driftyco/ionic2/issues">Ionic v2 Github Issues</a>.</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Understanding Built Node Modules]]></title>
+    <link href="http://jbavari.github.io/blog/2015/10/15/understanding-built-node-modules/"/>
+    <updated>2015-10-15T08:32:00-06:00</updated>
+    <id>http://jbavari.github.io/blog/2015/10/15/understanding-built-node-modules</id>
+    <content type="html"><![CDATA[<p>If you&rsquo;ve recently change node versions and begun running into issues with some of your modules, you might get a little help from understanding how native node modules work.</p>
+
+<p>TL;DR: If you upgraded node, run <code>npm rebuild</code> or <code>rm -rf node_modules &amp;&amp; npm install</code>.</p>
+
+<p>Why: This has to do with some of your modules you may be using having native bindings to your current system runtime.</p>
+
+<p>This then put me on a quest to understand more how native node modules are used. What I&rsquo;m referring to, is using <a href="https://nodejs.org/api/addons.html">Node addons</a>:</p>
+
+<blockquote><p>Addons are dynamically linked shared objects. They can provide glue to C and C++ libraries. The API (at the moment) is rather complex, involving knowledge of several libraries</p>
+
+<p>Node.js statically compiles all its dependencies into the executable. When compiling your module, you don&rsquo;t need to worry about linking to any of these libraries.</p></blockquote>
+
+<p>Since I maintain the <a href="https://github.com/driftyco/ionic-cli">Ionic CLI</a>, we have a few depedencies to a native node module, node-sass.</p>
+
+<p>Node-sass relies on some native C/C++ bindings to compile SASS down to CSS.</p>
+
+<p>If you have a version of Node 0.12 for example, and install the ionic-cli, then install Node 4.2.1, you may have issues running the CLI.</p>
+
+<p>This is due to the module building itself with that version of node and using those bindings, then when you install a new version of Node, you can&rsquo;t use those same bindings.</p>
+
+<p>When you change versions of node, make sure you do a quick <code>rm -rf node_modules</code> if on mac, or deleting the node_modules folder on windows and doing a fresh <code>npm install</code>.</p>
+
+<p>If you want to read a little more, background information is shared by <a href="http://twitter.com/voodootikigod">Chris Williams</a> about his struggles maintaining the node-serialport module on <a href="http://www.voodootikigod.com/on-maintaining-a-native-node-module/">this post</a>.</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Managing Environment Variables for your Ionic Application]]></title>
+    <link href="http://jbavari.github.io/blog/2014/08/23/managing-environment-variables-for-your-ionic-application/"/>
+    <updated>2014-08-23T20:43:00-06:00</updated>
+    <id>http://jbavari.github.io/blog/2014/08/23/managing-environment-variables-for-your-ionic-application</id>
+    <content type="html"><![CDATA[<p>I&rsquo;ve been lucky enough to be developing with the Ionic framework lately. One issue I keep running into is &ndash; how do I manage some environment variables (base api url, debug enabled, upload url, etc) across my code, both tests and application.</p>
+
+<p>I&rsquo;d like to share a little solution I&rsquo;ve come up with. It may not be the BEST solution to take, but it has been working great for me.</p>
+
+<h2>The idea</h2>
+
+<p>I&rsquo;d like to have some files that I can preprocess &ndash; say &lsquo;AppSettings.js&rsquo; that will expose some variables for the rest of my application to use. This could contain those pesky variables that I will need to change frequently.</p>
+
+<p>I put my preprocess file templates in my root folder named <code>templates</code>. I will have that file contain my preprocess variables. I will spit out the preprocessed file as <code>www/js/appsettings.js</code> file once its been preprocessed.</p>
+
+<p>That preprocessed file will be used in both my <code>index.html</code> and my <code>karma.conf.js</code> for testing.</p>
+
+<p>I harness <a href="http://gulpjs.com/">gulp</a> a lot, however you can still use <a href="http://gruntjs.com/">Grunt</a> or just plain node.js as well.</p>
+
+<p>My <code>AppSettings.js</code> file:</p>
+
+<p><code>js
+AppSettings = {
+  // @if ENV == 'DEVELOPMENT'
+  baseApiUrl: 'http://localhost:4400/',
+  debug: true
+  // @endif
+  // @if ENV == 'TEST'
+  baseApiUrl: 'https://test.api-example.com/'
+  // @endif
+  // @if ENV == 'PRODUCTION'
+  baseApiUrl: 'https://api-example.com/'
+  // @endif
+}
+</code></p>
+
+<p>In my preprocess file &ndash; you can see I have some <code>@if ENV == ''</code> statements beginning with <code>//</code> &ndash; these will be replaced if the <code>if</code> statement is true. (Duh)</p>
+
+<h2>Gulp Preprocess Task</h2>
+
+<p>I like <a href="https://www.npmjs.org/package/gulp-preprocess">gulp preproces</a>. Install with <code>npm install --save-dev gulp-preprocess</code>.</p>
+
+<p>My gulpfile contains 3 tasks &ndash; <code>dev</code> / <code>test_env</code> / and <code>prod</code>, looking like this:</p>
+
+<p>``` js
+var preprocess = require(&lsquo;gulp-preprocess&rsquo;);
+gulp.task(&lsquo;dev&rsquo;, function() {
+  gulp.src(&lsquo;./template/appsettings.js&rsquo;)</p>
+
+<pre><code>.pipe(preprocess({context: { NODE_ENV: 'DEVELOPMENT', DEBUG: true}}))
+.pipe(gulp.dest('./www/js/'));
+</code></pre>
+
+<p>});</p>
+
+<p>gulp.task(&lsquo;test_env&rsquo;, function() {
+  gulp.src(&lsquo;./template/appsettings.js&rsquo;)</p>
+
+<pre><code>.pipe(preprocess({context: { NODE_ENV: 'TEST', DEBUG: true}}))
+.pipe(gulp.dest('./www/js/'));
+</code></pre>
+
+<p>});</p>
+
+<p>gulp.task(&lsquo;prod&rsquo;, function() {
+  gulp.src(&lsquo;./template/appsettings.js&rsquo;)</p>
+
+<pre><code>.pipe(preprocess({context: { NODE_ENV: 'PRODUCTION'}}))
+.pipe(gulp.dest('./www/js/'));
+</code></pre>
+
+<p>});
+```</p>
+
+<h2>Invocation</h2>
+
+<p>Now I just have to fire off <code>gulp dev</code> for my development settings, <code>gulp test_env</code> for test settings, and <code>gulp prod</code> for production settings.</p>
+
+<p>As I mentioned &ndash; this works great for my tests, as I include the preprocessed file in <code>karma.conf.js</code> so my tests can use <code>AppSettings.baseApiUrl</code> (make sure you have your tests call the <code>dev</code> task first!)</p>
+
+<p>I hope this helps any who may have some environment variables they need to change between environments!</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Building a chat client with Ionic / Socket.io / Redis / Node.js]]></title>
+    <link href="http://jbavari.github.io/blog/2014/06/17/building-a-chat-client-with-ionic/"/>
+    <updated>2014-06-17T00:09:00-06:00</updated>
+    <id>http://jbavari.github.io/blog/2014/06/17/building-a-chat-client-with-ionic</id>
+    <content type="html"><![CDATA[<p>I wanted a fun challenge to push myself and cross a few things off my ever so growing <code>I want to play with this</code> type of lists. I love learning, and there are so many awesome tools / utilities / libraries out there to evaluate its hard to justify incorporating them into every project at work without having some knowledge of the tools.</p>
+
+<p>DISCLAIMER: I may use some tools incorrectly, but the main purpose of this fun little project was to learn and have fun.</p>
+
+<p>The list was this:</p>
+
+<ul>
+<li><a href="http://ionicframework.com">Ionic Framework</a></li>
+<li><a href="http://socket.io">Socket.io</a></li>
+<li><a href="http://redis.io">Redis</a></li>
+<li><a href="https://github.com/mranney/node_redis">Node.js Redis client</a></li>
+</ul>
+
+
+<h2>The Idea</h2>
+
+<p>I wanted to build a chat client that would have messages that disappear after a certain time, much like SnapChat. The idea also included the ability to create channels that also disappear after a certain time like messages.</p>
+
+<p>In future versions, I&rsquo;d love to include location to join channels that are near you.</p>
+
+<p>Users can join existing channels, or create their own. All users can see channels, and join any.</p>
+
+<h2>Tech details &ndash; using Redis / Node.js</h2>
+
+<p>At first, I wanted to create messages some how and have them each have <code>expire</code> times. After failing miserably, I got the amazing chance to pair up with <a href="https://twitter.com/michaelgorsuch">Michael Gorsuch</a> to give me some alternative ideas. (Shameless plug &ndash; if you need to do some server monitoring, check out his project <a href="http://canary.io/">Canary.io</a>, it&rsquo;s AWESOME).</p>
+
+<p>The concept is &ndash; instead of using separate keys with ezxpire times &ndash; use Redis' sorted sets with scores of the times in UNIX format and the member being a JSON encoded string. I had my channels keys in the format of <code>messages:ChannelName</code>.</p>
+
+<p>Something like:</p>
+
+<p><code>
+//ZADD key score member [score member ...]
+zadd messages:RedisChat 10581098019 '{"name": "Josh", "id": "5"}'
+</code></p>
+
+<p>Now, when we want to get all messages for a channel, its simply:</p>
+
+<p><code>
+//ZRANGEBYSCORE key min max [WITHSCORES] [LIMIT offset count]
+zrangebyscore messages:RedisChat 0 10924019840
+</code></p>
+
+<p>Since I was using Node.js &ndash; I simply used <code>setInterval</code> to have a function be run that removes all old posts named <code>removeKeys</code>, and looked as such:</p>
+
+<p>``` js
+//NOTE: Using Moment.js, as well as having channelWatchList being populated
+var channelWatchList = [&lsquo;Lobby&rsquo;, &lsquo;RedisChat&rsquo;];</p>
+
+<p>function removeKeys() {
+  console.log(&lsquo;We are removing old messages&rsquo;);</p>
+
+<p>  for(var channelIndex in channelWatchList) {</p>
+
+<pre><code>var channel = channelWatchList[channelIndex];
+var messageChannel = 'messages:' + channel;
+console.log('message channel', messageChannel)
+var timeToRemove = moment().subtract('m', 1).unix(); //Remove messages before min ago
+
+redisClient.zrangebyscore(messageChannel, 0, timeToRemove, function(err, result) {
+  if(result &amp;&amp; result.length &gt; 0) {
+    for (var resultIndex in result) {
+      var message = JSON.parse(result[resultIndex]);
+      //NOTE: Using socket.io
+      io.emit('message:remove:channel:' + channel, { message: message, channel: channel });
+    }
+  }
+});
+
+redisClient.zremrangebyscore(messageChannel, 0, timeToRemove, function(err, result) {
+  console.log('Removed ', result, ' messages');
+});
+</code></pre>
+
+<p>  }
+}
+```</p>
+
+<h2>The client &ndash; Ionic</h2>
+
+<p>This was by far the easy part. First I just used the Ionic CLI to create a basic app.</p>
+
+<p>I started by modifying the index.html file to include Socket.io. Nothing too fancy: <code>&lt;script src="js/socket.io.js"&gt;&lt;/script&gt;</code>.</p>
+
+<p>Next, I used some AngularJS <a href="https://github.com/jbavari/ionic-socket.io-redis-chat/blob/master/client/RedisChat/www/js/services.js">services</a> for socket.io:</p>
+
+<p>```
+angular.module(&lsquo;services&rsquo;, [])</p>
+
+<p>.factory(&lsquo;socket&rsquo;, function socket($rootScope) {
+  var socket = io.connect(baseUrl);
+  return {</p>
+
+<pre><code>on: function (eventName, callback) {
+  socket.on(eventName, function () {  
+    var args = arguments;
+    $rootScope.$apply(function () {
+      callback.apply(socket, args);
+    });
+  });
+},
+emit: function (eventName, data, callback) {
+  socket.emit(eventName, data, function () {
+    var args = arguments;
+    $rootScope.$apply(function () {
+      if (callback) {
+        callback.apply(socket, args);
+      }
+    });
+  })
+}
+</code></pre>
+
+<p>  };
+})
+```</p>
+
+<p>Then, I constructed my <code>AppCtrl</code> to handle my <a href="https://github.com/jbavari/ionic-socket.io-redis-chat/blob/master/client/RedisChat/www/js/controllers.js">controllers</a> interaction with Socket.io:</p>
+
+<p>``` js
+angular.module(&lsquo;starter.controllers&rsquo;, [&lsquo;services&rsquo;])</p>
+
+<p>.controller(&lsquo;AppCtrl&rsquo;, function($scope, $state, $filter, socket, Auth) {</p>
+
+<pre><code>//Ensure they are authed first.
+if(Auth.currentUser() == null) {
+    $state.go('login');
+    return;
+}
+
+//input models
+$scope.draft = { message: '' };
+$scope.channel = { name: '' };
+
+//App info
+$scope.channels = [];
+$scope.listeningChannels = [];
+$scope.activeChannel = null;
+$scope.userName = Auth.currentUser().name;
+$scope.messages = [];
+</code></pre>
+
+<p>///////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////
+//Socket.io listeners
+///////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////</p>
+
+<pre><code>socket.on('channels', function channels(channels){
+    console.log('channels', channels);
+
+    console.log(channels);
+    $scope.channels = channels;
+});
+
+socket.on('message:received', function messageReceived(message) {
+    $scope.messages.push(message);
+});
+
+socket.emit('user:joined', {name: Auth.currentUser().name});
+
+socket.on('user:joined', function(user) {
+    console.log('user:joined');
+    $scope.messages.push(user);
+});
+
+$scope.listenChannel = function listenChannel (channel) {
+    socket.on('messages:channel:' + channel, function messages(messages) {
+        console.log('got messages: ', messages);
+        console.log(messages.length);
+        for(var i = 0, j = messages.length; i &lt; j; i++) {
+            var message = messages[i];
+            console.log('message');
+            console.log(message);
+                console.log('apply with function');
+            $scope.messages.push(message);
+        }
+    });
+
+    socket.on('message:channel:' + channel, function message(message) {
+        console.log('got message: ' + message);
+        if(channel != $scope.activeChannel) {
+            return;
+        }
+        $scope.messages.push(message);
+    });
+
+    socket.on('message:remove:channel:' + channel, function(removalInfo) {
+        console.log('removalInfo to remove: ', removalInfo);
+        var expires = removalInfo.message.expires;
+        var expireMessageIndex = $filter('messageByExpires')($scope.messages, expires);
+        if(expireMessageIndex) {
+            $scope.messages.splice(expireMessageIndex, 1);
+        }
+
+    });
+
+    $scope.listeningChannels.push(channel);
+
+}
+</code></pre>
+
+<p>///////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////
+// Controller methods
+///////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////</p>
+
+<pre><code>$scope.joinChannel = function joinChannel(channel) {
+    $scope.activeChannel = channel;
+    $scope.messages = [];
+
+    $scope.channel.name = '';
+
+    //Listen to channel if we dont have it already.
+    if($scope.listeningChannels.indexOf(channel) == -1) {
+        $scope.listenChannel(channel);      
+    }
+
+    socket.emit('channel:join', { channel: channel, name: Auth.currentUser().name });
+}
+
+$scope.sendMessage = function sendMessage(draft) {
+    if(!draft.message || draft.message == null || typeof draft == 'undefined' || draft.length == 0) {
+        return;
+    }
+    socket.emit('message:send', { message: draft.message, name: Auth.currentUser().name, channel: $scope.activeChannel });
+    $scope.draft.message = '';
+};
+
+$scope.logout = function logout() {
+    Auth.logout();
+    $state.go('login');
+}
+
+//Auto join the lobby
+$scope.joinChannel('Lobby');
+</code></pre>
+
+<p>})
+```</p>
+
+<p>All of the code can be found on <a href="https://github.com/jbavari/ionic-socket.io-redis-chat">github here</a>.</p>
+
+<h3>Things to improve</h3>
+
+<ul>
+<li>Testing &ndash; for sure. I definitely failed in getting tests first</li>
+<li>Removing the inline functions from Socket.io callbacks &ndash; not sure I like how I handled that to be honest</li>
+<li>Improve the UI</li>
+<li>Actually make the channels expire over time &ndash; and alert the user</li>
+<li>Have some kind of location tracking to pull local channels near you</li>
+</ul>
+
+
+<p>Enjoy! Hope this helps any others learn some tips for developing in any of these technologies used!</p>
+]]></content>
+  </entry>
+  
+</feed>

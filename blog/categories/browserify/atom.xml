@@ -1,0 +1,479 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: browserify | Josh Bavari's Ramblings]]></title>
+  <link href="http://jbavari.github.io/blog/categories/browserify/atom.xml" rel="self"/>
+  <link href="http://jbavari.github.io/"/>
+  <updated>2019-01-27T19:16:40-07:00</updated>
+  <id>http://jbavari.github.io/</id>
+  <author>
+    <name><![CDATA[Josh Bavari]]></name>
+    <email><![CDATA[jbavari@gmail.com]]></email>
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Scoreboard forms in React and Angular 2]]></title>
+    <link href="http://jbavari.github.io/blog/2015/12/15/scoreboard-forms-in-react-and-angular-2/"/>
+    <updated>2015-12-15T23:01:00-07:00</updated>
+    <id>http://jbavari.github.io/blog/2015/12/15/scoreboard-forms-in-react-and-angular-2</id>
+    <content type="html"><![CDATA[<p>As a developer, you should be focused on spending some of your own time learning and staying up to date with technology that is always moving.</p>
+
+<p>I wanted to find a reason to hop into some of the &lsquo;newer&rsquo; front-end frameworks, React and Angular 2, as well as some of the module bundlers <a href="http://browserify.org/">browserify</a> and <a href="https://webpack.github.io/">webpack</a>.</p>
+
+<p>I had the opportunity to try out Angular 2 while it was still in alpha. With the recent announcement of Angular 2 going out in Beta, I wanted to build a Scoreboard form that went along with my Scoreboard project to evaluate the two frameworks.</p>
+
+<p>This post will aim to build a simple scoreboard form in both frameworks, so you can see the same DOM interactions and the code it takes to form them.</p>
+
+<p>Please also note, I&rsquo;m still very much learning, and some code may not be &lsquo;ideal&rsquo;.</p>
+
+<p>We&rsquo;ll cover:</p>
+
+<ul>
+<li>The scoreboard form idea</li>
+<li>Learning the ideas behind the frameworks</li>
+<li>The bundling systems</li>
+<li>Angular 2 implementation (TypeScript)</li>
+<li>React implementation (ES6)</li>
+<li>The differences between the two</li>
+<li>Pros and Cons of each (in my eyes)</li>
+</ul>
+
+
+<p>All of the source code is available on my Github profile in the <a href="https://github.com/jbavari/scoreboard-form">scoreboard-form</a> repository.</p>
+
+<h1>The Scoreboard Form</h1>
+
+<p>A scoreboard is simple &ndash; you&rsquo;ll enter the two team names, then specify a touchdown or field goal for either team.</p>
+
+<p>That means we will need a few components: a scoreboard and a team.</p>
+
+<p>The idea will be to build these components in React and Angular2, having them use similar templates to render to the equivalent DOM structures.</p>
+
+<h2>Learning the ideas behind the frameworks</h2>
+
+<p>Both frameworks aim to contain all of the functionality and display into a component.</p>
+
+<p>The idea will be to build a team component, that displays teams, and a scoreboard component, that will display both of those teams and have a submit method to post that data to our scoreboard API server.</p>
+
+<p>The main difference we will see between the two frameworks is adapting to <a href="http://es6-features.org/">ES6</a> or <a href="http://www.typescriptlang.org/">TypeScript</a>.</p>
+
+<p>In either framework, we will create a class for the component in ES6/TypeScript, and then connect the template to it, and finally attach it in the DOM.</p>
+
+<h1>The bundling systems</h1>
+
+<p>We will use Browserify to pack up React into a single module, while using webpack to bundle up Angular 2 into a single bundle.</p>
+
+<p>What is bundling you say? It&rsquo;s taking all the source for our components and bundling them up with the framework code to have one JavaScript file to load the entire bundle. That way, we only need one JavaScript file instead of a whole load of <code>&lt;script&gt;</code> tags.</p>
+
+<h1>Angular 2 implementation</h1>
+
+<p>Angular 2 is built in TypeScript, which is a superset of JavaScript that allows types to have a &lsquo;stronger type&rsquo; to work with. We will build our component in TypeScript, and transpile it down to ES5 JavaScript.</p>
+
+<h2>Building the Team component</h2>
+
+<p>In Angular 2, we need to use a decorator (<a href="https://www.sitepen.com/blog/2015/10/20/typescript-decorators/">see this blog post about TypeScript decorators</a>) to specify a Team as a component that will render.</p>
+
+<p>We will import the Decorator, <code>Component</code>, and then apply it to our class. The <code>Component</code> decorator specifies which DOM element it will attach to (in this case, <code>team</code>), any inputs our control may have, what template it will use (specified as the <code>template</code> key), and what other directives will be used to parse our template.</p>
+
+<p>Then, we have our class that defines the component itself with a name and score, methods to increase score (<code>touchdown</code> and <code>fieldGoal</code>), a <code>toJson</code> method, and finally callbacks to update itself from the parent component.</p>
+
+<p>The team component:</p>
+
+<p>```
+import {Component, EventEmitter, Output} from &lsquo;angular2/core&rsquo;;
+import {NgFor, NgIf, NgModel} from &lsquo;angular2/common&rsquo;;</p>
+
+<p>@Component({
+  directives: [NgFor, NgIf, NgModel],
+  selector: &lsquo;team&rsquo;,
+  template: `</p>
+
+<pre><code>&lt;div *ngIf="name == ''"&gt;
+  &lt;h3&gt;No team set&lt;/h3&gt;
+  &lt;input type="text" [(ngModel)]="nameInput" placeholder="Enter a name"/&gt;
+  &lt;button type="submit" (click)="setName()"&gt;Set name&lt;/button&gt;
+&lt;/div&gt;
+&lt;div *ngIf="name != ''"&gt;
+  &lt;h3&gt;&lt;/h3&gt;
+  &lt;button (click)="touchdown($event)"&gt;Touchdown&lt;/button&gt;
+  &lt;button (click)="fieldGoal($event)"&gt;Field Goal&lt;/button&gt;
+  &lt;h4&gt;Score: &lt;/h4&gt;
+&lt;/div&gt;
+`
+}
+</code></pre>
+
+<p>})
+export class Team {
+  @Output() updateTeam = new EventEmitter<Team>();
+  constructor() {</p>
+
+<pre><code>this.nameInput = '';
+this.name = '';
+this.score = 0;
+</code></pre>
+
+<p>  }</p>
+
+<p>  fieldGoal(e) {</p>
+
+<pre><code>e.preventDefault();
+this.score += 3;
+</code></pre>
+
+<p>  }</p>
+
+<p>  touchdown(e) {</p>
+
+<pre><code>e.preventDefault();
+this.score += 7;
+</code></pre>
+
+<p>  }</p>
+
+<p>  setName(nameInput) {</p>
+
+<pre><code>this.name = this.nameInput;
+this.nameInput = '';
+if(this.updateTeam) {
+  this.updateTeam.next(this);
+}
+</code></pre>
+
+<p>  }</p>
+
+<p>  toJson() {</p>
+
+<pre><code>return { name: this.name, score: this.score };
+</code></pre>
+
+<p>  }
+}</p>
+
+<p>```</p>
+
+<h2>Defining the scoreboard component</h2>
+
+<p>Now we need to displays these teams in a side by side manner, a callback to update information from the team component, and a method to submit the scores to the API.</p>
+
+<p>We&rsquo;ll define the component as follows:</p>
+
+<p>```
+import {Component} from &lsquo;angular2/core&rsquo;;
+import {Team} from &lsquo;../team/team&rsquo;;</p>
+
+<p>@Component({
+  directives: [Team],
+  selector: &lsquo;scoreboard&rsquo;,
+  template: `</p>
+
+<pre><code>&lt;form (ngSubmit)="submitScore()"&gt;
+  &lt;div class="row"&gt;
+    &lt;div class="col-md-6"&gt;
+      &lt;h2&gt;Home Team&lt;/h2&gt;
+      &lt;team (updateTeam)="updateHomeTeam($event)" home="true"&gt;&lt;/team&gt;
+    &lt;/div&gt;
+    &lt;div class="col-md-6"&gt;
+      &lt;h2&gt;Visitor Team&lt;/h2&gt;
+      &lt;team (updateTeam)="updateVisitorTeam($event)"&gt;&lt;/team&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+  &lt;div class="row"&gt;
+    &lt;button type="submit"&gt;Submit&lt;/button&gt;
+  &lt;/div&gt;
+  &lt;div *ngIf="submitted"&gt;
+    JSON payload: 
+  &lt;/div&gt;
+&lt;/form&gt;  
+</code></pre>
+
+<p>  `
+})
+export class Scoreboard {
+  homeTeam: Team = new Team();
+  visitorTeam: Team = new Team();
+  submitted: boolean = false;
+  jsonPayload: string = null;</p>
+
+<p>  constuctor() {
+  }</p>
+
+<p>  submitScore() {</p>
+
+<pre><code>this.submitted = true;
+this.jsonPayload = JSON.stringify({ homeTeam: this.homeTeam.toJson(), visitorTeam: this.visitorTeam.toJson()});
+</code></pre>
+
+<p>  }</p>
+
+<p>  updateHomeTeam(team: Team) {</p>
+
+<pre><code>this.homeTeam = team;
+</code></pre>
+
+<p>  }</p>
+
+<p>  updateVisitorTeam(team: Team) {</p>
+
+<pre><code>this.visitorTeam = team;
+</code></pre>
+
+<p>  }
+}</p>
+
+<p>```</p>
+
+<h2>Pros and Cons</h2>
+
+<h3>Pros</h3>
+
+<h3>Cons</h3>
+
+<ul>
+<li>Angular 2 &ndash; docs are all over the place.</li>
+<li>Main blogs that are linked from docs site are using old kabob style (e.g. <code>*ng-if</code> instead of <code>*ngIf</code>).</li>
+<li>Webpack configuration &ndash; I didn&rsquo;t include zone.js in my entries, and I could not get any DOM updates coming from my components changing.</li>
+<li>When to use two-way bindings, and one-way bindings was good enough.</li>
+<li>No &lsquo;why&rsquo; to what im doing &ndash; it aims to just follow the same &lsquo;idea&rsquo; as Angular.js.</li>
+<li>Plunkers aren&rsquo;t up to date.</li>
+</ul>
+
+
+<h1>React implementation (ES6)</h1>
+
+<p>Now that we have the basic idea of the team and scoreboard, you&rsquo;ll see React is very similiar. Instead of having a decorator specify the template and DOM elements to attach to, we&rsquo;ll specify a class that extends <code>React.Component</code>, a method that will render the markup, and finally, some bootstrap code to attach our class to a DOM element.</p>
+
+<h2>Defining the team component</h2>
+
+<p>```
+import React from &lsquo;react&rsquo;;</p>
+
+<p>export default class Team extends React.Component {
+  constructor(props) {</p>
+
+<pre><code>super(props);
+this.props = props;
+this.name = props.name;
+this.score = props.score || 0;
+this.setName = this.setName.bind(this);
+// this.state = {name: this.name, score: this.score};
+this.touchdown = this.touchdown.bind(this);
+this.fieldGoal = this.fieldGoal.bind(this);
+</code></pre>
+
+<p>  }</p>
+
+<p>  fieldGoal(e) {</p>
+
+<pre><code>e.preventDefault();
+this.score += 3;
+this.setState(this);
+</code></pre>
+
+<p>  }</p>
+
+<p>  touchdown(e) {</p>
+
+<pre><code>e.preventDefault();
+this.score += 7;
+this.setState(this);
+</code></pre>
+
+<p>  }</p>
+
+<p>  setName(e) {</p>
+
+<pre><code>e.preventDefault();
+this.name = this.refs.teamName.value;
+this.setState(this);
+this.props.update(this);
+</code></pre>
+
+<p>  }</p>
+
+<p>  toJson() {</p>
+
+<pre><code>return { name: this.name, score: this.score };
+</code></pre>
+
+<p>  }</p>
+
+<p>  render() {</p>
+
+<pre><code>if (!this.name) {
+  return (
+    &lt;div&gt;
+      &lt;h3&gt;No team set&lt;/h3&gt;
+      &lt;input type="text" ref="teamName" placeholder="Enter a name.." value={this.props.name}/&gt;
+      &lt;button onClick={this.setName}&gt;Set Name&lt;/button&gt;
+    &lt;/div&gt;
+  );
+} else {
+  return (
+    &lt;div&gt;
+      &lt;h3&gt;{this.name}&lt;/h3&gt;
+      &lt;button onClick={this.touchdown}&gt;Touch Down&lt;/button&gt;
+      &lt;button onClick={this.fieldGoal}&gt;Field Goal&lt;/button&gt;
+      &lt;h4&gt;Score: {this.score}&lt;/h4&gt;
+    &lt;/div&gt;
+  );
+}
+</code></pre>
+
+<p>  }
+}
+```</p>
+
+<h2>Defining the Scoreboard component</h2>
+
+<p>```
+import Team from &lsquo;./team.jsx&rsquo;;
+import React from &lsquo;react&rsquo;;</p>
+
+<p>export default class Scoreboard extends React.Component {
+  constructor(props) {</p>
+
+<pre><code>super(props);
+this.homeTeam = {};
+this.visitorTeam = {};
+this.url = this.props.url;
+this.submit = this.submit.bind(this);
+this.updateTeam = this.updateTeam.bind(this);
+this.submitted = false;
+this.jsonPayload = null;
+</code></pre>
+
+<p>  }</p>
+
+<p>  submit(event) {</p>
+
+<pre><code>event.preventDefault();
+this.submitted = true;
+this.setState(this);
+this.jsonPayload = JSON.stringify({ homeTeam: this.homeTeam.toJson(), visitorTeam: this.visitorTeam.toJson()});
+</code></pre>
+
+<p>  }</p>
+
+<p>  updateTeam(team) {</p>
+
+<pre><code>if (team.props.home) {
+  this.homeTeam = team;
+} else {
+  this.visitorTeam = team;
+}
+</code></pre>
+
+<p>  }</p>
+
+<p>  render() {</p>
+
+<pre><code>var jsonInformation = this.submitted ? (&lt;div&gt;JSON payload: {this.jsonPayload}&lt;/div&gt;) : null;
+return (
+  &lt;form onSubmit={this.submit}&gt;
+    &lt;div className="row"&gt;
+      &lt;div className="col-md-6"&gt;
+        &lt;h2&gt;Home Team&lt;/h2&gt;
+        &lt;Team home="true" update={this.updateTeam}&gt;&lt;/Team&gt;
+      &lt;/div&gt;
+      &lt;div className="col-md-6"&gt;
+        &lt;h2&gt;Visitor Team&lt;/h2&gt;
+        &lt;Team update={this.updateTeam}&gt;&lt;/Team&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+    &lt;div className="row"&gt;
+      &lt;button type="submit"&gt;Submit&lt;/button&gt;
+    &lt;/div&gt;
+    {jsonInformation}
+  &lt;/form&gt;
+)
+</code></pre>
+
+<p>  }
+}
+```</p>
+
+<p>Now you&rsquo;ll see, theres no way we tell React to attach to a DOM node to attach our components to the browser DOM.</p>
+
+<p>This happens by the bootstrapping code:</p>
+
+<p>```
+import React from &lsquo;react&rsquo;;
+import ReactDOM from &lsquo;react-dom&rsquo;;
+import Scoreboard from &lsquo;../component/scoreboard.jsx&rsquo;;</p>
+
+<p>window.app = (function() {
+  return ReactDOM.render(<Scoreboard/>, document.getElementById(&lsquo;react-scoreboard&rsquo;));
+})();
+```</p>
+
+<p>Now, React knows to use our <code>Scoreboard</code> component (the one that was imported) to attach it to the <code>react-scoreboard</code> DOM element with an id of <code>react-scoreboard</code>. Internally for the Scoreboard, it specifies it&rsquo;s render method:</p>
+
+<p>```
+import Team from &lsquo;./team.jsx&rsquo;;
+// .. snipped code ..
+render() {
+  var jsonInformation = this.submitted ? (<div>JSON payload: {this.jsonPayload}</div>) : null;
+  return (</p>
+
+<pre><code>&lt;form onSubmit={this.submit}&gt;
+  &lt;div className="row"&gt;
+    &lt;div className="col-md-6"&gt;
+      &lt;h2&gt;Home Team&lt;/h2&gt;
+      &lt;Team home="true" update={this.updateTeam}&gt;&lt;/Team&gt;
+    &lt;/div&gt;
+    &lt;div className="col-md-6"&gt;
+      &lt;h2&gt;Visitor Team&lt;/h2&gt;
+      &lt;Team update={this.updateTeam}&gt;&lt;/Team&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+  &lt;div className="row"&gt;
+    &lt;button type="submit"&gt;Submit&lt;/button&gt;
+  &lt;/div&gt;
+  {jsonInformation}
+&lt;/form&gt;
+</code></pre>
+
+<p>  )
+}
+```</p>
+
+<h2>Pros and Cons</h2>
+
+<h3>Pros</h3>
+
+<p><a href="https://chrome.google.com/webstore/detail/react-developer-tools/fmkadmapgofadopljbjfkapdkoienihi?hl=en">React Dev tools</a> &ndash; inspect react components, super handy.
+Dev docs talk about how to think in react &ndash; giving the why before the what, really helped understand the concepts.</p>
+
+<h3>Cons</h3>
+
+<p>Dev tooling is not straight forward &ndash; you have to decide yourself.
+Figuring how to plug in rendering steps between state changes. <code>this.setState({})</code> with some state information.</p>
+
+<h1>Differences between the two</h1>
+
+<p>The main difference I can see if how Angular 2 specifies its <code>selector</code> to find out how it attaches to a DOM element you specify.</p>
+
+<p>React just follows using JSX to specify the component, which you can pass in properties.</p>
+
+<p>Angular 2 takes the approach of keeping state and doing stateful checks from its Virtual DOM diff'ing. However, the templating directives you can use, like <code>*ngIf</code> requires handling a template of some sort, where as React, you can just use JavaScript conditionals to render your DOM.</p>
+
+<h1>Conclusions</h1>
+
+<p>I really like the approach React takes. I also feel like it is a year early to the Virtual DOM party, and Angular 2 is really trying to keep up.</p>
+
+<p>As far as intuition and ease of development goes, React was definitely easier. Even with my previous Angular 2 knowledge, it still took me longer to get up and going.</p>
+
+<p>To give Angular 2 a fair shot, it is still in Beta. However, if I were to start a project today, it would be in React, due to the huge community that is building, the tooling available, and being backed by Facebook, one of the utmost leaders in User inface design and performance.</p>
+
+<p>I hope this short write up helps! If you have any questions, please drop a comment and we&rsquo;ll clear things up!</p>
+
+<p>As a reminder, <a href="https://github.com/jbavari/scoreboard-form">here is all of the code</a> is available on Github, feel free to open an issue.</p>
+
+<p>Cheers!</p>
+]]></content>
+  </entry>
+  
+</feed>

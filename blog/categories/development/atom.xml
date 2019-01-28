@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: development | Josh Bavari's Ramblings]]></title>
+  <link href="http://jbavari.github.io/blog/categories/development/atom.xml" rel="self"/>
+  <link href="http://jbavari.github.io/"/>
+  <updated>2019-01-27T19:16:40-07:00</updated>
+  <id>http://jbavari.github.io/</id>
+  <author>
+    <name><![CDATA[Josh Bavari]]></name>
+    <email><![CDATA[jbavari@gmail.com]]></email>
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Respect yourself]]></title>
+    <link href="http://jbavari.github.io/blog/2015/11/27/respect-yourself/"/>
+    <updated>2015-11-27T21:58:00-07:00</updated>
+    <id>http://jbavari.github.io/blog/2015/11/27/respect-yourself</id>
+    <content type="html"><![CDATA[<p>I&rsquo;m writing this post as a memoir for myself, a retrospect of sorts. I read <a href="http://sethgodin.typepad.com/seths_blog/2015/11/unconscious-consumption.html">Seth Godins blog about Unconscious consumption</a> and that post inspired me to write this post.</p>
+
+<p>In the last 3 years, amazing events have unfolded. I helped create a start up, <a href="http://raisemore.com">RaiseMore</a>. I moved to Boulder, Colorado. I got a job at Ionic. I met a strong, amazing, beautiful woman who is my girlfriend.</p>
+
+<p>I trained jiu-jitsu 4-5 times a week, I kept working on my strength, and trying to inspire others to do the same. I was striving to always read self-help books, watching informational videos, TED talks, ignite talks, challenging and pushing myself, and helping others grow.</p>
+
+<p>All these new and exciting things kept happening to me. Many times before, I&rsquo;ve asked myself, &lsquo;how did I get so lucky?&rsquo;. Things just had a snowball effect and kept getting better and better!</p>
+
+<p>I&rsquo;d like to think what attracted all these amazing things into my life was from these advancements.</p>
+
+<p>However, something happened during these last 4 months that really threw me in a rut. I developed a poor attitude. I started thinking I was a victim. I no longer work for the company that I had looked up to for so long.</p>
+
+<p>As I sit here now and reflect on the last few months, I know I&rsquo;ve made my fair share of mistakes. I take full responsibility for that. And due to some of those mistakes, I&rsquo;m unemployed (and looking for opportunities!) and I know it&rsquo;s my own fault.</p>
+
+<p>I&rsquo;d like to stop and take a minute to deep dive and retrospect on what happened. I know, deep in my heart, that it all changed when <em>I stopped respecting myself and making my personal growth a priority</em>.</p>
+
+<p>I&rsquo;m realizing that while all these good things were occurring, one thing remained constant &ndash; <em>I put myself and my personal growth first</em>.</p>
+
+<p>I&rsquo;d like to deep dive into what really happened, and discover the why.</p>
+
+<h2>Deep diving</h2>
+
+<p>Questions to ask:</p>
+
+<ul>
+<li>What did you do right?</li>
+<li>What did you do wrong?</li>
+<li>What can you do better?</li>
+</ul>
+
+
+<h3>What did I do right?</h3>
+
+<p>In January, I was jumping head first into the Ionic CLI. I was familiar with Node.js, but wasn&rsquo;t nearly at the level I wanted to be at. So I jumped head first into blogs, training courses, books, and more.</p>
+
+<p>I learned a ton by failing forward, bouncing ideas off of others, and most importantly, <em>maintaining a healthy work life balance</em>.</p>
+
+<p>In March, I came up with the crazy idea to make the Ionic CLI easier to consume by almost any user by just point/clicking. In my free time after working on the Ionic CLI, I started cranking out <a href="http://lab.ionic.io">Ionic Lab</a> &ndash; that would do just that.</p>
+
+<p>It was so freeing to use my creative side and use my intuition, listening to myself as I craved to learn more about Node.js and <a href="http://electron.github.io">Electron</a>!</p>
+
+<p>After demoing Ionic Lab to the Ionic team, they were convinced this was a tool that could open the door to more developers and really improve the tooling. Thus, I was instructed to work on it full time. Such a joy!</p>
+
+<p>Then it hit, this thing had to ship. I had to really buckle down and work out the final kinks in integrating Cordova fully into Ionic Lab, which took me down rabbit holes into discovering more about Electron than I wanted to know, fixing stdio errors and things that occurred deep in Cordova library code.</p>
+
+<p>Once we shipped out Ionic Lab in July, I was told to focus on Ionic 2. The rest of the team had been heads down working on the codebase since March, I was the new guy, so I had to really step it up and put in the time to learn Angular 2, TypeScript, ES6, Webpack, and all the other new ground to cover.</p>
+
+<p>It was exciting once again to jump head first into learning and exploration. But something happened that I did not expect.. I became a cynic.</p>
+
+<h4>What did I do wrong?</h4>
+
+<p>I think it wasn&rsquo;t until after July that things started to slow down and my personal happiness started to decline. I started working more hours (60 hours was the minimum). I stayed up late working most every night. I slept less. I started working out less (I gained 10-20 lbs). I started putting myself <em>and my personal growth</em> last.</p>
+
+<p>I stopped calling my friends. I stopped reaching out to my support group as much. I wasn&rsquo;t maintaining my happy upbeat attitude I&rsquo;ve been told has been so inspiring.</p>
+
+<p>I started putting work first. I started accepting others views of myself. I stopped valuing my work, my time, and my efforts to put that towards a company that at the end of the day, only wanted more and more. We all know what this leads to, <em>burn out</em>.</p>
+
+<p>This all was boiling down to the AngularConnect conference, where we planned to unveil Ionic 2 to the European crowds. I was given a hefty task of learning all that was Ionic 2, adding cross platform functionality in Ionic 2, adjusting the Ionic CLI for v2, helping curate content for a workshop at the conference, as well as building the first Ionic v2 app, <a href="http://github.com/driftyco/ionic-conference-app">the Ionic conference app</a>.</p>
+
+<p>All this was going down and other life issues arise, as they do. My older (15y old) dog was getting worse by the day. My girlfriend was not happy that I was putting her second to work. My friends stopped calling me. My shoulder got injured. I lost confidence in my work because I was burning out.</p>
+
+<p>Then, a personal goal I had set didn&rsquo;t get delivered to a group of users I was really wanted to, the Windows Ionic CLI users.</p>
+
+<p>This hurt. Failure when placed heavy, can hurt. It hurt even more when I was putting work first, and myself last.</p>
+
+<p>Looking more hopefully at the situation..</p>
+
+<h4>What can I do better?</h4>
+
+<p>First off &ndash; be honest with myself. Tell others I need a helping hand when needed. Going forward, I will look out for myself better (we all know employers want employees that can look out for themselves).</p>
+
+<p>Don&rsquo;t accept others views of myself unless I first believe them!</p>
+
+<p>Most importantly, respecting myself. I should always take the time to have a 1 on 1 with myself and really get a sense of where I&rsquo;m at. If I need a break, use that vacation that we are so lucky to have!</p>
+
+<p>We tend to forget that if we dont build ourselves up, the world surely wont. (Unless you are lucky enough to have awesome friends that stick through it thick and thin). Burnout happens when you don&rsquo;t let your support structure help put out of the flame before you become a pile of ash.</p>
+
+<p>So please, take this time to evaluate yourself and your needs. Be honest with yourself. Focus on caring for yourself. Be compassionate to yourself. Let yourself make mistakes, but learn from them.</p>
+
+<p>Focus on the positive. Surround yourself with upbeat people, ditch the negativity, and remind yourself that your future is in your hands. Take it.</p>
+
+<p>Don&rsquo;t forget that the only difference between a victor and a victim, is their mindset.</p>
+
+<p>Remember, there is no luck, only the work you put in and the effect you see afterwards.</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Its not the tools - its you]]></title>
+    <link href="http://jbavari.github.io/blog/2014/03/01/its-not-the-tools-its-you/"/>
+    <updated>2014-03-01T02:16:00-07:00</updated>
+    <id>http://jbavari.github.io/blog/2014/03/01/its-not-the-tools-its-you</id>
+    <content type="html"><![CDATA[<h1>Reminder &ndash; you write the code, not the tools</h1>
+
+<p>Duh, right?</p>
+
+<p>There&rsquo;s a lot of debate I see about people saying you have to use a certain language or tool
+to write good software or create apps. This is simply not the fact.</p>
+
+<p>Case and point &ndash; if you write an app in iOS and it works great, the user simply does not care if it
+was written in Objective-C, PhoneGap, or some other hybrid tool. (NOTE: unless the user is a troll)</p>
+
+<p>I personally do a lot of work lately with Cordova/PhoneGap. I actively contribute to Cordova as well.
+When I hear purists come down on the technology, I really wonder why.</p>
+
+<p>Certainly, there can be some bad apps created with it. The same can be said for Objective-C!
+Whatever the tool/language is, it can always be used in the wrong or inefficient way.</p>
+
+<p>The truth is, there are some awesome technologies coming out from all kinds of directions.
+What makes the tech better? The tools/languages/software used, or the overall look/feel/usage?</p>
+
+<h2>Why am I writing this?</h2>
+
+<p>Lately, I&rsquo;ve been trying to grow as a developer and really fine tune my craft.
+I&rsquo;m writing this to remind myself &amp; hopefully remind others, any products/apps we make are only as good as we can make them.
+<strong>NOT</strong> the tools we use to make them. (NOTE: sometimes a tool can improve performance, or some other aspect, but its still up to you to learn and adapt)</p>
+
+<h2>If your app/product sucks, its your fault</h2>
+
+<p>That&rsquo;s right &ndash; true responsibility.</p>
+
+<p>Think about this &ndash; these days developers can make awesome, usable softare with only a text editor and some command line tools.</p>
+
+<p>Now, given some additional IDEs, SDKs, Frameworks, ETC., the same developer could make more software, generally quicker.
+Was it the tools that made the finalized product awesome?</p>
+
+<p>That being said, if you are using a tool/system/framework, and it truly does suck &ndash; guess what?
+You are free to change it!</p>
+
+<h2>The weakness is you</h2>
+
+<p>What makes someone great at anything is when they know what they are weak at and actively improve on those weaknesses.</p>
+
+<p>One thing I wanted to focus fire this year was hitting my weak points.</p>
+
+<p>It&rsquo;s always difficult to take a true honest look at yourself and evaluate what actions you should take. However, if you really want to improve and get ahead, there&rsquo;s no other way.</p>
+
+<h3>Some of my weaknesses</h3>
+
+<ul>
+<li>Writing tests for my code &amp; taking a TDD approach</li>
+<li>Actively testing my product (thoroughly)</li>
+<li>Reading and keeping up to date with knowledge (blogs/books/etc)</li>
+<li>Communicating and expressing my ideas</li>
+</ul>
+
+
+<h3>What I&rsquo;m trying</h3>
+
+<ul>
+<li>Expecting small improvements.</li>
+<li>Iterate quickly.</li>
+<li>Evaluate often.</li>
+<li>Always be learning.</li>
+</ul>
+
+
+<h3>What I&rsquo;m doing</h3>
+
+<ul>
+<li>Starting to write tests for older code &amp; refactoring when needed, especially in Javascript &amp; Ruby</li>
+<li>Getting together active test runners for iOS, Android, and the Web (CasperJS).</li>
+<li>Evaluating weekly my tests I&rsquo;m writing &ndash; Using <a href="http://codeclimate.com">Code climate</a> to evaluate the quality/complexity of our code</li>
+<li>Looking at other open source projects and how they write tests</li>
+<li>Reading some BDD/TDD books to learn</li>
+</ul>
+
+
+<h2>The big picture</h2>
+
+<p>Next time you are getting frustrated with your tools, programming language, etc &ndash; remember, it&rsquo;s up to you to improve it, or improve yourself. Cheers.</p>
+]]></content>
+  </entry>
+  
+</feed>

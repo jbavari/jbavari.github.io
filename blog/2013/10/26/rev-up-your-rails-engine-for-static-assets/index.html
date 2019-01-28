@@ -1,0 +1,522 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Rev Up Your Rails Engine For Static Assets - Josh Bavari's Ramblings</title>
+  <meta name="author" content="Josh Bavari">
+
+  
+  <meta name="description" content="Lately we&rsquo;ve had the desire to move some of our rails services / middleware from our main web project to Rails Engines as gems to help us scale &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://jbavari.github.io/blog/2013/10/26/rev-up-your-rails-engine-for-static-assets">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="Josh Bavari's Ramblings" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">Josh Bavari's Ramblings</a></h1>
+  
+    <h2>tech babbles on Ruby, Javascript, Rails, Phonegap/Cordova, Grunt, and more</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:jbavari.github.io" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+  <li><a href="/about">About</a></li>
+  <li><a href="/speaking">Speaking</a></li>
+  <li><a href="/knowledge">Knowledge</a></li>
+  <li><a href="/about/resume">Resume</a></li>
+  <li><a href="/cv">C.V.</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Rev Up Your Rails Engine for Static Assets</h1>
+    
+    
+      <p class="meta">
+        <span class="reading-time">about a 8 minute read</span>
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-10-26T19:32:00-06:00" pubdate data-updated="true">Oct 26<span>th</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>Lately we&rsquo;ve had the desire to move some of our rails services / middleware from our main web project to Rails Engines as gems to help us scale out and reuse that functionality across servers and sites.</p>
+
+<p>Haven&rsquo;t heard of Rails Engines? Rails engines are essentially miniture rails applications that provide funtionality to its host application &ndash; you could think of engines of what used to be Rails plugins in Rails 2 and upgraded in Rails 3.2. <a href="http://guides.rubyonrails.org/engines.html" title="Rails Guides - Getting Started with Engines">RailsGuides</a> is a great place to start, <a href="http://railscasts.com/episodes/277-mountable-engines" title="RailsCasts - Mountable Engines">RailsCasts</a> has a nice walk through. I want to focus on showing some tips, tricks, and pitfuls I&rsquo;ve encountered to help you be more successful.</p>
+
+<h1>Why I started using Rails Engines</h1>
+
+<p>For our needs, we had to display a mobile version of our application on our main website webserver. All of the code for the mobile application was hosted in another git repository (Note: I love the <a href="https://github.com/schacon/ruby-git" title="Ruby Git Gem">Git Gem</a>) and had different themes that needed to be applied. The big question was, how do we have this hosted on different web nodes and control our changes from the mobile repository?</p>
+
+<p>There are so many different ways to approach this problem, the method I chose was to try out a Rails Engine. The main reasons this was attractive was:</p>
+
+<ol>
+<li>A set of controllers to handle the requests for only the mobile application</li>
+<li>Not bombarding our web server&rsquo;s public folder with all of the mobile html/images/javascript/css</li>
+<li>Being able to configure the mobile gem based on any environment it may be in</li>
+<li>Being able to precompile our assets with the rails asset pipeline</li>
+<li>Handle updating the mobile app by just bundle updating the Gem</li>
+</ol>
+
+
+<h2>Rails Engines &ndash; Full vs Mountable</h2>
+
+<p>There are two types of Rails Engines available, a full engine and a mountable engine (see this <a href="http://stackoverflow.com/questions/6118905/rails-3-1-engine-vs-mountable-app" title="Stackoverflow Article on Full Engine vs Mountable Engine">StackOverflow</a> article or <a href="http://www.astjohn.ca/2011/08/06/rails-31-engines-mountable-or-full-part-1" title="Rails 3.1 Engines – Mountable or Full? – Part 1">Adam St Johns Blog</a> for more wisdom). The difference lies in how they handle requests. The full engine sets up routes and controllers as if they were part of the hosting app, whereas the mounted engine is mounted in the hosting app and handles its own routing.</p>
+
+<p>Getting started is easy. For a full engine where all requests are handled as part of hosting app, do this:</p>
+
+<pre><code>rails plugin new NameOfEngine --full
+</code></pre>
+
+<p>For a mountable engine, where we namespace our requests, do this:</p>
+
+<pre><code>rails plugin new NameOfMountableEngine --mountable
+</code></pre>
+
+<p>Let&rsquo;s take a look at how a full engine gets requests routed. For a full engine, we&rsquo;d have something like this in our Hosting application routing file for everything in our mobile engine.</p>
+
+<pre><code>Rails.application.routes.draw do
+    namespace "mobile" do 
+        match "/app" =&gt; "mobile#app", :via =&gt; :get
+        match "/modules" =&gt; "mobile#modules", :via =&gt; :get
+        match "/start" =&gt; "mobile#start", :via =&gt; :get
+        match "/tutorials" =&gt; "mobile#tutorials", :via =&gt; :gets
+        match "/" =&gt; "mobile#generic", :via =&gt; :get
+        # Any many more /mobile routes..
+    end
+
+    # Other hosting application routing goes here, and mixes in with our mobile routes.
+end
+</code></pre>
+
+<p>Taken straight from <a href="https://github.com/rails/rails/blob/master/railties/lib/rails/engine.rb" title="Rails / Engine.rb Line 197">Rails Engine Code Comments</a> &ndash;</p>
+
+<blockquote><p>&hellip; sometimes you want to isolate your engine from the application, especially if your engine has its own router. To do that, you simply need to call +isolate_namespace+. This method requires you to pass a module where all your controllers, helpers and models should be nested to.</p></blockquote>
+
+<p>Great, so now we dont&#8217; have to uglify our routing file AND we get routing and code reusablity across servers for a mounted engine, that means we have our own routing.rb file in our engine:</p>
+
+<pre><code>MobileEngine::Engine.routes.draw do
+    match "/app" =&gt; "mobile#app", :via =&gt; :get
+    match "/" =&gt; "mobile#generic", :via =&gt; :get
+end
+</code></pre>
+
+<p>We specify the isolate_namespace in our engine file:</p>
+
+<pre><code>module MobileEngine
+    class Engine &lt; ::Rails::Engine
+        isolate_namespace MobileEngine
+    end
+end
+</code></pre>
+
+<p>Finally we mount our engine in the hosting app:</p>
+
+<pre><code>Rails.application.routes.draw do
+    mount MobileEngine::Engine =&gt; "/mobile"
+
+    #Other hosted application routing
+end
+</code></pre>
+
+<p>The main difference between full and mounted is found in your <NameOfEngineDirectory>/lib/name_of_engine/engine.rb file:</p>
+
+<p>Full:</p>
+
+<pre><code>module FullEngine
+    class Engine &lt; ::Rails::Engine
+    end
+end
+</code></pre>
+
+<p>Mounted:</p>
+
+<pre><code>module MountedEngine
+    class Engine &lt; ::Rails::Engine
+        isolate_namespace MobileEngine
+    end
+end
+</code></pre>
+
+<p>Awesome, so now no matter what, any hosted rails application that uses our mounted engine gets all of its routes namespaced by whatever we choose, in this case, /mobile. Awesome.</p>
+
+<h2>Engines and routing / matching controllers and views</h2>
+
+<p>Quick reminder on Rails routing:</p>
+
+<blockquote><p>Rails routes are matched in the order they are specified, so if you have a resources :photos above a get &lsquo;photos/poll&rsquo; the show action&rsquo;s route for the resources line will be matched before the get line. To fix this, move the get line above the resources line so that it is matched first.</p></blockquote>
+
+<p>One thing to note is the way you namespace your engine which is done with using your engine name in your file structure, both in your controllers and engines, such as this structure:</p>
+
+<pre><code>/mobile_engine
+    /app
+        /assets
+        /controllers
+            /mobile_engine
+                application_controller.rb
+                mobile_controller.rb
+        /helpers
+            /mobile_engine
+        /mailers
+            /mobile_engine
+        /models
+            /mobile_engine
+        /views
+            /layouts
+                application.html.erb
+            /mobile_engine
+                /mobile
+                    app.html.erb
+</code></pre>
+
+<p>So for our mobile_controller.rb, we simply have this:</p>
+
+<pre><code># Note the use of Engine.root for finding its path
+require File.join(MobileEngine::Engine.root, 'lib', 'mobile_engine', 'file_we_need') 
+module MobileEngine
+    class MobileController &lt; ApplicationController
+        before_filter :adjust_format_for_iphone
+        layout false
+
+        def app
+
+            # Code
+
+        end
+    end
+end
+</code></pre>
+
+<p>Let&rsquo;s look at the full request cycle for mounted engines for &ldquo;/mobile/app&rdquo;:</p>
+
+<ul>
+<li>A request for &ldquo;/mobile/app&rdquo; goes through our hosting application, no routes are found for &ldquo;/mobile/app&rdquo; for the hosting application routing file, so it looks at the engine.</li>
+<li>The engine has a route, so it then begins looking in the hosting application for the mobile controller</li>
+<li>If the hosting application has no mobile controller, it then begins looking at it&rsquo;s included engines for a mobile controller</li>
+<li>The engine has a controller, so it uses that controller&rsquo;s action and goes to render the view.</li>
+<li>The hosting application begins looking for a view in the hosting application for &ldquo;views/mobile/app&rdquo;</li>
+<li>If the hosting application did not have a view, it then looks for the view in the engine &ldquo;views/mobile_engine/mobile/app&rdquo;</li>
+</ul>
+
+
+<p>Why is this important? I had an issue where I still had a view in my hosting application that was being used over my engine views &ndash; so always note that the hosting application trumps its engines controllers and views. Full overriding capabilities is always the control of the hosting application.</p>
+
+<h2>Public folder mashing &amp; configuration</h2>
+
+<p>The second point in choosing an engine is leaving all of our mobile assets in our mobile engine gem&rsquo;s public folder so we don&rsquo;t have to worry about getting those assets copy/pasted between projects that may want the mobile code. Just plunk your JS/CSS/HTML in your public folders as you normally would and make this modification in your engine.rb file in your engine gem:</p>
+
+<pre><code>module MobileEngine
+  class Engine &lt; ::Rails::Engine
+    isolate_namespace MobileEngine
+
+    # Add any configuration settings to your Engine here
+
+    config.mobile_app_name = "mobile_raisemore"
+    config.mobile_app_containing_directory = File.join(root, "vendor").to_s
+    config.mobile_app_path = File.join(root, "vendor", "mobile_raisemore").to_s
+    config.mobile_theme_path = File.join(root, "public", "mobilethemes").to_s
+    config.mobile_repo_url = "git@bitbucket.org:raisemore/mobile_raisemore.git"
+    config.local_asset_js_path = File.join(root, "vendor", "assets", "javascripts", "mobile").to_s
+    config.local_asset_css_path = File.join(root, "vendor", "assets", "stylesheets", "mobile").to_s
+    config.local_public_mobile_path = File.join(root, "public", "mobile").to_s
+
+    # Initializer to combine this engines static assets with the static assets of the hosting site.
+    initializer "static assets" do |app|
+        app.middleware.insert_before(::ActionDispatch::Static, ::ActionDispatch::Static, "#{root}/public")
+    end
+  end
+end
+</code></pre>
+
+<p>Then in our hosting application, we can use those configuration settings via an initializer:</p>
+
+<pre><code>MobileEngine::Engine.config.mobile_app_name = "RaiseMore"
+</code></pre>
+
+<p>Great, we&rsquo;ve isolated our namespace to leave all requests for mobile_engine, as well as setting up some configuration settings for what the mobile code may depend on, as well as merged our engine&rsquo;s public folder with the hosting site application.</p>
+
+<p>One thing to note, when using an Engine, it sets up several helpers for you to use. One of which I use there is root, which is the root path of the engine, not the root path of the hosting application. To get the root path of the application, you can use main_app, like this:</p>
+
+<pre><code>&lt;%= link_to "Home", main_app.root_path %&gt;
+</code></pre>
+
+<h2>Precompiling any assets</h2>
+
+<p>No difference here, place your assets in your normal locations. Works just like the <a href="http://guides.rubyonrails.org/index.html" title="Rails Asset Pipeline">Rails Asset Pipelines Guide</a>, and documented nicely for gems by <a href="http://rakeroutes.com/blog/write-a-gem-for-the-rails-asset-pipeline/" title="Write a Gem To Serve Static Assets On The Rails Asset Pipeline">Stephen Balls Blog</a>, but essentially still the same.</p>
+
+<p>My file structure for assets looks like this:</p>
+
+<pre><code>/mobile_engine
+    /vendor
+        /assets
+            /images
+            /javascripts
+                /mobile
+                    jquery.js
+                    angular.js
+                    ...many more...
+                mobile.js
+            /stylesheets
+</code></pre>
+
+<p>Mobile.js is nothing special, and looks like this:</p>
+
+<pre><code>//= require ./mobile/
+</code></pre>
+
+<p>This will package up all javascript files in the /assets/javascripts/mobile folder to be combined and accessed by the hosting application, just run the assets precompile:</p>
+
+<pre><code>rake assets:precompile
+</code></pre>
+
+<p>Now access them as usual</p>
+
+<pre><code>http://hostingapp.com/assets/mobile.js
+</code></pre>
+
+<h1>The big picture</h1>
+
+<p>All in all, I&rsquo;ve really enjoyed learning about Rails Engines and I can already see several uses for them:</p>
+
+<ul>
+<li>Pulling all of our API calls to an engine so we can place that engine on any web nodes and keep API functionality in one place</li>
+<li>Put together an error handling gem to handle incoming error requests to record and a page to see errors</li>
+<li>Database models / access methods to be used by other projects</li>
+</ul>
+
+
+<p>I hope I&rsquo;ve shed some light on Rails Engines and given a few tips/tricks that I&rsquo;ve found along the way.</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Josh Bavari</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-10-26T19:32:00-06:00" pubdate data-updated="true">Oct 26<span>th</span>, 2013</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/rails/'>rails</a>, <a class='category' href='/blog/categories/ruby/'>ruby</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://jbavari.github.io/blog/2013/10/26/rev-up-your-rails-engine-for-static-assets/" data-via="jbavari" data-counturl="http://jbavari.github.io/blog/2013/10/26/rev-up-your-rails-engine-for-static-assets/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+      
+        <a class="basic-alignment right" href="/blog/2013/11/30/automating-phonegap-builds-with-grunt/" title="Next Post: Automating Phonegap Builds with Grunt">Automating Phonegap Builds with Grunt &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2017/04/16/puppet-a-testing-handbook/">Puppet: A Testing Handbook</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2017/03/13/test-coverage-reports-in-elixir/">Test Coverage Reports in Elixir</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/12/29/multicast-service-discovery-in-electron/">Multicast Service Discovery in Electron</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/03/11/using-erlang-observer-on-a-remote-elixir-server/">Using Erlang Observer on a Remote Elixir Server</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/01/24/custom-json-encoding-in-phoenix/">Custom JSON Encoding in Phoenix</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/jbavari">@jbavari</a> on GitHub
+  
+  <script type="text/javascript">
+    $(document).ready(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'jbavari',
+            count: 0,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2019 - Josh Bavari -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+  <script src="//static.getclicky.com/js" type="text/javascript"></script>
+  <script type="text/javascript">try{ clicky.init(100896582); }catch(e){}</script>
+  <noscript><p><img alt="Clicky" width="1" height="1" src="//in.getclicky.com/100896582ns.gif" /></p></noscript>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'joshbavari';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://jbavari.github.io/blog/2013/10/26/rev-up-your-rails-engine-for-static-assets/';
+        var disqus_url = 'http://jbavari.github.io/blog/2013/10/26/rev-up-your-rails-engine-for-static-assets/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

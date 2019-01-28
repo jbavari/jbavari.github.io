@@ -1,0 +1,339 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: redis | Josh Bavari's Ramblings]]></title>
+  <link href="http://jbavari.github.io/blog/categories/redis/atom.xml" rel="self"/>
+  <link href="http://jbavari.github.io/"/>
+  <updated>2019-01-27T19:16:40-07:00</updated>
+  <id>http://jbavari.github.io/</id>
+  <author>
+    <name><![CDATA[Josh Bavari]]></name>
+    <email><![CDATA[jbavari@gmail.com]]></email>
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Pushing Jobs to Sidekiq From Another Server]]></title>
+    <link href="http://jbavari.github.io/blog/2014/06/21/pushing-jobs-to-sidekiq-from-another-server/"/>
+    <updated>2014-06-21T00:35:00-06:00</updated>
+    <id>http://jbavari.github.io/blog/2014/06/21/pushing-jobs-to-sidekiq-from-another-server</id>
+    <content type="html"><![CDATA[<p>We use <a href="http://sidekiq.org/">Sidekiq</a> for our background job processing for videos, social integrations, and other tasks. It works great for what it does.</p>
+
+<p>Due to some of technical decisions at work, we have a few servers set up.</p>
+
+<ul>
+<li>An API server</li>
+<li>A job processing server</li>
+<li>An analytical dashboard Rails server</li>
+</ul>
+
+
+<p>The job processing server has all the Sidekiq worker models in it, as you&rsquo;d expect. We did this to keep all processing in one central location.</p>
+
+<p>Some use cases we have for it is to have all Push notifications sent from a single location, the job server. However, we need to trigger some of those from our API or analytical dashboard.</p>
+
+<h2>The problem and solution</h2>
+
+<p>How do we get workers queued up from other servers without replicating the Worker class in other servers? Since Sidekiq uses <a href="http://redis.io">Redis</a>, we figure&rsquo;d we&rsquo;d make a simple <code>RedisJobPusher</code> class to push workers to list in Redis that Sidekiq watches. Using this class, we can now queue jobs from other servers.</p>
+
+<p>The class has a core method, <code>push_to_queue</code>, that other methods (<code>push_leg_notification</code>, etc) call to push the worker name and parameters in redis. The above class assumes it is able to connect to redis.</p>
+
+<p>It looks like this:</p>
+
+<p>``` ruby
+require &lsquo;redis&rsquo;
+require &lsquo;json&rsquo;
+class RedisJobPusher</p>
+
+<pre><code>def self.push_leg_notification(user_id, event_id, message, title)
+    params = [user_id, event_id, 'leg', message, title, nil]
+    RedisJobPusher.push_to_queue('PushNotificationWorker', params)
+end
+
+def self.push_post_notification(user_id, event_id, message, title, event_user_social_id)
+    params = [user_id, event_id, 'post', message, title, event_user_social_id]
+    RedisJobPusher.push_to_queue('PushNotificationWorker', params)
+end
+
+def self.push_to_queue(worker_name, params)
+# using &lt;&lt;  rather than + because it cats instead of newing up string objects
+redisurl = 'redis://' &lt;&lt; CONFIG[:redis_server] &lt;&lt; ':6379' &lt;&lt; '/' &lt;&lt; CONFIG[:redis_db_num]
+
+    msg = { 'class' =&gt; worker_name, 'args' =&gt; params, 'retry' =&gt; true }
+    redis = Redis.new(:url =&gt; redisurl)
+    redis.lpush("raisemore_sidekiq:queue:JobWorker", JSON.dump(msg))
+end
+</code></pre>
+
+<p>end
+```</p>
+
+<p>As you can see, there isn&rsquo;t a lot going on here. Simple and easy. Just connect to redis, do a quick <code>lpush</code>, and go on your day.</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Building a chat client with Ionic / Socket.io / Redis / Node.js]]></title>
+    <link href="http://jbavari.github.io/blog/2014/06/17/building-a-chat-client-with-ionic/"/>
+    <updated>2014-06-17T00:09:00-06:00</updated>
+    <id>http://jbavari.github.io/blog/2014/06/17/building-a-chat-client-with-ionic</id>
+    <content type="html"><![CDATA[<p>I wanted a fun challenge to push myself and cross a few things off my ever so growing <code>I want to play with this</code> type of lists. I love learning, and there are so many awesome tools / utilities / libraries out there to evaluate its hard to justify incorporating them into every project at work without having some knowledge of the tools.</p>
+
+<p>DISCLAIMER: I may use some tools incorrectly, but the main purpose of this fun little project was to learn and have fun.</p>
+
+<p>The list was this:</p>
+
+<ul>
+<li><a href="http://ionicframework.com">Ionic Framework</a></li>
+<li><a href="http://socket.io">Socket.io</a></li>
+<li><a href="http://redis.io">Redis</a></li>
+<li><a href="https://github.com/mranney/node_redis">Node.js Redis client</a></li>
+</ul>
+
+
+<h2>The Idea</h2>
+
+<p>I wanted to build a chat client that would have messages that disappear after a certain time, much like SnapChat. The idea also included the ability to create channels that also disappear after a certain time like messages.</p>
+
+<p>In future versions, I&rsquo;d love to include location to join channels that are near you.</p>
+
+<p>Users can join existing channels, or create their own. All users can see channels, and join any.</p>
+
+<h2>Tech details &ndash; using Redis / Node.js</h2>
+
+<p>At first, I wanted to create messages some how and have them each have <code>expire</code> times. After failing miserably, I got the amazing chance to pair up with <a href="https://twitter.com/michaelgorsuch">Michael Gorsuch</a> to give me some alternative ideas. (Shameless plug &ndash; if you need to do some server monitoring, check out his project <a href="http://canary.io/">Canary.io</a>, it&rsquo;s AWESOME).</p>
+
+<p>The concept is &ndash; instead of using separate keys with ezxpire times &ndash; use Redis' sorted sets with scores of the times in UNIX format and the member being a JSON encoded string. I had my channels keys in the format of <code>messages:ChannelName</code>.</p>
+
+<p>Something like:</p>
+
+<p><code>
+//ZADD key score member [score member ...]
+zadd messages:RedisChat 10581098019 '{"name": "Josh", "id": "5"}'
+</code></p>
+
+<p>Now, when we want to get all messages for a channel, its simply:</p>
+
+<p><code>
+//ZRANGEBYSCORE key min max [WITHSCORES] [LIMIT offset count]
+zrangebyscore messages:RedisChat 0 10924019840
+</code></p>
+
+<p>Since I was using Node.js &ndash; I simply used <code>setInterval</code> to have a function be run that removes all old posts named <code>removeKeys</code>, and looked as such:</p>
+
+<p>``` js
+//NOTE: Using Moment.js, as well as having channelWatchList being populated
+var channelWatchList = [&lsquo;Lobby&rsquo;, &lsquo;RedisChat&rsquo;];</p>
+
+<p>function removeKeys() {
+  console.log(&lsquo;We are removing old messages&rsquo;);</p>
+
+<p>  for(var channelIndex in channelWatchList) {</p>
+
+<pre><code>var channel = channelWatchList[channelIndex];
+var messageChannel = 'messages:' + channel;
+console.log('message channel', messageChannel)
+var timeToRemove = moment().subtract('m', 1).unix(); //Remove messages before min ago
+
+redisClient.zrangebyscore(messageChannel, 0, timeToRemove, function(err, result) {
+  if(result &amp;&amp; result.length &gt; 0) {
+    for (var resultIndex in result) {
+      var message = JSON.parse(result[resultIndex]);
+      //NOTE: Using socket.io
+      io.emit('message:remove:channel:' + channel, { message: message, channel: channel });
+    }
+  }
+});
+
+redisClient.zremrangebyscore(messageChannel, 0, timeToRemove, function(err, result) {
+  console.log('Removed ', result, ' messages');
+});
+</code></pre>
+
+<p>  }
+}
+```</p>
+
+<h2>The client &ndash; Ionic</h2>
+
+<p>This was by far the easy part. First I just used the Ionic CLI to create a basic app.</p>
+
+<p>I started by modifying the index.html file to include Socket.io. Nothing too fancy: <code>&lt;script src="js/socket.io.js"&gt;&lt;/script&gt;</code>.</p>
+
+<p>Next, I used some AngularJS <a href="https://github.com/jbavari/ionic-socket.io-redis-chat/blob/master/client/RedisChat/www/js/services.js">services</a> for socket.io:</p>
+
+<p>```
+angular.module(&lsquo;services&rsquo;, [])</p>
+
+<p>.factory(&lsquo;socket&rsquo;, function socket($rootScope) {
+  var socket = io.connect(baseUrl);
+  return {</p>
+
+<pre><code>on: function (eventName, callback) {
+  socket.on(eventName, function () {  
+    var args = arguments;
+    $rootScope.$apply(function () {
+      callback.apply(socket, args);
+    });
+  });
+},
+emit: function (eventName, data, callback) {
+  socket.emit(eventName, data, function () {
+    var args = arguments;
+    $rootScope.$apply(function () {
+      if (callback) {
+        callback.apply(socket, args);
+      }
+    });
+  })
+}
+</code></pre>
+
+<p>  };
+})
+```</p>
+
+<p>Then, I constructed my <code>AppCtrl</code> to handle my <a href="https://github.com/jbavari/ionic-socket.io-redis-chat/blob/master/client/RedisChat/www/js/controllers.js">controllers</a> interaction with Socket.io:</p>
+
+<p>``` js
+angular.module(&lsquo;starter.controllers&rsquo;, [&lsquo;services&rsquo;])</p>
+
+<p>.controller(&lsquo;AppCtrl&rsquo;, function($scope, $state, $filter, socket, Auth) {</p>
+
+<pre><code>//Ensure they are authed first.
+if(Auth.currentUser() == null) {
+    $state.go('login');
+    return;
+}
+
+//input models
+$scope.draft = { message: '' };
+$scope.channel = { name: '' };
+
+//App info
+$scope.channels = [];
+$scope.listeningChannels = [];
+$scope.activeChannel = null;
+$scope.userName = Auth.currentUser().name;
+$scope.messages = [];
+</code></pre>
+
+<p>///////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////
+//Socket.io listeners
+///////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////</p>
+
+<pre><code>socket.on('channels', function channels(channels){
+    console.log('channels', channels);
+
+    console.log(channels);
+    $scope.channels = channels;
+});
+
+socket.on('message:received', function messageReceived(message) {
+    $scope.messages.push(message);
+});
+
+socket.emit('user:joined', {name: Auth.currentUser().name});
+
+socket.on('user:joined', function(user) {
+    console.log('user:joined');
+    $scope.messages.push(user);
+});
+
+$scope.listenChannel = function listenChannel (channel) {
+    socket.on('messages:channel:' + channel, function messages(messages) {
+        console.log('got messages: ', messages);
+        console.log(messages.length);
+        for(var i = 0, j = messages.length; i &lt; j; i++) {
+            var message = messages[i];
+            console.log('message');
+            console.log(message);
+                console.log('apply with function');
+            $scope.messages.push(message);
+        }
+    });
+
+    socket.on('message:channel:' + channel, function message(message) {
+        console.log('got message: ' + message);
+        if(channel != $scope.activeChannel) {
+            return;
+        }
+        $scope.messages.push(message);
+    });
+
+    socket.on('message:remove:channel:' + channel, function(removalInfo) {
+        console.log('removalInfo to remove: ', removalInfo);
+        var expires = removalInfo.message.expires;
+        var expireMessageIndex = $filter('messageByExpires')($scope.messages, expires);
+        if(expireMessageIndex) {
+            $scope.messages.splice(expireMessageIndex, 1);
+        }
+
+    });
+
+    $scope.listeningChannels.push(channel);
+
+}
+</code></pre>
+
+<p>///////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////
+// Controller methods
+///////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////</p>
+
+<pre><code>$scope.joinChannel = function joinChannel(channel) {
+    $scope.activeChannel = channel;
+    $scope.messages = [];
+
+    $scope.channel.name = '';
+
+    //Listen to channel if we dont have it already.
+    if($scope.listeningChannels.indexOf(channel) == -1) {
+        $scope.listenChannel(channel);      
+    }
+
+    socket.emit('channel:join', { channel: channel, name: Auth.currentUser().name });
+}
+
+$scope.sendMessage = function sendMessage(draft) {
+    if(!draft.message || draft.message == null || typeof draft == 'undefined' || draft.length == 0) {
+        return;
+    }
+    socket.emit('message:send', { message: draft.message, name: Auth.currentUser().name, channel: $scope.activeChannel });
+    $scope.draft.message = '';
+};
+
+$scope.logout = function logout() {
+    Auth.logout();
+    $state.go('login');
+}
+
+//Auto join the lobby
+$scope.joinChannel('Lobby');
+</code></pre>
+
+<p>})
+```</p>
+
+<p>All of the code can be found on <a href="https://github.com/jbavari/ionic-socket.io-redis-chat">github here</a>.</p>
+
+<h3>Things to improve</h3>
+
+<ul>
+<li>Testing &ndash; for sure. I definitely failed in getting tests first</li>
+<li>Removing the inline functions from Socket.io callbacks &ndash; not sure I like how I handled that to be honest</li>
+<li>Improve the UI</li>
+<li>Actually make the channels expire over time &ndash; and alert the user</li>
+<li>Have some kind of location tracking to pull local channels near you</li>
+</ul>
+
+
+<p>Enjoy! Hope this helps any others learn some tips for developing in any of these technologies used!</p>
+]]></content>
+  </entry>
+  
+</feed>

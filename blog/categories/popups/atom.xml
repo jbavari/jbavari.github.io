@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: popups | Josh Bavari's Ramblings]]></title>
+  <link href="http://jbavari.github.io/blog/categories/popups/atom.xml" rel="self"/>
+  <link href="http://jbavari.github.io/"/>
+  <updated>2019-01-27T19:16:40-07:00</updated>
+  <id>http://jbavari.github.io/</id>
+  <author>
+    <name><![CDATA[Josh Bavari]]></name>
+    <email><![CDATA[jbavari@gmail.com]]></email>
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Handling AngularJS Popups for OAuth on Rails]]></title>
+    <link href="http://jbavari.github.io/blog/2014/06/04/handling-angularjs-popups-for-oauth/"/>
+    <updated>2014-06-04T22:56:00-06:00</updated>
+    <id>http://jbavari.github.io/blog/2014/06/04/handling-angularjs-popups-for-oauth</id>
+    <content type="html"><![CDATA[<p>I&rsquo;ve been using AngularJS a lot lately in some of my projects at work. It&rsquo;s been a great tool to use to help me solve challenging problems the nicest and cleanest way possible.</p>
+
+<p>I ran into needing some users to log into a variety of different social platforms. Since I was using Rails, I chose to use <a href="https://github.com/intridea/omniauth">omniauth</a> for <a href="https://github.com/mkdynamic/omniauth-facebook">facebook</a> and <a href="https://github.com/arunagw/omniauth-twitter">twitter</a>. It became even more challenging because they needed to login to these platforms with THEIR social application ID&rsquo;s, not ours.</p>
+
+<h2>The Problem</h2>
+
+<ul>
+<li>Need to have admin window where user clicks login button for facebook or twitter and logs in with their Facebook application (think Coke, Pepsi, etc)</li>
+<li>User then sees pop up window where OAuth login process happens</li>
+<li>After OAuth login complete, pop up window goes away and they resume their actions</li>
+</ul>
+
+
+<h2>The solution</h2>
+
+<h3>Solving dynamic twitter/facebook log ins for Social Platforms</h3>
+
+<p>I started by having this config in Rails for my omniauth initializer:</p>
+
+<p>``` rb
+SETUP_FACEBOOK = lambda do |env|</p>
+
+<pre><code>AccountAuth.setup_facebook_keys(env)
+</code></pre>
+
+<p>end</p>
+
+<p>SETUP_TWITTER = lambda do |env|</p>
+
+<pre><code>AccountAuth.setup_twitter_keys(env)
+</code></pre>
+
+<p>end</p>
+
+<p>Rails.application.config.middleware.use OmniAuth::Builder do</p>
+
+<pre><code>provider :twitter, :setup =&gt; SETUP_TWITTER
+provider :facebook, :setup =&gt; SETUP_FACEBOOK
+</code></pre>
+
+<p>end
+```</p>
+
+<p>Simple and clean. In those AccountAuth methods, I take the <code>env</code> variable (essential the request) and pick off my variables there from an OAuth URL (<a href="http://my.dashboard.dev/auth/facebook?appid=123456789">http://my.dashboard.dev/auth/facebook?appid=123456789</a>).</p>
+
+<h3>Solving the User pop up</h3>
+
+<p>I had a dashboard with a ton of user actions, as well as two well placed social log in buttons. View template like so:</p>
+
+<p>``` html</p>
+
+<div class="container" ng-controller="SettingsCtrl">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="header-copy">Account Settings</div>
+                <div class="section-title"></div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6">
+                <div class="header-copy">Facebook Settings</div>
+                <div class="divider"></div>
+
+                <div ng-show="facebookId">
+                    Currently ({{ facebookName}}) &nbsp;
+                    <span class="btn dash-subs" ng-click="logout('facebook')">Logout</span>
+                </div>
+                <div ng-hide="facebookId">
+                    <span class="btn dash-subs login-btn" ng-click="authNetwork('facebook')">Login With Facebook</span>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="header-copy">Twitter Settings</div>
+                <div class="divider"></div>
+                <div ng-show="twitterName">
+                    Currently (@{{twitterName}}) &nbsp;
+                    <span class="btn dash-subs" ng-click="logout('twitter')">Logout</span>
+                </div>
+                <div ng-hide="twitterName">
+                    <span class="btn dash-subs login-btn" ng-click="authNetwork('twitter')">Login With Twitter</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+<p>```</p>
+
+<p>Now on my SettingsCtrl, I had to respond to the authNetwork clicks in the template above to show my pop up window for the network specified, handle its settings, then update this controller. We get that link by setting a global variable on the <code>window</code> that opened by doing <code>window.$windowScope = $scope</code>.</p>
+
+<p>``` js
+angular.module(&lsquo;myApp&rsquo;, [&lsquo;ui.bootstrap&rsquo;]);</p>
+
+<p>function SettingsCtrl($scope, $http) {
+  //..snip!..
+   $scope.handlePopupAuthentication = function handlePopupAuthentication(network, account) {</p>
+
+<pre><code>  //Note: using $scope.$apply wrapping
+  //the window popup will call this 
+  //and is unwatched func 
+  //so we need to wrap
+  $scope.$apply(function(){
+     $scope.applyNetwork(network, account);
+  });
+</code></pre>
+
+<p>   }</p>
+
+<p>   $scope.authNetwork = function authNetwork(network) {</p>
+
+<pre><code>  var openUrl = '/auth/' + network + '?account_id=' + $scope.accountTokens['id'] + "&amp;eid=" + eventId;
+  window.$windowScope = $scope;
+  window.open(openUrl, "Authenticate Account", "width=500, height=500");
+</code></pre>
+
+<p>   };
+}
+```</p>
+
+<h3>Solving popup talking to AngularJS controller</h3>
+
+<p>Once the OAuth pop up that is being opened via <code>window.open</code> is completed, it will come back to our server (<a href="http://my.dashboard.dev/session/create">http://my.dashboard.dev/session/create</a>) in which I will render a view through Rails that will display a simple &lsquo;this window is closing&rsquo; message. It will also pass in some information from the Rails controller and pass back its completed information back to our calling AngularJS controller. (Thats a lot of controllers, folks)</p>
+
+<p>```</p>
+
+<p>This view will now self-destruct</p>
+
+
+<script>
+   try {
+      window.opener.$windowScope.handlePopupAuthentication('<%= @provider %>', <%= @account.to_json.html_safe %>);
+   } catch(err) {}
+   window.close();
+</script>
+
+
+<p>```</p>
+
+<h3>Conclusion</h3>
+
+<p>That&rsquo;s pretty much it. That is how I handled my popups reporting back to its calling AngularJS controller through OAuth on Rails. Hope this helps others out there trying to solve problems like these.</p>
+]]></content>
+  </entry>
+  
+</feed>

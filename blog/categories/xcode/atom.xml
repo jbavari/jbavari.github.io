@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: xcode | Josh Bavari's Ramblings]]></title>
+  <link href="http://jbavari.github.io/blog/categories/xcode/atom.xml" rel="self"/>
+  <link href="http://jbavari.github.io/"/>
+  <updated>2019-01-27T19:16:40-07:00</updated>
+  <id>http://jbavari.github.io/</id>
+  <author>
+    <name><![CDATA[Josh Bavari]]></name>
+    <email><![CDATA[jbavari@gmail.com]]></email>
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Automating Underlying Mobile Infrastructure With Grunt]]></title>
+    <link href="http://jbavari.github.io/blog/2013/12/02/automating-underlying-mobile-infrastructure-with-grunt/"/>
+    <updated>2013-12-02T19:15:00-07:00</updated>
+    <id>http://jbavari.github.io/blog/2013/12/02/automating-underlying-mobile-infrastructure-with-grunt</id>
+    <content type="html"><![CDATA[<p>I&rsquo;m obsessed with automating some of the tasks that I find myself repetitively doing. I don&rsquo;t know about you, but I hate doing the same thing over and over &ndash; it&rsquo;s boring and pointless</p>
+
+<p>I posted a little while ago regarding automation of phonegap build and deployments, see that <a href="/blog/2013/11/30/automating-phonegap-builds-with-grunt/">here</a>.</p>
+
+<h2>Why am I bothering with this?</h2>
+
+<p>Our mobile app is the core of what we do. As you may already well know, most mobile apps require an API server serving the application data. In this post, I&rsquo;d like to address automating the underlying infrastructure that supports the mobile app.</p>
+
+<h3>It&rsquo;s a two-fold win</h3>
+
+<p>The main reason is to help get the server stack up without doing all of the repetitive tasks. Getting the mobile infrastructure up can be a slight annoyance, especially when your task is to code.</p>
+
+<p>We have a designer that works on the mobile app styles, and he shouldn&rsquo;t need to know or care about the requirements of the app just to get to work.</p>
+
+<p>The second reason that I&rsquo;d want to automate the server stack is due to my frequently using <a href="http://people.apache.org/~pmuellr/weinre/docs/latest/">Weinre</a>. I use it a lot to debug either the iOS app or the Android app. Another thing to automate would be to get the weinre server up and have the script for it injected into my source references without having to manually do it.</p>
+
+<h3>What I&rsquo;d prefer we do..</h3>
+
+<p>I&rsquo;d like to just type simple commands&hellip; Something I can type to get my local dev servers up, or our designer can type that will get the whole stack and emulator running.</p>
+
+<p>For our designer, I&rsquo;d want &lsquo;grunt emulate&rsquo;. For myself, I&rsquo;d want &lsquo;grunt emulate &mdash;weinre=true &mdash;host=192.168.1.100&rsquo; &ndash; either of those commands would do the following:</p>
+
+<ul>
+<li>Boot up Rails server at a specified IP</li>
+<li>Boot up the weinre server at a specified IP (optionally)</li>
+<li>Preprocess the index.html file to have the weinre javascript source reference</li>
+<li>Adjust the app settings to be at the specified IP</li>
+<li>Execute the xcode build command for the iOS project</li>
+<li>Open the built app on the iOS Simulator</li>
+</ul>
+
+
+<h3>How to get there</h3>
+
+<p>To get some of the servers up and running, we need a grunt task that would invoke those processes and would continue running in the background while the other tasks continue running. For this, we&rsquo;ll need another Grunt plugin, called <a href="https://npmjs.org/package/grunt-bg-shell">Grunt bgShell</a></p>
+
+<p>First we&rsquo;ll define the background shell tasks in our grunt config file:</p>
+
+<p>``` javascript Grunt background shell configuration
+bgShell: {</p>
+
+<pre><code>weinre: {
+    cmd: 'weinre --httpPort 8080 --boundHost=' + ipAddress,
+    bg: true
+},
+rails: {
+    cmd: 'cd ../raisemore_web &amp;&amp; bundle install &amp;&amp; rails s -p 3000 -b ' + ipAddress
+}
+</code></pre>
+
+<p>}
+```</p>
+
+<p>That covers the servers. Now, for the xcode build and ios-simulator, we&rsquo;ll use the standard <a href="https://github.com/sindresorhus/grunt-shell">grunt shell</a> plugin to keep running in sync. To invoke the iOS simulator, we&rsquo;ll use the Node.js package from Phonegap called <a href="https://github.com/phonegap/ios-sim">ios-sim</a></p>
+
+<p>Before we can use ios-sim, we must invoke the npm installer for it, passing the -g flag for it to be globally installed.</p>
+
+<p><code>sh Installing ios-sim
+sudo npm install ios-sim -g
+</code></p>
+
+<p>Now let&rsquo;s configure the grunt shell tasks for xcode build and iphone simulation:</p>
+
+<p>``` javascript Grunt shell configuration for xcode build and ios-sim
+shell: {</p>
+
+<pre><code>xcodebuild: {
+    options: {
+      stdout: true
+    },
+    command: [ 
+        'cd ./ios', 
+        'xcodebuild -project RaiseMore.xcodeproj -sdk iphonesimulator7.0 -scheme RaiseMore -configuration Debug install DSTROOT=/tmp/RaiseMore' ].join("&amp;&amp;")
+},
+iphonesimulator: {
+    options: {
+        stdout: true
+    },
+    command: [ 
+        'ios-sim launch /tmp/RaiseMore/Applications/RaiseMore.app --sdk 5.0'
+    ].join("&amp;&amp;")
+}
+</code></pre>
+
+<p>}
+```</p>
+
+<p>That covers the configuration. Now we just need to have a grunt task that will handle all the preprocessing, start the servers, and then start the build process, and finally run the simulator with the newly built app.</p>
+
+<p>The preprocessing steps were covered in my previous post <a href="/blog/2013/11/30/automating-phonegap-builds-with-grunt/">here</a> and I&rsquo;ll leave the preprocessing configuration in that post.</p>
+
+<p>All that is left now is to define the grunt tasks, as such:</p>
+
+<p>``` javascript Grunt task definition
+//Main task for our designer
+grunt.registerTask(&lsquo;emulator&rsquo;, [&lsquo;env:dev&rsquo;, &lsquo;preprocess:dev&rsquo;, &lsquo;bgShell:weinre&rsquo;, &lsquo;bgShell:rails&rsquo;, &lsquo;shell:xcodebuild&rsquo;, &lsquo;shell:iphonesimulator&rsquo;]);</p>
+
+<p>//Main task I&rsquo;ll probably use, via &lsquo;grunt servers &mdash;weinre=true &mdash;host=192.168.1.100&rsquo;
+grunt.registerTask(&lsquo;servers&rsquo;, [&lsquo;bgShell:weinre&rsquo;, &lsquo;bgShell:rails&rsquo;])
+```</p>
+
+<h3>Using the task</h3>
+
+<p>To just boot up the servers, do this:</p>
+
+<p><code>sh Invoking the grunt server task
+grunt servers
+</code></p>
+
+<p>If you want the servers and the simulator, do this:</p>
+
+<p><code>sh Invoking the grunt emulator task
+grunt emulator
+</code></p>
+
+<p>I know these methods aren&rsquo;t perfect, as there are a few areas I&rsquo;d like to improve on. I&rsquo;d like to have bgShell track the processes to kill them if the task is stopped, or instead to have them ignored if they are already running.</p>
+
+<p>I guess that work will have to be addressed later. Cheers.</p>
+]]></content>
+  </entry>
+  
+</feed>

@@ -1,0 +1,476 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: cli | Josh Bavari's Ramblings]]></title>
+  <link href="http://jbavari.github.io/blog/categories/cli/atom.xml" rel="self"/>
+  <link href="http://jbavari.github.io/"/>
+  <updated>2019-01-27T19:16:40-07:00</updated>
+  <id>http://jbavari.github.io/</id>
+  <author>
+    <name><![CDATA[Josh Bavari]]></name>
+    <email><![CDATA[jbavari@gmail.com]]></email>
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[The Scoreboard Project]]></title>
+    <link href="http://jbavari.github.io/blog/2015/12/04/the-scoreboard-project/"/>
+    <updated>2015-12-04T17:22:00-07:00</updated>
+    <id>http://jbavari.github.io/blog/2015/12/04/the-scoreboard-project</id>
+    <content type="html"><![CDATA[<p>Lately I&rsquo;ve been wanting to dig more into some technologies I&rsquo;ve been wanting to explore and gain more experience. Not only this, but I wanted to make sure my dev workflow was still improving, my tools were getting sharpened, and I was re-establishing the best practices as much as I could.</p>
+
+<p>Those specific technologies I wanted to dig into was:</p>
+
+<ul>
+<li>Building a CLI in Ruby, using <a href="https://github.com/erikhuda/thor">Thor</a></li>
+<li>A <a href="http://sinatrarb.com">Sinatra</a> Modular API</li>
+<li>Solifying <a href="https://github.com/jeremyevans/sequel">Sequel</a> Model usage and JSON serialization</li>
+<li>Building a dashboard using <a href="https://github.com/Shopify/dashing">Dashing</a></li>
+<li>Diving more into <a href="https://github.com/bbatsov/rubocop">Rubocop</a> for Ruby static code analysis</li>
+<li>Automated Code Review using <a href="http://codeclimate.com">CodeClimate</a></li>
+</ul>
+
+
+<p>I found a way to connect all the dots in what I&rsquo;m calling the scoreboard project. I chose these technologies because it would let me shine up my ruby/sql skills without a framework carrying me the way. (Although they mostly did anyway!)</p>
+
+<p>This blog post will go over the idea of making an API around scoreboards. There will be a simple CLI tool to gather scores on &lsquo;games&rsquo;. Those scores will be sent to the API, to store in Postgres. The dashboard project will then pull these values from postgres and display them in an easy to view manner.</p>
+
+<h2>This post</h2>
+
+<p>With this post, i&rsquo;ll go over the individual pieces of the project, the interesting tidbits of each one, and finally go over a short retrospective over the entire project.</p>
+
+<p>In entire time, the project took about a day and a half. It was fun, and I really enjoyed the experience over all.</p>
+
+<h2>The pieces</h2>
+
+<ul>
+<li><a href="https://github.com/jbavari/scoreboard-cli">Scoreboard CLI</a></li>
+<li><a href="https://github.com/jbavari/scoreboard-api">Scoreboard API</a></li>
+<li><a href="https://github.com/jbavari/scoreboard-dashboard">Scoreboard Dashboard</a></li>
+<li>Scoreboard Mobile App (coming soon)</li>
+</ul>
+
+
+<p>All of the projects are listed on my github profile. I&rsquo;ve been trying to keep most issues in the github repo&rsquo;s issue page for each respective project.</p>
+
+<p>All of the projects are checked by CodeClimate, and I&rsquo;ve been trying to keep up with rubocop&rsquo;s rules on these as I go.</p>
+
+<h2>Scoreboard CLI</h2>
+
+<p>The idea for the CLI was to prompt the user for a home team and visitor team, then collect data about getting a touch down for the home team, for example: <code>h:td</code>.</p>
+
+<p>It would keep prompting for more scoring plays until the user gives a SIGTERM or hits CTRL+D.</p>
+
+<p>First I started by reading up on Thor, which was an absolute pleasure to work with. You can download it via <code>gem install scoreboard</code>.</p>
+
+<p>To make it available via command line, I added this:</p>
+
+<p><code>ruby
+  spec.bindir        = "bin"
+  spec.executables   = spec.files.grep(%r{^bin/}) { |f| File.basename(f) }
+</code></p>
+
+<p>Then in <code>bin/scoreboard</code> <a href="https://github.com/jbavari/scoreboard-cli/blob/master/bin/scoreboard">link</a>, we just require in our CLI and run it with the arguments:</p>
+
+<p>``` ruby</p>
+
+<h1>!/usr/bin/env ruby</h1>
+
+<p>require_relative &ldquo;../lib/scoreboard/cli&rdquo;</p>
+
+<p>begin
+  cli = Scoreboard::Cli.new
+  cli.start(ARGV)
+rescue => e
+  raise e if $DEBUG
+  STDERR.puts e.message
+  STDERR.puts e.backtrace.join(&ldquo;\n&rdquo;)
+  exit 1
+end
+```</p>
+
+<h3>A note on the SIGTERM exception handling</h3>
+
+<p>If you see in my <code>STDIN.each_line</code> loop where I read in scoring entries, <a href="https://github.com/jbavari/scoreboard-cli/blob/master/lib/scoreboard/cli.rb#L47">you will see</a> I rescue all Exception. This could be improved to find the exact SIGTERM exception is being thrown, but for simplicity, I left it catching the general exception.</p>
+
+<h2>Scoreboard API</h2>
+
+<p>The API has a few paths, based on the <code>/api/v1</code> namespace for requests.</p>
+
+<p>You can access its teams or the entire scoreboard, via <code>GET /api/v1/teams</code> or <code>GET /api/v1/scores</code>. You can see the core <a href="https://github.com/jbavari/scoreboard-api/blob/master/application.rb">Sinatra Application</a> on github.</p>
+
+<p>It was absolutely easy to set up the <a href="https://github.com/jbavari/scoreboard-api/tree/master/migrations">Sequel migrations</a> to define the team table and the scoreboard table in postgres.</p>
+
+<p>The main tying point was getting the Sequel models to serialize, which was solved in another blog post.</p>
+
+<h2>Scoreboard Dashboard</h2>
+
+<p>Dashing was really easy to get started, a project set up, and out the gate.</p>
+
+<p>First I had to include Sequel to get me my data, which I included an <code>Api</code> model to ease the SQL bridge for me.</p>
+
+<p>The main point here was the <code>scoreboard.rb</code> file which was scheduled to run every 5 seconds, gather data from some crafty queries, and send that data to the dashboard. Other than the HTML markup, this was the chunky part of it:</p>
+
+<p>``` ruby
+require &lsquo;sequel&rsquo;</p>
+
+<p>DB = Sequel.connect(&lsquo;postgres://localhost/scoreboard&rsquo;)
+scoreboard = DB[:scoreboard]
+team = DB[:team]</p>
+
+<p>send_event(&lsquo;games-played&rsquo;, { value: scoreboard.count })</p>
+
+<p>def teams_played
+  DB[&lt;&lt;-eos</p>
+
+<pre><code>  select
+    sum(value)::int as value,
+    label
+  from (
+    select count(home_id) as value, name as label from team inner join scoreboard on team.id = scoreboard.home_id group by scoreboard.home_id, team.name
+
+    UNION ALL
+
+    select count(visitor_id) as value, name as label from team inner join scoreboard on team.id = scoreboard.visitor_id group by scoreboard.visitor_id, team.name
+  ) sub
+  group by value, label
+  order by value desc
+eos
+</code></pre>
+
+<p>  ]</p>
+
+<p>end</p>
+
+<p>def team_scoreboard
+  DB[&lt;&lt;-eos</p>
+
+<pre><code>  select 
+    s.id,
+    t.name as home_team, 
+    t2.name as visitor_team, 
+    home_score, 
+    visitor_score 
+  from team t 
+  inner join scoreboard s on s.home_id = t.id 
+  inner join team t2 on t2.id = s.visitor_id
+  limit 10;
+eos
+</code></pre>
+
+<p>  ]
+end</p>
+
+<p>SCHEDULER.every &lsquo;5s&rsquo; do
+  teams = teams_played.map do |item|</p>
+
+<pre><code>{:label =&gt; item[:label], :value =&gt; item[:value]}
+</code></pre>
+
+<p>  end
+  send_event(&lsquo;games-played&rsquo;, { value: scoreboard.count })
+  send_event(&lsquo;teams&rsquo;, { items: teams })
+  puts &ldquo;Scoreboard: #{team_scoreboard.to_a}&rdquo;</p>
+
+<p>  send_event(&lsquo;scoreboard&rsquo;, { items: team_scoreboard.to_a })
+end
+```</p>
+
+<h1>Retrospective</h1>
+
+<ul>
+<li>What went right</li>
+<li>What went wrong</li>
+<li>What could be improved</li>
+</ul>
+
+
+<h2>What went right</h2>
+
+<ul>
+<li>The CLI came together smoothly. Thor was easy to get running.</li>
+<li>Getting data to post to the API was a breeze</li>
+<li>Sinatra and Sequel were easy to hoist up a simple API to take POST data and serve GET requests as JSON</li>
+<li>Getting data into the dashboard was SUPER easy with Sequel, no need to do the ORM dance</li>
+<li>Dashing was easy to create my own scoreboard component, using the <code>data-</code> type DOM attributes</li>
+</ul>
+
+
+<h2>What went wrong</h2>
+
+<ul>
+<li>Had some issues handling SIGTERM in CLI</li>
+<li>CLI still doesnt validate input</li>
+<li>API for Sinatra was a little difficult to get JSON serialization off the bat</li>
+<li>Dashing is very &lsquo;opinionated&rsquo; and doesnt give you more room to fit into an existing app</li>
+<li>No tests were made</li>
+<li>Nothing is deployed to servers yet</li>
+</ul>
+
+
+<h2>What could be improved</h2>
+
+<ul>
+<li>Minitest suite for CLI, API, and the Dashboard</li>
+<li>Dashboard process tasks could be broken out to be more DRY</li>
+<li>CLI needs to check and validate input</li>
+<li>API needs to add in rollbar, new relic, or other metrics to help find errors</li>
+<li>Deploy all the things!</li>
+</ul>
+
+
+<h1>Future plans</h1>
+
+<p>The plan is to keep working on this project and continue improving tooling and getting other best practices in place. Finally, ship it to digital ocean and enjoy the conveniences they provide.</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Ionic 2.0 Generators - Services]]></title>
+    <link href="http://jbavari.github.io/blog/2015/11/06/ionic-2-dot-0-generators-services/"/>
+    <updated>2015-11-06T01:23:00-07:00</updated>
+    <id>http://jbavari.github.io/blog/2015/11/06/ionic-2-dot-0-generators-services</id>
+    <content type="html"><![CDATA[<p>This is the second post in a series covering the new Ionic Generators in Ionic 2.0. In the <a href="http://jbavari.github.io/blog/2015/11/05/using-ionic-2-dot-0-generators/">first post</a>, we discussed generating pages, let&rsquo;s focus now on generating some services to consume some JSON data via an http request.</p>
+
+<h2>Get the tools</h2>
+
+<p>Run this to get started:</p>
+
+<p><code>bash Install Ionic CLI and start an Ionic application
+npm install -g ionic@alpha
+ionic start MyIonic2App tabs --v2
+cd MyIonic2App
+</code></p>
+
+<h2>Generate the service</h2>
+
+<p><code>ionic g injectable MyDataService</code></p>
+
+<p>You should see the service:</p>
+
+<p><code>bash Run generate command
+~/Development/testing/MyIonic2App$ ionic g injectable MyDataService
+√ Create www/app/my-data-service/my-data-service.js
+</code></p>
+
+<p>The basic blueprint of the generated service is as follows:</p>
+
+<p>``` javascript Generated Data Service
+import {Injectable} from &lsquo;angular2/angular2&rsquo;;
+import {Http} from &lsquo;angular2/http&rsquo;;</p>
+
+<p>@Injectable()
+export class MyDataService {
+  constructor(<a href="http:">http:</a> Http) {</p>
+
+<pre><code>this.http = http;
+this.data = null;
+</code></pre>
+
+<p>  }</p>
+
+<p>  retrieveData() {</p>
+
+<pre><code>//Here, we're going to get a JSON data file, use the `map` call to parse json
+// and finally subscribe to the observable and set our data
+//to the value it provides once the http request is complete.
+this.http.get('path/to/data.json')
+  .map(res =&gt; res.json())
+  .subscribe(data =&gt; {
+    this.data = data;
+  }, error =&gt; {
+    console.log('Error with http.get: ', error);
+  });
+</code></pre>
+
+<p>  }
+}</p>
+
+<p>```</p>
+
+<h2>Wiring it in to be used</h2>
+
+<p>Adjust <code>www/app/app.js</code> to import the data service, as well as provide it for all of its components:</p>
+
+<p>```js www/app/app.js
+import {MyDataService} from &lsquo;./my-data-service/my-data-service&rsquo;;</p>
+
+<p>@App({
+  template: &lsquo;&lt;ion-nav [root]=&ldquo;root&rdquo;>&lt;/ion-nav>&rsquo;,
+  providers: [Friends, MyDataService]
+})
+```</p>
+
+<h2>Use the service</h2>
+
+<p>We&rsquo;ll use the tabs starter dashboard page to pull data.</p>
+
+<p>Let&rsquo;s modify <code>www/app/dash/dash.ts</code> &ndash; adding an import for <code>MyDataService</code>, adding <code>MyDataService</code> to the constructore as an injected dependency, and finally adding the call to <code>retrieveData</code> in the constructore method.</p>
+
+<p>``` js www/app/dash/dash.ts
+import {Page, NavController, ViewController} from &lsquo;ionic/ionic&rsquo;;
+import {MyDataService} from &lsquo;../my-data-service/my-data-service&rsquo;;
+import {About} from &lsquo;../about/about&rsquo;;</p>
+
+<p>@Page({
+  templateUrl: &lsquo;app/dash/dash.html&rsquo;,
+})
+export class Dash {
+  constructor(nav: NavController, view: ViewController, data: MyDataService) {</p>
+
+<pre><code>this.nav = nav;
+this.view = view;
+data.retrieveData();
+</code></pre>
+
+<p>  }</p>
+
+<p>  goToAboutPage() {</p>
+
+<pre><code>this.nav.push(About);
+</code></pre>
+
+<p>  }</p>
+
+<p>}
+```</p>
+
+<h2>Additional information</h2>
+
+<p>If you&rsquo;ve used Angular 1, you&rsquo;re probably familiar with promises to return your data from http requests.</p>
+
+<p>Under the hood of Angular 2 lies <a href="https://github.com/Reactive-Extensions/RxJS">RxJs</a> that builds on promises, focusing on being repeatable.</p>
+
+<p>Enjoy!</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Using Ionic 2.0 Generators]]></title>
+    <link href="http://jbavari.github.io/blog/2015/11/05/using-ionic-2-dot-0-generators/"/>
+    <updated>2015-11-05T21:49:00-07:00</updated>
+    <id>http://jbavari.github.io/blog/2015/11/05/using-ionic-2-dot-0-generators</id>
+    <content type="html"><![CDATA[<p>At the time of writing this, Ionic 2.0 is still in alpha.</p>
+
+<p>Ionic 2.0 builds on a ton of new technologies, such as Angular v2, TypeScript (with decorators), and ES6. If you&rsquo;ve never dabbled in these technologies, you can use the generators available in the <a href="http://npmjs.org/package/ionic"><code>ionic-cli</code></a> to get ramped up quickly!</p>
+
+<h2>Getting started</h2>
+
+<p>First, install the <code>alpha</code> version of the Ionic CLI: <code>npm install -g ionic@alpha</code>, currently version 2.0.0-alpha.19.</p>
+
+<p>Start an app with the tabs template: <code>ionic start MyIonic2App tabs --v2</code>.</p>
+
+<p>Change directories and serve the app in the browser: <code>cd MyIonic2App &amp;&amp; ionic serve</code>.</p>
+
+<p>You&rsquo;ll see, we&rsquo;ve got a basic tabs starter now avilable at <code>MyIonic2App</code> directory.</p>
+
+<h2>Generating a few pages</h2>
+
+<p>Let&rsquo;s say we want to link to a new page, &lsquo;About&rsquo;, from one of the tabs. First, let&rsquo;s generate our page with this command: <code>ionic generate page About</code>. NOTE: You can also use the generate alias, <code>ionic g</code>.</p>
+
+<p>You&rsquo;ll see a few files added:</p>
+
+<p><code>bash
+~/Development/testing/MyIonic2App$ ionic g page About
+√ Create www/app/about/about.html
+√ Create www/app/about/about.js
+√ Create www/app/about/about.scss
+</code></p>
+
+<h2>Adding link on view to the About page</h2>
+
+<p>Let&rsquo;s add the link to the main tab page in <code>www/app/dash/dash.html</code>, via the <code>(click)</code> handler on an anchor, like so:</p>
+
+<p>```
+&lt;ion-card>
+  &lt;ion-card-header></p>
+
+<pre><code>Go to about page
+</code></pre>
+
+<p>  &lt;/ion-card-header>
+  &lt;ion-card-content></p>
+
+<pre><code>&lt;button (click)="goToAboutPage()"&gt;About this&lt;/button&gt;
+</code></pre>
+
+<p>  &lt;/ion-card-content>
+&lt;/ion-card>
+```</p>
+
+<h2>Navigating to the page</h2>
+
+<p>Modify the Dashboard TypeScript file (<code>www/app/dash/dash.ts</code>) to import our new about page, add the click event handler, and push the page on the nav controller, all like so:</p>
+
+<p>```js
+import {Page, NavController} from &lsquo;ionic/ionic&rsquo;;
+import {About} from &lsquo;../about/about&rsquo;;</p>
+
+<p>@Page({
+  templateUrl: &lsquo;app/dash/dash.html&rsquo;,
+})
+export class Dash {
+  constructor(nav: NavController, view: ViewController) {</p>
+
+<pre><code>this.nav = nav;
+this.view = view;
+</code></pre>
+
+<p>  }</p>
+
+<p>  goToAboutPage() {</p>
+
+<pre><code>this.nav.push(About);
+</code></pre>
+
+<p>  }</p>
+
+<p>}
+```</p>
+
+<h2>Try it out!</h2>
+
+<p>Look in your browser, you should have an anchor available to click/tap that will then navigate you to the About page, fresh for you to get working!</p>
+
+<p>Here&rsquo;s a GIF of what it looks like:</p>
+
+<p><img class="[pic]" src="/images/IonicV2Generators.gif" title="[250] [250] [Ionic 2.0- Page generator example]" ></p>
+
+<p>I&rsquo;d like to also note, Ionic 2 is much smoother than a GIF would allow.</p>
+
+<h2>Wiring up sass</h2>
+
+<p>If you want to use the custom sass styles on the about page, first wire in the <code>about.scss</code> page in your <code>www/app/app.scss</code> sass file, like so: <code>@import 'about/about';</code>.</p>
+
+<h2>A quick note on naming conventions</h2>
+
+<p>For Ionic 2.0, we&rsquo;ve contributed to a <a href="https://en.wikipedia.org/wiki/Naming_convention_%28programming%29#Multiple-word_identifiers">naming convention</a> of kabob-casing for file names (my-about-page.html) and css classes (.my-about-page), and using PascalCasing for JavaScript classes in ES6 / TypeScript (MyAboutPage).</p>
+
+<h2>Other generators</h2>
+
+<p>Check out all the generators available: <code>ionic g --list</code></p>
+
+<p><code>bash
+~/Development/testing/MyIonic2App$ ionic g --list
+Available generators:
+ * component
+ * directive
+ * injectable
+ * page
+ * page-login
+ * page-sidemenu
+ * page-signup
+ * pipe
+ * tabs
+</code></p>
+
+<h1>Final words</h1>
+
+<p>We hope you find the generators help you get started with ramping up quickly and building some awesome Ionic applications! Enjoy.</p>
+
+<p>We&rsquo;d love your feedback, drop us a line at <a href="https://github.com/driftyco/ionic2/issues">Ionic v2 Github Issues</a>.</p>
+]]></content>
+  </entry>
+  
+</feed>

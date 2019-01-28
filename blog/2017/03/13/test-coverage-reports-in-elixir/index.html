@@ -1,0 +1,341 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Test Coverage Reports in Elixir - Josh Bavari's Ramblings</title>
+  <meta name="author" content="Josh Bavari">
+
+  
+  <meta name="description" content="Lately I&rsquo;ve been learning a ton more about Elixir and really working towards refactoring and hardening the system. On my current project, I& &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://jbavari.github.io/blog/2017/03/13/test-coverage-reports-in-elixir">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="Josh Bavari's Ramblings" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">Josh Bavari's Ramblings</a></h1>
+  
+    <h2>tech babbles on Ruby, Javascript, Rails, Phonegap/Cordova, Grunt, and more</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:jbavari.github.io" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+  <li><a href="/about">About</a></li>
+  <li><a href="/speaking">Speaking</a></li>
+  <li><a href="/knowledge">Knowledge</a></li>
+  <li><a href="/about/resume">Resume</a></li>
+  <li><a href="/cv">C.V.</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Test Coverage Reports in Elixir</h1>
+    
+    
+      <p class="meta">
+        <span class="reading-time">about a 2 minute read</span>
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2017-03-13T18:38:00-06:00" pubdate data-updated="true">Mar 13<span>th</span>, 2017</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>Lately I&rsquo;ve been learning a ton more about Elixir and really working towards refactoring and hardening the system.</p>
+
+<p>On my current project, I&rsquo;ve got about 200 tests that exercise various parts of the system. Lately though, I&rsquo;ve been trying to analyze which parts of the system aren&rsquo;t being covered, and of course, theres tools to help with that.</p>
+
+<p>The two I looked at were <a href="https://github.com/parroty/excoveralls">Coveralls</a> and <a href="https://github.com/alfert/coverex">Coverex</a>. I&rsquo;m going to be using <code>coverex</code> in this post.</p>
+
+<p>Getting started is a breeze, check the readme for that. I&rsquo;ll cover it briefly for a bit here, my modifying our <code>mix.exs</code> file:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='elixir'><span class='line'>  <span class="c1"># in `def project`, we add test_coverage</span>
+</span><span class='line'>  <span class="ss">test_coverage:</span> <span class="p">[</span>
+</span><span class='line'>    <span class="ss">tool:</span> <span class="no">Coverex</span><span class="o">.</span><span class="no">Task</span>
+</span><span class='line'>  <span class="p">],</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="c1"># in deps, add the depedency for only test environment</span>
+</span><span class='line'>  <span class="p">{</span><span class="ss">:coverex</span><span class="p">,</span> <span class="s2">&quot;~&gt; 1.4.10&quot;</span><span class="p">,</span> <span class="ss">only:</span> <span class="ss">:test</span><span class="p">},</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>After setup, running <code>mix test --cover</code> generates some reports in your projects <code>./cover</code> folder &ndash; with <code>functions.html</code> and <code>modules.html</code>. These give you your standard coverage reports with lines covered / ratio covered.</p>
+
+<p>For my project, I had quite a bit of generated files using <a href="https://github.com/bitwalker/exprotobuf">exprotobuf</a>. The coverage report was getting butchered from not using these many files in my tests.</p>
+
+<p>According to the docs, we can add a keyword for <code>ignore_modules</code> in the keyword list <code>test_coverage</code> and the coverage reports will ignore those modules.</p>
+
+<p>However, for my generated list of modules, I had quite the growing list to ignore and it quickly became unwieldy to put that list of modules in my <code>mix.exs</code> file.</p>
+
+<p>Since we can&rsquo;t access other modules from our mix file, I had a quick solution. I created a <code>.coverignore</code> file in the project directory, lumped in all the modules I wanted to ignore (from the <code>modules.html</code> generated file) and put them all in the <code>.coverignore</code> file.</p>
+
+<p>I ensured all the modules I wanted to ignore were all newline delimited (<code>\n</code>).</p>
+
+<p>From there, I modified my <code>mix.exs</code> file as such:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='elixir'><span class='line'>  <span class="c1"># Near the top</span>
+</span><span class='line'>  <span class="nv">@ignore_modules</span> <span class="no">File</span><span class="o">.</span><span class="n">read!</span><span class="p">(</span><span class="s2">&quot;./.coverignore&quot;</span><span class="p">)</span> <span class="o">|&gt;</span> <span class="no">String</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;\n&quot;</span><span class="p">)</span> <span class="o">|&gt;</span> <span class="no">Enum</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="err">&amp;</span><span class="p">(</span><span class="no">String</span><span class="o">.</span><span class="n">to_atom</span><span class="p">(</span><span class="nv">&amp;1</span><span class="p">)))</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="c1"># in def project</span>
+</span><span class='line'>  <span class="ss">test_coverage:</span> <span class="p">[</span>
+</span><span class='line'>    <span class="ss">tool:</span> <span class="no">Coverex</span><span class="o">.</span><span class="no">Task</span><span class="p">,</span>
+</span><span class='line'>    <span class="ss">ignore_modules:</span> <span class="nv">@ignore_modules</span>
+</span><span class='line'>  <span class="p">],</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Boom, that does it! Now we&rsquo;ve got a manageable list of modules to ignore in a separate file so we can keep our mix file clean.</p>
+
+<p>All in all, <code>coverex</code> is a great module, and I would suggest using it if you do not want to ship data to coveralls.</p>
+
+<p>Hope this helps, happy coding. Cheers!</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Josh Bavari</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2017-03-13T18:38:00-06:00" pubdate data-updated="true">Mar 13<span>th</span>, 2017</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/cover/'>cover</a>, <a class='category' href='/blog/categories/elixir/'>elixir</a>, <a class='category' href='/blog/categories/test/'>test</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://jbavari.github.io/blog/2017/03/13/test-coverage-reports-in-elixir/" data-via="jbavari" data-counturl="http://jbavari.github.io/blog/2017/03/13/test-coverage-reports-in-elixir/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2016/12/29/multicast-service-discovery-in-electron/" title="Previous Post: Multicast Service Discovery in Electron">&laquo; Multicast Service Discovery in Electron</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2017/04/16/puppet-a-testing-handbook/" title="Next Post: Puppet: A Testing Handbook">Puppet: A Testing Handbook &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2017/04/16/puppet-a-testing-handbook/">Puppet: A Testing Handbook</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2017/03/13/test-coverage-reports-in-elixir/">Test Coverage Reports in Elixir</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/12/29/multicast-service-discovery-in-electron/">Multicast Service Discovery in Electron</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/03/11/using-erlang-observer-on-a-remote-elixir-server/">Using Erlang Observer on a Remote Elixir Server</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/01/24/custom-json-encoding-in-phoenix/">Custom JSON Encoding in Phoenix</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/jbavari">@jbavari</a> on GitHub
+  
+  <script type="text/javascript">
+    $(document).ready(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'jbavari',
+            count: 0,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2019 - Josh Bavari -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+  <script src="//static.getclicky.com/js" type="text/javascript"></script>
+  <script type="text/javascript">try{ clicky.init(100896582); }catch(e){}</script>
+  <noscript><p><img alt="Clicky" width="1" height="1" src="//in.getclicky.com/100896582ns.gif" /></p></noscript>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'joshbavari';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://jbavari.github.io/blog/2017/03/13/test-coverage-reports-in-elixir/';
+        var disqus_url = 'http://jbavari.github.io/blog/2017/03/13/test-coverage-reports-in-elixir/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

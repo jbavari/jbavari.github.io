@@ -1,0 +1,392 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: testflight | Josh Bavari's Ramblings]]></title>
+  <link href="http://jbavari.github.io/blog/categories/testflight/atom.xml" rel="self"/>
+  <link href="http://jbavari.github.io/"/>
+  <updated>2019-01-27T19:16:40-07:00</updated>
+  <id>http://jbavari.github.io/</id>
+  <author>
+    <name><![CDATA[Josh Bavari]]></name>
+    <email><![CDATA[jbavari@gmail.com]]></email>
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Automating Phonegap Builds with Grunt]]></title>
+    <link href="http://jbavari.github.io/blog/2013/11/30/automating-phonegap-builds-with-grunt/"/>
+    <updated>2013-11-30T21:36:00-07:00</updated>
+    <id>http://jbavari.github.io/blog/2013/11/30/automating-phonegap-builds-with-grunt</id>
+    <content type="html"><![CDATA[<p>One big thorn in my side lately has been getting our Phonegap/Cordova builds out to our team in a timely manner or just getting our mobile app environment set up. Currently our process involves changing a few files up, running some command line prompts, and then hitting a few different IDE&rsquo;s to crank out builds to manually upload to Testflight (www.testflightapp.com).</p>
+
+<h3>What usually happens</h3>
+
+<p>&ldquo;Hey can we please get a new build out to test with?&rdquo; &ndash; DataChomp<br/>
+&ldquo;Yea, give me a few minutes to get the build out.&rdquo; &ndash; DevDweeb<br/>
+&ldquo;Ok, lemme know when&rdquo; &ndash; DataChomp<br/>
+&mdash;30 minutes later&mdash;<br/>
+&ldquo;Hows that build coming?&rdquo; &ndash; DataChomp<br/>
+&ldquo;Oh man.. not sure.. something messed up along the way. It&rsquo;ll be a bit more&rdquo; &ndash; DevDweeb<br/>
+&mdash;waits a bit more&mdash;-<br/>
+&ldquo;Nevermind. I figured it out.&rdquo; &ndash; DataChomp<br/>
+&ldquo;Ok whew, cuz it will be a bit more&rdquo; &ndash; DevDweeb</p>
+
+<h3>What I wish would happen</h3>
+
+<p>&ldquo;Hey can we please get a new build out to test with?&rdquo; &ndash; DataChomp<br/>
+&ldquo;That was done an hour ago, sir&rdquo; &ndash; Jenkins</p>
+
+<h3>What is the prob, bob</h3>
+
+<p>It&rsquo;s the process. Here&rsquo;s what a human would typically go through for the project:</p>
+
+<p>1) Point the build at the correct API end point (localhost/stage/production)<br/>
+2) Ensure the HTML has the script for weinre remote debugging (may need to be commented out if not needed)<br/>
+3) Open XCode &ndash; build the ios project<br/>
+4) Take the build from the project &ndash; upload to Testflight<br/>
+5) Open Eclipse &ndash; build the android project<br/>
+6) Take the build from the android project &ndash; upload to Testflight</p>
+
+<p>That is a predictable set of steps for a human, but as we all know, humans are prone to make errors. I know I do.</p>
+
+<p>The answer, then, is I didn&rsquo;t know how bad ass Grunt was and has so many plugins to assist with automation as I do now.</p>
+
+<p>Luckily for me, I found a great post from Jim at imgur, from his post here: <a href="http://imgur.com/blog/2013/07/16/tech-tuesday-using-grunt-to-simplify-deployment-processes/">http://imgur.com/blog/2013/07/16/tech-tuesday-using-grunt-to-simplify-deployment-processes/</a></p>
+
+<p>I&rsquo;m going to dive in to some ways I&rsquo;ve put together some grunt tasks to accomplish the above tasks.</p>
+
+<h2>Introducing Grunt Task Runner</h2>
+
+<p>Grunt is a javascript task runner. Learn more at <a href="http://gruntjs.com/">http://gruntjs.com/</a></p>
+
+<p>The reason I like using it &ndash; the config for grunt is in javascript, grunt is lightweight, grunt has very little requirements, and you can get started with a ton of plug-ins available.</p>
+
+<p>I plan on looking at Jenkins to integrate some of these tasks on check-ins for auto or nightly builds. See this post for an idea: <a href="http://sideroad.secret.jp/articles/grunt-on-jenkins/">http://sideroad.secret.jp/articles/grunt-on-jenkins/</a></p>
+
+<h3>A few plug-ins I&rsquo;m using so far:</h3>
+
+<p>Grunt Shell &ndash; <a href="https://github.com/sindresorhus/grunt-shell">https://github.com/sindresorhus/grunt-shell</a>
+This plugin gives you some shell commands to easily fire off shell commands such as xcodebuild, or even fire up a weinre server.</p>
+
+<p>Grunt preprocess &ndash; <a href="https://github.com/jsoverson/grunt-preprocess">https://github.com/jsoverson/grunt-preprocess</a>
+Great tool to combine template files with environment settings to preprocess HTML/Javascript files to drop in IPs or other settings you specify</p>
+
+<p>Grunt env &ndash; <a href="https://github.com/jsoverson/grunt-env">https://github.com/jsoverson/grunt-env</a>
+Grunt tasks to automate environment configuration for future tasks.</p>
+
+<h2>Removing the human element for app settings</h2>
+
+<p>The human must first place the proper host or ip address in place based on where the build may desire to be pointed at as well as whether or not they want Weinre remote debugging (Read about weinre here: <a href="http://people.apache.org/~pmuellr/weinre/docs/latest/">http://people.apache.org/~pmuellr/weinre/docs/latest/</a>).</p>
+
+<p>The host/ip address is stored in the appsettings.js file and the weinre remote debugging IP is stored in the index.html page.</p>
+
+<p>First I specified the files that would be preprocessed in the grunt config file. In this case, I specified both appsettings.js and index.html located in a template directory being processed to another location relative from the gruntfile.</p>
+
+<p>``` javascript Grunt preprocess settings
+preprocess: {
+  dev: {</p>
+
+<pre><code>files : {
+  './appsettings.js': '../tmpl/appsettings.js',
+  '../index.html': '../tmpl/index.html'
+}
+</code></pre>
+
+<p>  },
+  prod: {</p>
+
+<pre><code>files: {
+  './appsettings.js': '../tmpl/appsettings.js',
+  '../index.html': '../tmpl/index.html'
+}
+</code></pre>
+
+<p>  },
+  stage: {</p>
+
+<pre><code>files : {
+  './appsettings.js': '../tmpl/appsettings.js',
+  '../index.html': '../tmpl/index.html'
+}
+</code></pre>
+
+<p>  }
+}
+```</p>
+
+<p>Then I specified the ENV settings in the grunt config:</p>
+
+<p>``` javascript Grunt env settings
+env: {
+  dev: {</p>
+
+<pre><code>  NODE_ENV: 'DEVELOPMENT',
+  IP_ADDRESS: ipAddress
+</code></pre>
+
+<p>  },
+  prod : {</p>
+
+<pre><code>  NODE_ENV: 'PRODUCTION'
+</code></pre>
+
+<p>  },
+  stage: {</p>
+
+<pre><code>NODE_ENV: 'STAGE'
+</code></pre>
+
+<p>  }
+}
+```</p>
+
+<p>You&rsquo;ll notice above, I assigned an ENV variable IP_ADDRESS to a variable ipAddress, which I&rsquo;ve specified for Grunt as an option that is passed in via command line. That looked something like this snip:</p>
+
+<p>``` javascript Grunt option for command line parameters
+module.exports = function(grunt) {
+  var ipAddress = grunt.option(&lsquo;host&rsquo;) || &lsquo;localhost&rsquo;;
+  // Project configuration.
+  grunt.initConfig({</p>
+
+<pre><code>preprocess: {
+  dev: {
+    files : {
+      './appsettings.js': '../tmpl/appsettings.js',
+      '../index.html': '../tmpl/index.html'
+    }
+  }
+},
+env: {
+  dev: {
+    NODE_ENV: 'Development',
+    IP_ADDRESS: ipAddress
+  }
+}
+</code></pre>
+
+<p>  });
+};
+```</p>
+
+<p>Using the command line to specify the host, you&rsquo;d invoke the following grunt command to set up a local dev environment with the server at the specified IP Address:</p>
+
+<p><code>bash Passing host/ip address to the grunt tasks
+grunt preprocess:dev --host=192.168.1.100
+</code></p>
+
+<p>Now I need to specify some templates to make use of the ENV variables set up. The grunt preprocess plugin documentation is great, so head there for more info. Here is how I applied it to the two files, appsettings.js and index.html</p>
+
+<p>``` javascript AppSettings.js
+AppSettings = {</p>
+
+<pre><code>// @if NODE_ENV == 'DEVELOPMENT'
+basePath: "http:///* @echo IP_ADDRESS */:3000/",
+uploadBasePath: "http:///* @echo IP_ADDRESS */:3000/",
+uploadURI: "https://media.address.com",
+debug: true
+// @endif
+// @if NODE_ENV == 'STAGE'
+basePath: "http://stage.server.com/",
+uploadBasePath: "http://stage.server.com/"
+// @endif
+// @if NODE_ENV == 'PRODUCTION'
+basePath: "http://prod.server.com/",
+uploadBasePath: "http://prod.server.com/"
+// @endif   
+</code></pre>
+
+<p>}
+```</p>
+
+<p>And the template for index.html:</p>
+
+<p>``` html index.html
+&hellip;. snip &hellip;.</p>
+
+<!-- @if NODE_ENV='DEVELOPMENT' || NODE_ENV='STAGE' -->
+
+
+<script src="http://<!-- @echo IP_ADDRESS -->:8080/target/target-script-min.js"></script>
+
+
+<p></p>
+
+<!-- @endif -->
+
+
+<p>&hellip;. snip &hellip;.
+```</p>
+
+<h2>Removing the human element from app uploads</h2>
+
+<p>Another tool that changed the game up for me was the Nomad-cli &ndash; a set of tools to build and upload to testflight, amazon, or your FTP choice &ndash; found at <a href="http://nomad-cli.com/">http://nomad-cli.com/</a></p>
+
+<p>This gives us a ruby gem we can use to fire off to handle all of our iOS tasks for building and pushing to test flight. The tool I mainly use is called Shenzhen.</p>
+
+<p>A few things are needed. First, we had to create a Gemfile in a subdirectory that used the nomad cli gem:</p>
+
+<p><code>ruby Gemfile for nomad
+source 'https://rubygems.org'
+gem 'nomad-cli'
+</code></p>
+
+<p>Using the grunt shell task, I needed to ensure whoever ran this task got the nomad-cli gem first, fired off the command to build and distribute to testflight via shenzhen. It looked like this</p>
+
+<p>``` javascript Grunt shell command for xcode build
+shell: {
+  testflight: {</p>
+
+<pre><code>options: {
+  stdout: true
+},
+command: [ 
+  'cd ../../', 
+  'bundle install', 
+  'cd ./ios',
+  'ipa build -p RaiseMore.xcodeproj -c Debug -s RaiseMore', 
+  'ipa distribute -a &lt;%= testflight_settings.raisemore.apiKey %&gt; -T &lt;%= testflight_settings.raisemore.teamToken -m "' + uploadMessage + '"'
+  'cd ../android', 
+  'ant debug', 
+  'cd bin',
+  "curl http://testflightapp.com/api/builds.json " +
+  "-F file=@MainActivity-debug.apk " +
+  "-F api_token='&lt;%= testflight_settings.raisemore.apiToken %&gt;' " +
+  "-F team_token='&lt;%= testflight_settings.raisemore.teamToken %&gt;' " +
+  "-F notes='Some notes for automated upload' " + 
+  "-F notify=False " +
+  "-F distribution_lists='Testers'"
+].join("&amp;&amp;")
+</code></pre>
+
+<p>  }
+}
+```
+As you can see, there are quite a bit of commands contained in that grunt shell task. Let&rsquo;s step through the steps, just to be clear.</p>
+
+<ol>
+<li>CD to the IOS folder</li>
+<li>Call the nomad CLI tool to build iOS app</li>
+<li>Call the nomad CLI tool to upload to test flight</li>
+<li>CD to the Android folder</li>
+<li>Call the ant script to build the app</li>
+<li>Curl to upload the file to Test Flight</li>
+</ol>
+
+
+<p>Perhaps you&rsquo;re wondering how I got the testflight_settings, I specified those as follows:</p>
+
+<p>``` javascript Grunt testflight_settings
+grunt.initConfig({
+  testflight_settings: {</p>
+
+<pre><code>raisemore: {
+  apiToken: 'some_api_token_here',
+  teamToken: 'some_team_token_here'
+}
+</code></pre>
+
+<p>  }
+}
+```</p>
+
+<h2>Putting the pieces together</h2>
+
+<p>Lets see that Grunt config file now&hellip;</p>
+
+<p>``` javascript Grunt config
+module.exports = function(grunt) {</p>
+
+<p>  //Options and variables</p>
+
+<p>  var ipAddress = grunt.option(&lsquo;host&rsquo;) || &lsquo;localhost&rsquo;;
+  var preprocess_files = {</p>
+
+<pre><code>'./appsettings.js': '../tmpl/appsettings.js',
+'../index.html': '../tmpl/index.html'
+</code></pre>
+
+<p>  };</p>
+
+<p>  // Grunt Plug in configuration.</p>
+
+<p>  grunt.initConfig({</p>
+
+<pre><code>testflight_settings: {
+  raisemore: {
+    apiToken: 'apitoken',
+    teamToken: 'teamtoken'
+  }
+},
+preprocess: {
+  dev: {
+    files: preprocess_files
+  },
+  stage: {
+    files: preprocess_files
+  },
+  prod: {
+    files: preprocess_files
+  }
+},
+env: {
+  dev: {
+    NODE_ENV: 'Development',
+    IP_ADDRESS: ipAddress
+  },
+  stage: {
+    NODE_ENV: 'Staging',
+    IP_ADDRESS: ipAddress
+  },
+  prod: {
+    NODE_ENV: 'Production'
+  }
+},
+shell: {
+  testflight: {
+    options: {
+      stdout: true
+    },
+    command: [ 
+      'cd ../../', 
+      'bundle install', 
+      'cd ./ios',
+      'ipa build -p RaiseMore.xcodeproj -c Debug -s RaiseMore', 
+      'ipa distribute -a &lt;%= testflight_settings.raisemore.apiKey %&gt; -T &lt;%= testflight_settings.raisemore.teamToken -m "' + uploadMessage + '"'
+      'cd ../android', 
+      'ant debug', 
+      'cd bin',
+      "curl http://testflightapp.com/api/builds.json " +
+      "-F file=@MainActivity-debug.apk " +
+      "-F api_token='&lt;%= testflight_settings.raisemore.apiToken %&gt;' " +
+      "-F team_token='&lt;%= testflight_settings.raisemore.teamToken %&gt;' " +
+      "-F notes='Some notes for automated upload' " + 
+      "-F notify=False " +
+      "-F distribution_lists='Testers'"
+    ].join("&amp;&amp;")
+  }
+}
+</code></pre>
+
+<p>  });</p>
+
+<p>  //Now grunt tasks
+  grunt.registerTask(&lsquo;dev&rsquo;, [&lsquo;env:dev&rsquo;, &lsquo;preprocess:dev&rsquo;]);
+  grunt.registerTask(&lsquo;stage&rsquo;, [&lsquo;env:stage&rsquo;, &lsquo;preprocess:stage&rsquo;]);
+  grunt.registerTask(&lsquo;prod&rsquo;, [&lsquo;env:prod&rsquo;, &lsquo;preprocess:prod&rsquo;]);</p>
+
+<p>  grunt.registerTask(&lsquo;testflight&rsquo;, [&lsquo;env:stage&rsquo;, &lsquo;preprocess:stage&rsquo;, &lsquo;shell:testflight&rsquo;]);
+};
+```</p>
+
+<p>So say then, our designer wants to try his design changes out with data from stage. He doesn&rsquo;t know what files to go touch, and most likely it gets confusing for him. Now with automation, he just types &lsquo;grunt stage&rsquo;.</p>
+
+<p>Or say, now someone needs to get a build out on test flight for some testers. Simply type &lsquo;grunt testflight&rsquo;. 1 step is easier and way more predictable than the handful of steps one must jump through.</p>
+
+<p>Although I&rsquo;m sure there are better ways to do this, I&rsquo;d love to hear about them. After fighting through tasks such as the grunt testflight plugin, and some vague issues there, the rather clear shell commands provide enough value for myself and my team to automate builds and even have these tasks integrated with any CL like Jenkins.</p>
+
+<p>I hope you can walk away with a few ideas and become more productive. Cheers!</p>
+]]></content>
+  </entry>
+  
+</feed>

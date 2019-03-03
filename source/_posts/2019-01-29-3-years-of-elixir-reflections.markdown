@@ -12,7 +12,7 @@ What I want to outline in this post is the lessons I've learned using Elixir the
 
 ## Upgrade sooner than later
 
-Discuss pains of upgrading Elixir 1.3 -> 1.6, Ecto 1.0 -> 2.0, Phoenix 0.9 -> 1.3.
+Discuss pains of upgrading Elixir 1.3 -> 1.6, Ecto 1.0 -> 2.0, Phoenix 0.9 -> 1.3. It definitely hasn't been easy to update, this is mitigated by staying abreast of Elixir / phoenix changes and trying to implement early.
 
 ## GenServers are your friend - but use them only if you must
 
@@ -20,15 +20,23 @@ Abstract away the API and the Server - link to post by [Dave Thomas explaining s
 
 ## Testing pains with GenServers and Ecto's concurrency model
 
-Make sure to restart genservers / supervisors.
+Make sure to restart genservers / supervisors. Having a connection time out be longer for longer running genservers that aren't started every setup fixture.
+
+## Using docker for team / testing scenarios
+
+Docker-compose for stack, testing with diff vars. Preload any databases by putting them in the postgres container root in `/tmp`.
+
+## Testing browsers with Hound / ChromeDriver
+
+Use Hound and chromedriver.
 
 ## Do not code everything to the `Repo` itself
 
-It's not as easy to cut off your database addiction.
+It's not as easy to cut off your database addiction. Having an intermediate context API that cache is a good first step.
 
 ## PubSub is your friend, use structs to pass messages
 
-When using cast/gproc, pass the Structs, don't use tuples. Resist the simple solutiuons.
+When using cast/gproc, pass the Structs, don't use tuples. Resist the simple solutiuons. Pass structs defined.
 
 ## Learn ETS
 
@@ -36,7 +44,7 @@ Don't use a cache when the Erlang VM has one built in.
 
 ## Use behaviours
 
-Link to post for the crowdfundr app. Code to interfaces, not the implementations. Use the `impl` approach.
+Take a look how [crowdfundr](https://github.com/aaronrenner/crowdfundr) app. Code to interfaces, not the implementations. Use the `impl` approach.
 
 ## Nginx as a front-end for SSL termination
 
@@ -44,7 +52,7 @@ Links/discussion to the post, security wise, leave Nginx to handle the vulns and
 
 ## Releases with Distillery
 
-Ship those tars, let it fly. Easier/safer than shiping your code.
+Ship those tarballs, let it fly. Easier/safer than shiping your code. Should probably post about the replacing of ENV vars. Use a Config module for system set env variables instead of them getting baked into your `sys.config` file.
 
 ## Clustering - using epmd / GenServers for node communication message passing
 

@@ -9,7 +9,7 @@
   <meta name="author" content="Josh Bavari">
 
   
-  <meta name="description" content="I&rsquo;ve been lucky enough to be developing with the Ionic framework lately. One issue I keep running into is &ndash; how do I manage some &hellip;">
+  <meta name="description" content="This last weekend I spent a little time on a fun little side project to learn how to use Snap.svg. I was trying to take my friend Rob&rsquo;s &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -70,6 +70,448 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/10/23/a-field-guide-to-snap-dot-svg/">A Field Guide to Snap.svg</a></h1>
+    
+    
+      <p class="meta">
+        <span class="reading-time">less than a 1 minute read</span>
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-10-23T12:31:00-06:00" pubdate data-updated="true">Oct 23<span>rd</span>, 2014</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>This last weekend I spent a little time on a fun little side project to learn how to use <a href="http://snapsvg.io/">Snap.svg</a>. I was trying to take my friend Rob&rsquo;s datachomp character and make it a little interactive.</p>
+
+<p>After trying to do what I thought was a few simple little hacks with his PNG image, it turned out to be a great way to fully learn and understand SVG and the Snap.svg library.</p>
+
+<p>I have to admit I did not fully understand what SVG was and what it was composed of. I wanted to compile a list of thoughts, links, blogs, and tutorials that helped me learn along the way.</p>
+
+<h2>What SVG is and what it isnt</h2>
+
+<p>First of all, I had to learn that there are two image types &ndash; ones that scale (vector), and ones that are defined with strict sizes (bitmaps). For the longest time, I admit I thought they were basically the same.</p>
+
+<p>Vectors are mainly svg, while bitmap types are jpeg, png, gif, to name a few.</p>
+
+<p>You&rsquo;d want to use an svg element when you need an image that can grow without looking skewed. You&rsquo;d want to use a bitmap type when the size can remain the same.</p>
+
+<p>One thing to note is, svg&rsquo;s can contain bitmap images as well, as in this example:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="nt">&lt;html&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;body&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;svg</span> <span class="na">id=</span><span class="s">&quot;svg-node&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;circle</span> <span class="na">id=</span><span class="s">&quot;svg-element&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;image</span> <span class="na">id=</span><span class="s">&quot;datachomp-arm&quot;</span> <span class="na">sketch:type=</span><span class="s">&quot;MSBitmapLayer&quot;</span> <span class="na">x=</span><span class="s">&quot;0&quot;</span> <span class="na">y=</span><span class="s">&quot;0&quot;</span> <span class="na">width=</span><span class="s">&quot;269&quot;</span> <span class="na">height=</span><span class="s">&quot;209&quot;</span> <span class="na">xlink:href=</span><span class="s">&quot;img/datachomp/arm.png&quot;</span><span class="nt">&gt;&lt;/image&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;/svg&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;/body&gt;</span>
+</span><span class='line'><span class="nt">&lt;/html&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>Svg editors vs bitmap editors</h2>
+
+<p>My undertanding is that most bitmap editors can&rsquo;t do svg. GIMP, photoshop, and other editors like these are bitmap editors. Although they can create paths and export them, for the most part, they cannot do svg type modifications.</p>
+
+<p>Some svg editors are illustrator, inkscape, and fireworks, to name a few.</p>
+
+<p>Most vector editors can import bitmap images and use them as an svg element. My understanding is, they cant really modify them other than stretch/skewing them. However, I could and probably am wrong about this. (I dont pretend to be an expert at this!)</p>
+
+<h2>Svg understanding</h2>
+
+<p>To start, Mozilla Developer Network had a great set of documents to help understand SVG: what it is, what elements it&rsquo;s composed of, and how to define shapes, paths, and transforms.</p>
+
+<p><a href="https://developer.mozilla.org/en-US/docs/Web/SVG/Tutorial/Introduction">MDN SVG tutorial</a></p>
+
+<p>From the article:
+<code>
+Scalable Vector Graphics (SVG) is an XML markup language for describing two-dimensional vector graphics. SVG is essentially to graphics what XHTML is to text.
+</code></p>
+
+<p>That being said, you&rsquo;d be interested to know that inside of a root <code>svg</code> element, it contains other elements. Here&rsquo;s a <a href="https://developer.mozilla.org/en-US/docs/Web/SVG/Element">list of those elements available</a>.</p>
+
+<h2>Using Snap.svg to make svg elements look alive</h2>
+
+<h3>Modifying svg element attributes</h3>
+
+<p>You can access and modify any attribute on any element from Snap.svg. Examples could be the stroke, the width of the stroke, the x/y coordinates of the element, and many other <a href="https://developer.mozilla.org/en-US/docs/Web/SVG/Attribute">attributes</a>.</p>
+
+<p>First, select the element (using Snap), then do a call to <code>elem.attr({})</code>:</p>
+
+<p>Html:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="nt">&lt;html&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;body&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;svg</span> <span class="na">id=</span><span class="s">&quot;svg-node&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;circle</span> <span class="na">id=</span><span class="s">&quot;svg-element&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;/svg&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;/body&gt;</span>
+</span><span class='line'><span class="nt">&lt;/html&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>JavaScript:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">var</span> <span class="nx">svgNode</span> <span class="o">=</span> <span class="nx">Snap</span><span class="p">.</span><span class="nx">select</span><span class="p">(</span><span class="s1">&#39;#svg-node&#39;</span><span class="p">),</span>
+</span><span class='line'>    <span class="nx">svgElement</span> <span class="o">=</span> <span class="nx">svgNode</span><span class="p">.</span><span class="nx">select</span><span class="p">(</span><span class="s1">&#39;#svg-element&#39;</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="nx">svgElement</span><span class="p">.</span><span class="nx">attr</span><span class="p">({</span>
+</span><span class='line'>    <span class="nx">fill</span><span class="o">:</span> <span class="s2">&quot;#bada55&quot;</span><span class="p">,</span>
+</span><span class='line'>    <span class="nx">stroke</span><span class="o">:</span> <span class="s2">&quot;#000&quot;</span><span class="p">,</span>
+</span><span class='line'>    <span class="nx">strokeWidth</span><span class="o">:</span> <span class="mi">5</span><span class="p">,</span>
+</span><span class='line'>    <span class="nx">x</span><span class="o">:</span> <span class="mi">50</span><span class="p">,</span>
+</span><span class='line'>    <span class="nx">y</span><span class="o">:</span> <span class="mi">100</span>
+</span><span class='line'><span class="p">});</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Transforms</h3>
+
+<p><a href="http://snapsvg.io/docs/#Element.transform">Snap.svg</a> defines some methods to help you transform your svg elements. It looks like this:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">var</span> <span class="nx">arm</span> <span class="o">=</span> <span class="nx">datachomp</span> <span class="o">=</span> <span class="nx">Snap</span><span class="p">.</span><span class="nx">select</span><span class="p">(</span><span class="s2">&quot;#datachomp&quot;</span><span class="p">),</span>
+</span><span class='line'>      <span class="nx">arm</span> <span class="o">=</span> <span class="nx">datachomp</span><span class="p">.</span><span class="nx">select</span><span class="p">(</span><span class="s2">&quot;#datachomp-arm&quot;</span><span class="p">);</span>
+</span><span class='line'><span class="kd">var</span> <span class="nx">elementTransform</span> <span class="o">=</span> <span class="s2">&quot;t0,-80r360t-30,0r360t-30,30t-10,10&quot;</span><span class="p">;</span>
+</span><span class='line'><span class="nx">arm</span><span class="p">.</span><span class="nx">animate</span><span class="p">({</span><span class="nx">transform</span><span class="o">:</span> <span class="nx">tAmt</span><span class="p">},</span> <span class="mi">500</span><span class="p">,</span> <span class="nx">mina</span><span class="p">.</span><span class="nx">elastic</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>However, I was having some trouble understanding the transform string syntax. The author also created <a href="http://raphaeljs.com/">Raphael.js</a> and provides some additional documentation on how to <a href="http://raphaeljs.com/reference.html#Element.transform">understand transform strings here</a>.</p>
+
+<p>Taken from the Raphael reference:</p>
+
+<p>&#8220;
+Each letter is a command. There are four commands: t is for translate, r is for rotate, s is for scale and m is for matrix.</p>
+
+<p>There are also alternative &lsquo;absolute&rsquo; translation, rotation and scale: T, R and S. They will not take previous transformation into account. For example, &hellip;T100,0 will always move element 100 px horisontally, while &hellip;t100,0 could move it vertically if there is r90 before. Just compare results of r90t100,0 and r90T100,0.</p>
+
+<p>So, the example line above could be read like &lsquo;translate by 100, 100; rotate 30° around 100, 100; scale twice around 100, 100; rotate 45° around centre; scale 1.5 times relative to centre&rsquo;. As you can see rotate and scale commands have origin coordinates as optional parameters, the default is the centre point of the element. Matrix accepts six parameters.
+&#8220;</p>
+
+<h3>Paths</h3>
+
+<p>Again I admit I knew very little about how to define a path. <a href="https://developer.mozilla.org/en-US/docs/Web/SVG/Tutorial/Paths">This document</a> helped tremendously in the different types of paths and how to define them.</p>
+
+<p>One task I wanted to do was make an svg element follow along a path. <a href="http://codepen.io/mattsince87/pen/snqLy">This CodePen</a> helped tremendously with figuring out how to make an element follow along with a path.</p>
+
+<p>Out of <a href="https://groups.google.com/forum/#!topic/snapsvg/TOYtCQvLNHA">this google group thread</a>, a code snippit comes up that helps:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="c1">//Snap.svg helper method to make an element trace a defined path</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">function</span> <span class="nx">animateAlongPath</span><span class="p">(</span> <span class="nx">path</span><span class="p">,</span> <span class="nx">element</span><span class="p">,</span> <span class="nx">start</span><span class="p">,</span> <span class="nx">dur</span> <span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="kd">var</span> <span class="nx">len</span> <span class="o">=</span> <span class="nx">Snap</span><span class="p">.</span><span class="nx">path</span><span class="p">.</span><span class="nx">getTotalLength</span><span class="p">(</span> <span class="nx">path</span> <span class="p">);</span>
+</span><span class='line'>    <span class="nx">Snap</span><span class="p">.</span><span class="nx">animate</span><span class="p">(</span> <span class="nx">start</span><span class="p">,</span> <span class="nx">len</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span> <span class="nx">value</span> <span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>            <span class="kd">var</span> <span class="nx">movePoint</span> <span class="o">=</span> <span class="nx">Snap</span><span class="p">.</span><span class="nx">path</span><span class="p">.</span><span class="nx">getPointAtLength</span><span class="p">(</span> <span class="nx">path</span><span class="p">,</span> <span class="nx">value</span> <span class="p">);</span>
+</span><span class='line'>            <span class="nx">element</span><span class="p">.</span><span class="nx">attr</span><span class="p">({</span> <span class="nx">x</span><span class="o">:</span> <span class="nx">movePoint</span><span class="p">.</span><span class="nx">x</span><span class="p">,</span> <span class="nx">y</span><span class="o">:</span> <span class="nx">movePoint</span><span class="p">.</span><span class="nx">y</span> <span class="p">});</span>
+</span><span class='line'>    <span class="p">},</span> <span class="nx">dur</span><span class="p">);</span>
+</span><span class='line'><span class="p">};</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>I found a blog post with a demo that helped show some additional paths and how to use tools to create them, <a href="http://dropthebit.com/592/pathanimator-moving-along-an-svg-path/">found here</a>.</p>
+
+<p>I found another little hack on how to create paths using <a href="http://www.gimp.org/">GIMP</a>. First, start to create your path with the path tool. When you&rsquo;re done, select your path you created from the toolbar (under the &lsquo;paths&rsquo; tab), right click it, and select <code>export path</code>. That should give you an svg file with the path inside of it.</p>
+
+<h2>Svg vs Canvas</h2>
+
+<p>A question came up, when would you want to use svg over something like the canvas?</p>
+
+<p>After reading <a href="http://www.htmlgoodies.com/html5/other/html5-canvas-vs.-svg-choose-the-best-tool-for-the-job.html#fbid=9b7MQgV-6i0">this article</a>, the author makes a point for which you&rsquo;d want to use:</p>
+
+<p><code>
+SVG Relies on Files, Canvas Uses Pure Scripting
+SVG images are defined in XML. As a result, every SVG element is appended to the Document Object Model (DOM) and can be manipulated using a combination of JavaScript and CSS. Moreover, you can attach an event handlers to a SVG element or update its properties based on another document event. Canvas, on the other hand, is a simple graphics API. It draws pixels (extremely well I might add) and nothing more. Hence, there's no way to alter existing drawings or react to events. If you want to update the Canvas image, you have to redraw it.
+</code></p>
+
+<p>I&rsquo;ll continue updating this post as I learn more. I hope this helps others learn these svg topics with ease.</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/10/21/exploring-best-practices-with-docker-for-older-libraries/">Exploring Best Practices With Docker for Older Libraries</a></h1>
+    
+    
+      <p class="meta">
+        <span class="reading-time">less than a 1 minute read</span>
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-10-21T21:29:00-06:00" pubdate data-updated="true">Oct 21<span>st</span>, 2014</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>I am not pretending to be an expert about what&rsquo;s in this post, but merely a talking point to learn upon.</p>
+
+<h2>Problem: I need to reassemble an old C++ project with some old libraries and files that may not be around (or have disappeared already).</h2>
+
+<p>First theres a big chunk of files that are used strictly for rendering a video, ~560MB. Some of which had since gone missing.</p>
+
+<p>Then theres some old C++ libraries which a previous shell script was doing a <code>wget</code> request for, and the files are nowhere to be found.</p>
+
+<p>Finally, there&rsquo;s the need to rebuild the image used to render the files.</p>
+
+<p>Theres so many ways to attack this problem, I&rsquo;m just going to cover my approaches. I&rsquo;m open to new ones as well.</p>
+
+<h1>Potential solutions for rendering files</h1>
+
+<ul>
+<li>store on AWS S3</li>
+<li>put into git repo</li>
+<li>store on server somewhere</li>
+</ul>
+
+
+<h4>Lets break down the pros / cons of these</h4>
+
+<h2>Store on AWS S3</h2>
+
+<h3>PROS:</h3>
+
+<ul>
+<li>quick to add</li>
+<li>cheap to store</li>
+</ul>
+
+
+<h3>CONS:</h3>
+
+<ul>
+<li>can go missing (and did)</li>
+</ul>
+
+
+<h2>Put into git repo</h2>
+
+<h3>PROS:</h3>
+
+<ul>
+<li>versioning control with notes (none before)</li>
+<li>the files give a story in time</li>
+<li>cheap or free</li>
+</ul>
+
+
+<h3>CONS:</h3>
+
+<ul>
+<li>slow to pull repo (duh)</li>
+<li>storing binary files (derp)</li>
+</ul>
+
+
+<h2>Store on server somewhere</h2>
+
+<h3>PROS:</h3>
+
+<ul>
+<li>cheap to store</li>
+<li>fast to access (local network)</li>
+</ul>
+
+
+<h3>CONS:</h3>
+
+<ul>
+<li>can go missing (and did)</li>
+<li>no story to the files</li>
+</ul>
+
+
+<h1>Potential solutions for server image</h1>
+
+<ul>
+<li>single shell script to run for setting up image</li>
+<li>dockerfile to build up the image with <code>RUN</code> commands</li>
+<li>dockerfile to execute the single shell script</li>
+</ul>
+
+
+<p>Some of the libraries this said project was depending on are no longer where they were from a previous shell script to set them all up. That means I have to do some kind of dependency management. Whether that be forking the libraries into a git repo I know will be solid, or copying the files somewhere I can trust, or more simply committing them to my own repo (560 MB or more.. ugh).</p>
+
+<p>This is my thought process, not sure if its right:</p>
+
+<p>If your aim is to have something fully repeatable and easy to run again, go with the docker solution.</p>
+
+<p>If your aim is to just get it done quickly, go with the shell script.</p>
+
+<p>However, I still can&rsquo;t decipher what the pro/cons of the dockerfile just running a single shell script.</p>
+
+<p>Let&rsquo;s dive deeper into the pros and cons of each.</p>
+
+<h2>Single shell script</h2>
+
+<p>Steps:</p>
+
+<ul>
+<li>Create instance from Amazon AMI</li>
+<li>create / test shell script</li>
+<li>copy shell script to server</li>
+<li>run shell script on server</li>
+</ul>
+
+
+<h3>PROS:</h3>
+
+<ul>
+<li>quick to run (once completed, overall time)</li>
+<li>quick to tell you of errors</li>
+<li>works on my machine</li>
+</ul>
+
+
+<h3>CONS:</h3>
+
+<ul>
+<li>not easily repeatable</li>
+<li>may not work in another environment (things are assumed)</li>
+<li>not always easy to debug</li>
+</ul>
+
+
+<h2>Dockerfile with RUN commmands</h2>
+
+<p>Steps:</p>
+
+<ul>
+<li>install docker (if not already)</li>
+<li>create Dockerfile with RUN commands</li>
+<li>ADD dependencies to the docker container</li>
+<li>docker build image</li>
+<li>docker run image</li>
+<li>bundle image to Amazon AMI</li>
+<li>start instance</li>
+<li>profit</li>
+</ul>
+
+
+<h3>PROS:</h3>
+
+<ul>
+<li>control the starting point environment</li>
+<li>commands verified to work step by step</li>
+<li>easily repeatable</li>
+<li>quick to tell you of errors</li>
+<li>fast after first run (cache)</li>
+</ul>
+
+
+<h3>CONS:</h3>
+
+<ul>
+<li>slow start up with downloads/updates/git clones/etc</li>
+<li>costly for disk space</li>
+<li>must install docker / boot2docker / etc</li>
+</ul>
+
+
+<h2>Dockerfile to execute single shell script</h2>
+
+<p>Steps:</p>
+
+<ul>
+<li>install docker (if not already)</li>
+<li>create image from dockerfile</li>
+<li>run image</li>
+<li>create / test shell script in image</li>
+<li>modify dockerfile &ndash; ADD shell script created in previous step</li>
+</ul>
+
+
+<h3>PROS:</h3>
+
+<ul>
+<li>quick to test out your commands</li>
+</ul>
+
+
+<h3>CONS</h3>
+
+<ul>
+<li>harder to have the diffs between images when modifying shell script</li>
+</ul>
+
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -1485,536 +1927,6 @@
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/06/18/cordova-and-the-safari-web-inspector/">Cordova and the Safari Web Inspector</a></h1>
-    
-    
-      <p class="meta">
-        <span class="reading-time">less than a 1 minute read</span>
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2014-06-18T00:22:00-06:00" pubdate data-updated="true">Jun 18<span>th</span>, 2014</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>If you&rsquo;ve ever been doing some iOS development in Cordova, you may have used the Safari Web Inspector (SWI) once or twice. You&rsquo;ve also noticed that SWI closes when the app is put in the background or you switch apps.</p>
-
-<p>I found a sweet hack that allows you to keep your safari web inspector running regardless of whether or not the app is in the foreground or not. I&rsquo;d like to outline that in this post.</p>
-
-<p>I&rsquo;m not sure how I stumbled across this sweet hack, but I have to write it down before I forget how it&rsquo;s done. My system specs at the time of writing this is Mac OSX 10.8.5 (Mountain Lion).</p>
-
-<h2>Whats involved</h2>
-
-<ul>
-<li>Using a simulator or connected device</li>
-<li>Having Safari web inspector (SWI) running</li>
-</ul>
-
-
-<p>What normally happens is, when the app closes, SWI will also close. When you relaunch the app, you will need to put Safari in the foreground, click <code>Develop</code> on the menu bar, then hover <code>iPhone Simulator</code> or <code>iPhone</code>, then click the <code>index.html</code> (or your page) to connect &amp; launch SWI.</p>
-
-<p>This is very frustrating because on the app relaunching you may have a callback happening or other code you want to debug/inspect/log on app start up. This hack lets you keep SWI and running gracefully.</p>
-
-<p>Bare with me now, we&rsquo;re going to get funky.</p>
-
-<h2>Setting up a global hotkey</h2>
-
-<p>The first thing to do is to set a <a href="http://support.apple.com/kb/ph6889">global hotkey</a> &ndash; steps:</p>
-
-<ul>
-<li>Open System Preferences / Keyboard</li>
-<li>On the right panel, select <code>Application Shortcuts</code></li>
-<li>Add a hot key &ndash; use whatever keys you want (I used <code>CMD + ALT + I</code>)</li>
-<li>Have the matching key be <code>index.html</code> or whatever your cordova&rsquo;s main html file is</li>
-</ul>
-
-
-<h2>Steps to keep open SWI</h2>
-
-<ul>
-<li>Launch Cordova App</li>
-<li>Open SWI</li>
-<li>Close SWI</li>
-<li>Launch SWI with quick key as set up in global hotkey <code>Application Shortcuts</code></li>
-<li>Close App</li>
-<li>Reopen app &ndash; notice SWI is still running and continues to give us logging/debugging!</li>
-</ul>
-
-
-<p>Enjoy, friends!</p>
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/06/17/building-a-chat-client-with-ionic/">Building a Chat Client With Ionic / Socket.io / Redis / Node.js</a></h1>
-    
-    
-      <p class="meta">
-        <span class="reading-time">less than a 1 minute read</span>
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2014-06-17T00:09:00-06:00" pubdate data-updated="true">Jun 17<span>th</span>, 2014</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>I wanted a fun challenge to push myself and cross a few things off my ever so growing <code>I want to play with this</code> type of lists. I love learning, and there are so many awesome tools / utilities / libraries out there to evaluate its hard to justify incorporating them into every project at work without having some knowledge of the tools.</p>
-
-<p>DISCLAIMER: I may use some tools incorrectly, but the main purpose of this fun little project was to learn and have fun.</p>
-
-<p>The list was this:</p>
-
-<ul>
-<li><a href="http://ionicframework.com">Ionic Framework</a></li>
-<li><a href="http://socket.io">Socket.io</a></li>
-<li><a href="http://redis.io">Redis</a></li>
-<li><a href="https://github.com/mranney/node_redis">Node.js Redis client</a></li>
-</ul>
-
-
-<h2>The Idea</h2>
-
-<p>I wanted to build a chat client that would have messages that disappear after a certain time, much like SnapChat. The idea also included the ability to create channels that also disappear after a certain time like messages.</p>
-
-<p>In future versions, I&rsquo;d love to include location to join channels that are near you.</p>
-
-<p>Users can join existing channels, or create their own. All users can see channels, and join any.</p>
-
-<h2>Tech details &ndash; using Redis / Node.js</h2>
-
-<p>At first, I wanted to create messages some how and have them each have <code>expire</code> times. After failing miserably, I got the amazing chance to pair up with <a href="https://twitter.com/michaelgorsuch">Michael Gorsuch</a> to give me some alternative ideas. (Shameless plug &ndash; if you need to do some server monitoring, check out his project <a href="http://canary.io/">Canary.io</a>, it&rsquo;s AWESOME).</p>
-
-<p>The concept is &ndash; instead of using separate keys with ezxpire times &ndash; use Redis&#8217; sorted sets with scores of the times in UNIX format and the member being a JSON encoded string. I had my channels keys in the format of <code>messages:ChannelName</code>.</p>
-
-<p>Something like:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>//ZADD key score member [score member ...]
-</span><span class='line'>zadd messages:RedisChat 10581098019 '{"name": "Josh", "id": "5"}'</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Now, when we want to get all messages for a channel, its simply:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>//ZRANGEBYSCORE key min max [WITHSCORES] [LIMIT offset count]
-</span><span class='line'>zrangebyscore messages:RedisChat 0 10924019840</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Since I was using Node.js &ndash; I simply used <code>setInterval</code> to have a function be run that removes all old posts named <code>removeKeys</code>, and looked as such:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="c1">//NOTE: Using Moment.js, as well as having channelWatchList being populated</span>
-</span><span class='line'><span class="kd">var</span> <span class="nx">channelWatchList</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Lobby&#39;</span><span class="p">,</span> <span class="s1">&#39;RedisChat&#39;</span><span class="p">];</span>
-</span><span class='line'>
-</span><span class='line'><span class="kd">function</span> <span class="nx">removeKeys</span><span class="p">()</span> <span class="p">{</span>
-</span><span class='line'>  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;We are removing old messages&#39;</span><span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="k">for</span><span class="p">(</span><span class="kd">var</span> <span class="nx">channelIndex</span> <span class="k">in</span> <span class="nx">channelWatchList</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>    <span class="kd">var</span> <span class="nx">channel</span> <span class="o">=</span> <span class="nx">channelWatchList</span><span class="p">[</span><span class="nx">channelIndex</span><span class="p">];</span>
-</span><span class='line'>    <span class="kd">var</span> <span class="nx">messageChannel</span> <span class="o">=</span> <span class="s1">&#39;messages:&#39;</span> <span class="o">+</span> <span class="nx">channel</span><span class="p">;</span>
-</span><span class='line'>    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;message channel&#39;</span><span class="p">,</span> <span class="nx">messageChannel</span><span class="p">)</span>
-</span><span class='line'>    <span class="kd">var</span> <span class="nx">timeToRemove</span> <span class="o">=</span> <span class="nx">moment</span><span class="p">().</span><span class="nx">subtract</span><span class="p">(</span><span class="s1">&#39;m&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">).</span><span class="nx">unix</span><span class="p">();</span> <span class="c1">//Remove messages before min ago</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="nx">redisClient</span><span class="p">.</span><span class="nx">zrangebyscore</span><span class="p">(</span><span class="nx">messageChannel</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="nx">timeToRemove</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">result</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>      <span class="k">if</span><span class="p">(</span><span class="nx">result</span> <span class="o">&amp;&amp;</span> <span class="nx">result</span><span class="p">.</span><span class="nx">length</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>        <span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">resultIndex</span> <span class="k">in</span> <span class="nx">result</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>          <span class="kd">var</span> <span class="nx">message</span> <span class="o">=</span> <span class="nx">JSON</span><span class="p">.</span><span class="nx">parse</span><span class="p">(</span><span class="nx">result</span><span class="p">[</span><span class="nx">resultIndex</span><span class="p">]);</span>
-</span><span class='line'>          <span class="c1">//NOTE: Using socket.io</span>
-</span><span class='line'>          <span class="nx">io</span><span class="p">.</span><span class="nx">emit</span><span class="p">(</span><span class="s1">&#39;message:remove:channel:&#39;</span> <span class="o">+</span> <span class="nx">channel</span><span class="p">,</span> <span class="p">{</span> <span class="nx">message</span><span class="o">:</span> <span class="nx">message</span><span class="p">,</span> <span class="nx">channel</span><span class="o">:</span> <span class="nx">channel</span> <span class="p">});</span>
-</span><span class='line'>        <span class="p">}</span>
-</span><span class='line'>      <span class="p">}</span>
-</span><span class='line'>    <span class="p">});</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="nx">redisClient</span><span class="p">.</span><span class="nx">zremrangebyscore</span><span class="p">(</span><span class="nx">messageChannel</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="nx">timeToRemove</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">result</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>      <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;Removed &#39;</span><span class="p">,</span> <span class="nx">result</span><span class="p">,</span> <span class="s1">&#39; messages&#39;</span><span class="p">);</span>
-</span><span class='line'>    <span class="p">});</span>
-</span><span class='line'>  <span class="p">}</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h2>The client &ndash; Ionic</h2>
-
-<p>This was by far the easy part. First I just used the Ionic CLI to create a basic app.</p>
-
-<p>I started by modifying the index.html file to include Socket.io. Nothing too fancy: <code>&lt;script src="js/socket.io.js"&gt;&lt;/script&gt;</code>.</p>
-
-<p>Next, I used some AngularJS <a href="https://github.com/jbavari/ionic-socket.io-redis-chat/blob/master/client/RedisChat/www/js/services.js">services</a> for socket.io:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="nx">angular</span><span class="p">.</span><span class="nx">module</span><span class="p">(</span><span class="s1">&#39;services&#39;</span><span class="p">,</span> <span class="p">[])</span>
-</span><span class='line'>
-</span><span class='line'><span class="p">.</span><span class="nx">factory</span><span class="p">(</span><span class="s1">&#39;socket&#39;</span><span class="p">,</span> <span class="kd">function</span> <span class="nx">socket</span><span class="p">(</span><span class="nx">$rootScope</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>  <span class="kd">var</span> <span class="nx">socket</span> <span class="o">=</span> <span class="nx">io</span><span class="p">.</span><span class="nx">connect</span><span class="p">(</span><span class="nx">baseUrl</span><span class="p">);</span>
-</span><span class='line'>  <span class="k">return</span> <span class="p">{</span>
-</span><span class='line'>    <span class="nx">on</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">eventName</span><span class="p">,</span> <span class="nx">callback</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>      <span class="nx">socket</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="nx">eventName</span><span class="p">,</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
-</span><span class='line'>        <span class="kd">var</span> <span class="nx">args</span> <span class="o">=</span> <span class="nx">arguments</span><span class="p">;</span>
-</span><span class='line'>        <span class="nx">$rootScope</span><span class="p">.</span><span class="nx">$apply</span><span class="p">(</span><span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
-</span><span class='line'>          <span class="nx">callback</span><span class="p">.</span><span class="nx">apply</span><span class="p">(</span><span class="nx">socket</span><span class="p">,</span> <span class="nx">args</span><span class="p">);</span>
-</span><span class='line'>        <span class="p">});</span>
-</span><span class='line'>      <span class="p">});</span>
-</span><span class='line'>    <span class="p">},</span>
-</span><span class='line'>    <span class="nx">emit</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">eventName</span><span class="p">,</span> <span class="nx">data</span><span class="p">,</span> <span class="nx">callback</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>      <span class="nx">socket</span><span class="p">.</span><span class="nx">emit</span><span class="p">(</span><span class="nx">eventName</span><span class="p">,</span> <span class="nx">data</span><span class="p">,</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
-</span><span class='line'>        <span class="kd">var</span> <span class="nx">args</span> <span class="o">=</span> <span class="nx">arguments</span><span class="p">;</span>
-</span><span class='line'>        <span class="nx">$rootScope</span><span class="p">.</span><span class="nx">$apply</span><span class="p">(</span><span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
-</span><span class='line'>          <span class="k">if</span> <span class="p">(</span><span class="nx">callback</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>            <span class="nx">callback</span><span class="p">.</span><span class="nx">apply</span><span class="p">(</span><span class="nx">socket</span><span class="p">,</span> <span class="nx">args</span><span class="p">);</span>
-</span><span class='line'>          <span class="p">}</span>
-</span><span class='line'>        <span class="p">});</span>
-</span><span class='line'>      <span class="p">})</span>
-</span><span class='line'>    <span class="p">}</span>
-</span><span class='line'>  <span class="p">};</span>
-</span><span class='line'><span class="p">})</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Then, I constructed my <code>AppCtrl</code> to handle my <a href="https://github.com/jbavari/ionic-socket.io-redis-chat/blob/master/client/RedisChat/www/js/controllers.js">controllers</a> interaction with Socket.io:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-<span class='line-number'>39</span>
-<span class='line-number'>40</span>
-<span class='line-number'>41</span>
-<span class='line-number'>42</span>
-<span class='line-number'>43</span>
-<span class='line-number'>44</span>
-<span class='line-number'>45</span>
-<span class='line-number'>46</span>
-<span class='line-number'>47</span>
-<span class='line-number'>48</span>
-<span class='line-number'>49</span>
-<span class='line-number'>50</span>
-<span class='line-number'>51</span>
-<span class='line-number'>52</span>
-<span class='line-number'>53</span>
-<span class='line-number'>54</span>
-<span class='line-number'>55</span>
-<span class='line-number'>56</span>
-<span class='line-number'>57</span>
-<span class='line-number'>58</span>
-<span class='line-number'>59</span>
-<span class='line-number'>60</span>
-<span class='line-number'>61</span>
-<span class='line-number'>62</span>
-<span class='line-number'>63</span>
-<span class='line-number'>64</span>
-<span class='line-number'>65</span>
-<span class='line-number'>66</span>
-<span class='line-number'>67</span>
-<span class='line-number'>68</span>
-<span class='line-number'>69</span>
-<span class='line-number'>70</span>
-<span class='line-number'>71</span>
-<span class='line-number'>72</span>
-<span class='line-number'>73</span>
-<span class='line-number'>74</span>
-<span class='line-number'>75</span>
-<span class='line-number'>76</span>
-<span class='line-number'>77</span>
-<span class='line-number'>78</span>
-<span class='line-number'>79</span>
-<span class='line-number'>80</span>
-<span class='line-number'>81</span>
-<span class='line-number'>82</span>
-<span class='line-number'>83</span>
-<span class='line-number'>84</span>
-<span class='line-number'>85</span>
-<span class='line-number'>86</span>
-<span class='line-number'>87</span>
-<span class='line-number'>88</span>
-<span class='line-number'>89</span>
-<span class='line-number'>90</span>
-<span class='line-number'>91</span>
-<span class='line-number'>92</span>
-<span class='line-number'>93</span>
-<span class='line-number'>94</span>
-<span class='line-number'>95</span>
-<span class='line-number'>96</span>
-<span class='line-number'>97</span>
-<span class='line-number'>98</span>
-<span class='line-number'>99</span>
-<span class='line-number'>100</span>
-<span class='line-number'>101</span>
-<span class='line-number'>102</span>
-<span class='line-number'>103</span>
-<span class='line-number'>104</span>
-<span class='line-number'>105</span>
-<span class='line-number'>106</span>
-<span class='line-number'>107</span>
-<span class='line-number'>108</span>
-<span class='line-number'>109</span>
-<span class='line-number'>110</span>
-<span class='line-number'>111</span>
-<span class='line-number'>112</span>
-<span class='line-number'>113</span>
-<span class='line-number'>114</span>
-<span class='line-number'>115</span>
-</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="nx">angular</span><span class="p">.</span><span class="nx">module</span><span class="p">(</span><span class="s1">&#39;starter.controllers&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;services&#39;</span><span class="p">])</span>
-</span><span class='line'>
-</span><span class='line'><span class="p">.</span><span class="nx">controller</span><span class="p">(</span><span class="s1">&#39;AppCtrl&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">$scope</span><span class="p">,</span> <span class="nx">$state</span><span class="p">,</span> <span class="nx">$filter</span><span class="p">,</span> <span class="nx">socket</span><span class="p">,</span> <span class="nx">Auth</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>  <span class="c1">//Ensure they are authed first.</span>
-</span><span class='line'>  <span class="k">if</span><span class="p">(</span><span class="nx">Auth</span><span class="p">.</span><span class="nx">currentUser</span><span class="p">()</span> <span class="o">==</span> <span class="kc">null</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>      <span class="nx">$state</span><span class="p">.</span><span class="nx">go</span><span class="p">(</span><span class="s1">&#39;login&#39;</span><span class="p">);</span>
-</span><span class='line'>      <span class="k">return</span><span class="p">;</span>
-</span><span class='line'>  <span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="c1">//input models</span>
-</span><span class='line'>  <span class="nx">$scope</span><span class="p">.</span><span class="nx">draft</span> <span class="o">=</span> <span class="p">{</span> <span class="nx">message</span><span class="o">:</span> <span class="s1">&#39;&#39;</span> <span class="p">};</span>
-</span><span class='line'>  <span class="nx">$scope</span><span class="p">.</span><span class="nx">channel</span> <span class="o">=</span> <span class="p">{</span> <span class="nx">name</span><span class="o">:</span> <span class="s1">&#39;&#39;</span> <span class="p">};</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="c1">//App info</span>
-</span><span class='line'>  <span class="nx">$scope</span><span class="p">.</span><span class="nx">channels</span> <span class="o">=</span> <span class="p">[];</span>
-</span><span class='line'>  <span class="nx">$scope</span><span class="p">.</span><span class="nx">listeningChannels</span> <span class="o">=</span> <span class="p">[];</span>
-</span><span class='line'>  <span class="nx">$scope</span><span class="p">.</span><span class="nx">activeChannel</span> <span class="o">=</span> <span class="kc">null</span><span class="p">;</span>
-</span><span class='line'>  <span class="nx">$scope</span><span class="p">.</span><span class="nx">userName</span> <span class="o">=</span> <span class="nx">Auth</span><span class="p">.</span><span class="nx">currentUser</span><span class="p">().</span><span class="nx">name</span><span class="p">;</span>
-</span><span class='line'>  <span class="nx">$scope</span><span class="p">.</span><span class="nx">messages</span> <span class="o">=</span> <span class="p">[];</span>
-</span><span class='line'>
-</span><span class='line'><span class="c1">///////////////////////////////////////////////////////////////////////</span>
-</span><span class='line'><span class="c1">///////////////////////////////////////////////////////////////////////</span>
-</span><span class='line'><span class="c1">//Socket.io listeners</span>
-</span><span class='line'><span class="c1">///////////////////////////////////////////////////////////////////////</span>
-</span><span class='line'><span class="c1">///////////////////////////////////////////////////////////////////////</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="nx">socket</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">&#39;channels&#39;</span><span class="p">,</span> <span class="kd">function</span> <span class="nx">channels</span><span class="p">(</span><span class="nx">channels</span><span class="p">){</span>
-</span><span class='line'>      <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;channels&#39;</span><span class="p">,</span> <span class="nx">channels</span><span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'>      <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">channels</span><span class="p">);</span>
-</span><span class='line'>      <span class="nx">$scope</span><span class="p">.</span><span class="nx">channels</span> <span class="o">=</span> <span class="nx">channels</span><span class="p">;</span>
-</span><span class='line'>  <span class="p">});</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="nx">socket</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">&#39;message:received&#39;</span><span class="p">,</span> <span class="kd">function</span> <span class="nx">messageReceived</span><span class="p">(</span><span class="nx">message</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>      <span class="nx">$scope</span><span class="p">.</span><span class="nx">messages</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">message</span><span class="p">);</span>
-</span><span class='line'>  <span class="p">});</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="nx">socket</span><span class="p">.</span><span class="nx">emit</span><span class="p">(</span><span class="s1">&#39;user:joined&#39;</span><span class="p">,</span> <span class="p">{</span><span class="nx">name</span><span class="o">:</span> <span class="nx">Auth</span><span class="p">.</span><span class="nx">currentUser</span><span class="p">().</span><span class="nx">name</span><span class="p">});</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="nx">socket</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">&#39;user:joined&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">user</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>      <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;user:joined&#39;</span><span class="p">);</span>
-</span><span class='line'>      <span class="nx">$scope</span><span class="p">.</span><span class="nx">messages</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">user</span><span class="p">);</span>
-</span><span class='line'>  <span class="p">});</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="nx">$scope</span><span class="p">.</span><span class="nx">listenChannel</span> <span class="o">=</span> <span class="kd">function</span> <span class="nx">listenChannel</span> <span class="p">(</span><span class="nx">channel</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>      <span class="nx">socket</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">&#39;messages:channel:&#39;</span> <span class="o">+</span> <span class="nx">channel</span><span class="p">,</span> <span class="kd">function</span> <span class="nx">messages</span><span class="p">(</span><span class="nx">messages</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>          <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;got messages: &#39;</span><span class="p">,</span> <span class="nx">messages</span><span class="p">);</span>
-</span><span class='line'>          <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">messages</span><span class="p">.</span><span class="nx">length</span><span class="p">);</span>
-</span><span class='line'>          <span class="k">for</span><span class="p">(</span><span class="kd">var</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="nx">j</span> <span class="o">=</span> <span class="nx">messages</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">j</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>              <span class="kd">var</span> <span class="nx">message</span> <span class="o">=</span> <span class="nx">messages</span><span class="p">[</span><span class="nx">i</span><span class="p">];</span>
-</span><span class='line'>              <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;message&#39;</span><span class="p">);</span>
-</span><span class='line'>              <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">message</span><span class="p">);</span>
-</span><span class='line'>                  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;apply with function&#39;</span><span class="p">);</span>
-</span><span class='line'>              <span class="nx">$scope</span><span class="p">.</span><span class="nx">messages</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">message</span><span class="p">);</span>
-</span><span class='line'>          <span class="p">}</span>
-</span><span class='line'>      <span class="p">});</span>
-</span><span class='line'>
-</span><span class='line'>      <span class="nx">socket</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">&#39;message:channel:&#39;</span> <span class="o">+</span> <span class="nx">channel</span><span class="p">,</span> <span class="kd">function</span> <span class="nx">message</span><span class="p">(</span><span class="nx">message</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>          <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;got message: &#39;</span> <span class="o">+</span> <span class="nx">message</span><span class="p">);</span>
-</span><span class='line'>          <span class="k">if</span><span class="p">(</span><span class="nx">channel</span> <span class="o">!=</span> <span class="nx">$scope</span><span class="p">.</span><span class="nx">activeChannel</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>              <span class="k">return</span><span class="p">;</span>
-</span><span class='line'>          <span class="p">}</span>
-</span><span class='line'>          <span class="nx">$scope</span><span class="p">.</span><span class="nx">messages</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">message</span><span class="p">);</span>
-</span><span class='line'>      <span class="p">});</span>
-</span><span class='line'>
-</span><span class='line'>      <span class="nx">socket</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">&#39;message:remove:channel:&#39;</span> <span class="o">+</span> <span class="nx">channel</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">removalInfo</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>          <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;removalInfo to remove: &#39;</span><span class="p">,</span> <span class="nx">removalInfo</span><span class="p">);</span>
-</span><span class='line'>          <span class="kd">var</span> <span class="nx">expires</span> <span class="o">=</span> <span class="nx">removalInfo</span><span class="p">.</span><span class="nx">message</span><span class="p">.</span><span class="nx">expires</span><span class="p">;</span>
-</span><span class='line'>          <span class="kd">var</span> <span class="nx">expireMessageIndex</span> <span class="o">=</span> <span class="nx">$filter</span><span class="p">(</span><span class="s1">&#39;messageByExpires&#39;</span><span class="p">)(</span><span class="nx">$scope</span><span class="p">.</span><span class="nx">messages</span><span class="p">,</span> <span class="nx">expires</span><span class="p">);</span>
-</span><span class='line'>          <span class="k">if</span><span class="p">(</span><span class="nx">expireMessageIndex</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>              <span class="nx">$scope</span><span class="p">.</span><span class="nx">messages</span><span class="p">.</span><span class="nx">splice</span><span class="p">(</span><span class="nx">expireMessageIndex</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span>
-</span><span class='line'>          <span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'>      <span class="p">});</span>
-</span><span class='line'>
-</span><span class='line'>      <span class="nx">$scope</span><span class="p">.</span><span class="nx">listeningChannels</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">channel</span><span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="c1">///////////////////////////////////////////////////////////////////////</span>
-</span><span class='line'><span class="c1">///////////////////////////////////////////////////////////////////////</span>
-</span><span class='line'><span class="c1">// Controller methods</span>
-</span><span class='line'><span class="c1">///////////////////////////////////////////////////////////////////////</span>
-</span><span class='line'><span class="c1">///////////////////////////////////////////////////////////////////////</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="nx">$scope</span><span class="p">.</span><span class="nx">joinChannel</span> <span class="o">=</span> <span class="kd">function</span> <span class="nx">joinChannel</span><span class="p">(</span><span class="nx">channel</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>      <span class="nx">$scope</span><span class="p">.</span><span class="nx">activeChannel</span> <span class="o">=</span> <span class="nx">channel</span><span class="p">;</span>
-</span><span class='line'>      <span class="nx">$scope</span><span class="p">.</span><span class="nx">messages</span> <span class="o">=</span> <span class="p">[];</span>
-</span><span class='line'>
-</span><span class='line'>      <span class="nx">$scope</span><span class="p">.</span><span class="nx">channel</span><span class="p">.</span><span class="nx">name</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'>      <span class="c1">//Listen to channel if we dont have it already.</span>
-</span><span class='line'>      <span class="k">if</span><span class="p">(</span><span class="nx">$scope</span><span class="p">.</span><span class="nx">listeningChannels</span><span class="p">.</span><span class="nx">indexOf</span><span class="p">(</span><span class="nx">channel</span><span class="p">)</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>          <span class="nx">$scope</span><span class="p">.</span><span class="nx">listenChannel</span><span class="p">(</span><span class="nx">channel</span><span class="p">);</span>     
-</span><span class='line'>      <span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'>      <span class="nx">socket</span><span class="p">.</span><span class="nx">emit</span><span class="p">(</span><span class="s1">&#39;channel:join&#39;</span><span class="p">,</span> <span class="p">{</span> <span class="nx">channel</span><span class="o">:</span> <span class="nx">channel</span><span class="p">,</span> <span class="nx">name</span><span class="o">:</span> <span class="nx">Auth</span><span class="p">.</span><span class="nx">currentUser</span><span class="p">().</span><span class="nx">name</span> <span class="p">});</span>
-</span><span class='line'>  <span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="nx">$scope</span><span class="p">.</span><span class="nx">sendMessage</span> <span class="o">=</span> <span class="kd">function</span> <span class="nx">sendMessage</span><span class="p">(</span><span class="nx">draft</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>      <span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="nx">draft</span><span class="p">.</span><span class="nx">message</span> <span class="o">||</span> <span class="nx">draft</span><span class="p">.</span><span class="nx">message</span> <span class="o">==</span> <span class="kc">null</span> <span class="o">||</span> <span class="k">typeof</span> <span class="nx">draft</span> <span class="o">==</span> <span class="s1">&#39;undefined&#39;</span> <span class="o">||</span> <span class="nx">draft</span><span class="p">.</span><span class="nx">length</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>          <span class="k">return</span><span class="p">;</span>
-</span><span class='line'>      <span class="p">}</span>
-</span><span class='line'>      <span class="nx">socket</span><span class="p">.</span><span class="nx">emit</span><span class="p">(</span><span class="s1">&#39;message:send&#39;</span><span class="p">,</span> <span class="p">{</span> <span class="nx">message</span><span class="o">:</span> <span class="nx">draft</span><span class="p">.</span><span class="nx">message</span><span class="p">,</span> <span class="nx">name</span><span class="o">:</span> <span class="nx">Auth</span><span class="p">.</span><span class="nx">currentUser</span><span class="p">().</span><span class="nx">name</span><span class="p">,</span> <span class="nx">channel</span><span class="o">:</span> <span class="nx">$scope</span><span class="p">.</span><span class="nx">activeChannel</span> <span class="p">});</span>
-</span><span class='line'>      <span class="nx">$scope</span><span class="p">.</span><span class="nx">draft</span><span class="p">.</span><span class="nx">message</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">;</span>
-</span><span class='line'>  <span class="p">};</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="nx">$scope</span><span class="p">.</span><span class="nx">logout</span> <span class="o">=</span> <span class="kd">function</span> <span class="nx">logout</span><span class="p">()</span> <span class="p">{</span>
-</span><span class='line'>      <span class="nx">Auth</span><span class="p">.</span><span class="nx">logout</span><span class="p">();</span>
-</span><span class='line'>      <span class="nx">$state</span><span class="p">.</span><span class="nx">go</span><span class="p">(</span><span class="s1">&#39;login&#39;</span><span class="p">);</span>
-</span><span class='line'>  <span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="c1">//Auto join the lobby</span>
-</span><span class='line'>  <span class="nx">$scope</span><span class="p">.</span><span class="nx">joinChannel</span><span class="p">(</span><span class="s1">&#39;Lobby&#39;</span><span class="p">);</span>
-</span><span class='line'><span class="p">})</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>All of the code can be found on <a href="https://github.com/jbavari/ionic-socket.io-redis-chat">github here</a>.</p>
-
-<h3>Things to improve</h3>
-
-<ul>
-<li>Testing &ndash; for sure. I definitely failed in getting tests first</li>
-<li>Removing the inline functions from Socket.io callbacks &ndash; not sure I like how I handled that to be honest</li>
-<li>Improve the UI</li>
-<li>Actually make the channels expire over time &ndash; and alert the user</li>
-<li>Have some kind of location tracking to pull local channels near you</li>
-</ul>
-
-
-<p>Enjoy! Hope this helps any others learn some tips for developing in any of these technologies used!</p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/5/">&larr; Older</a>
@@ -2032,6 +1944,14 @@
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2019/02/23/the-victim-or-the-victor/">The Victim or the Victor</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2019/01/29/3-years-of-elixir-reflections/">3 Years of Elixir: Reflections</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2017/04/16/puppet-a-testing-handbook/">Puppet: A Testing Handbook</a>
       </li>
     
@@ -2041,14 +1961,6 @@
     
       <li class="post">
         <a href="/blog/2016/12/29/multicast-service-discovery-in-electron/">Multicast Service Discovery in Electron</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2016/03/11/using-erlang-observer-on-a-remote-elixir-server/">Using Erlang Observer on a Remote Elixir Server</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2016/01/24/custom-json-encoding-in-phoenix/">Custom JSON Encoding in Phoenix</a>
       </li>
     
   </ul>

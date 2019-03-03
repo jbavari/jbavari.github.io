@@ -9,7 +9,7 @@
   <meta name="author" content="Josh Bavari">
 
   
-  <meta name="description" content="I&rsquo;ve been using AngularJS a lot lately. Since I do a lot of Javascript, that means I&rsquo;m prone to make a lot of runtime script errors. You &hellip;">
+  <meta name="description" content="If you&rsquo;ve ever been doing some iOS development in Cordova, you may have used the Safari Web Inspector (SWI) once or twice. You&rsquo;ve also &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -70,6 +70,536 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/06/18/cordova-and-the-safari-web-inspector/">Cordova and the Safari Web Inspector</a></h1>
+    
+    
+      <p class="meta">
+        <span class="reading-time">less than a 1 minute read</span>
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-06-18T00:22:00-06:00" pubdate data-updated="true">Jun 18<span>th</span>, 2014</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>If you&rsquo;ve ever been doing some iOS development in Cordova, you may have used the Safari Web Inspector (SWI) once or twice. You&rsquo;ve also noticed that SWI closes when the app is put in the background or you switch apps.</p>
+
+<p>I found a sweet hack that allows you to keep your safari web inspector running regardless of whether or not the app is in the foreground or not. I&rsquo;d like to outline that in this post.</p>
+
+<p>I&rsquo;m not sure how I stumbled across this sweet hack, but I have to write it down before I forget how it&rsquo;s done. My system specs at the time of writing this is Mac OSX 10.8.5 (Mountain Lion).</p>
+
+<h2>Whats involved</h2>
+
+<ul>
+<li>Using a simulator or connected device</li>
+<li>Having Safari web inspector (SWI) running</li>
+</ul>
+
+
+<p>What normally happens is, when the app closes, SWI will also close. When you relaunch the app, you will need to put Safari in the foreground, click <code>Develop</code> on the menu bar, then hover <code>iPhone Simulator</code> or <code>iPhone</code>, then click the <code>index.html</code> (or your page) to connect &amp; launch SWI.</p>
+
+<p>This is very frustrating because on the app relaunching you may have a callback happening or other code you want to debug/inspect/log on app start up. This hack lets you keep SWI and running gracefully.</p>
+
+<p>Bare with me now, we&rsquo;re going to get funky.</p>
+
+<h2>Setting up a global hotkey</h2>
+
+<p>The first thing to do is to set a <a href="http://support.apple.com/kb/ph6889">global hotkey</a> &ndash; steps:</p>
+
+<ul>
+<li>Open System Preferences / Keyboard</li>
+<li>On the right panel, select <code>Application Shortcuts</code></li>
+<li>Add a hot key &ndash; use whatever keys you want (I used <code>CMD + ALT + I</code>)</li>
+<li>Have the matching key be <code>index.html</code> or whatever your cordova&rsquo;s main html file is</li>
+</ul>
+
+
+<h2>Steps to keep open SWI</h2>
+
+<ul>
+<li>Launch Cordova App</li>
+<li>Open SWI</li>
+<li>Close SWI</li>
+<li>Launch SWI with quick key as set up in global hotkey <code>Application Shortcuts</code></li>
+<li>Close App</li>
+<li>Reopen app &ndash; notice SWI is still running and continues to give us logging/debugging!</li>
+</ul>
+
+
+<p>Enjoy, friends!</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/06/17/building-a-chat-client-with-ionic/">Building a Chat Client With Ionic / Socket.io / Redis / Node.js</a></h1>
+    
+    
+      <p class="meta">
+        <span class="reading-time">less than a 1 minute read</span>
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-06-17T00:09:00-06:00" pubdate data-updated="true">Jun 17<span>th</span>, 2014</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>I wanted a fun challenge to push myself and cross a few things off my ever so growing <code>I want to play with this</code> type of lists. I love learning, and there are so many awesome tools / utilities / libraries out there to evaluate its hard to justify incorporating them into every project at work without having some knowledge of the tools.</p>
+
+<p>DISCLAIMER: I may use some tools incorrectly, but the main purpose of this fun little project was to learn and have fun.</p>
+
+<p>The list was this:</p>
+
+<ul>
+<li><a href="http://ionicframework.com">Ionic Framework</a></li>
+<li><a href="http://socket.io">Socket.io</a></li>
+<li><a href="http://redis.io">Redis</a></li>
+<li><a href="https://github.com/mranney/node_redis">Node.js Redis client</a></li>
+</ul>
+
+
+<h2>The Idea</h2>
+
+<p>I wanted to build a chat client that would have messages that disappear after a certain time, much like SnapChat. The idea also included the ability to create channels that also disappear after a certain time like messages.</p>
+
+<p>In future versions, I&rsquo;d love to include location to join channels that are near you.</p>
+
+<p>Users can join existing channels, or create their own. All users can see channels, and join any.</p>
+
+<h2>Tech details &ndash; using Redis / Node.js</h2>
+
+<p>At first, I wanted to create messages some how and have them each have <code>expire</code> times. After failing miserably, I got the amazing chance to pair up with <a href="https://twitter.com/michaelgorsuch">Michael Gorsuch</a> to give me some alternative ideas. (Shameless plug &ndash; if you need to do some server monitoring, check out his project <a href="http://canary.io/">Canary.io</a>, it&rsquo;s AWESOME).</p>
+
+<p>The concept is &ndash; instead of using separate keys with ezxpire times &ndash; use Redis&#8217; sorted sets with scores of the times in UNIX format and the member being a JSON encoded string. I had my channels keys in the format of <code>messages:ChannelName</code>.</p>
+
+<p>Something like:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>//ZADD key score member [score member ...]
+</span><span class='line'>zadd messages:RedisChat 10581098019 '{"name": "Josh", "id": "5"}'</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Now, when we want to get all messages for a channel, its simply:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>//ZRANGEBYSCORE key min max [WITHSCORES] [LIMIT offset count]
+</span><span class='line'>zrangebyscore messages:RedisChat 0 10924019840</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Since I was using Node.js &ndash; I simply used <code>setInterval</code> to have a function be run that removes all old posts named <code>removeKeys</code>, and looked as such:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="c1">//NOTE: Using Moment.js, as well as having channelWatchList being populated</span>
+</span><span class='line'><span class="kd">var</span> <span class="nx">channelWatchList</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Lobby&#39;</span><span class="p">,</span> <span class="s1">&#39;RedisChat&#39;</span><span class="p">];</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">function</span> <span class="nx">removeKeys</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;We are removing old messages&#39;</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">for</span><span class="p">(</span><span class="kd">var</span> <span class="nx">channelIndex</span> <span class="k">in</span> <span class="nx">channelWatchList</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="kd">var</span> <span class="nx">channel</span> <span class="o">=</span> <span class="nx">channelWatchList</span><span class="p">[</span><span class="nx">channelIndex</span><span class="p">];</span>
+</span><span class='line'>    <span class="kd">var</span> <span class="nx">messageChannel</span> <span class="o">=</span> <span class="s1">&#39;messages:&#39;</span> <span class="o">+</span> <span class="nx">channel</span><span class="p">;</span>
+</span><span class='line'>    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;message channel&#39;</span><span class="p">,</span> <span class="nx">messageChannel</span><span class="p">)</span>
+</span><span class='line'>    <span class="kd">var</span> <span class="nx">timeToRemove</span> <span class="o">=</span> <span class="nx">moment</span><span class="p">().</span><span class="nx">subtract</span><span class="p">(</span><span class="s1">&#39;m&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">).</span><span class="nx">unix</span><span class="p">();</span> <span class="c1">//Remove messages before min ago</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nx">redisClient</span><span class="p">.</span><span class="nx">zrangebyscore</span><span class="p">(</span><span class="nx">messageChannel</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="nx">timeToRemove</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">result</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>      <span class="k">if</span><span class="p">(</span><span class="nx">result</span> <span class="o">&amp;&amp;</span> <span class="nx">result</span><span class="p">.</span><span class="nx">length</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>        <span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">resultIndex</span> <span class="k">in</span> <span class="nx">result</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>          <span class="kd">var</span> <span class="nx">message</span> <span class="o">=</span> <span class="nx">JSON</span><span class="p">.</span><span class="nx">parse</span><span class="p">(</span><span class="nx">result</span><span class="p">[</span><span class="nx">resultIndex</span><span class="p">]);</span>
+</span><span class='line'>          <span class="c1">//NOTE: Using socket.io</span>
+</span><span class='line'>          <span class="nx">io</span><span class="p">.</span><span class="nx">emit</span><span class="p">(</span><span class="s1">&#39;message:remove:channel:&#39;</span> <span class="o">+</span> <span class="nx">channel</span><span class="p">,</span> <span class="p">{</span> <span class="nx">message</span><span class="o">:</span> <span class="nx">message</span><span class="p">,</span> <span class="nx">channel</span><span class="o">:</span> <span class="nx">channel</span> <span class="p">});</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>      <span class="p">}</span>
+</span><span class='line'>    <span class="p">});</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nx">redisClient</span><span class="p">.</span><span class="nx">zremrangebyscore</span><span class="p">(</span><span class="nx">messageChannel</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="nx">timeToRemove</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">result</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>      <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;Removed &#39;</span><span class="p">,</span> <span class="nx">result</span><span class="p">,</span> <span class="s1">&#39; messages&#39;</span><span class="p">);</span>
+</span><span class='line'>    <span class="p">});</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>The client &ndash; Ionic</h2>
+
+<p>This was by far the easy part. First I just used the Ionic CLI to create a basic app.</p>
+
+<p>I started by modifying the index.html file to include Socket.io. Nothing too fancy: <code>&lt;script src="js/socket.io.js"&gt;&lt;/script&gt;</code>.</p>
+
+<p>Next, I used some AngularJS <a href="https://github.com/jbavari/ionic-socket.io-redis-chat/blob/master/client/RedisChat/www/js/services.js">services</a> for socket.io:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="nx">angular</span><span class="p">.</span><span class="nx">module</span><span class="p">(</span><span class="s1">&#39;services&#39;</span><span class="p">,</span> <span class="p">[])</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">.</span><span class="nx">factory</span><span class="p">(</span><span class="s1">&#39;socket&#39;</span><span class="p">,</span> <span class="kd">function</span> <span class="nx">socket</span><span class="p">(</span><span class="nx">$rootScope</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>  <span class="kd">var</span> <span class="nx">socket</span> <span class="o">=</span> <span class="nx">io</span><span class="p">.</span><span class="nx">connect</span><span class="p">(</span><span class="nx">baseUrl</span><span class="p">);</span>
+</span><span class='line'>  <span class="k">return</span> <span class="p">{</span>
+</span><span class='line'>    <span class="nx">on</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">eventName</span><span class="p">,</span> <span class="nx">callback</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>      <span class="nx">socket</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="nx">eventName</span><span class="p">,</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>        <span class="kd">var</span> <span class="nx">args</span> <span class="o">=</span> <span class="nx">arguments</span><span class="p">;</span>
+</span><span class='line'>        <span class="nx">$rootScope</span><span class="p">.</span><span class="nx">$apply</span><span class="p">(</span><span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>          <span class="nx">callback</span><span class="p">.</span><span class="nx">apply</span><span class="p">(</span><span class="nx">socket</span><span class="p">,</span> <span class="nx">args</span><span class="p">);</span>
+</span><span class='line'>        <span class="p">});</span>
+</span><span class='line'>      <span class="p">});</span>
+</span><span class='line'>    <span class="p">},</span>
+</span><span class='line'>    <span class="nx">emit</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">eventName</span><span class="p">,</span> <span class="nx">data</span><span class="p">,</span> <span class="nx">callback</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>      <span class="nx">socket</span><span class="p">.</span><span class="nx">emit</span><span class="p">(</span><span class="nx">eventName</span><span class="p">,</span> <span class="nx">data</span><span class="p">,</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>        <span class="kd">var</span> <span class="nx">args</span> <span class="o">=</span> <span class="nx">arguments</span><span class="p">;</span>
+</span><span class='line'>        <span class="nx">$rootScope</span><span class="p">.</span><span class="nx">$apply</span><span class="p">(</span><span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>          <span class="k">if</span> <span class="p">(</span><span class="nx">callback</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>            <span class="nx">callback</span><span class="p">.</span><span class="nx">apply</span><span class="p">(</span><span class="nx">socket</span><span class="p">,</span> <span class="nx">args</span><span class="p">);</span>
+</span><span class='line'>          <span class="p">}</span>
+</span><span class='line'>        <span class="p">});</span>
+</span><span class='line'>      <span class="p">})</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>  <span class="p">};</span>
+</span><span class='line'><span class="p">})</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Then, I constructed my <code>AppCtrl</code> to handle my <a href="https://github.com/jbavari/ionic-socket.io-redis-chat/blob/master/client/RedisChat/www/js/controllers.js">controllers</a> interaction with Socket.io:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+<span class='line-number'>67</span>
+<span class='line-number'>68</span>
+<span class='line-number'>69</span>
+<span class='line-number'>70</span>
+<span class='line-number'>71</span>
+<span class='line-number'>72</span>
+<span class='line-number'>73</span>
+<span class='line-number'>74</span>
+<span class='line-number'>75</span>
+<span class='line-number'>76</span>
+<span class='line-number'>77</span>
+<span class='line-number'>78</span>
+<span class='line-number'>79</span>
+<span class='line-number'>80</span>
+<span class='line-number'>81</span>
+<span class='line-number'>82</span>
+<span class='line-number'>83</span>
+<span class='line-number'>84</span>
+<span class='line-number'>85</span>
+<span class='line-number'>86</span>
+<span class='line-number'>87</span>
+<span class='line-number'>88</span>
+<span class='line-number'>89</span>
+<span class='line-number'>90</span>
+<span class='line-number'>91</span>
+<span class='line-number'>92</span>
+<span class='line-number'>93</span>
+<span class='line-number'>94</span>
+<span class='line-number'>95</span>
+<span class='line-number'>96</span>
+<span class='line-number'>97</span>
+<span class='line-number'>98</span>
+<span class='line-number'>99</span>
+<span class='line-number'>100</span>
+<span class='line-number'>101</span>
+<span class='line-number'>102</span>
+<span class='line-number'>103</span>
+<span class='line-number'>104</span>
+<span class='line-number'>105</span>
+<span class='line-number'>106</span>
+<span class='line-number'>107</span>
+<span class='line-number'>108</span>
+<span class='line-number'>109</span>
+<span class='line-number'>110</span>
+<span class='line-number'>111</span>
+<span class='line-number'>112</span>
+<span class='line-number'>113</span>
+<span class='line-number'>114</span>
+<span class='line-number'>115</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="nx">angular</span><span class="p">.</span><span class="nx">module</span><span class="p">(</span><span class="s1">&#39;starter.controllers&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;services&#39;</span><span class="p">])</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">.</span><span class="nx">controller</span><span class="p">(</span><span class="s1">&#39;AppCtrl&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">$scope</span><span class="p">,</span> <span class="nx">$state</span><span class="p">,</span> <span class="nx">$filter</span><span class="p">,</span> <span class="nx">socket</span><span class="p">,</span> <span class="nx">Auth</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>  <span class="c1">//Ensure they are authed first.</span>
+</span><span class='line'>  <span class="k">if</span><span class="p">(</span><span class="nx">Auth</span><span class="p">.</span><span class="nx">currentUser</span><span class="p">()</span> <span class="o">==</span> <span class="kc">null</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>      <span class="nx">$state</span><span class="p">.</span><span class="nx">go</span><span class="p">(</span><span class="s1">&#39;login&#39;</span><span class="p">);</span>
+</span><span class='line'>      <span class="k">return</span><span class="p">;</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="c1">//input models</span>
+</span><span class='line'>  <span class="nx">$scope</span><span class="p">.</span><span class="nx">draft</span> <span class="o">=</span> <span class="p">{</span> <span class="nx">message</span><span class="o">:</span> <span class="s1">&#39;&#39;</span> <span class="p">};</span>
+</span><span class='line'>  <span class="nx">$scope</span><span class="p">.</span><span class="nx">channel</span> <span class="o">=</span> <span class="p">{</span> <span class="nx">name</span><span class="o">:</span> <span class="s1">&#39;&#39;</span> <span class="p">};</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="c1">//App info</span>
+</span><span class='line'>  <span class="nx">$scope</span><span class="p">.</span><span class="nx">channels</span> <span class="o">=</span> <span class="p">[];</span>
+</span><span class='line'>  <span class="nx">$scope</span><span class="p">.</span><span class="nx">listeningChannels</span> <span class="o">=</span> <span class="p">[];</span>
+</span><span class='line'>  <span class="nx">$scope</span><span class="p">.</span><span class="nx">activeChannel</span> <span class="o">=</span> <span class="kc">null</span><span class="p">;</span>
+</span><span class='line'>  <span class="nx">$scope</span><span class="p">.</span><span class="nx">userName</span> <span class="o">=</span> <span class="nx">Auth</span><span class="p">.</span><span class="nx">currentUser</span><span class="p">().</span><span class="nx">name</span><span class="p">;</span>
+</span><span class='line'>  <span class="nx">$scope</span><span class="p">.</span><span class="nx">messages</span> <span class="o">=</span> <span class="p">[];</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">///////////////////////////////////////////////////////////////////////</span>
+</span><span class='line'><span class="c1">///////////////////////////////////////////////////////////////////////</span>
+</span><span class='line'><span class="c1">//Socket.io listeners</span>
+</span><span class='line'><span class="c1">///////////////////////////////////////////////////////////////////////</span>
+</span><span class='line'><span class="c1">///////////////////////////////////////////////////////////////////////</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nx">socket</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">&#39;channels&#39;</span><span class="p">,</span> <span class="kd">function</span> <span class="nx">channels</span><span class="p">(</span><span class="nx">channels</span><span class="p">){</span>
+</span><span class='line'>      <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;channels&#39;</span><span class="p">,</span> <span class="nx">channels</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">channels</span><span class="p">);</span>
+</span><span class='line'>      <span class="nx">$scope</span><span class="p">.</span><span class="nx">channels</span> <span class="o">=</span> <span class="nx">channels</span><span class="p">;</span>
+</span><span class='line'>  <span class="p">});</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nx">socket</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">&#39;message:received&#39;</span><span class="p">,</span> <span class="kd">function</span> <span class="nx">messageReceived</span><span class="p">(</span><span class="nx">message</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>      <span class="nx">$scope</span><span class="p">.</span><span class="nx">messages</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">message</span><span class="p">);</span>
+</span><span class='line'>  <span class="p">});</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nx">socket</span><span class="p">.</span><span class="nx">emit</span><span class="p">(</span><span class="s1">&#39;user:joined&#39;</span><span class="p">,</span> <span class="p">{</span><span class="nx">name</span><span class="o">:</span> <span class="nx">Auth</span><span class="p">.</span><span class="nx">currentUser</span><span class="p">().</span><span class="nx">name</span><span class="p">});</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nx">socket</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">&#39;user:joined&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">user</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>      <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;user:joined&#39;</span><span class="p">);</span>
+</span><span class='line'>      <span class="nx">$scope</span><span class="p">.</span><span class="nx">messages</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">user</span><span class="p">);</span>
+</span><span class='line'>  <span class="p">});</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nx">$scope</span><span class="p">.</span><span class="nx">listenChannel</span> <span class="o">=</span> <span class="kd">function</span> <span class="nx">listenChannel</span> <span class="p">(</span><span class="nx">channel</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>      <span class="nx">socket</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">&#39;messages:channel:&#39;</span> <span class="o">+</span> <span class="nx">channel</span><span class="p">,</span> <span class="kd">function</span> <span class="nx">messages</span><span class="p">(</span><span class="nx">messages</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>          <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;got messages: &#39;</span><span class="p">,</span> <span class="nx">messages</span><span class="p">);</span>
+</span><span class='line'>          <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">messages</span><span class="p">.</span><span class="nx">length</span><span class="p">);</span>
+</span><span class='line'>          <span class="k">for</span><span class="p">(</span><span class="kd">var</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="nx">j</span> <span class="o">=</span> <span class="nx">messages</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">j</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>              <span class="kd">var</span> <span class="nx">message</span> <span class="o">=</span> <span class="nx">messages</span><span class="p">[</span><span class="nx">i</span><span class="p">];</span>
+</span><span class='line'>              <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;message&#39;</span><span class="p">);</span>
+</span><span class='line'>              <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">message</span><span class="p">);</span>
+</span><span class='line'>                  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;apply with function&#39;</span><span class="p">);</span>
+</span><span class='line'>              <span class="nx">$scope</span><span class="p">.</span><span class="nx">messages</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">message</span><span class="p">);</span>
+</span><span class='line'>          <span class="p">}</span>
+</span><span class='line'>      <span class="p">});</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="nx">socket</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">&#39;message:channel:&#39;</span> <span class="o">+</span> <span class="nx">channel</span><span class="p">,</span> <span class="kd">function</span> <span class="nx">message</span><span class="p">(</span><span class="nx">message</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>          <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;got message: &#39;</span> <span class="o">+</span> <span class="nx">message</span><span class="p">);</span>
+</span><span class='line'>          <span class="k">if</span><span class="p">(</span><span class="nx">channel</span> <span class="o">!=</span> <span class="nx">$scope</span><span class="p">.</span><span class="nx">activeChannel</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>              <span class="k">return</span><span class="p">;</span>
+</span><span class='line'>          <span class="p">}</span>
+</span><span class='line'>          <span class="nx">$scope</span><span class="p">.</span><span class="nx">messages</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">message</span><span class="p">);</span>
+</span><span class='line'>      <span class="p">});</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="nx">socket</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">&#39;message:remove:channel:&#39;</span> <span class="o">+</span> <span class="nx">channel</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">removalInfo</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>          <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;removalInfo to remove: &#39;</span><span class="p">,</span> <span class="nx">removalInfo</span><span class="p">);</span>
+</span><span class='line'>          <span class="kd">var</span> <span class="nx">expires</span> <span class="o">=</span> <span class="nx">removalInfo</span><span class="p">.</span><span class="nx">message</span><span class="p">.</span><span class="nx">expires</span><span class="p">;</span>
+</span><span class='line'>          <span class="kd">var</span> <span class="nx">expireMessageIndex</span> <span class="o">=</span> <span class="nx">$filter</span><span class="p">(</span><span class="s1">&#39;messageByExpires&#39;</span><span class="p">)(</span><span class="nx">$scope</span><span class="p">.</span><span class="nx">messages</span><span class="p">,</span> <span class="nx">expires</span><span class="p">);</span>
+</span><span class='line'>          <span class="k">if</span><span class="p">(</span><span class="nx">expireMessageIndex</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>              <span class="nx">$scope</span><span class="p">.</span><span class="nx">messages</span><span class="p">.</span><span class="nx">splice</span><span class="p">(</span><span class="nx">expireMessageIndex</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span>
+</span><span class='line'>          <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="p">});</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="nx">$scope</span><span class="p">.</span><span class="nx">listeningChannels</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">channel</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">///////////////////////////////////////////////////////////////////////</span>
+</span><span class='line'><span class="c1">///////////////////////////////////////////////////////////////////////</span>
+</span><span class='line'><span class="c1">// Controller methods</span>
+</span><span class='line'><span class="c1">///////////////////////////////////////////////////////////////////////</span>
+</span><span class='line'><span class="c1">///////////////////////////////////////////////////////////////////////</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nx">$scope</span><span class="p">.</span><span class="nx">joinChannel</span> <span class="o">=</span> <span class="kd">function</span> <span class="nx">joinChannel</span><span class="p">(</span><span class="nx">channel</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>      <span class="nx">$scope</span><span class="p">.</span><span class="nx">activeChannel</span> <span class="o">=</span> <span class="nx">channel</span><span class="p">;</span>
+</span><span class='line'>      <span class="nx">$scope</span><span class="p">.</span><span class="nx">messages</span> <span class="o">=</span> <span class="p">[];</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="nx">$scope</span><span class="p">.</span><span class="nx">channel</span><span class="p">.</span><span class="nx">name</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="c1">//Listen to channel if we dont have it already.</span>
+</span><span class='line'>      <span class="k">if</span><span class="p">(</span><span class="nx">$scope</span><span class="p">.</span><span class="nx">listeningChannels</span><span class="p">.</span><span class="nx">indexOf</span><span class="p">(</span><span class="nx">channel</span><span class="p">)</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>          <span class="nx">$scope</span><span class="p">.</span><span class="nx">listenChannel</span><span class="p">(</span><span class="nx">channel</span><span class="p">);</span>     
+</span><span class='line'>      <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="nx">socket</span><span class="p">.</span><span class="nx">emit</span><span class="p">(</span><span class="s1">&#39;channel:join&#39;</span><span class="p">,</span> <span class="p">{</span> <span class="nx">channel</span><span class="o">:</span> <span class="nx">channel</span><span class="p">,</span> <span class="nx">name</span><span class="o">:</span> <span class="nx">Auth</span><span class="p">.</span><span class="nx">currentUser</span><span class="p">().</span><span class="nx">name</span> <span class="p">});</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nx">$scope</span><span class="p">.</span><span class="nx">sendMessage</span> <span class="o">=</span> <span class="kd">function</span> <span class="nx">sendMessage</span><span class="p">(</span><span class="nx">draft</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>      <span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="nx">draft</span><span class="p">.</span><span class="nx">message</span> <span class="o">||</span> <span class="nx">draft</span><span class="p">.</span><span class="nx">message</span> <span class="o">==</span> <span class="kc">null</span> <span class="o">||</span> <span class="k">typeof</span> <span class="nx">draft</span> <span class="o">==</span> <span class="s1">&#39;undefined&#39;</span> <span class="o">||</span> <span class="nx">draft</span><span class="p">.</span><span class="nx">length</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>          <span class="k">return</span><span class="p">;</span>
+</span><span class='line'>      <span class="p">}</span>
+</span><span class='line'>      <span class="nx">socket</span><span class="p">.</span><span class="nx">emit</span><span class="p">(</span><span class="s1">&#39;message:send&#39;</span><span class="p">,</span> <span class="p">{</span> <span class="nx">message</span><span class="o">:</span> <span class="nx">draft</span><span class="p">.</span><span class="nx">message</span><span class="p">,</span> <span class="nx">name</span><span class="o">:</span> <span class="nx">Auth</span><span class="p">.</span><span class="nx">currentUser</span><span class="p">().</span><span class="nx">name</span><span class="p">,</span> <span class="nx">channel</span><span class="o">:</span> <span class="nx">$scope</span><span class="p">.</span><span class="nx">activeChannel</span> <span class="p">});</span>
+</span><span class='line'>      <span class="nx">$scope</span><span class="p">.</span><span class="nx">draft</span><span class="p">.</span><span class="nx">message</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">;</span>
+</span><span class='line'>  <span class="p">};</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nx">$scope</span><span class="p">.</span><span class="nx">logout</span> <span class="o">=</span> <span class="kd">function</span> <span class="nx">logout</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>      <span class="nx">Auth</span><span class="p">.</span><span class="nx">logout</span><span class="p">();</span>
+</span><span class='line'>      <span class="nx">$state</span><span class="p">.</span><span class="nx">go</span><span class="p">(</span><span class="s1">&#39;login&#39;</span><span class="p">);</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="c1">//Auto join the lobby</span>
+</span><span class='line'>  <span class="nx">$scope</span><span class="p">.</span><span class="nx">joinChannel</span><span class="p">(</span><span class="s1">&#39;Lobby&#39;</span><span class="p">);</span>
+</span><span class='line'><span class="p">})</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>All of the code can be found on <a href="https://github.com/jbavari/ionic-socket.io-redis-chat">github here</a>.</p>
+
+<h3>Things to improve</h3>
+
+<ul>
+<li>Testing &ndash; for sure. I definitely failed in getting tests first</li>
+<li>Removing the inline functions from Socket.io callbacks &ndash; not sure I like how I handled that to be honest</li>
+<li>Improve the UI</li>
+<li>Actually make the channels expire over time &ndash; and alert the user</li>
+<li>Have some kind of location tracking to pull local channels near you</li>
+</ul>
+
+
+<p>Enjoy! Hope this helps any others learn some tips for developing in any of these technologies used!</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -1936,130 +2466,6 @@ Enjoy!</p>
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/04/18/enabling-android-remote-debugging-in-phonegap-2-dot-9/">Enabling Android Remote Debugging in Phonegap 2.9</a></h1>
-    
-    
-      <p class="meta">
-        <span class="reading-time">less than a 1 minute read</span>
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2014-04-18T10:13:00-06:00" pubdate data-updated="true">Apr 18<span>th</span>, 2014</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Recently the Cordova (as well as Phonegap) team has introduced <a href="http://www.raymondcamden.com/index.cfm/2014/1/2/Apache-Cordova-33-and-Remote-Debugging-for-Android">the ability to remote debug Android 4.4+</a> from <a href="https://issues.apache.org/jira/browse/CB-5487">this issue</a>.</p>
-
-<p>If you&rsquo;re like us, you have a lot of invested technology into Phonegap 2.9, and are actively making the move to Cordova 3.4. In the real world, you aren&rsquo;t always granted conveniences to move to the latest and greatest all at one time when you have released products. <a href="http://www.raymondcamden.com/index.cfm/2014/4/11/Results-of-PhoneGap-Survey">Raymond Camden did a survey</a> and apparently there are still some out there utilizing Phonegap/Cordova 2.9.</p>
-
-<p>I wanted to show how easy it was our team to backport some of the changes needed to enable Remote Debugging in Phonegap 2.9.</p>
-
-<p>You&rsquo;ll need to make a few changes to your MainActivity.java file. The first is an import statement, and the second is to make these changes near the bottom of the onCreate method:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>// At the top near your other import statements:
-</span><span class='line'>import android.webkit.WebView;
-</span><span class='line'>// ..snip..!
-</span><span class='line'>
-</span><span class='line'>public void onCreate(Bundle savedInstanceState) {
-</span><span class='line'>    // ..snip..
-</span><span class='line'>    // Enable web debugging
-</span><span class='line'>    if(android.os.Build.VERSION.SDK_INT &gt;= android.os.Build.VERSION_CODES.KITKAT) {
-</span><span class='line'>      WebView.setWebContentsDebuggingEnabled(true);
-</span><span class='line'>    }
-</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
-
-
-<p>One thing to note, this only works for Android versions 4.4 or greater! If you aren&rsquo;t using Android API 19 or greater, you&rsquo;ll have to keep using Weinre.</p>
-
-<p>Now just start your app, enable USB debugging, open Chrome, go to about:inspect, and enjoy your remote debugging in Phonegap/Cordova 2.9! Cheers!</p>
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/04/14/apachecon-2014/">Apachecon 2014</a></h1>
-    
-    
-      <p class="meta">
-        <span class="reading-time">less than a 1 minute read</span>
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2014-04-14T20:58:00-06:00" pubdate data-updated="true">Apr 14<span>th</span>, 2014</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>This year I was fortunate enough to attend ApacheCon 2014 in Denver CO. It was a big adventure for me, partyly due to one of my main goals this year was to contribute more to open source. I&rsquo;ve been actively contributing to the Apache Cordova project, so this was my opportunity to meet some of the Cordova contributors.</p>
-
-<p>The conference kicked off first with Steve Gill&rsquo;s (<a href="https://twitter.com/stevesgill">@stevesgill</a>) talk on the Cordova CLI and the work flow with it. Steve is in charge of all the releases for Cordova, and we&rsquo;ve worked together on the <a href="http://plugins.cordova.io">cordova plugins registry</a> since the beginning of this year. Steve really pulls this team together, as he&rsquo;s a stand up guy and really easy to talk to. I, for one, am very thankful to have him be a part of the Cordova team!</p>
-
-<p>The next talk was by <a href="https://twitter.com/doncoleman">@doncoleman</a> over Bluetooth LE and how to use it with the Cordova platform. This presentation really opened my eyes to what the Cordova project is capable of (not that I hadn&rsquo;t known, but he sure opened up some ideas), and much more so with Don&rsquo;s awesome <a href="https://github.com/don/cordova-plugin-rfduino">Cordova Plugin &ndash; RFDuino</a>, as well as his <a href="https://github.com/don/phonegap-nfc">NFC Plugin</a> that he presented later in the day. Not only can you write your Bluetooth/NFC items once, but they can run across platforms. Way awesome.</p>
-
-<p>I was then lucky enough to see Andrew Grieve&rsquo;s <a href="https://twitter.com/GrieveAndrew">@GrieveAndrew</a> talk over the <a href="https://dl.dropboxusercontent.com/u/6648754/apachecon2014/index.html#1">Cordova Development Lifecycle</a> &ndash; it amazes me that the Cordova project is composed of around 50+ repos, and releases can take days! Wow. Theres&rsquo;s a lot that goes into the Cordova project.</p>
-
-<p><a href="https://twitter.com/hazems">Hazem Saleh</a> then spoke about Javascript and Cordova &ndash; and how they fit together with the native bridges quite easily. He also quizzed the audience over some Javascript gotchas. Hazem also spoke to what it is like outside of the US &ndash; where there are other phones us American&rsquo;s don&rsquo;t really get to play with. Now that is global support, way to go Cordova!</p>
-
-<p>Finally, <a href="https://twitter.com/LisaSeacat">Lisa DeLuca</a> gave a very informative presentation on how her and the other open source members around the world translate all of the Cordova documenation in a ton of different languages. It&rsquo;s interesting &ndash; first they take the English documents, upload to <a href="https://crowdin.net/">Crowdin</a> &ndash; which then handles either human translation (preferred) and even gives the option for automated translation (not perfect).</p>
-
-<p>Finally, there was the hackathon held by Red Hat and IBM. It was awesome getting to sit with 8 of the core Cordova team members and hacking on my own project as well as getting very familiar with the code base. It was a truly exciting time for me.</p>
-
-<p>Hopefully I&rsquo;ll get the opportunity to work with these fine folks more in the future! Cheers!</p>
-
-<p><img class="left" src="https://pbs.twimg.com/media/Bky_CGxCAAAzDRb.jpg"></p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/6/">&larr; Older</a>
@@ -2077,6 +2483,14 @@ Enjoy!</p>
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2019/02/23/the-victim-or-the-victor/">The Victim or the Victor</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2019/01/29/3-years-of-elixir-reflections/">3 Years of Elixir: Reflections</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2017/04/16/puppet-a-testing-handbook/">Puppet: A Testing Handbook</a>
       </li>
     
@@ -2086,14 +2500,6 @@ Enjoy!</p>
     
       <li class="post">
         <a href="/blog/2016/12/29/multicast-service-discovery-in-electron/">Multicast Service Discovery in Electron</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2016/03/11/using-erlang-observer-on-a-remote-elixir-server/">Using Erlang Observer on a Remote Elixir Server</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2016/01/24/custom-json-encoding-in-phoenix/">Custom JSON Encoding in Phoenix</a>
       </li>
     
   </ul>

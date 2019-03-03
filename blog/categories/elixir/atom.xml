@@ -4,7 +4,7 @@
   <title><![CDATA[Category: elixir | Josh Bavari's Ramblings]]></title>
   <link href="http://jbavari.github.io/blog/categories/elixir/atom.xml" rel="self"/>
   <link href="http://jbavari.github.io/"/>
-  <updated>2019-01-27T19:23:21-07:00</updated>
+  <updated>2019-03-02T17:47:20-07:00</updated>
   <id>http://jbavari.github.io/</id>
   <author>
     <name><![CDATA[Josh Bavari]]></name>
@@ -12,6 +12,65 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[3 years of Elixir: Reflections]]></title>
+    <link href="http://jbavari.github.io/blog/2019/01/29/3-years-of-elixir-reflections/"/>
+    <updated>2019-01-29T07:30:00-07:00</updated>
+    <id>http://jbavari.github.io/blog/2019/01/29/3-years-of-elixir-reflections</id>
+    <content type="html"><![CDATA[<p>Back in 2015, I had just started at <a href="http://canvas.technology">CANVAS Technology</a> and my task was clear: to create a web application that can service many operations concurrently from users, robots, and other integration services. Prior to this new venture, I had spent my last few years doing Ruby on Rails, Node.js JavaScript, mobile applications (cordova, minimal Objective-C, Java/Android). Only a few months before joining CANVAS had I just started playing with Elixir and Phoenix. I was so excited and relieved to find something that was geared exactly for what we were embarking on.</p>
+
+<p>What I want to outline in this post is the lessons I&rsquo;ve learned using Elixir these last 3+ years and help others learn quickly.</p>
+
+<h2>Upgrade sooner than later</h2>
+
+<p>Discuss pains of upgrading Elixir 1.3 &ndash;> 1.6, Ecto 1.0 &ndash;> 2.0, Phoenix 0.9 &ndash;> 1.3. It definitely hasn&rsquo;t been easy to update, this is mitigated by staying abreast of Elixir / phoenix changes and trying to implement early.</p>
+
+<h2>GenServers are your friend &ndash; but use them only if you must</h2>
+
+<p>Abstract away the API and the Server &ndash; link to post by <a href="https://pragdave.me/blog/2017/07/13/decoupling-interface-and-implementation-in-elixir.html">Dave Thomas explaining splitting the APIs, Servers, and Implementations in Elixir</a>.</p>
+
+<h2>Testing pains with GenServers and Ecto&rsquo;s concurrency model</h2>
+
+<p>Make sure to restart genservers / supervisors. Having a connection time out be longer for longer running genservers that aren&rsquo;t started every setup fixture.</p>
+
+<h2>Using docker for team / testing scenarios</h2>
+
+<p>Docker-compose for stack, testing with diff vars. Preload any databases by putting them in the postgres container root in <code>/tmp</code>.</p>
+
+<h2>Testing browsers with Hound / ChromeDriver</h2>
+
+<p>Use Hound and chromedriver.</p>
+
+<h2>Do not code everything to the <code>Repo</code> itself</h2>
+
+<p>It&rsquo;s not as easy to cut off your database addiction. Having an intermediate context API that cache is a good first step.</p>
+
+<h2>PubSub is your friend, use structs to pass messages</h2>
+
+<p>When using cast/gproc, pass the Structs, don&rsquo;t use tuples. Resist the simple solutiuons. Pass structs defined.</p>
+
+<h2>Learn ETS</h2>
+
+<p>Don&rsquo;t use a cache when the Erlang VM has one built in.</p>
+
+<h2>Use behaviours</h2>
+
+<p>Take a look how <a href="https://github.com/aaronrenner/crowdfundr">crowdfundr</a> app. Code to interfaces, not the implementations. Use the <code>impl</code> approach.</p>
+
+<h2>Nginx as a front-end for SSL termination</h2>
+
+<p>Links/discussion to the post, security wise, leave Nginx to handle the vulns and your app to handle the impl.</p>
+
+<h2>Releases with Distillery</h2>
+
+<p>Ship those tarballs, let it fly. Easier/safer than shiping your code. Should probably post about the replacing of ENV vars. Use a Config module for system set env variables instead of them getting baked into your <code>sys.config</code> file.</p>
+
+<h2>Clustering &ndash; using epmd / GenServers for node communication message passing</h2>
+
+<p>Link to swarm and libcluster &ndash; knowing that clustering comes out of the box with Erlang/Elixir.</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Test Coverage Reports in Elixir]]></title>
@@ -187,123 +246,6 @@ plug Plug.Static,
 </code></p>
 
 <p>There you have it, now I can access the files in the <code>zips</code> folder in <code>priv/static/zips</code> through the URL. Cheers!</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Shipping data with Protocol Buffers in Elixir]]></title>
-    <link href="http://jbavari.github.io/blog/2016/01/16/shipping-data-with-protocol-buffers-in-elixir/"/>
-    <updated>2016-01-16T22:49:00-07:00</updated>
-    <id>http://jbavari.github.io/blog/2016/01/16/shipping-data-with-protocol-buffers-in-elixir</id>
-    <content type="html"><![CDATA[<p>Lately, I&rsquo;ve needed some data shipped across to various nodes to exchange data in a variety of places on a problem I was working on. There were a few ways to get that data shipped across, as the usual suspects are JSON, XML, or Google&rsquo;s <a href="https://developers.google.com/protocol-buffers/?hl=en">Protocol Buffers</a>.</p>
-
-<p>For this specific problem, we were needing to get that data shared from C++ nodes to Elixir/Erlang.</p>
-
-<p>Since the team was using Protocol buffers already, I decided to give them a run in Elixir using <a href="https://github.com/bitwalker/exprotobuf">exprotobuf</a>.</p>
-
-<p>Note: <a href="https://github.com/jbavari/elixir-zeromq-protobuf-uploader">the client for this experiement is on github</a>.</p>
-
-<h2>The idea</h2>
-
-<p>The idea here is &ndash; we&rsquo;ll capture pieces of data from one node and ship it to the server for processing. We define the data structure by a <code>.proto</code> file, then turn our data into binary form by encoding it, and finally shipping it to it&rsquo;s destination. We could do the same thing with JSON, but we want the data as light as possible.</p>
-
-<p>We&rsquo;ll use <a href="http://zeromq.org/">ZeroMQ</a> to ship the data and use the Elixir package <a href="https://github.com/zeromq/exzmq">exzmq</a> to encode in protocol buffers.</p>
-
-<h2>The process</h2>
-
-<p>First we define our protocol buffer format for an image message we want to send with data, its width, height, and bits per pixel:</p>
-
-<p><code>protobuf
-message ImageMsg {
-  optional bytes data = 1;
-  optional int32 width = 2;
-  optional int32 height = 3;
-  optional int32 bpp = 4;
-}
-</code></p>
-
-<p>We set up our application to use <code>exprotobuf</code> in our <code>mix.exs</code> file:</p>
-
-<p>``` elixir
-def application do</p>
-
-<pre><code>[applications: [:logger, :exzmq, :exprotobuf],
- mod: {Zmq2, []}]
-</code></pre>
-
-<p>end
-```</p>
-
-<p>as well as including it as a dependency:</p>
-
-<p>``` elixir
-defp deps do
-  [</p>
-
-<pre><code>{:exzmq, git: "https://github.com/zeromq/exzmq"},
-{:exprotobuf, "1.0.0-rc1"}
-</code></pre>
-
-<p>  ]
-end
-```</p>
-
-<p>Finally we create an Elixir struct from this <a href="https://github.com/jbavari/elixir-zeromq-protobuf-uploader/blob/master/lib/proto/imagemsg.proto">proto file</a> as such:</p>
-
-<p><code>elixir
-defmodule Zmq2.Protobuf do
-  use Protobuf, from: Path.wildcard(Path.expand("./proto/imagemsg.proto", __DIR__))
-end
-</code></p>
-
-<p>Now that we have our protobuf file read in, let&rsquo;s get an images binary data, create an elixir structure from our protobuf file, and send that data over a Zero MQ socket (using <code>exzmq</code>):</p>
-
-<p>``` elixir
-def check_file(file_path, socket) do
-  IO.puts &ldquo;Sending image from file path: #{Path.expand(file_path, <strong>DIR</strong>)}&rdquo;</p>
-
-<p>  case File.read(Path.expand(file_path)) do</p>
-
-<pre><code>{:error, :enoent} -&gt;
-  IO.puts "No file at the path: #{file_path}"
-{:ok, img_data} -&gt;
-  send_image_data(socket, img_data)
-</code></pre>
-
-<p>  end
-end</p>
-
-<p>def send_image_data(socket, img_data) do
-  img_message = Zmq2.Protobuf.ImageMsg.new(data: img_data)
-  encoded_data = Zmq2.Protobuf.ImageMsg.encode(img_message)</p>
-
-<p>  IO.puts &ldquo;The encoded data: #{inspect encoded_data}&rdquo;</p>
-
-<p>  Exzmq.send(socket, [encoded_data])</p>
-
-<p>  IO.puts &ldquo;Sent request &ndash; awaiting reply\n\n&rdquo;</p>
-
-<p>  # {:ok, r} =
-  case Exzmq.recv(socket) do</p>
-
-<pre><code>{:ok, r} -&gt; IO.puts("Received reply #{inspect r}")
-_ -&gt; {:error, "No Reply"}
-</code></pre>
-
-<p>  end</p>
-
-<p>end
-```</p>
-
-<p>And there we have it, a message sent serialized with protocol buffers. We can now apply this same strategy over any different protocol buffer messages we define, and ship them over any protocl we&rsquo;d like.</p>
-
-<h3>Some inspiration</h3>
-
-<p>Along the R&amp;D process, I came across <a href="http://dbeck.github.io">David Beck&rsquo;s blog</a>. David has an experiment where he was <a href="http://dbeck.github.io/Wrapping-up-my-Elixir-TCP-experiments/">sending several million messages in TCP</a> where he explores some ultra-efficient methods of sending messages, it&rsquo;s a great read. He also covers <a href="http://dbeck.github.io/5-lessons-learnt-from-choosing-zeromq-and-protobuf/">zeromq and protocol buffers</a> that goes more in depth into Protocol buffers and some lessons learned.</p>
-
-<p>Alas, we move on!</p>
-
-<p>Cheers</p>
 ]]></content>
   </entry>
   

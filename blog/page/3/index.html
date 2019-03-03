@@ -9,7 +9,7 @@
   <meta name="author" content="Josh Bavari">
 
   
-  <meta name="description" content="If you do any kind of deployments to npm, you&rsquo;ll probably find learning more about npm tags very helpful. Just as git tags mark commits in your &hellip;">
+  <meta name="description" content="I&rsquo;ve been fortunate enough to be working on Angular 2 while being on the Ionic team. I really enjoyed Pascal Precht&rsquo;s post about &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -70,6 +70,455 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/10/19/angular-2-injectables/">Angular 2 Injectables</a></h1>
+    
+    
+      <p class="meta">
+        <span class="reading-time">less than a 1 minute read</span>
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-10-19T16:34:00-06:00" pubdate data-updated="true">Oct 19<span>th</span>, 2015</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>I&rsquo;ve been fortunate enough to be working on Angular 2 while being on the Ionic team.</p>
+
+<p>I really enjoyed Pascal Precht&rsquo;s post about <a href="http://blog.thoughtram.io/angular/2015/05/18/dependency-injection-in-angular-2.html">Dependency injection in Angular 2</a>. One thing that I want to shed some more light on is how dependency injection works in an Angular 2 application using the <code>@Injectable</code> metadata thats passed for a class that&rsquo;s to be injected.</p>
+
+<p>Quick tip: take a quick look at the <a href="https://angular.io/docs/ts/latest/guide/cheatsheet.html">Angular 2 cheat sheet</a> to see some more of these Angular 2 syntax and API.</p>
+
+<h2>The basics of Depdendency injection</h2>
+
+<p>The gist of it we need:</p>
+
+<p>1) A class with <code>@Injectable</code> to tell angular 2 that its to be injected &ndash; DataService<br/>
+2) A class with a constructor that accepts a type to be injected</p>
+
+<p>A solid example, DataService marked as <code>@Injectable</code> that also needs <code>Http</code> to be injected for its use:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kr">import</span> <span class="p">{</span><span class="nx">Injectable</span><span class="p">,</span> <span class="nx">bind</span><span class="p">}</span> <span class="nx">from</span> <span class="s1">&#39;angular2/core&#39;</span><span class="p">;</span>
+</span><span class='line'><span class="kr">import</span> <span class="p">{</span><span class="nx">Http</span><span class="p">}</span> <span class="nx">from</span> <span class="s1">&#39;angular2/http&#39;</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="err">@</span><span class="nx">Injectable</span><span class="p">()</span> <span class="cm">/* This is #1 */</span>
+</span><span class='line'><span class="kr">export</span> <span class="kr">class</span> <span class="nx">DataService</span> <span class="p">{</span>
+</span><span class='line'>  <span class="nx">constructor</span><span class="p">(</span><span class="nx">http</span><span class="o">:</span> <span class="nx">Http</span> <span class="cm">/* This is #2 */</span> <span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">this</span><span class="p">.</span><span class="nx">http</span> <span class="o">=</span> <span class="nx">http</span><span class="p">;</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>What we have in the example above is a class, DataService, that needs Http to do what it needs to be done.</p>
+
+<h2>An example scenario</h2>
+
+<p>Let&rsquo;s say we have the following scenario, an angular 2 application with an app, a page for sessions, session details, speakers, and a data service that provides the data for those pages.</p>
+
+<p>We&rsquo;d want the app instance to instantiate the data service, then have a component <code>schedule</code> that can use the data service as provided by the app instance. From there, we&rsquo;d have the session detail that also gets the schedule data from the data service.</p>
+
+<p>The hierarchy would look like this:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>          App
+</span><span class='line'>           |
+</span><span class='line'>  |.............|...............|
+</span><span class='line'>  |             |               |
+</span><span class='line'>   Schedule      Speakers     Session-detail
+</span><span class='line'>  |
+</span><span class='line'>  |
+</span><span class='line'>  Schedule-list
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>All of these components will need the instance of data service.</p>
+
+<p>We&rsquo;ll need:</p>
+
+<ul>
+<li>A data serviced marked with <code>@Injectable</code>.</li>
+<li>A schedule page</li>
+<li>A schedule-list component</li>
+<li>A speakers page</li>
+</ul>
+
+
+<p>Say you have the following:</p>
+
+<p>In <code>www/app/service/data.js</code>:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kr">import</span> <span class="p">{</span><span class="nx">Injectable</span><span class="p">}</span> <span class="nx">from</span> <span class="s1">&#39;angular2/core&#39;</span><span class="p">;</span>
+</span><span class='line'><span class="kr">import</span> <span class="p">{</span><span class="nx">Http</span><span class="p">}</span> <span class="nx">from</span> <span class="s1">&#39;angular2/http&#39;</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="err">@</span><span class="nx">Injectable</span><span class="p">()</span>
+</span><span class='line'><span class="kr">export</span> <span class="kr">class</span> <span class="nx">DataService</span> <span class="p">{</span>
+</span><span class='line'>  <span class="nx">constructor</span><span class="p">(</span><span class="nx">http</span><span class="o">:</span> <span class="nx">Http</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">this</span><span class="p">.</span><span class="nx">http</span> <span class="o">=</span> <span class="nx">http</span><span class="p">;</span>
+</span><span class='line'>    <span class="k">this</span><span class="p">.</span><span class="nx">data</span> <span class="o">=</span> <span class="kc">null</span><span class="p">;</span>
+</span><span class='line'>    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;DataService constructor&#39;</span><span class="p">);</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nx">retrieveData</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">this</span><span class="p">.</span><span class="nx">http</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">&#39;api/data/data.json&#39;</span><span class="p">)</span>
+</span><span class='line'>    <span class="p">.</span><span class="nx">map</span><span class="p">(</span><span class="nx">res</span> <span class="o">=&gt;</span> <span class="nx">res</span><span class="p">.</span><span class="nx">json</span><span class="p">())</span>
+</span><span class='line'>    <span class="p">.</span><span class="nx">subscribe</span><span class="p">(</span><span class="nx">data</span> <span class="o">=&gt;</span> <span class="p">{</span>
+</span><span class='line'>      <span class="k">this</span><span class="p">.</span><span class="nx">data</span> <span class="o">=</span> <span class="nx">data</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">});</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>We&rsquo;d also have our Application object, <code>www/app/app.js</code>:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kr">import</span> <span class="p">{</span><span class="nx">App</span><span class="p">,</span> <span class="nx">Platform</span><span class="p">,</span> <span class="nx">StatusBar</span><span class="p">}</span> <span class="nx">from</span> <span class="s1">&#39;ionic/ionic&#39;</span><span class="p">;</span>
+</span><span class='line'><span class="kr">import</span> <span class="p">{</span><span class="nx">DataService</span><span class="p">}</span> <span class="nx">from</span> <span class="s1">&#39;./service/data&#39;</span><span class="p">;</span>
+</span><span class='line'><span class="kr">import</span> <span class="p">{</span><span class="nx">AboutPage</span><span class="p">}</span> <span class="nx">from</span> <span class="s1">&#39;./about/about&#39;</span><span class="p">;</span>
+</span><span class='line'><span class="kr">import</span> <span class="p">{</span><span class="nx">MapPage</span><span class="p">}</span> <span class="nx">from</span> <span class="s1">&#39;./map/map&#39;</span><span class="p">;</span>
+</span><span class='line'><span class="kr">import</span> <span class="p">{</span><span class="nx">SchedulePage</span><span class="p">}</span> <span class="nx">from</span> <span class="s1">&#39;./schedule/schedule&#39;</span><span class="p">;</span>
+</span><span class='line'><span class="kr">import</span> <span class="p">{</span><span class="nx">SpeakersPage</span><span class="p">}</span> <span class="nx">from</span> <span class="s1">&#39;./speakers/speakers&#39;</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="err">@</span><span class="nx">App</span><span class="p">({</span>
+</span><span class='line'>  <span class="nx">templateUrl</span><span class="o">:</span> <span class="s1">&#39;app/app.html&#39;</span><span class="p">,</span>
+</span><span class='line'>  <span class="nx">providers</span><span class="o">:</span> <span class="p">[</span><span class="nx">DataService</span><span class="p">]</span>
+</span><span class='line'>  <span class="cm">/* </span>
+</span><span class='line'><span class="cm">    Here we&#39;re saying, please include an instance of </span>
+</span><span class='line'><span class="cm">    DataService for all my children components,</span>
+</span><span class='line'><span class="cm">    in this case being sessions, speakers, </span>
+</span><span class='line'><span class="cm">    and session detail.</span>
+</span><span class='line'><span class="cm">  */</span>
+</span><span class='line'><span class="p">})</span>
+</span><span class='line'><span class="kr">class</span> <span class="nx">ConferenceApp</span> <span class="p">{</span>
+</span><span class='line'>  <span class="nx">constructor</span><span class="p">(</span><span class="nx">platform</span><span class="o">:</span> <span class="nx">Platform</span><span class="p">,</span> <span class="nx">data</span><span class="o">:</span> <span class="nx">DataService</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="nx">data</span><span class="p">.</span><span class="nx">retrieveData</span><span class="p">();</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Then we&rsquo;d have our speakers component, <code>www/app/speakers/speakers.js</code>:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kr">import</span> <span class="p">{</span><span class="nx">Page</span><span class="p">}</span> <span class="nx">from</span> <span class="s1">&#39;ionic/ionic&#39;</span><span class="p">;</span>
+</span><span class='line'><span class="kr">import</span> <span class="p">{</span><span class="nx">DataService</span><span class="p">}</span> <span class="nx">from</span> <span class="s1">&#39;../service/data&#39;</span><span class="p">;</span>
+</span><span class='line'><span class="kr">import</span> <span class="p">{</span><span class="nx">SpeakerDetailPage</span><span class="p">}</span> <span class="nx">from</span> <span class="s1">&#39;../speaker-detail/speaker-detail&#39;</span><span class="p">;</span>
+</span><span class='line'><span class="kr">import</span> <span class="p">{</span><span class="nx">SessionDetailPage</span><span class="p">}</span> <span class="nx">from</span> <span class="s1">&#39;../session-detail/session-detail&#39;</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="err">@</span><span class="nx">Page</span><span class="p">({</span>
+</span><span class='line'>  <span class="nx">templateUrl</span><span class="o">:</span> <span class="s1">&#39;app/speakers/speakers.html&#39;</span>
+</span><span class='line'><span class="p">})</span>
+</span><span class='line'><span class="kr">export</span> <span class="kr">class</span> <span class="nx">SpeakersPage</span> <span class="p">{</span>
+</span><span class='line'>  <span class="nx">constructor</span><span class="p">(</span><span class="nx">nav</span><span class="o">:</span> <span class="nx">NavController</span><span class="p">,</span> <span class="nx">data</span><span class="o">:</span> <span class="nx">DataService</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">this</span><span class="p">.</span><span class="nx">nav</span> <span class="o">=</span> <span class="nx">nav</span><span class="p">;</span>
+</span><span class='line'>    <span class="k">this</span><span class="p">.</span><span class="nx">speakers</span> <span class="o">=</span> <span class="kc">null</span><span class="p">;</span>
+</span><span class='line'>    <span class="k">this</span><span class="p">.</span><span class="nx">dataService</span> <span class="o">=</span> <span class="nx">data</span><span class="p">;</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nx">onInit</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">this</span><span class="p">.</span><span class="nx">speakers</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">dataService</span><span class="p">.</span><span class="nx">getSchedule</span><span class="p">();</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Now I want to point something out above. If we had the <code>SpeakersPage</code> to also have a <code>providers: [DataService]</code>, we are telling angular 2 to create an instance of DataService to make it available for <code>SpeakersPage</code>&rsquo;s children, <strong>instead of</strong> using the DataService that <code>ConferenceApp</code> provided.</p>
+
+<p>I repeat, we&rsquo;d have two instances of <code>DataService</code> with this:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kr">import</span> <span class="p">{</span><span class="nx">Page</span><span class="p">}</span> <span class="nx">from</span> <span class="s1">&#39;ionic/ionic&#39;</span><span class="p">;</span>
+</span><span class='line'><span class="kr">import</span> <span class="p">{</span><span class="nx">DataService</span><span class="p">}</span> <span class="nx">from</span> <span class="s1">&#39;../service/data&#39;</span><span class="p">;</span>
+</span><span class='line'><span class="kr">import</span> <span class="p">{</span><span class="nx">SpeakerDetailPage</span><span class="p">}</span> <span class="nx">from</span> <span class="s1">&#39;../speaker-detail/speaker-detail&#39;</span><span class="p">;</span>
+</span><span class='line'><span class="kr">import</span> <span class="p">{</span><span class="nx">SessionDetailPage</span><span class="p">}</span> <span class="nx">from</span> <span class="s1">&#39;../session-detail/session-detail&#39;</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="err">@</span><span class="nx">Page</span><span class="p">({</span>
+</span><span class='line'>  <span class="nx">templateUrl</span><span class="o">:</span> <span class="s1">&#39;app/speakers/speakers.html&#39;</span><span class="p">,</span>
+</span><span class='line'>  <span class="nx">providers</span><span class="o">:</span> <span class="p">[</span><span class="nx">DataService</span><span class="p">]</span>
+</span><span class='line'>  <span class="c1">// This will instantiate a new DataService for its children</span>
+</span><span class='line'><span class="p">})</span>
+</span><span class='line'><span class="kr">export</span> <span class="kr">class</span> <span class="nx">SpeakersPage</span> <span class="p">{</span>
+</span><span class='line'>  <span class="nx">constructor</span><span class="p">(</span><span class="nx">nav</span><span class="o">:</span> <span class="nx">NavController</span><span class="p">,</span> <span class="nx">data</span><span class="o">:</span> <span class="nx">DataService</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">this</span><span class="p">.</span><span class="nx">nav</span> <span class="o">=</span> <span class="nx">nav</span><span class="p">;</span>
+</span><span class='line'>    <span class="k">this</span><span class="p">.</span><span class="nx">speakers</span> <span class="o">=</span> <span class="kc">null</span><span class="p">;</span>
+</span><span class='line'>    <span class="k">this</span><span class="p">.</span><span class="nx">dataService</span> <span class="o">=</span> <span class="nx">data</span><span class="p">;</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nx">onInit</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">this</span><span class="p">.</span><span class="nx">speakers</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">dataService</span><span class="p">.</span><span class="nx">getSchedule</span><span class="p">();</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>This is very important. If we had a <code>console.log</code> statement in the <code>DataService</code> constructor, we&rsquo;d see it run twice with the <code>providers: [DataService]</code> being specified.</p>
+
+<p>One thing to remember, if at the root application you specify a provider, it will be available to all children components that it contains, unless you specify a <code>providers</code> that then will initialize a new instance of that provided class.</p>
+
+<p>I hope this post helps clear up dependency injection in Angular 2. Now get back to coding!</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/10/17/npm-production-checklist/">Npm Production Checklist</a></h1>
+    
+    
+      <p class="meta">
+        <span class="reading-time">less than a 1 minute read</span>
+        
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+<time datetime="2015-10-17T18:33:00-06:00" pubdate data-updated="true">Oct 17<span>th</span>, 2015</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>I recently read this post by RisingStack over the <a href="https://blog.risingstack.com/node-js-production-checklist">Node.js Production Checklist</a>.</p>
+
+<p>Since this was aimed at releasing node.js applications for the most part, I wanted to touch base on a &lsquo;production checklist&rsquo; on releasing a npm module.</p>
+
+<p>The <a href="https://docs.npmjs.com/misc/developers">npm-developers guide</a> does a <em>great</em> job of explaining much you need to know about publishing your npm module.</p>
+
+<p>This post will mainly serve as a work in progress document to supplement the developers guide, as well as serving as a way to help me continue to keep learning best practices all the time.</p>
+
+<p>Some of the methods I use in my npm release schedule are as follows:</p>
+
+<ol>
+<li>Keeping files out of your package</li>
+<li>Locking versions</li>
+<li>Continuous integration (tests, install, etc)</li>
+<li>Alpha/beta pushes (user testing)</li>
+<li><a href="https://github.com/tjunnone/npm-check-updates">npm-check-updates</a></li>
+</ol>
+
+
+<h2>Keeping files out of your package</h2>
+
+<p>We want our users to only have to download what they need to use your module. This may mean removing any files that are not beneficial for the user. Much like <code>.gitignore</code> for files being checked into git, npm has <code>.npmignore</code>.</p>
+
+<p>Straight from <a href="https://docs.npmjs.com/misc/developers#keeping-files-out-of-your-package">npm docs</a>:</p>
+
+<blockquote><p>Use a .npmignore file to keep stuff out of your package. If there&rsquo;s no .npmignore file, but there is a .gitignore file, then npm will ignore the stuff matched by the .gitignore file. If you want to include something that is excluded by your .gitignore file, you can create an empty .npmignore file to override it. Like git, npm looks for .npmignore and .gitignore files in all subdirectories of your package, not only the root directory.</p></blockquote>
+
+<p>We can also use a command in the npm CLI called <code>prune</code>.</p>
+
+<p>Again, straight from the <a href="https://docs.npmjs.com/cli/prune">npm documentation</a>:</p>
+
+<blockquote><p>This command removes &ldquo;extraneous&rdquo; packages. If a package name is provided, then only packages matching one of the supplied names are removed.
+Extraneous packages are packages that are not listed on the parent package&rsquo;s dependencies list.
+If the &mdash;production flag is specified or the NODE_ENV environment variable is set to production, this command will remove the packages specified in your devDependencies. Setting &mdash;production=false will negate NODE_ENV being set to production.</p></blockquote>
+
+<p>This is a great way to ensure you dont have any extra packages you might have installed via <code>npm install</code> and either forgot to pass the <code>--save</code> flag or were just testing functionality.</p>
+
+<p>You can also use this command inline with the <code>--production</code> flag when installing node modules to avoid having the extra cruft of the <code>devDependencies</code>, which are mainly used for developing the modules (think testing, etc).</p>
+
+<h2>Locking versions</h2>
+
+<p>Theres a few methods to use with npm to lock down your versions. You can use the <code>npm shrinkwrap</code> command or specify node modules to bundle in your module with <code>bundleDependencies</code>.</p>
+
+<p>The strategy is, you can either pack those in with your tarball as they are in your <code>node_modules</code> folder, or you can lock down those exact versions by storing the exact tarball to download when the user <code>npm install</code>s your module.</p>
+
+<p>Edit: I&rsquo;ve just learned on a new method to package bundle up node modules by using the <code>bundledDependencies</code> attribute in your projects <code>package.json</code> file.</p>
+
+<h2>Bundling</h2>
+
+<p>By specifying <code>bundleDependencies</code> in your package.json, you are telling npm on its publishing process to include those modules listed in the tarball it creates and pushes up to the npm registry. For example, if you go to any npm repo and download the tarball in the url there, unzip it and open it, you&rsquo;ll see those exact node modules in them as you&rsquo;ve got in your own <code>node_modules</code> folder.</p>
+
+<p>This effectively locks down your modules versions, at the cost of a larger tarball size the user will download intially. Any modules that are not bundled, will then be downloaded and installed after the tarball is downloaded.</p>
+
+<h2>Shrinkwrapping</h2>
+
+<p>If you&rsquo;ve ever done any Rails, you&rsquo;ve probably seen the gemfile.lock. The equivalent in Node land is the <code>npm-shrinkwrap.json</code> file.</p>
+
+<p>What the <code>npm shrinkwrap</code> command does is looks at your <code>node_modules</code> folder and looks at the packages installed there and compares those to what is in your <code>package.json</code> file.</p>
+
+<p>Straight from <a href="https://docs.npmjs.com/cli/shrinkwrap">npm documentation</a>:</p>
+
+<blockquote><p>The shrinkwrap command has locked down the dependencies based on what&rsquo;s currently installed in node_modules. The installation behavior is changed to:</p>
+
+<p>The module tree described by the shrinkwrap is reproduced. This means reproducing the structure described in the file, using the specific files referenced in &ldquo;resolved&rdquo; if available, falling back to normal package resolution using &ldquo;version&rdquo; if one isn&rsquo;t.</p>
+
+<p>The tree is walked and any missing dependencies are installed in the usual fasion.</p></blockquote>
+
+<p>A huge misconception is that shrinkwrap locks down what versions are in your <code>package.json</code> file. This is incorrect. Just to reiterate, it will look in your <code>node_modules</code> and use that compared to your <code>package.json</code> file.</p>
+
+<p>Edit: Another thing to note, if you take a look in your npm-shrinkwrap.json, you&rsquo;ll see the exact URL for that versions tarball to download, which npm cli will use to grab without taking a peep at anything else. This may cause issues for some users, as stated by <a href="https://github.com/driftyco/ionic-cli/issues/636">Forrest on this Ionic CLI issue</a>:</p>
+
+<blockquote><p>Due to how shrinkwrap works, it ends up bypassing the npm cache and redownloading every package mentioned in the shrinkwrap each time npm install is run. If users have any issues with their network, or something gets sticky with npm&rsquo;s CDN, the whole install can fail, forcing them to start over again.</p></blockquote>
+
+<p>Heed this warning, friends.</p>
+
+<h2>Testing</h2>
+
+<p>Try to avoid the old addage, &lsquo;it worked on my machine&rsquo;, by having a CI server pull your package, run some tests, and even sometimes install the module to make sure it works on other machines besides your own.</p>
+
+<p>I really enjoy using <a href="https://circleci.com/">CircleCI</a>, as it is free for open source projects! You can normally specify a config file that says what version of node/npm to use and the rest is automated.</p>
+
+<h2>Alpha/beta pushes</h2>
+
+<p>I covered this in a <a href="http://jbavari.github.io/blog/2015/10/16/using-npm-tags">previous article about using npm tags</a>.</p>
+
+<p>The idea is, before publishing your version to npm, try doing a alpha/beta push first (to save the version in npm you&rsquo;re about to publish, since there can only be <em>one</em> version) to let users <code>npm install</code> the module to run some tests before commiting that to the <code>latest</code> tag for everyone to install.</p>
+
+<h2>npm Check Updates</h2>
+
+<p>There&rsquo;s a nice module that looks at your <code>package.json</code> file and looks to see the latest tags on the modules you specify in your dependencies.</p>
+
+<p>It will give you some heads up if there are latest packages, so you can update if you have too many out of date packages.</p>
+
+<p>Hope this helps!</p>
+
+<p>References:</p>
+
+<ul>
+<li><a href="http://blog.keithcirkel.co.uk/how-to-use-npm-as-a-build-tool/">Using npm as a build tool</a></li>
+<li><a href="http://jbavari.github.io/blog/2015/10/16/using-npm-tags">Using npm tags</a></li>
+<li><a href="https://docs.npmjs.com/cli/shrinkwrap">npm documentation</a></li>
+<li><a href="https://docs.npmjs.com/misc/developers">npm-developers guide</a></li>
+<li><a href="https://www.npmjs.com/package/module-best-practices#naming-conventions">npm &ndash; Module best practices</a></li>
+<li><a href="https://blog.risingstack.com/node-js-production-checklist">Node.js Production Checklist</a></li>
+<li><a href="http://blog.nchaulet.fr/publish-package-on-npm-best-practice/">Publish packages on npm &ndash; best practice</a></li>
+</ul>
+
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -1654,448 +2103,6 @@ Do not use the &mdash;resource-rules flag or ResourceRules.plist. They have been
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/10/23/a-field-guide-to-snap-dot-svg/">A Field Guide to Snap.svg</a></h1>
-    
-    
-      <p class="meta">
-        <span class="reading-time">less than a 1 minute read</span>
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2014-10-23T12:31:00-06:00" pubdate data-updated="true">Oct 23<span>rd</span>, 2014</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>This last weekend I spent a little time on a fun little side project to learn how to use <a href="http://snapsvg.io/">Snap.svg</a>. I was trying to take my friend Rob&rsquo;s datachomp character and make it a little interactive.</p>
-
-<p>After trying to do what I thought was a few simple little hacks with his PNG image, it turned out to be a great way to fully learn and understand SVG and the Snap.svg library.</p>
-
-<p>I have to admit I did not fully understand what SVG was and what it was composed of. I wanted to compile a list of thoughts, links, blogs, and tutorials that helped me learn along the way.</p>
-
-<h2>What SVG is and what it isnt</h2>
-
-<p>First of all, I had to learn that there are two image types &ndash; ones that scale (vector), and ones that are defined with strict sizes (bitmaps). For the longest time, I admit I thought they were basically the same.</p>
-
-<p>Vectors are mainly svg, while bitmap types are jpeg, png, gif, to name a few.</p>
-
-<p>You&rsquo;d want to use an svg element when you need an image that can grow without looking skewed. You&rsquo;d want to use a bitmap type when the size can remain the same.</p>
-
-<p>One thing to note is, svg&rsquo;s can contain bitmap images as well, as in this example:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="nt">&lt;html&gt;</span>
-</span><span class='line'>  <span class="nt">&lt;body&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;svg</span> <span class="na">id=</span><span class="s">&quot;svg-node&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>      <span class="nt">&lt;circle</span> <span class="na">id=</span><span class="s">&quot;svg-element&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>      <span class="nt">&lt;image</span> <span class="na">id=</span><span class="s">&quot;datachomp-arm&quot;</span> <span class="na">sketch:type=</span><span class="s">&quot;MSBitmapLayer&quot;</span> <span class="na">x=</span><span class="s">&quot;0&quot;</span> <span class="na">y=</span><span class="s">&quot;0&quot;</span> <span class="na">width=</span><span class="s">&quot;269&quot;</span> <span class="na">height=</span><span class="s">&quot;209&quot;</span> <span class="na">xlink:href=</span><span class="s">&quot;img/datachomp/arm.png&quot;</span><span class="nt">&gt;&lt;/image&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;/svg&gt;</span>
-</span><span class='line'>  <span class="nt">&lt;/body&gt;</span>
-</span><span class='line'><span class="nt">&lt;/html&gt;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h2>Svg editors vs bitmap editors</h2>
-
-<p>My undertanding is that most bitmap editors can&rsquo;t do svg. GIMP, photoshop, and other editors like these are bitmap editors. Although they can create paths and export them, for the most part, they cannot do svg type modifications.</p>
-
-<p>Some svg editors are illustrator, inkscape, and fireworks, to name a few.</p>
-
-<p>Most vector editors can import bitmap images and use them as an svg element. My understanding is, they cant really modify them other than stretch/skewing them. However, I could and probably am wrong about this. (I dont pretend to be an expert at this!)</p>
-
-<h2>Svg understanding</h2>
-
-<p>To start, Mozilla Developer Network had a great set of documents to help understand SVG: what it is, what elements it&rsquo;s composed of, and how to define shapes, paths, and transforms.</p>
-
-<p><a href="https://developer.mozilla.org/en-US/docs/Web/SVG/Tutorial/Introduction">MDN SVG tutorial</a></p>
-
-<p>From the article:
-<code>
-Scalable Vector Graphics (SVG) is an XML markup language for describing two-dimensional vector graphics. SVG is essentially to graphics what XHTML is to text.
-</code></p>
-
-<p>That being said, you&rsquo;d be interested to know that inside of a root <code>svg</code> element, it contains other elements. Here&rsquo;s a <a href="https://developer.mozilla.org/en-US/docs/Web/SVG/Element">list of those elements available</a>.</p>
-
-<h2>Using Snap.svg to make svg elements look alive</h2>
-
-<h3>Modifying svg element attributes</h3>
-
-<p>You can access and modify any attribute on any element from Snap.svg. Examples could be the stroke, the width of the stroke, the x/y coordinates of the element, and many other <a href="https://developer.mozilla.org/en-US/docs/Web/SVG/Attribute">attributes</a>.</p>
-
-<p>First, select the element (using Snap), then do a call to <code>elem.attr({})</code>:</p>
-
-<p>Html:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="nt">&lt;html&gt;</span>
-</span><span class='line'>  <span class="nt">&lt;body&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;svg</span> <span class="na">id=</span><span class="s">&quot;svg-node&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>      <span class="nt">&lt;circle</span> <span class="na">id=</span><span class="s">&quot;svg-element&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;/svg&gt;</span>
-</span><span class='line'>  <span class="nt">&lt;/body&gt;</span>
-</span><span class='line'><span class="nt">&lt;/html&gt;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>JavaScript:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">var</span> <span class="nx">svgNode</span> <span class="o">=</span> <span class="nx">Snap</span><span class="p">.</span><span class="nx">select</span><span class="p">(</span><span class="s1">&#39;#svg-node&#39;</span><span class="p">),</span>
-</span><span class='line'>    <span class="nx">svgElement</span> <span class="o">=</span> <span class="nx">svgNode</span><span class="p">.</span><span class="nx">select</span><span class="p">(</span><span class="s1">&#39;#svg-element&#39;</span><span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'><span class="nx">svgElement</span><span class="p">.</span><span class="nx">attr</span><span class="p">({</span>
-</span><span class='line'>    <span class="nx">fill</span><span class="o">:</span> <span class="s2">&quot;#bada55&quot;</span><span class="p">,</span>
-</span><span class='line'>    <span class="nx">stroke</span><span class="o">:</span> <span class="s2">&quot;#000&quot;</span><span class="p">,</span>
-</span><span class='line'>    <span class="nx">strokeWidth</span><span class="o">:</span> <span class="mi">5</span><span class="p">,</span>
-</span><span class='line'>    <span class="nx">x</span><span class="o">:</span> <span class="mi">50</span><span class="p">,</span>
-</span><span class='line'>    <span class="nx">y</span><span class="o">:</span> <span class="mi">100</span>
-</span><span class='line'><span class="p">});</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>Transforms</h3>
-
-<p><a href="http://snapsvg.io/docs/#Element.transform">Snap.svg</a> defines some methods to help you transform your svg elements. It looks like this:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">var</span> <span class="nx">arm</span> <span class="o">=</span> <span class="nx">datachomp</span> <span class="o">=</span> <span class="nx">Snap</span><span class="p">.</span><span class="nx">select</span><span class="p">(</span><span class="s2">&quot;#datachomp&quot;</span><span class="p">),</span>
-</span><span class='line'>      <span class="nx">arm</span> <span class="o">=</span> <span class="nx">datachomp</span><span class="p">.</span><span class="nx">select</span><span class="p">(</span><span class="s2">&quot;#datachomp-arm&quot;</span><span class="p">);</span>
-</span><span class='line'><span class="kd">var</span> <span class="nx">elementTransform</span> <span class="o">=</span> <span class="s2">&quot;t0,-80r360t-30,0r360t-30,30t-10,10&quot;</span><span class="p">;</span>
-</span><span class='line'><span class="nx">arm</span><span class="p">.</span><span class="nx">animate</span><span class="p">({</span><span class="nx">transform</span><span class="o">:</span> <span class="nx">tAmt</span><span class="p">},</span> <span class="mi">500</span><span class="p">,</span> <span class="nx">mina</span><span class="p">.</span><span class="nx">elastic</span><span class="p">);</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>However, I was having some trouble understanding the transform string syntax. The author also created <a href="http://raphaeljs.com/">Raphael.js</a> and provides some additional documentation on how to <a href="http://raphaeljs.com/reference.html#Element.transform">understand transform strings here</a>.</p>
-
-<p>Taken from the Raphael reference:</p>
-
-<p>&#8220;
-Each letter is a command. There are four commands: t is for translate, r is for rotate, s is for scale and m is for matrix.</p>
-
-<p>There are also alternative &lsquo;absolute&rsquo; translation, rotation and scale: T, R and S. They will not take previous transformation into account. For example, &hellip;T100,0 will always move element 100 px horisontally, while &hellip;t100,0 could move it vertically if there is r90 before. Just compare results of r90t100,0 and r90T100,0.</p>
-
-<p>So, the example line above could be read like &lsquo;translate by 100, 100; rotate 30° around 100, 100; scale twice around 100, 100; rotate 45° around centre; scale 1.5 times relative to centre&rsquo;. As you can see rotate and scale commands have origin coordinates as optional parameters, the default is the centre point of the element. Matrix accepts six parameters.
-&#8220;</p>
-
-<h3>Paths</h3>
-
-<p>Again I admit I knew very little about how to define a path. <a href="https://developer.mozilla.org/en-US/docs/Web/SVG/Tutorial/Paths">This document</a> helped tremendously in the different types of paths and how to define them.</p>
-
-<p>One task I wanted to do was make an svg element follow along a path. <a href="http://codepen.io/mattsince87/pen/snqLy">This CodePen</a> helped tremendously with figuring out how to make an element follow along with a path.</p>
-
-<p>Out of <a href="https://groups.google.com/forum/#!topic/snapsvg/TOYtCQvLNHA">this google group thread</a>, a code snippit comes up that helps:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="c1">//Snap.svg helper method to make an element trace a defined path</span>
-</span><span class='line'>
-</span><span class='line'><span class="kd">function</span> <span class="nx">animateAlongPath</span><span class="p">(</span> <span class="nx">path</span><span class="p">,</span> <span class="nx">element</span><span class="p">,</span> <span class="nx">start</span><span class="p">,</span> <span class="nx">dur</span> <span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>    <span class="kd">var</span> <span class="nx">len</span> <span class="o">=</span> <span class="nx">Snap</span><span class="p">.</span><span class="nx">path</span><span class="p">.</span><span class="nx">getTotalLength</span><span class="p">(</span> <span class="nx">path</span> <span class="p">);</span>
-</span><span class='line'>    <span class="nx">Snap</span><span class="p">.</span><span class="nx">animate</span><span class="p">(</span> <span class="nx">start</span><span class="p">,</span> <span class="nx">len</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span> <span class="nx">value</span> <span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>            <span class="kd">var</span> <span class="nx">movePoint</span> <span class="o">=</span> <span class="nx">Snap</span><span class="p">.</span><span class="nx">path</span><span class="p">.</span><span class="nx">getPointAtLength</span><span class="p">(</span> <span class="nx">path</span><span class="p">,</span> <span class="nx">value</span> <span class="p">);</span>
-</span><span class='line'>            <span class="nx">element</span><span class="p">.</span><span class="nx">attr</span><span class="p">({</span> <span class="nx">x</span><span class="o">:</span> <span class="nx">movePoint</span><span class="p">.</span><span class="nx">x</span><span class="p">,</span> <span class="nx">y</span><span class="o">:</span> <span class="nx">movePoint</span><span class="p">.</span><span class="nx">y</span> <span class="p">});</span>
-</span><span class='line'>    <span class="p">},</span> <span class="nx">dur</span><span class="p">);</span>
-</span><span class='line'><span class="p">};</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>I found a blog post with a demo that helped show some additional paths and how to use tools to create them, <a href="http://dropthebit.com/592/pathanimator-moving-along-an-svg-path/">found here</a>.</p>
-
-<p>I found another little hack on how to create paths using <a href="http://www.gimp.org/">GIMP</a>. First, start to create your path with the path tool. When you&rsquo;re done, select your path you created from the toolbar (under the &lsquo;paths&rsquo; tab), right click it, and select <code>export path</code>. That should give you an svg file with the path inside of it.</p>
-
-<h2>Svg vs Canvas</h2>
-
-<p>A question came up, when would you want to use svg over something like the canvas?</p>
-
-<p>After reading <a href="http://www.htmlgoodies.com/html5/other/html5-canvas-vs.-svg-choose-the-best-tool-for-the-job.html#fbid=9b7MQgV-6i0">this article</a>, the author makes a point for which you&rsquo;d want to use:</p>
-
-<p><code>
-SVG Relies on Files, Canvas Uses Pure Scripting
-SVG images are defined in XML. As a result, every SVG element is appended to the Document Object Model (DOM) and can be manipulated using a combination of JavaScript and CSS. Moreover, you can attach an event handlers to a SVG element or update its properties based on another document event. Canvas, on the other hand, is a simple graphics API. It draws pixels (extremely well I might add) and nothing more. Hence, there's no way to alter existing drawings or react to events. If you want to update the Canvas image, you have to redraw it.
-</code></p>
-
-<p>I&rsquo;ll continue updating this post as I learn more. I hope this helps others learn these svg topics with ease.</p>
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/10/21/exploring-best-practices-with-docker-for-older-libraries/">Exploring Best Practices With Docker for Older Libraries</a></h1>
-    
-    
-      <p class="meta">
-        <span class="reading-time">less than a 1 minute read</span>
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2014-10-21T21:29:00-06:00" pubdate data-updated="true">Oct 21<span>st</span>, 2014</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>I am not pretending to be an expert about what&rsquo;s in this post, but merely a talking point to learn upon.</p>
-
-<h2>Problem: I need to reassemble an old C++ project with some old libraries and files that may not be around (or have disappeared already).</h2>
-
-<p>First theres a big chunk of files that are used strictly for rendering a video, ~560MB. Some of which had since gone missing.</p>
-
-<p>Then theres some old C++ libraries which a previous shell script was doing a <code>wget</code> request for, and the files are nowhere to be found.</p>
-
-<p>Finally, there&rsquo;s the need to rebuild the image used to render the files.</p>
-
-<p>Theres so many ways to attack this problem, I&rsquo;m just going to cover my approaches. I&rsquo;m open to new ones as well.</p>
-
-<h1>Potential solutions for rendering files</h1>
-
-<ul>
-<li>store on AWS S3</li>
-<li>put into git repo</li>
-<li>store on server somewhere</li>
-</ul>
-
-
-<h4>Lets break down the pros / cons of these</h4>
-
-<h2>Store on AWS S3</h2>
-
-<h3>PROS:</h3>
-
-<ul>
-<li>quick to add</li>
-<li>cheap to store</li>
-</ul>
-
-
-<h3>CONS:</h3>
-
-<ul>
-<li>can go missing (and did)</li>
-</ul>
-
-
-<h2>Put into git repo</h2>
-
-<h3>PROS:</h3>
-
-<ul>
-<li>versioning control with notes (none before)</li>
-<li>the files give a story in time</li>
-<li>cheap or free</li>
-</ul>
-
-
-<h3>CONS:</h3>
-
-<ul>
-<li>slow to pull repo (duh)</li>
-<li>storing binary files (derp)</li>
-</ul>
-
-
-<h2>Store on server somewhere</h2>
-
-<h3>PROS:</h3>
-
-<ul>
-<li>cheap to store</li>
-<li>fast to access (local network)</li>
-</ul>
-
-
-<h3>CONS:</h3>
-
-<ul>
-<li>can go missing (and did)</li>
-<li>no story to the files</li>
-</ul>
-
-
-<h1>Potential solutions for server image</h1>
-
-<ul>
-<li>single shell script to run for setting up image</li>
-<li>dockerfile to build up the image with <code>RUN</code> commands</li>
-<li>dockerfile to execute the single shell script</li>
-</ul>
-
-
-<p>Some of the libraries this said project was depending on are no longer where they were from a previous shell script to set them all up. That means I have to do some kind of dependency management. Whether that be forking the libraries into a git repo I know will be solid, or copying the files somewhere I can trust, or more simply committing them to my own repo (560 MB or more.. ugh).</p>
-
-<p>This is my thought process, not sure if its right:</p>
-
-<p>If your aim is to have something fully repeatable and easy to run again, go with the docker solution.</p>
-
-<p>If your aim is to just get it done quickly, go with the shell script.</p>
-
-<p>However, I still can&rsquo;t decipher what the pro/cons of the dockerfile just running a single shell script.</p>
-
-<p>Let&rsquo;s dive deeper into the pros and cons of each.</p>
-
-<h2>Single shell script</h2>
-
-<p>Steps:</p>
-
-<ul>
-<li>Create instance from Amazon AMI</li>
-<li>create / test shell script</li>
-<li>copy shell script to server</li>
-<li>run shell script on server</li>
-</ul>
-
-
-<h3>PROS:</h3>
-
-<ul>
-<li>quick to run (once completed, overall time)</li>
-<li>quick to tell you of errors</li>
-<li>works on my machine</li>
-</ul>
-
-
-<h3>CONS:</h3>
-
-<ul>
-<li>not easily repeatable</li>
-<li>may not work in another environment (things are assumed)</li>
-<li>not always easy to debug</li>
-</ul>
-
-
-<h2>Dockerfile with RUN commmands</h2>
-
-<p>Steps:</p>
-
-<ul>
-<li>install docker (if not already)</li>
-<li>create Dockerfile with RUN commands</li>
-<li>ADD dependencies to the docker container</li>
-<li>docker build image</li>
-<li>docker run image</li>
-<li>bundle image to Amazon AMI</li>
-<li>start instance</li>
-<li>profit</li>
-</ul>
-
-
-<h3>PROS:</h3>
-
-<ul>
-<li>control the starting point environment</li>
-<li>commands verified to work step by step</li>
-<li>easily repeatable</li>
-<li>quick to tell you of errors</li>
-<li>fast after first run (cache)</li>
-</ul>
-
-
-<h3>CONS:</h3>
-
-<ul>
-<li>slow start up with downloads/updates/git clones/etc</li>
-<li>costly for disk space</li>
-<li>must install docker / boot2docker / etc</li>
-</ul>
-
-
-<h2>Dockerfile to execute single shell script</h2>
-
-<p>Steps:</p>
-
-<ul>
-<li>install docker (if not already)</li>
-<li>create image from dockerfile</li>
-<li>run image</li>
-<li>create / test shell script in image</li>
-<li>modify dockerfile &ndash; ADD shell script created in previous step</li>
-</ul>
-
-
-<h3>PROS:</h3>
-
-<ul>
-<li>quick to test out your commands</li>
-</ul>
-
-
-<h3>CONS</h3>
-
-<ul>
-<li>harder to have the diffs between images when modifying shell script</li>
-</ul>
-
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/4/">&larr; Older</a>
@@ -2113,6 +2120,14 @@ SVG images are defined in XML. As a result, every SVG element is appended to the
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2019/02/23/the-victim-or-the-victor/">The Victim or the Victor</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2019/01/29/3-years-of-elixir-reflections/">3 Years of Elixir: Reflections</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2017/04/16/puppet-a-testing-handbook/">Puppet: A Testing Handbook</a>
       </li>
     
@@ -2122,14 +2137,6 @@ SVG images are defined in XML. As a result, every SVG element is appended to the
     
       <li class="post">
         <a href="/blog/2016/12/29/multicast-service-discovery-in-electron/">Multicast Service Discovery in Electron</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2016/03/11/using-erlang-observer-on-a-remote-elixir-server/">Using Erlang Observer on a Remote Elixir Server</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2016/01/24/custom-json-encoding-in-phoenix/">Custom JSON Encoding in Phoenix</a>
       </li>
     
   </ul>

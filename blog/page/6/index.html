@@ -9,7 +9,7 @@
   <meta name="author" content="Josh Bavari">
 
   
-  <meta name="description" content="Throughout the last few months, I&rsquo;ve began helping out the Cordova team with a few bug fixes that I come across and want to contribute back. &hellip;">
+  <meta name="description" content="Recently the Cordova (as well as Phonegap) team has introduced the ability to remote debug Android 4.4+ from this issue. If you&rsquo;re like us, you &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -70,6 +70,130 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/04/18/enabling-android-remote-debugging-in-phonegap-2-dot-9/">Enabling Android Remote Debugging in Phonegap 2.9</a></h1>
+    
+    
+      <p class="meta">
+        <span class="reading-time">less than a 1 minute read</span>
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-04-18T10:13:00-06:00" pubdate data-updated="true">Apr 18<span>th</span>, 2014</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Recently the Cordova (as well as Phonegap) team has introduced <a href="http://www.raymondcamden.com/index.cfm/2014/1/2/Apache-Cordova-33-and-Remote-Debugging-for-Android">the ability to remote debug Android 4.4+</a> from <a href="https://issues.apache.org/jira/browse/CB-5487">this issue</a>.</p>
+
+<p>If you&rsquo;re like us, you have a lot of invested technology into Phonegap 2.9, and are actively making the move to Cordova 3.4. In the real world, you aren&rsquo;t always granted conveniences to move to the latest and greatest all at one time when you have released products. <a href="http://www.raymondcamden.com/index.cfm/2014/4/11/Results-of-PhoneGap-Survey">Raymond Camden did a survey</a> and apparently there are still some out there utilizing Phonegap/Cordova 2.9.</p>
+
+<p>I wanted to show how easy it was our team to backport some of the changes needed to enable Remote Debugging in Phonegap 2.9.</p>
+
+<p>You&rsquo;ll need to make a few changes to your MainActivity.java file. The first is an import statement, and the second is to make these changes near the bottom of the onCreate method:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>// At the top near your other import statements:
+</span><span class='line'>import android.webkit.WebView;
+</span><span class='line'>// ..snip..!
+</span><span class='line'>
+</span><span class='line'>public void onCreate(Bundle savedInstanceState) {
+</span><span class='line'>    // ..snip..
+</span><span class='line'>    // Enable web debugging
+</span><span class='line'>    if(android.os.Build.VERSION.SDK_INT &gt;= android.os.Build.VERSION_CODES.KITKAT) {
+</span><span class='line'>      WebView.setWebContentsDebuggingEnabled(true);
+</span><span class='line'>    }
+</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
+
+
+<p>One thing to note, this only works for Android versions 4.4 or greater! If you aren&rsquo;t using Android API 19 or greater, you&rsquo;ll have to keep using Weinre.</p>
+
+<p>Now just start your app, enable USB debugging, open Chrome, go to about:inspect, and enjoy your remote debugging in Phonegap/Cordova 2.9! Cheers!</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/04/14/apachecon-2014/">Apachecon 2014</a></h1>
+    
+    
+      <p class="meta">
+        <span class="reading-time">less than a 1 minute read</span>
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-04-14T20:58:00-06:00" pubdate data-updated="true">Apr 14<span>th</span>, 2014</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>This year I was fortunate enough to attend ApacheCon 2014 in Denver CO. It was a big adventure for me, partyly due to one of my main goals this year was to contribute more to open source. I&rsquo;ve been actively contributing to the Apache Cordova project, so this was my opportunity to meet some of the Cordova contributors.</p>
+
+<p>The conference kicked off first with Steve Gill&rsquo;s (<a href="https://twitter.com/stevesgill">@stevesgill</a>) talk on the Cordova CLI and the work flow with it. Steve is in charge of all the releases for Cordova, and we&rsquo;ve worked together on the <a href="http://plugins.cordova.io">cordova plugins registry</a> since the beginning of this year. Steve really pulls this team together, as he&rsquo;s a stand up guy and really easy to talk to. I, for one, am very thankful to have him be a part of the Cordova team!</p>
+
+<p>The next talk was by <a href="https://twitter.com/doncoleman">@doncoleman</a> over Bluetooth LE and how to use it with the Cordova platform. This presentation really opened my eyes to what the Cordova project is capable of (not that I hadn&rsquo;t known, but he sure opened up some ideas), and much more so with Don&rsquo;s awesome <a href="https://github.com/don/cordova-plugin-rfduino">Cordova Plugin &ndash; RFDuino</a>, as well as his <a href="https://github.com/don/phonegap-nfc">NFC Plugin</a> that he presented later in the day. Not only can you write your Bluetooth/NFC items once, but they can run across platforms. Way awesome.</p>
+
+<p>I was then lucky enough to see Andrew Grieve&rsquo;s <a href="https://twitter.com/GrieveAndrew">@GrieveAndrew</a> talk over the <a href="https://dl.dropboxusercontent.com/u/6648754/apachecon2014/index.html#1">Cordova Development Lifecycle</a> &ndash; it amazes me that the Cordova project is composed of around 50+ repos, and releases can take days! Wow. Theres&rsquo;s a lot that goes into the Cordova project.</p>
+
+<p><a href="https://twitter.com/hazems">Hazem Saleh</a> then spoke about Javascript and Cordova &ndash; and how they fit together with the native bridges quite easily. He also quizzed the audience over some Javascript gotchas. Hazem also spoke to what it is like outside of the US &ndash; where there are other phones us American&rsquo;s don&rsquo;t really get to play with. Now that is global support, way to go Cordova!</p>
+
+<p>Finally, <a href="https://twitter.com/LisaSeacat">Lisa DeLuca</a> gave a very informative presentation on how her and the other open source members around the world translate all of the Cordova documenation in a ton of different languages. It&rsquo;s interesting &ndash; first they take the English documents, upload to <a href="https://crowdin.net/">Crowdin</a> &ndash; which then handles either human translation (preferred) and even gives the option for automated translation (not perfect).</p>
+
+<p>Finally, there was the hackathon held by Red Hat and IBM. It was awesome getting to sit with 8 of the core Cordova team members and hacking on my own project as well as getting very familiar with the code base. It was a truly exciting time for me.</p>
+
+<p>Hopefully I&rsquo;ll get the opportunity to work with these fine folks more in the future! Cheers!</p>
+
+<p><img class="left" src="https://pbs.twimg.com/media/Bky_CGxCAAAzDRb.jpg"></p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -1036,210 +1160,6 @@ You are free to change it!</p>
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2013/12/17/dont-be-a-grunt/">Dont Be a Grunt</a></h1>
-    
-    
-      <p class="meta">
-        <span class="reading-time">less than a 1 minute read</span>
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-12-17T10:18:00-07:00" pubdate data-updated="true">Dec 17<span>th</span>, 2013</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>I&rsquo;ve posted some slides I presented at the <a href="http://okcjs.com">OKC Javascript User Group</a> over Grunt.js titled <a href="http://jbavari.github.io/Dont-Be-a-Grunt-Use-Grunt-Slides/">Dont be a grunt, use grunt</a>.</p>
-
-<p>I encourage any and all to take any ideas and information from the slides. I&rsquo;m hoping they provide value to anyone who may want to learn and use Grunt.</p>
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2013/12/04/automating-local-ip-lookup-with-grunt-and-node/">Automating Local IP Lookup With Grunt and Node</a></h1>
-    
-    
-      <p class="meta">
-        <span class="reading-time">less than a 1 minute read</span>
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-12-04T15:18:00-07:00" pubdate data-updated="true">Dec 4<span>th</span>, 2013</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>In the last few write-ups I&rsquo;ve done lately (see <a href="/blog/2013/12/02/automating-underlying-mobile-infrastructure-with-grunt">the servers post</a> and the <a href="/blog/2013/11/30/automating-phonegap-builds-with-grunt">phonegap builds post</a>), I&rsquo;ve been requiring the user to pass in the IP or the host in the command line. That works and all, but I usually have to go look up that ip using the good ol &lsquo;ifconfig&rsquo; command.</p>
-
-<p>Since I&rsquo;m obsesed with automation, I&rsquo;d rather be lazy and just have the IP Address look up be automatic.</p>
-
-<h2>Why am I writing this?</h2>
-
-<p>I work in a dozen of different places. At any given time I may be at home, work, a coffee shop, etc. Most times my ip address will be different. I really just want to boot the servers up to my current IP and have the mobile app point at that IP. (The actual device can&rsquo;t understand localhost or a local 0.0.0.0 IP address over wifi)</p>
-
-<p>Have you guessed it yet? I want to automatically set that ip address / hostname to my local IP without having to go look it up every time.</p>
-
-<p>I found this post on <a href="http://stackoverflow.com/questions/3653065/get-local-ip-address-in-node-js">stackoverflow</a> that pointed me at this <a href="http://nodejs.org/api/os.html#os_os_networkinterfaces">Node.js documentation</a> to look up the network interfaces. This lets us dig deeper with Grunt to get the IP Address, especially since grunt sits on Node.js.</p>
-
-<h3>Simple and (too) easy</h3>
-
-<p>There&rsquo;s a Node.js call that puts all of the config settings into nice JSON for you to work with.</p>
-
-<figure class='code'><figcaption><span>Node.js command for getting network interfaces</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="c1">//Gets a JSON much like running &#39;ifconfig&#39;</span>
-</span><span class='line'><span class="kd">var</span> <span class="nx">ifaces</span> <span class="o">=</span> <span class="nx">os</span><span class="p">.</span><span class="nx">networkInterfaces</span><span class="p">();</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>The next key is to go through all the interfaces, and get the current local IP from the device from ethernet or wifi.</p>
-
-<p>My grunt config looks something like this:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-<span class='line-number'>39</span>
-<span class='line-number'>40</span>
-<span class='line-number'>41</span>
-<span class='line-number'>42</span>
-<span class='line-number'>43</span>
-<span class='line-number'>44</span>
-<span class='line-number'>45</span>
-<span class='line-number'>46</span>
-<span class='line-number'>47</span>
-</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">module</span><span class="p">.</span><span class="nx">exports</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">grunt</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="kd">var</span> <span class="nx">os</span><span class="o">=</span><span class="nx">require</span><span class="p">(</span><span class="s1">&#39;os&#39;</span><span class="p">);</span>
-</span><span class='line'>  <span class="kd">var</span> <span class="nx">ifaces</span><span class="o">=</span><span class="nx">os</span><span class="p">.</span><span class="nx">networkInterfaces</span><span class="p">();</span>
-</span><span class='line'>  <span class="kd">var</span> <span class="nx">lookupIpAddress</span> <span class="o">=</span> <span class="kc">null</span><span class="p">;</span>
-</span><span class='line'>  <span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">dev</span> <span class="k">in</span> <span class="nx">ifaces</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>      <span class="k">if</span><span class="p">(</span><span class="nx">dev</span> <span class="o">!=</span> <span class="s2">&quot;en1&quot;</span> <span class="o">&amp;&amp;</span> <span class="nx">dev</span> <span class="o">!=</span> <span class="s2">&quot;en0&quot;</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>          <span class="k">continue</span><span class="p">;</span>
-</span><span class='line'>      <span class="p">}</span>
-</span><span class='line'>      <span class="nx">ifaces</span><span class="p">[</span><span class="nx">dev</span><span class="p">].</span><span class="nx">forEach</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">details</span><span class="p">){</span>
-</span><span class='line'>        <span class="k">if</span> <span class="p">(</span><span class="nx">details</span><span class="p">.</span><span class="nx">family</span><span class="o">==</span><span class="s1">&#39;IPv4&#39;</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>          <span class="nx">lookupIpAddress</span> <span class="o">=</span> <span class="nx">details</span><span class="p">.</span><span class="nx">address</span><span class="p">;</span>
-</span><span class='line'>          <span class="k">break</span><span class="p">;</span>
-</span><span class='line'>        <span class="p">}</span>
-</span><span class='line'>      <span class="p">});</span>
-</span><span class='line'>  <span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="c1">//If an IP Address is passed</span>
-</span><span class='line'>  <span class="c1">//we&#39;re going to use the ip/host from the param</span>
-</span><span class='line'>  <span class="c1">//passed over the command line </span>
-</span><span class='line'>  <span class="c1">//over the ip addressed that was looked up</span>
-</span><span class='line'>  <span class="kd">var</span> <span class="nx">ipAddress</span> <span class="o">=</span> <span class="nx">grunt</span><span class="p">.</span><span class="nx">option</span><span class="p">(</span><span class="s1">&#39;host&#39;</span><span class="p">)</span> <span class="o">||</span> <span class="nx">lookupIpAddress</span><span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="nx">grunt</span><span class="p">.</span><span class="nx">initConfig</span><span class="p">({</span>
-</span><span class='line'>      <span class="nx">bgShell</span><span class="o">:</span> <span class="p">{</span>
-</span><span class='line'>          <span class="nx">weinre</span><span class="o">:</span> <span class="p">{</span>
-</span><span class='line'>              <span class="nx">cmd</span><span class="o">:</span> <span class="s1">&#39;weinre --httpPort 8080 --boundHost=&#39;</span> <span class="o">+</span> <span class="nx">ipAddress</span><span class="p">,</span>
-</span><span class='line'>              <span class="nx">bg</span><span class="o">:</span> <span class="kc">false</span>
-</span><span class='line'>          <span class="p">},</span>
-</span><span class='line'>          <span class="nx">rails</span><span class="o">:</span> <span class="p">{</span>
-</span><span class='line'>              <span class="nx">cmd</span><span class="o">:</span> <span class="s1">&#39;cd ../raisemore_web &amp;&amp; rails s -p 3000 -b &#39;</span> <span class="o">+</span> <span class="nx">ipAddress</span>
-</span><span class='line'>          <span class="p">}</span>
-</span><span class='line'>      <span class="p">}</span>
-</span><span class='line'>  <span class="p">});</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="c1">//Load in the preprocess tasks</span>
-</span><span class='line'>  <span class="nx">grunt</span><span class="p">.</span><span class="nx">loadTasks</span><span class="p">(</span><span class="s1">&#39;preprocess&#39;</span><span class="p">);</span>
-</span><span class='line'>  <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;load-grunt-tasks&#39;</span><span class="p">)(</span><span class="nx">grunt</span><span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="c1">//Tasks to have both servers at local ip and app at local ip</span>
-</span><span class='line'>  <span class="nx">grunt</span><span class="p">.</span><span class="nx">registerTask</span><span class="p">(</span><span class="s1">&#39;servers&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;env:dev&#39;</span><span class="p">,</span> <span class="s1">&#39;preprocess:dev&#39;</span><span class="p">,</span> <span class="s1">&#39;bgShell:weinre&#39;</span><span class="p">,</span> <span class="s1">&#39;bgShell:rails&#39;</span><span class="p">]);</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="c1">//Task to set up app files pointing at stage ip</span>
-</span><span class='line'>  <span class="c1">//and setting up weinre at current local ip</span>
-</span><span class='line'>  <span class="nx">grunt</span><span class="p">.</span><span class="nx">registerTask</span><span class="p">(</span><span class="s1">&#39;debug&#39;</span><span class="p">,</span> <span class="p">[</span> <span class="s1">&#39;env:stage&#39;</span><span class="p">,</span> <span class="s1">&#39;preprocess:stage&#39;</span><span class="p">,</span> <span class="s1">&#39;bgShell:weinre&#39;</span><span class="p">]);</span>
-</span><span class='line'>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Now we can just do &lsquo;grunt servers&rsquo; to have both servers up at my current local ip or &lsquo;grunt debug&rsquo; to get app accessing the stage server and having weinre run locally to debug the app.</p>
-
-<p>Not much to it &ndash; call networkInterfaces(), go through JSON, get ipAddress &ndash; assign it to the option unless one was passed in. You&rsquo;re done.</p>
-
-<p>Cheers.</p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/7/">&larr; Older</a>
@@ -1257,6 +1177,14 @@ You are free to change it!</p>
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2019/02/23/the-victim-or-the-victor/">The Victim or the Victor</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2019/01/29/3-years-of-elixir-reflections/">3 Years of Elixir: Reflections</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2017/04/16/puppet-a-testing-handbook/">Puppet: A Testing Handbook</a>
       </li>
     
@@ -1266,14 +1194,6 @@ You are free to change it!</p>
     
       <li class="post">
         <a href="/blog/2016/12/29/multicast-service-discovery-in-electron/">Multicast Service Discovery in Electron</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2016/03/11/using-erlang-observer-on-a-remote-elixir-server/">Using Erlang Observer on a Remote Elixir Server</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2016/01/24/custom-json-encoding-in-phoenix/">Custom JSON Encoding in Phoenix</a>
       </li>
     
   </ul>

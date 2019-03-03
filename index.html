@@ -9,10 +9,7 @@
   <meta name="author" content="Josh Bavari">
 
   
-  <meta name="description" content="Explain why the post &ndash; job required, growing pains, need for stability and health of the repo
-Why to test
-What to test
-How to test Lint &ndash &hellip;">
+  <meta name="description" content="When I was a younger boy, my grandma would tell me stories of my grandfather going to war. Like most men during world war 2, he did not want to go to &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -73,6 +70,138 @@ How to test Lint &ndash &hellip;">
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2019/02/23/the-victim-or-the-victor/">The Victim or the Victor</a></h1>
+    
+    
+      <p class="meta">
+        <span class="reading-time">less than a 1 minute read</span>
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2019-02-23T07:14:00-07:00" pubdate data-updated="true">Feb 23<span>rd</span>, 2019</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>When I was a younger boy, my grandma would tell me stories of my grandfather going to war. Like most men during world war 2, he did not want to go to leave his new bride and head to where death is ever looming. One thing I remember her saying to me as a life lesson is that you&rsquo;re given a choice in life that most always boils down to your attitude. She said, &ldquo;just like your grandpa, you can chose to be a victim, or go get the courage to become a victor. The choice is always yours.&rdquo;</p>
+
+<p>What does this mean? This means, when given any situation, your belief about the situation will in turn guide your thoughts and actions. This belief is so strong that even the way you think and address the situation happens whether or not your are conscious about it. The obvious choice would to be to see yourself as given a challenge that you must rise to and become a victor over.</p>
+
+<p>The opposite is true &ndash; you could be given a challenge and say, &lsquo;why me&rsquo;. From this victim midset, you have now set yourself up for failure from the start. You&rsquo;ve seen the challenge become the burden.</p>
+
+<p>That thought has always been on my mind throughout the years, but I have to admit I haven&rsquo;t always been as couragous as I could have been. You always assume when the time comes, you&rsquo;ll be ready. The fact is, it comes and hits you in the face right when you&rsquo;re planning for it. &ldquo;Everyone has a plan until you&rsquo;re punched in the face&rdquo;. The point is, the mindset of preparation is the key to success. My study of <a href="http://thedailystoic.com">stoicism</a> has lead me lately to living as if it has already happened, being unphased by things we should expect happen, and turning my &lsquo;have to&rsquo;s into &#8216;get to&rsquo;s.</p>
+
+<p>How do you break this cycle? You start by examining your internal thoughts first. Now that you are conscious about your thoughts, you can then analyze how to course-correct. Until then, you might be in the default victim midset and not even know it.</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2019/01/29/3-years-of-elixir-reflections/">3 Years of Elixir: Reflections</a></h1>
+    
+    
+      <p class="meta">
+        <span class="reading-time">less than a 1 minute read</span>
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2019-01-29T07:30:00-07:00" pubdate data-updated="true">Jan 29<span>th</span>, 2019</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Back in 2015, I had just started at <a href="http://canvas.technology">CANVAS Technology</a> and my task was clear: to create a web application that can service many operations concurrently from users, robots, and other integration services. Prior to this new venture, I had spent my last few years doing Ruby on Rails, Node.js JavaScript, mobile applications (cordova, minimal Objective-C, Java/Android). Only a few months before joining CANVAS had I just started playing with Elixir and Phoenix. I was so excited and relieved to find something that was geared exactly for what we were embarking on.</p>
+
+<p>What I want to outline in this post is the lessons I&rsquo;ve learned using Elixir these last 3+ years and help others learn quickly.</p>
+
+<h2>Upgrade sooner than later</h2>
+
+<p>Discuss pains of upgrading Elixir 1.3 &ndash;> 1.6, Ecto 1.0 &ndash;> 2.0, Phoenix 0.9 &ndash;> 1.3. It definitely hasn&rsquo;t been easy to update, this is mitigated by staying abreast of Elixir / phoenix changes and trying to implement early.</p>
+
+<h2>GenServers are your friend &ndash; but use them only if you must</h2>
+
+<p>Abstract away the API and the Server &ndash; link to post by <a href="https://pragdave.me/blog/2017/07/13/decoupling-interface-and-implementation-in-elixir.html">Dave Thomas explaining splitting the APIs, Servers, and Implementations in Elixir</a>.</p>
+
+<h2>Testing pains with GenServers and Ecto&rsquo;s concurrency model</h2>
+
+<p>Make sure to restart genservers / supervisors. Having a connection time out be longer for longer running genservers that aren&rsquo;t started every setup fixture.</p>
+
+<h2>Using docker for team / testing scenarios</h2>
+
+<p>Docker-compose for stack, testing with diff vars. Preload any databases by putting them in the postgres container root in <code>/tmp</code>.</p>
+
+<h2>Testing browsers with Hound / ChromeDriver</h2>
+
+<p>Use Hound and chromedriver.</p>
+
+<h2>Do not code everything to the <code>Repo</code> itself</h2>
+
+<p>It&rsquo;s not as easy to cut off your database addiction. Having an intermediate context API that cache is a good first step.</p>
+
+<h2>PubSub is your friend, use structs to pass messages</h2>
+
+<p>When using cast/gproc, pass the Structs, don&rsquo;t use tuples. Resist the simple solutiuons. Pass structs defined.</p>
+
+<h2>Learn ETS</h2>
+
+<p>Don&rsquo;t use a cache when the Erlang VM has one built in.</p>
+
+<h2>Use behaviours</h2>
+
+<p>Take a look how <a href="https://github.com/aaronrenner/crowdfundr">crowdfundr</a> app. Code to interfaces, not the implementations. Use the <code>impl</code> approach.</p>
+
+<h2>Nginx as a front-end for SSL termination</h2>
+
+<p>Links/discussion to the post, security wise, leave Nginx to handle the vulns and your app to handle the impl.</p>
+
+<h2>Releases with Distillery</h2>
+
+<p>Ship those tarballs, let it fly. Easier/safer than shiping your code. Should probably post about the replacing of ENV vars. Use a Config module for system set env variables instead of them getting baked into your <code>sys.config</code> file.</p>
+
+<h2>Clustering &ndash; using epmd / GenServers for node communication message passing</h2>
+
+<p>Link to swarm and libcluster &ndash; knowing that clustering comes out of the box with Erlang/Elixir.</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -1464,436 +1593,6 @@ Figuring how to plug in rendering steps between state changes. <code>this.setSta
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2015/12/12/using-brew-to-install-old-versions/">Using Brew to Install Old Versions</a></h1>
-    
-    
-      <p class="meta">
-        <span class="reading-time">less than a 1 minute read</span>
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2015-12-12T13:50:00-07:00" pubdate data-updated="true">Dec 12<span>th</span>, 2015</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>I just wanted to share a quick little tidbit on how to install older brew versions.</p>
-
-<p>I was having some issues with an older version of Elixir failing tests (1.0.1), and the latest version (1.1.1) is working fine.</p>
-
-<p>Just running <code>brew install elixir</code> gets latest.</p>
-
-<p>To get 1.0.1 installed, I first went to the <a href="https://github.com/Homebrew/homebrew">homebrew github repo</a>, looked at the <code>Library/Formula</code> folder, found the <code>elixir.rb</code> formula to install elixir, looked in the history, found 1.0.1, and then executed the following line:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>brew install https://raw.githubusercontent.com/Homebrew/homebrew/8506ced146655c24920f3cc5b20e6bc9e6e703cc/Library/Formula/elixir.rb</span></code></pre></td></tr></table></div></figure>
-
-
-<p>That did it, I easily got 1.0.1 installed, and going back to 1.1.1 was super easy.</p>
-
-<p>Hope this helps, enjoy! Cheers!</p>
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2015/12/07/adding-postgresql-geometric-type-support-to-elixir/">Adding PostgreSQL Geometric Type Support to Elixir</a></h1>
-    
-    
-      <p class="meta">
-        <span class="reading-time">less than a 1 minute read</span>
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2015-12-07T18:04:00-07:00" pubdate data-updated="true">Dec 7<span>th</span>, 2015</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>In the last week or so, I&rsquo;ve had a blast playing around with basic Postgres <a href="http://www.postgresql.org/docs/9.4/static/datatype-geometric.html">geometric types</a> to do basic earth distance queries.</p>
-
-<p>From my favorite blog, <a href="http://datachomp.com/archives/radius-queries-in-postgres/">Datachomp shows how to use radius queries in postgres</a> to find the closest place to get a burrito fix. Since I&rsquo;ve been on an <a href="http://elixir-lang.org/">Elixir</a> kick lately, I figured it was time to contribute back to the open source world by adding first class burrito, err, geometric type support.</p>
-
-<h2>Initial reaction</h2>
-
-<p>I immediately made an Ecto model trying to use the point type in my model:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-</pre></td><td class='code'><pre><code class='elixir'><span class='line'><span class="k">defmodule</span> <span class="no">MyApp</span><span class="o">.</span><span class="no">LocationPoint</span> <span class="k">do</span>
-</span><span class='line'><span class="k">  </span><span class="kn">use</span> <span class="no">MyApp</span><span class="o">.</span><span class="no">Web</span><span class="p">,</span> <span class="ss">:model</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="n">schema</span> <span class="s2">&quot;location_point&quot;</span> <span class="k">do</span>
-</span><span class='line'><span class="k">    </span><span class="n">field</span> <span class="ss">:name</span><span class="p">,</span> <span class="ss">:string</span>
-</span><span class='line'>    <span class="n">field</span> <span class="ss">:date</span><span class="p">,</span> <span class="no">Ecto</span><span class="o">.</span><span class="no">DateTime</span>
-</span><span class='line'>    <span class="n">field</span> <span class="ss">:location</span><span class="p">,</span> <span class="ss">:point</span>
-</span><span class='line'>    <span class="n">timestamps</span>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="nv">@required_fields</span> <span class="err">~</span><span class="n">w</span><span class="p">(</span><span class="n">name</span> <span class="n">date</span><span class="p">)</span>
-</span><span class='line'>  <span class="nv">@optional_fields</span> <span class="err">~</span><span class="n">w</span><span class="p">(</span><span class="n">location</span><span class="p">)</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="nv">@doc</span> <span class="sd">&quot;&quot;&quot;</span>
-</span><span class='line'><span class="sd">  Creates a changeset based on the `model` and `params`.</span>
-</span><span class='line'>
-</span><span class='line'><span class="sd">  If no params are provided, an invalid changeset is returned</span>
-</span><span class='line'><span class="sd">  with no validation performed.</span>
-</span><span class='line'><span class="sd">  &quot;&quot;&quot;</span>
-</span><span class='line'>  <span class="k">def</span> <span class="n">changeset</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">params</span> <span class="p">\\</span> <span class="ss">:empty</span><span class="p">)</span> <span class="k">do</span>
-</span><span class='line'><span class="k">    </span><span class="n">model</span>
-</span><span class='line'>    <span class="o">|&gt;</span> <span class="n">cast</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="nv">@required_fields</span><span class="p">,</span> <span class="nv">@optional_fields</span><span class="p">)</span>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'><span class="k">end</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Right away, when I ran the commands to retrieve this location from <code>iex</code>, it gave me some errors:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='elixir'><span class='line'><span class="err">$</span> <span class="n">iex</span> <span class="o">-</span><span class="no">S</span> <span class="n">mix</span>
-</span><span class='line'><span class="err">$</span> <span class="n">alias</span> <span class="no">MyApp</span><span class="o">.</span><span class="no">Repo</span>
-</span><span class='line'><span class="err">$</span> <span class="n">alias</span> <span class="no">MyApp</span><span class="o">.</span><span class="no">LocationPoint</span>
-</span><span class='line'><span class="err">$</span> <span class="no">Repo</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="no">LocationPoint</span><span class="p">)</span>
-</span><span class='line'><span class="err">$</span> <span class="o">**</span> <span class="p">(</span><span class="no">ArgumentError</span><span class="p">)</span> <span class="n">no</span> <span class="n">extension</span> <span class="n">found</span> <span class="n">for</span> <span class="n">oid</span> <span class="err">`</span><span class="m">600</span><span class="err">`</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Right away, I knew this mission was up to me to get point support into Postgrex.</p>
-
-<p>In this post, I&rsquo;ll outline how to add type support to Postgres via the Elixir package, <a href="https://github.com/ericmj/postgrex">postgrex</a>. We will walk through adding the <code>Point</code> data type in Postgres.</p>
-
-<p>This post will cover:</p>
-
-<ul>
-<li>How to see how postgres stores its types (built in and composite)</li>
-<li>How postgrex does its type lookups</li>
-<li>Finding the source type &ndash; adding it to postgres senders</li>
-<li>Looking up postgres source code for data mapping</li>
-<li>Adding new type <code>Point</code> type</li>
-<li>Adding built in <code>Type</code> structs</li>
-<li>Adding encode method</li>
-<li>Adding decode method</li>
-</ul>
-
-
-<h1>How Postgres stores its types</h1>
-
-<p>Postgres stores its types in a special system table called <code>pg_type</code> (<a href="http://www.postgresql.org/docs/9.4/static/catalog-pg-type.html">docs</a>). It defines a few things about the type:</p>
-
-<ul>
-<li>Its <code>typelem</code> &ndash; how the type is stored &ndash; array, or otherwise</li>
-<li>Its <code>typsend</code> &ndash; Output conversion function (binary format), or 0 if none</li>
-<li>Its <code>typarray</code> &ndash; an oid to another array type that has its send method</li>
-</ul>
-
-
-<h1>How Postgrex does type lookups</h1>
-
-<p>Postgrex at it&rsquo;s core is a simple data adapter into PostgreSQL from Elixir. It&rsquo;s an awesome library, and if you&rsquo;re using <a href="https://github.com/elixir-lang/ecto">Ecto</a>, you&rsquo;re already using it!</p>
-
-<p>First, let&rsquo;s look at how they are loading most types, by looking them up in the <code>pg_type</code> table in postgres:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-</pre></td><td class='code'><pre><code class='elixir'><span class='line'>  <span class="c1">### BOOTSTRAP TYPES AND EXTENSIONS ###</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="nv">@doc</span> <span class="no">false</span>
-</span><span class='line'>  <span class="k">def</span> <span class="n">bootstrap_query</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">version</span><span class="p">)</span> <span class="k">do</span>
-</span><span class='line'><span class="k">    </span><span class="p">{</span><span class="n">rngsubtype</span><span class="p">,</span> <span class="n">join_range</span><span class="p">}</span> <span class="o">=</span>
-</span><span class='line'>      <span class="k">if</span> <span class="n">version</span> <span class="o">&gt;=</span> <span class="p">{</span><span class="m">9</span><span class="p">,</span> <span class="m">2</span><span class="p">,</span> <span class="m">0</span><span class="p">}</span> <span class="k">do</span>
-</span><span class='line'><span class="k">        </span><span class="p">{</span><span class="s2">&quot;coalesce(r.rngsubtype, 0)&quot;</span><span class="p">,</span>
-</span><span class='line'>         <span class="s2">&quot;LEFT JOIN pg_range AS r ON r.rngtypid = t.oid&quot;</span><span class="p">}</span>
-</span><span class='line'>      <span class="k">else</span>
-</span><span class='line'>        <span class="p">{</span><span class="s2">&quot;0&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">}</span>
-</span><span class='line'>      <span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="sd">&quot;&quot;&quot;</span>
-</span><span class='line'><span class="sd">    SELECT t.oid, t.typname, t.typsend, t.typreceive, t.typoutput, t.typinput,</span>
-</span><span class='line'><span class="sd">           t.typelem, #{rngsubtype}, ARRAY (</span>
-</span><span class='line'><span class="sd">      SELECT a.atttypid</span>
-</span><span class='line'><span class="sd">      FROM pg_attribute AS a</span>
-</span><span class='line'><span class="sd">      WHERE a.attrelid = t.typrelid AND a.attnum &gt; 0 AND NOT a.attisdropped</span>
-</span><span class='line'><span class="sd">      ORDER BY a.attnum</span>
-</span><span class='line'><span class="sd">    )</span>
-</span><span class='line'><span class="sd">    FROM pg_type AS t</span>
-</span><span class='line'><span class="sd">    #{join_range}</span>
-</span><span class='line'><span class="sd">    WHERE</span>
-</span><span class='line'><span class="sd">      t.typname::text = ANY ((#{sql_array(m.type)})::text[]) OR</span>
-</span><span class='line'><span class="sd">      t.typsend::text = ANY ((#{sql_array(m.send)})::text[]) OR</span>
-</span><span class='line'><span class="sd">      t.typreceive::text = ANY ((#{sql_array(m.receive)})::text[]) OR</span>
-</span><span class='line'><span class="sd">      t.typoutput::text = ANY ((#{sql_array(m.output)})::text[]) OR</span>
-</span><span class='line'><span class="sd">      t.typinput::text = ANY ((#{sql_array(m.input)})::text[])</span>
-</span><span class='line'><span class="sd">    &quot;&quot;&quot;</span>
-</span><span class='line'>  <span class="k">end</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>You can see that under the hood, we&rsquo;re querying Postgres and asking it for it&rsquo;s types, so we can do OID lookups and call the appropriate encoder/decoder methods. From here, we can match up our newly added types encoding/decoding methods.</p>
-
-<h1>Finding the source type &ndash; adding it to postgres senders</h1>
-
-<p>Find information about the geometrics category:</p>
-
-<p><code>SELECT * from pg_type where typcategory = 'G';</code></p>
-
-<p>We will see the point type has an oid of 600, which is using a send specification of <code>point_send</code>. Other notable send types for geometries: <code>point_send lseg_send path_send box_send poly_send line_send circle_send</code>.</p>
-
-<p>Thus, we&rsquo;ll update the send types in postgrex, located in the <code>binary.ex</code> file:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class='elixir'><span class='line'><span class="nv">@senders</span> <span class="err">~</span><span class="n">w</span><span class="p">(</span><span class="n">boolsend</span> <span class="n">bpcharsend</span> <span class="n">textsend</span> <span class="n">varcharsend</span> <span class="n">byteasend</span>
-</span><span class='line'>            <span class="n">int2send</span> <span class="n">int4send</span> <span class="n">int8send</span> <span class="n">float4send</span> <span class="n">float8send</span> <span class="n">numeric_send</span>
-</span><span class='line'>            <span class="n">uuid_send</span> <span class="n">date_send</span> <span class="n">time_send</span> <span class="n">timetz_send</span> <span class="n">timestamp_send</span>
-</span><span class='line'>            <span class="n">timestamptz_send</span> <span class="n">interval_send</span> <span class="n">enum_send</span> <span class="n">tidsend</span> <span class="n">unknownsend</span>
-</span><span class='line'>            <span class="n">inet_send</span> <span class="n">cidr_send</span> <span class="n">macaddr_send</span> <span class="n">point_send</span>
-</span><span class='line'>            <span class="p">)</span> <span class="o">++</span> <span class="nv">@oid_senders</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Boom, that gets us the oid to encode/decode off of!</p>
-
-<h1>Looking up postgres source code for data mapping</h1>
-
-<p>I hopped into the Postgres source code and looked up the struct type for point, <a href="https://github.com/postgres/postgres/blob/master/src/include/utils/geo_decls.h#L58-L62">found here</a>.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='c++'><span class='line'><span class="k">typedef</span> <span class="k">struct</span>
-</span><span class='line'><span class="p">{</span>
-</span><span class='line'>  <span class="kt">double</span>    <span class="n">x</span><span class="p">,</span>
-</span><span class='line'>        <span class="n">y</span><span class="p">;</span>
-</span><span class='line'><span class="p">}</span> <span class="n">Point</span><span class="p">;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Great, its just two floats, no big deal.</p>
-
-<h1>Adding the point struct</h1>
-
-<p>Let&rsquo;s craft our Postgrex stuct type in <code>builtins.ex</code> then!</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-</pre></td><td class='code'><pre><code class='c++'><span class='line'><span class="n">defmodule</span> <span class="n">Postgrex</span><span class="p">.</span><span class="n">Point</span> <span class="k">do</span>
-</span><span class='line'>  <span class="err">@</span><span class="n">moduledoc</span> <span class="s">&quot;&quot;&quot;</span>
-</span><span class='line'>  <span class="n">Struct</span> <span class="k">for</span> <span class="n">Postgres</span> <span class="n">point</span><span class="p">.</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="err">##</span> <span class="n">Fields</span>
-</span><span class='line'>    <span class="o">*</span> <span class="err">`</span><span class="n">x</span><span class="err">`</span>
-</span><span class='line'>    <span class="o">*</span> <span class="err">`</span><span class="n">y</span><span class="err">`</span>
-</span><span class='line'>  <span class="s">&quot;&quot;&quot;</span>
-</span><span class='line'>  <span class="n">require</span> <span class="n">Decimal</span>
-</span><span class='line'>  <span class="err">@</span><span class="n">type</span> <span class="n">t</span> <span class="o">::</span> <span class="o">%</span><span class="n">__MODULE__</span><span class="p">{</span><span class="nl">x:</span> <span class="kt">float</span><span class="p">,</span> <span class="nl">y:</span> <span class="kt">float</span><span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="n">defstruct</span> <span class="p">[</span>
-</span><span class='line'>    <span class="nl">x:</span> <span class="n">nil</span><span class="p">,</span>
-</span><span class='line'>    <span class="nl">y:</span> <span class="n">nil</span><span class="p">]</span>
-</span><span class='line'><span class="n">end</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h1>Adding the encode method</h1>
-
-<p>Now since we are sending PostgreSQL binary data, we need to take our data and map it to it&rsquo;s binary form, via an <code>encode</code> method.</p>
-
-<p>However, postgrex is going to do a type look up, based on the types that we used in that query above.</p>
-
-<p>We&rsquo;ll add the methods to encode, that does some pattern matching to decipher we are getting the correct sender value.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='c++'><span class='line'><span class="n">def</span> <span class="n">encode</span><span class="p">(</span><span class="o">%</span><span class="n">TypeInfo</span><span class="p">{</span><span class="nl">type:</span> <span class="s">&quot;point&quot;</span><span class="p">,</span> <span class="nl">send:</span> <span class="s">&quot;point_send&quot;</span><span class="p">},</span> <span class="o">%</span><span class="n">Postgrex</span><span class="p">.</span><span class="n">Point</span><span class="p">{}</span> <span class="o">=</span> <span class="n">point</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">),</span>
-</span><span class='line'>  <span class="k">do</span><span class="o">:</span> <span class="n">encode_point</span><span class="p">(</span><span class="n">point</span><span class="p">)</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>As you can see, we are encoding, when a <code>TypeInfo</code> tuple is passed with type <code>point</code> and <code>send</code> <code>point_send</code>! Great, we just pass that to this method to parse out the two floats passed in the binary object:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='c++'><span class='line'><span class="n">defp</span> <span class="n">encode_point</span><span class="p">(</span><span class="o">%</span><span class="n">Postgrex</span><span class="p">.</span><span class="n">Point</span><span class="p">{</span><span class="nl">x:</span> <span class="n">x</span><span class="p">,</span> <span class="nl">y:</span> <span class="n">y</span><span class="p">}),</span>
-</span><span class='line'>  <span class="k">do</span><span class="o">:</span> <span class="o">&lt;&lt;</span><span class="n">x</span><span class="o">::</span><span class="n">float64</span><span class="p">,</span> <span class="n">y</span><span class="o">::</span><span class="n">float64</span><span class="o">&gt;&gt;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>It just takes those two values, and serializes them down to their binary counterparts.</p>
-
-<p>That now handles the test we&rsquo;ve got to keep us honest:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='c++'><span class='line'><span class="n">test</span> <span class="s">&quot;encode point&quot;</span><span class="p">,</span> <span class="n">context</span> <span class="k">do</span>
-</span><span class='line'>  <span class="n">assert</span> <span class="p">[[</span><span class="o">%</span><span class="n">Postgrex</span><span class="p">.</span><span class="n">Point</span><span class="p">{</span><span class="nl">x:</span> <span class="o">-</span><span class="mi">97</span><span class="p">,</span> <span class="nl">y:</span> <span class="mi">100</span><span class="p">}]]</span> <span class="o">==</span> <span class="n">query</span><span class="p">(</span><span class="s">&quot;SELECT $1::point&quot;</span><span class="p">,</span> <span class="p">[</span><span class="o">%</span><span class="n">Postgrex</span><span class="p">.</span><span class="n">Point</span><span class="p">{</span><span class="nl">x:</span> <span class="o">-</span><span class="mi">97</span><span class="p">,</span> <span class="nl">y:</span> <span class="mi">100</span><span class="p">}])</span>
-</span><span class='line'><span class="n">end</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>This test as promised, takes a <code>Postgrex.Point</code> type, and encodes it to the binary form, and sends it off to Postgres. How beautiful.</p>
-
-<h1>Adding the decode method</h1>
-
-<p>Now, when we get binary values from Postgres, we need to map that to our <code>Point</code> type we&rsquo;ve created.</p>
-
-<p>Adding the functions to <code>decode</code> in <code>binary.ex</code>:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-</pre></td><td class='code'><pre><code class='c++'><span class='line'><span class="n">def</span> <span class="n">decode</span><span class="p">(</span><span class="o">%</span><span class="n">TypeInfo</span><span class="p">{</span><span class="nl">type:</span> <span class="s">&quot;point&quot;</span><span class="p">},</span> <span class="n">binary</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">),</span>
-</span><span class='line'>  <span class="k">do</span><span class="o">:</span> <span class="n">decode_point</span><span class="p">(</span><span class="n">binary</span><span class="p">)</span>
-</span><span class='line'>
-</span><span class='line'><span class="cp"># ..snip..</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">defp</span> <span class="n">decode_point</span><span class="p">(</span><span class="o">&lt;&lt;</span><span class="n">x</span><span class="o">::</span><span class="n">float64</span><span class="p">,</span> <span class="n">y</span><span class="o">::</span><span class="n">float64</span><span class="o">&gt;&gt;</span><span class="p">)</span> <span class="k">do</span>
-</span><span class='line'>  <span class="o">%</span><span class="n">Postgrex</span><span class="p">.</span><span class="n">Point</span><span class="p">{</span><span class="nl">x:</span> <span class="n">x</span><span class="p">,</span> <span class="nl">y:</span> <span class="n">y</span><span class="p">}</span>
-</span><span class='line'><span class="n">end</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>The real meat and potatoes is, receiving our binary parameter, mapping its individual segmets as two floats, sized 8 bytes, and then with the pattern matching mapping those to our <code>Postgrex.Point</code> struct. QED.</p>
-
-<p>And the test:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='c++'><span class='line'><span class="n">test</span> <span class="s">&quot;decode point&quot;</span><span class="p">,</span> <span class="n">context</span> <span class="k">do</span>
-</span><span class='line'>  <span class="n">assert</span> <span class="p">[[</span><span class="o">%</span><span class="n">Postgrex</span><span class="p">.</span><span class="n">Point</span><span class="p">{</span><span class="nl">x:</span> <span class="o">-</span><span class="mi">97</span><span class="p">,</span> <span class="nl">y:</span> <span class="mi">100</span><span class="p">}]]</span> <span class="o">==</span> <span class="n">query</span><span class="p">(</span><span class="s">&quot;SELECT point(-97, 100)::point&quot;</span><span class="p">,</span> <span class="p">[])</span>
-</span><span class='line'>  <span class="n">assert</span> <span class="p">[[</span><span class="o">%</span><span class="n">Postgrex</span><span class="p">.</span><span class="n">Point</span><span class="p">{</span><span class="nl">x:</span> <span class="o">-</span><span class="mf">97.5</span><span class="p">,</span> <span class="nl">y:</span> <span class="mf">100.1</span><span class="p">}]]</span> <span class="o">==</span> <span class="n">query</span><span class="p">(</span><span class="s">&quot;SELECT point(-97.5, 100.1)::point&quot;</span><span class="p">,</span> <span class="p">[])</span>
-</span><span class='line'><span class="n">end</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h1>Conclusion</h1>
-
-<p>Once I finally figured out what pieces were what, I was able to run and create the point type, its mappings, and its senders it required, easily mapping to the struct in Elixir.</p>
-
-<p>I plan to keep working on postgrex, to add first class support for Postgres geometric types.</p>
-
-<p>Cheers!</p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/2/">&larr; Older</a>
@@ -1909,6 +1608,14 @@ Figuring how to plug in rendering steps between state changes. <code>this.setSta
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2019/02/23/the-victim-or-the-victor/">The Victim or the Victor</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2019/01/29/3-years-of-elixir-reflections/">3 Years of Elixir: Reflections</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2017/04/16/puppet-a-testing-handbook/">Puppet: A Testing Handbook</a>
       </li>
     
@@ -1918,14 +1625,6 @@ Figuring how to plug in rendering steps between state changes. <code>this.setSta
     
       <li class="post">
         <a href="/blog/2016/12/29/multicast-service-discovery-in-electron/">Multicast Service Discovery in Electron</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2016/03/11/using-erlang-observer-on-a-remote-elixir-server/">Using Erlang Observer on a Remote Elixir Server</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2016/01/24/custom-json-encoding-in-phoenix/">Custom JSON Encoding in Phoenix</a>
       </li>
     
   </ul>

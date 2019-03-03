@@ -4,7 +4,7 @@
   <title><![CDATA[Josh Bavari's Ramblings]]></title>
   <link href="http://jbavari.github.io/atom.xml" rel="self"/>
   <link href="http://jbavari.github.io/"/>
-  <updated>2019-01-27T19:23:21-07:00</updated>
+  <updated>2019-03-02T17:47:20-07:00</updated>
   <id>http://jbavari.github.io/</id>
   <author>
     <name><![CDATA[Josh Bavari]]></name>
@@ -12,6 +12,82 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[The Victim or the victor]]></title>
+    <link href="http://jbavari.github.io/blog/2019/02/23/the-victim-or-the-victor/"/>
+    <updated>2019-02-23T07:14:00-07:00</updated>
+    <id>http://jbavari.github.io/blog/2019/02/23/the-victim-or-the-victor</id>
+    <content type="html"><![CDATA[<p>When I was a younger boy, my grandma would tell me stories of my grandfather going to war. Like most men during world war 2, he did not want to go to leave his new bride and head to where death is ever looming. One thing I remember her saying to me as a life lesson is that you&rsquo;re given a choice in life that most always boils down to your attitude. She said, &ldquo;just like your grandpa, you can chose to be a victim, or go get the courage to become a victor. The choice is always yours.&rdquo;</p>
+
+<p>What does this mean? This means, when given any situation, your belief about the situation will in turn guide your thoughts and actions. This belief is so strong that even the way you think and address the situation happens whether or not your are conscious about it. The obvious choice would to be to see yourself as given a challenge that you must rise to and become a victor over.</p>
+
+<p>The opposite is true &ndash; you could be given a challenge and say, &lsquo;why me&rsquo;. From this victim midset, you have now set yourself up for failure from the start. You&rsquo;ve seen the challenge become the burden.</p>
+
+<p>That thought has always been on my mind throughout the years, but I have to admit I haven&rsquo;t always been as couragous as I could have been. You always assume when the time comes, you&rsquo;ll be ready. The fact is, it comes and hits you in the face right when you&rsquo;re planning for it. &ldquo;Everyone has a plan until you&rsquo;re punched in the face&rdquo;. The point is, the mindset of preparation is the key to success. My study of <a href="http://thedailystoic.com">stoicism</a> has lead me lately to living as if it has already happened, being unphased by things we should expect happen, and turning my &lsquo;have to&rsquo;s into &#8216;get to&rsquo;s.</p>
+
+<p>How do you break this cycle? You start by examining your internal thoughts first. Now that you are conscious about your thoughts, you can then analyze how to course-correct. Until then, you might be in the default victim midset and not even know it.</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[3 years of Elixir: Reflections]]></title>
+    <link href="http://jbavari.github.io/blog/2019/01/29/3-years-of-elixir-reflections/"/>
+    <updated>2019-01-29T07:30:00-07:00</updated>
+    <id>http://jbavari.github.io/blog/2019/01/29/3-years-of-elixir-reflections</id>
+    <content type="html"><![CDATA[<p>Back in 2015, I had just started at <a href="http://canvas.technology">CANVAS Technology</a> and my task was clear: to create a web application that can service many operations concurrently from users, robots, and other integration services. Prior to this new venture, I had spent my last few years doing Ruby on Rails, Node.js JavaScript, mobile applications (cordova, minimal Objective-C, Java/Android). Only a few months before joining CANVAS had I just started playing with Elixir and Phoenix. I was so excited and relieved to find something that was geared exactly for what we were embarking on.</p>
+
+<p>What I want to outline in this post is the lessons I&rsquo;ve learned using Elixir these last 3+ years and help others learn quickly.</p>
+
+<h2>Upgrade sooner than later</h2>
+
+<p>Discuss pains of upgrading Elixir 1.3 &ndash;> 1.6, Ecto 1.0 &ndash;> 2.0, Phoenix 0.9 &ndash;> 1.3. It definitely hasn&rsquo;t been easy to update, this is mitigated by staying abreast of Elixir / phoenix changes and trying to implement early.</p>
+
+<h2>GenServers are your friend &ndash; but use them only if you must</h2>
+
+<p>Abstract away the API and the Server &ndash; link to post by <a href="https://pragdave.me/blog/2017/07/13/decoupling-interface-and-implementation-in-elixir.html">Dave Thomas explaining splitting the APIs, Servers, and Implementations in Elixir</a>.</p>
+
+<h2>Testing pains with GenServers and Ecto&rsquo;s concurrency model</h2>
+
+<p>Make sure to restart genservers / supervisors. Having a connection time out be longer for longer running genservers that aren&rsquo;t started every setup fixture.</p>
+
+<h2>Using docker for team / testing scenarios</h2>
+
+<p>Docker-compose for stack, testing with diff vars. Preload any databases by putting them in the postgres container root in <code>/tmp</code>.</p>
+
+<h2>Testing browsers with Hound / ChromeDriver</h2>
+
+<p>Use Hound and chromedriver.</p>
+
+<h2>Do not code everything to the <code>Repo</code> itself</h2>
+
+<p>It&rsquo;s not as easy to cut off your database addiction. Having an intermediate context API that cache is a good first step.</p>
+
+<h2>PubSub is your friend, use structs to pass messages</h2>
+
+<p>When using cast/gproc, pass the Structs, don&rsquo;t use tuples. Resist the simple solutiuons. Pass structs defined.</p>
+
+<h2>Learn ETS</h2>
+
+<p>Don&rsquo;t use a cache when the Erlang VM has one built in.</p>
+
+<h2>Use behaviours</h2>
+
+<p>Take a look how <a href="https://github.com/aaronrenner/crowdfundr">crowdfundr</a> app. Code to interfaces, not the implementations. Use the <code>impl</code> approach.</p>
+
+<h2>Nginx as a front-end for SSL termination</h2>
+
+<p>Links/discussion to the post, security wise, leave Nginx to handle the vulns and your app to handle the impl.</p>
+
+<h2>Releases with Distillery</h2>
+
+<p>Ship those tarballs, let it fly. Easier/safer than shiping your code. Should probably post about the replacing of ENV vars. Use a Config module for system set env variables instead of them getting baked into your <code>sys.config</code> file.</p>
+
+<h2>Clustering &ndash; using epmd / GenServers for node communication message passing</h2>
+
+<p>Link to swarm and libcluster &ndash; knowing that clustering comes out of the box with Erlang/Elixir.</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Puppet: A Testing Handbook]]></title>
@@ -2695,397 +2771,6 @@ Figuring how to plug in rendering steps between state changes. <code>this.setSta
 </span><span class='line'>  <span class="p">},</span>
 </span><span class='line'><span class="cm">/* snip */</span>
 </span></code></pre></td></tr></table></div></figure>
-
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Angular 2 Injectables]]></title>
-    <link href="http://jbavari.github.io/blog/2015/10/19/angular-2-injectables/"/>
-    <updated>2015-10-19T16:34:00-06:00</updated>
-    <id>http://jbavari.github.io/blog/2015/10/19/angular-2-injectables</id>
-    <content type="html"><![CDATA[<p>I&rsquo;ve been fortunate enough to be working on Angular 2 while being on the Ionic team.</p>
-
-<p>I really enjoyed Pascal Precht&rsquo;s post about <a href="http://blog.thoughtram.io/angular/2015/05/18/dependency-injection-in-angular-2.html">Dependency injection in Angular 2</a>. One thing that I want to shed some more light on is how dependency injection works in an Angular 2 application using the <code>@Injectable</code> metadata thats passed for a class that&rsquo;s to be injected.</p>
-
-<p>Quick tip: take a quick look at the <a href="https://angular.io/docs/ts/latest/guide/cheatsheet.html">Angular 2 cheat sheet</a> to see some more of these Angular 2 syntax and API.</p>
-
-<h2>The basics of Depdendency injection</h2>
-
-<p>The gist of it we need:</p>
-
-<p>1) A class with <code>@Injectable</code> to tell angular 2 that its to be injected &ndash; DataService<br/>
-2) A class with a constructor that accepts a type to be injected</p>
-
-<p>A solid example, DataService marked as <code>@Injectable</code> that also needs <code>Http</code> to be injected for its use:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kr">import</span> <span class="p">{</span><span class="nx">Injectable</span><span class="p">,</span> <span class="nx">bind</span><span class="p">}</span> <span class="nx">from</span> <span class="s1">&#39;angular2/core&#39;</span><span class="p">;</span>
-</span><span class='line'><span class="kr">import</span> <span class="p">{</span><span class="nx">Http</span><span class="p">}</span> <span class="nx">from</span> <span class="s1">&#39;angular2/http&#39;</span><span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'><span class="err">@</span><span class="nx">Injectable</span><span class="p">()</span> <span class="cm">/* This is #1 */</span>
-</span><span class='line'><span class="kr">export</span> <span class="kr">class</span> <span class="nx">DataService</span> <span class="p">{</span>
-</span><span class='line'>  <span class="nx">constructor</span><span class="p">(</span><span class="nx">http</span><span class="o">:</span> <span class="nx">Http</span> <span class="cm">/* This is #2 */</span> <span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>    <span class="k">this</span><span class="p">.</span><span class="nx">http</span> <span class="o">=</span> <span class="nx">http</span><span class="p">;</span>
-</span><span class='line'>  <span class="p">}</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>What we have in the example above is a class, DataService, that needs Http to do what it needs to be done.</p>
-
-<h2>An example scenario</h2>
-
-<p>Let&rsquo;s say we have the following scenario, an angular 2 application with an app, a page for sessions, session details, speakers, and a data service that provides the data for those pages.</p>
-
-<p>We&rsquo;d want the app instance to instantiate the data service, then have a component <code>schedule</code> that can use the data service as provided by the app instance. From there, we&rsquo;d have the session detail that also gets the schedule data from the data service.</p>
-
-<p>The hierarchy would look like this:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>          App
-</span><span class='line'>           |
-</span><span class='line'>  |.............|...............|
-</span><span class='line'>  |             |               |
-</span><span class='line'>   Schedule      Speakers     Session-detail
-</span><span class='line'>  |
-</span><span class='line'>  |
-</span><span class='line'>  Schedule-list
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>All of these components will need the instance of data service.</p>
-
-<p>We&rsquo;ll need:</p>
-
-<ul>
-<li>A data serviced marked with <code>@Injectable</code>.</li>
-<li>A schedule page</li>
-<li>A schedule-list component</li>
-<li>A speakers page</li>
-</ul>
-
-
-<p>Say you have the following:</p>
-
-<p>In <code>www/app/service/data.js</code>:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kr">import</span> <span class="p">{</span><span class="nx">Injectable</span><span class="p">}</span> <span class="nx">from</span> <span class="s1">&#39;angular2/core&#39;</span><span class="p">;</span>
-</span><span class='line'><span class="kr">import</span> <span class="p">{</span><span class="nx">Http</span><span class="p">}</span> <span class="nx">from</span> <span class="s1">&#39;angular2/http&#39;</span><span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'><span class="err">@</span><span class="nx">Injectable</span><span class="p">()</span>
-</span><span class='line'><span class="kr">export</span> <span class="kr">class</span> <span class="nx">DataService</span> <span class="p">{</span>
-</span><span class='line'>  <span class="nx">constructor</span><span class="p">(</span><span class="nx">http</span><span class="o">:</span> <span class="nx">Http</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>    <span class="k">this</span><span class="p">.</span><span class="nx">http</span> <span class="o">=</span> <span class="nx">http</span><span class="p">;</span>
-</span><span class='line'>    <span class="k">this</span><span class="p">.</span><span class="nx">data</span> <span class="o">=</span> <span class="kc">null</span><span class="p">;</span>
-</span><span class='line'>    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;DataService constructor&#39;</span><span class="p">);</span>
-</span><span class='line'>  <span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="nx">retrieveData</span><span class="p">()</span> <span class="p">{</span>
-</span><span class='line'>    <span class="k">this</span><span class="p">.</span><span class="nx">http</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">&#39;api/data/data.json&#39;</span><span class="p">)</span>
-</span><span class='line'>    <span class="p">.</span><span class="nx">map</span><span class="p">(</span><span class="nx">res</span> <span class="o">=&gt;</span> <span class="nx">res</span><span class="p">.</span><span class="nx">json</span><span class="p">())</span>
-</span><span class='line'>    <span class="p">.</span><span class="nx">subscribe</span><span class="p">(</span><span class="nx">data</span> <span class="o">=&gt;</span> <span class="p">{</span>
-</span><span class='line'>      <span class="k">this</span><span class="p">.</span><span class="nx">data</span> <span class="o">=</span> <span class="nx">data</span><span class="p">;</span>
-</span><span class='line'>    <span class="p">});</span>
-</span><span class='line'>  <span class="p">}</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>We&rsquo;d also have our Application object, <code>www/app/app.js</code>:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kr">import</span> <span class="p">{</span><span class="nx">App</span><span class="p">,</span> <span class="nx">Platform</span><span class="p">,</span> <span class="nx">StatusBar</span><span class="p">}</span> <span class="nx">from</span> <span class="s1">&#39;ionic/ionic&#39;</span><span class="p">;</span>
-</span><span class='line'><span class="kr">import</span> <span class="p">{</span><span class="nx">DataService</span><span class="p">}</span> <span class="nx">from</span> <span class="s1">&#39;./service/data&#39;</span><span class="p">;</span>
-</span><span class='line'><span class="kr">import</span> <span class="p">{</span><span class="nx">AboutPage</span><span class="p">}</span> <span class="nx">from</span> <span class="s1">&#39;./about/about&#39;</span><span class="p">;</span>
-</span><span class='line'><span class="kr">import</span> <span class="p">{</span><span class="nx">MapPage</span><span class="p">}</span> <span class="nx">from</span> <span class="s1">&#39;./map/map&#39;</span><span class="p">;</span>
-</span><span class='line'><span class="kr">import</span> <span class="p">{</span><span class="nx">SchedulePage</span><span class="p">}</span> <span class="nx">from</span> <span class="s1">&#39;./schedule/schedule&#39;</span><span class="p">;</span>
-</span><span class='line'><span class="kr">import</span> <span class="p">{</span><span class="nx">SpeakersPage</span><span class="p">}</span> <span class="nx">from</span> <span class="s1">&#39;./speakers/speakers&#39;</span><span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'><span class="err">@</span><span class="nx">App</span><span class="p">({</span>
-</span><span class='line'>  <span class="nx">templateUrl</span><span class="o">:</span> <span class="s1">&#39;app/app.html&#39;</span><span class="p">,</span>
-</span><span class='line'>  <span class="nx">providers</span><span class="o">:</span> <span class="p">[</span><span class="nx">DataService</span><span class="p">]</span>
-</span><span class='line'>  <span class="cm">/* </span>
-</span><span class='line'><span class="cm">    Here we&#39;re saying, please include an instance of </span>
-</span><span class='line'><span class="cm">    DataService for all my children components,</span>
-</span><span class='line'><span class="cm">    in this case being sessions, speakers, </span>
-</span><span class='line'><span class="cm">    and session detail.</span>
-</span><span class='line'><span class="cm">  */</span>
-</span><span class='line'><span class="p">})</span>
-</span><span class='line'><span class="kr">class</span> <span class="nx">ConferenceApp</span> <span class="p">{</span>
-</span><span class='line'>  <span class="nx">constructor</span><span class="p">(</span><span class="nx">platform</span><span class="o">:</span> <span class="nx">Platform</span><span class="p">,</span> <span class="nx">data</span><span class="o">:</span> <span class="nx">DataService</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>    <span class="nx">data</span><span class="p">.</span><span class="nx">retrieveData</span><span class="p">();</span>
-</span><span class='line'>  <span class="p">}</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Then we&rsquo;d have our speakers component, <code>www/app/speakers/speakers.js</code>:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kr">import</span> <span class="p">{</span><span class="nx">Page</span><span class="p">}</span> <span class="nx">from</span> <span class="s1">&#39;ionic/ionic&#39;</span><span class="p">;</span>
-</span><span class='line'><span class="kr">import</span> <span class="p">{</span><span class="nx">DataService</span><span class="p">}</span> <span class="nx">from</span> <span class="s1">&#39;../service/data&#39;</span><span class="p">;</span>
-</span><span class='line'><span class="kr">import</span> <span class="p">{</span><span class="nx">SpeakerDetailPage</span><span class="p">}</span> <span class="nx">from</span> <span class="s1">&#39;../speaker-detail/speaker-detail&#39;</span><span class="p">;</span>
-</span><span class='line'><span class="kr">import</span> <span class="p">{</span><span class="nx">SessionDetailPage</span><span class="p">}</span> <span class="nx">from</span> <span class="s1">&#39;../session-detail/session-detail&#39;</span><span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'><span class="err">@</span><span class="nx">Page</span><span class="p">({</span>
-</span><span class='line'>  <span class="nx">templateUrl</span><span class="o">:</span> <span class="s1">&#39;app/speakers/speakers.html&#39;</span>
-</span><span class='line'><span class="p">})</span>
-</span><span class='line'><span class="kr">export</span> <span class="kr">class</span> <span class="nx">SpeakersPage</span> <span class="p">{</span>
-</span><span class='line'>  <span class="nx">constructor</span><span class="p">(</span><span class="nx">nav</span><span class="o">:</span> <span class="nx">NavController</span><span class="p">,</span> <span class="nx">data</span><span class="o">:</span> <span class="nx">DataService</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>    <span class="k">this</span><span class="p">.</span><span class="nx">nav</span> <span class="o">=</span> <span class="nx">nav</span><span class="p">;</span>
-</span><span class='line'>    <span class="k">this</span><span class="p">.</span><span class="nx">speakers</span> <span class="o">=</span> <span class="kc">null</span><span class="p">;</span>
-</span><span class='line'>    <span class="k">this</span><span class="p">.</span><span class="nx">dataService</span> <span class="o">=</span> <span class="nx">data</span><span class="p">;</span>
-</span><span class='line'>  <span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="nx">onInit</span><span class="p">()</span> <span class="p">{</span>
-</span><span class='line'>    <span class="k">this</span><span class="p">.</span><span class="nx">speakers</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">dataService</span><span class="p">.</span><span class="nx">getSchedule</span><span class="p">();</span>
-</span><span class='line'>  <span class="p">}</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Now I want to point something out above. If we had the <code>SpeakersPage</code> to also have a <code>providers: [DataService]</code>, we are telling angular 2 to create an instance of DataService to make it available for <code>SpeakersPage</code>&rsquo;s children, <strong>instead of</strong> using the DataService that <code>ConferenceApp</code> provided.</p>
-
-<p>I repeat, we&rsquo;d have two instances of <code>DataService</code> with this:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kr">import</span> <span class="p">{</span><span class="nx">Page</span><span class="p">}</span> <span class="nx">from</span> <span class="s1">&#39;ionic/ionic&#39;</span><span class="p">;</span>
-</span><span class='line'><span class="kr">import</span> <span class="p">{</span><span class="nx">DataService</span><span class="p">}</span> <span class="nx">from</span> <span class="s1">&#39;../service/data&#39;</span><span class="p">;</span>
-</span><span class='line'><span class="kr">import</span> <span class="p">{</span><span class="nx">SpeakerDetailPage</span><span class="p">}</span> <span class="nx">from</span> <span class="s1">&#39;../speaker-detail/speaker-detail&#39;</span><span class="p">;</span>
-</span><span class='line'><span class="kr">import</span> <span class="p">{</span><span class="nx">SessionDetailPage</span><span class="p">}</span> <span class="nx">from</span> <span class="s1">&#39;../session-detail/session-detail&#39;</span><span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'><span class="err">@</span><span class="nx">Page</span><span class="p">({</span>
-</span><span class='line'>  <span class="nx">templateUrl</span><span class="o">:</span> <span class="s1">&#39;app/speakers/speakers.html&#39;</span><span class="p">,</span>
-</span><span class='line'>  <span class="nx">providers</span><span class="o">:</span> <span class="p">[</span><span class="nx">DataService</span><span class="p">]</span>
-</span><span class='line'>  <span class="c1">// This will instantiate a new DataService for its children</span>
-</span><span class='line'><span class="p">})</span>
-</span><span class='line'><span class="kr">export</span> <span class="kr">class</span> <span class="nx">SpeakersPage</span> <span class="p">{</span>
-</span><span class='line'>  <span class="nx">constructor</span><span class="p">(</span><span class="nx">nav</span><span class="o">:</span> <span class="nx">NavController</span><span class="p">,</span> <span class="nx">data</span><span class="o">:</span> <span class="nx">DataService</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>    <span class="k">this</span><span class="p">.</span><span class="nx">nav</span> <span class="o">=</span> <span class="nx">nav</span><span class="p">;</span>
-</span><span class='line'>    <span class="k">this</span><span class="p">.</span><span class="nx">speakers</span> <span class="o">=</span> <span class="kc">null</span><span class="p">;</span>
-</span><span class='line'>    <span class="k">this</span><span class="p">.</span><span class="nx">dataService</span> <span class="o">=</span> <span class="nx">data</span><span class="p">;</span>
-</span><span class='line'>  <span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="nx">onInit</span><span class="p">()</span> <span class="p">{</span>
-</span><span class='line'>    <span class="k">this</span><span class="p">.</span><span class="nx">speakers</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">dataService</span><span class="p">.</span><span class="nx">getSchedule</span><span class="p">();</span>
-</span><span class='line'>  <span class="p">}</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>This is very important. If we had a <code>console.log</code> statement in the <code>DataService</code> constructor, we&rsquo;d see it run twice with the <code>providers: [DataService]</code> being specified.</p>
-
-<p>One thing to remember, if at the root application you specify a provider, it will be available to all children components that it contains, unless you specify a <code>providers</code> that then will initialize a new instance of that provided class.</p>
-
-<p>I hope this post helps clear up dependency injection in Angular 2. Now get back to coding!</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[npm Production Checklist]]></title>
-    <link href="http://jbavari.github.io/blog/2015/10/17/npm-production-checklist/"/>
-    <updated>2015-10-17T18:33:00-06:00</updated>
-    <id>http://jbavari.github.io/blog/2015/10/17/npm-production-checklist</id>
-    <content type="html"><![CDATA[<p>I recently read this post by RisingStack over the <a href="https://blog.risingstack.com/node-js-production-checklist">Node.js Production Checklist</a>.</p>
-
-<p>Since this was aimed at releasing node.js applications for the most part, I wanted to touch base on a &lsquo;production checklist&rsquo; on releasing a npm module.</p>
-
-<p>The <a href="https://docs.npmjs.com/misc/developers">npm-developers guide</a> does a <em>great</em> job of explaining much you need to know about publishing your npm module.</p>
-
-<p>This post will mainly serve as a work in progress document to supplement the developers guide, as well as serving as a way to help me continue to keep learning best practices all the time.</p>
-
-<p>Some of the methods I use in my npm release schedule are as follows:</p>
-
-<ol>
-<li>Keeping files out of your package</li>
-<li>Locking versions</li>
-<li>Continuous integration (tests, install, etc)</li>
-<li>Alpha/beta pushes (user testing)</li>
-<li><a href="https://github.com/tjunnone/npm-check-updates">npm-check-updates</a></li>
-</ol>
-
-
-<h2>Keeping files out of your package</h2>
-
-<p>We want our users to only have to download what they need to use your module. This may mean removing any files that are not beneficial for the user. Much like <code>.gitignore</code> for files being checked into git, npm has <code>.npmignore</code>.</p>
-
-<p>Straight from <a href="https://docs.npmjs.com/misc/developers#keeping-files-out-of-your-package">npm docs</a>:</p>
-
-<blockquote><p>Use a .npmignore file to keep stuff out of your package. If there&rsquo;s no .npmignore file, but there is a .gitignore file, then npm will ignore the stuff matched by the .gitignore file. If you want to include something that is excluded by your .gitignore file, you can create an empty .npmignore file to override it. Like git, npm looks for .npmignore and .gitignore files in all subdirectories of your package, not only the root directory.</p></blockquote>
-
-<p>We can also use a command in the npm CLI called <code>prune</code>.</p>
-
-<p>Again, straight from the <a href="https://docs.npmjs.com/cli/prune">npm documentation</a>:</p>
-
-<blockquote><p>This command removes &ldquo;extraneous&rdquo; packages. If a package name is provided, then only packages matching one of the supplied names are removed.
-Extraneous packages are packages that are not listed on the parent package&rsquo;s dependencies list.
-If the &mdash;production flag is specified or the NODE_ENV environment variable is set to production, this command will remove the packages specified in your devDependencies. Setting &mdash;production=false will negate NODE_ENV being set to production.</p></blockquote>
-
-<p>This is a great way to ensure you dont have any extra packages you might have installed via <code>npm install</code> and either forgot to pass the <code>--save</code> flag or were just testing functionality.</p>
-
-<p>You can also use this command inline with the <code>--production</code> flag when installing node modules to avoid having the extra cruft of the <code>devDependencies</code>, which are mainly used for developing the modules (think testing, etc).</p>
-
-<h2>Locking versions</h2>
-
-<p>Theres a few methods to use with npm to lock down your versions. You can use the <code>npm shrinkwrap</code> command or specify node modules to bundle in your module with <code>bundleDependencies</code>.</p>
-
-<p>The strategy is, you can either pack those in with your tarball as they are in your <code>node_modules</code> folder, or you can lock down those exact versions by storing the exact tarball to download when the user <code>npm install</code>s your module.</p>
-
-<p>Edit: I&rsquo;ve just learned on a new method to package bundle up node modules by using the <code>bundledDependencies</code> attribute in your projects <code>package.json</code> file.</p>
-
-<h2>Bundling</h2>
-
-<p>By specifying <code>bundleDependencies</code> in your package.json, you are telling npm on its publishing process to include those modules listed in the tarball it creates and pushes up to the npm registry. For example, if you go to any npm repo and download the tarball in the url there, unzip it and open it, you&rsquo;ll see those exact node modules in them as you&rsquo;ve got in your own <code>node_modules</code> folder.</p>
-
-<p>This effectively locks down your modules versions, at the cost of a larger tarball size the user will download intially. Any modules that are not bundled, will then be downloaded and installed after the tarball is downloaded.</p>
-
-<h2>Shrinkwrapping</h2>
-
-<p>If you&rsquo;ve ever done any Rails, you&rsquo;ve probably seen the gemfile.lock. The equivalent in Node land is the <code>npm-shrinkwrap.json</code> file.</p>
-
-<p>What the <code>npm shrinkwrap</code> command does is looks at your <code>node_modules</code> folder and looks at the packages installed there and compares those to what is in your <code>package.json</code> file.</p>
-
-<p>Straight from <a href="https://docs.npmjs.com/cli/shrinkwrap">npm documentation</a>:</p>
-
-<blockquote><p>The shrinkwrap command has locked down the dependencies based on what&rsquo;s currently installed in node_modules. The installation behavior is changed to:</p>
-
-<p>The module tree described by the shrinkwrap is reproduced. This means reproducing the structure described in the file, using the specific files referenced in &ldquo;resolved&rdquo; if available, falling back to normal package resolution using &ldquo;version&rdquo; if one isn&rsquo;t.</p>
-
-<p>The tree is walked and any missing dependencies are installed in the usual fasion.</p></blockquote>
-
-<p>A huge misconception is that shrinkwrap locks down what versions are in your <code>package.json</code> file. This is incorrect. Just to reiterate, it will look in your <code>node_modules</code> and use that compared to your <code>package.json</code> file.</p>
-
-<p>Edit: Another thing to note, if you take a look in your npm-shrinkwrap.json, you&rsquo;ll see the exact URL for that versions tarball to download, which npm cli will use to grab without taking a peep at anything else. This may cause issues for some users, as stated by <a href="https://github.com/driftyco/ionic-cli/issues/636">Forrest on this Ionic CLI issue</a>:</p>
-
-<blockquote><p>Due to how shrinkwrap works, it ends up bypassing the npm cache and redownloading every package mentioned in the shrinkwrap each time npm install is run. If users have any issues with their network, or something gets sticky with npm&rsquo;s CDN, the whole install can fail, forcing them to start over again.</p></blockquote>
-
-<p>Heed this warning, friends.</p>
-
-<h2>Testing</h2>
-
-<p>Try to avoid the old addage, &lsquo;it worked on my machine&rsquo;, by having a CI server pull your package, run some tests, and even sometimes install the module to make sure it works on other machines besides your own.</p>
-
-<p>I really enjoy using <a href="https://circleci.com/">CircleCI</a>, as it is free for open source projects! You can normally specify a config file that says what version of node/npm to use and the rest is automated.</p>
-
-<h2>Alpha/beta pushes</h2>
-
-<p>I covered this in a <a href="http://jbavari.github.io/blog/2015/10/16/using-npm-tags">previous article about using npm tags</a>.</p>
-
-<p>The idea is, before publishing your version to npm, try doing a alpha/beta push first (to save the version in npm you&rsquo;re about to publish, since there can only be <em>one</em> version) to let users <code>npm install</code> the module to run some tests before commiting that to the <code>latest</code> tag for everyone to install.</p>
-
-<h2>npm Check Updates</h2>
-
-<p>There&rsquo;s a nice module that looks at your <code>package.json</code> file and looks to see the latest tags on the modules you specify in your dependencies.</p>
-
-<p>It will give you some heads up if there are latest packages, so you can update if you have too many out of date packages.</p>
-
-<p>Hope this helps!</p>
-
-<p>References:</p>
-
-<ul>
-<li><a href="http://blog.keithcirkel.co.uk/how-to-use-npm-as-a-build-tool/">Using npm as a build tool</a></li>
-<li><a href="http://jbavari.github.io/blog/2015/10/16/using-npm-tags">Using npm tags</a></li>
-<li><a href="https://docs.npmjs.com/cli/shrinkwrap">npm documentation</a></li>
-<li><a href="https://docs.npmjs.com/misc/developers">npm-developers guide</a></li>
-<li><a href="https://www.npmjs.com/package/module-best-practices#naming-conventions">npm &ndash; Module best practices</a></li>
-<li><a href="https://blog.risingstack.com/node-js-production-checklist">Node.js Production Checklist</a></li>
-<li><a href="http://blog.nchaulet.fr/publish-package-on-npm-best-practice/">Publish packages on npm &ndash; best practice</a></li>
-</ul>
 
 ]]></content>
   </entry>

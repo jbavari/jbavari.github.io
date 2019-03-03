@@ -1,0 +1,329 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>3 years of Elixir: Reflections - Josh Bavari's Ramblings</title>
+  <meta name="author" content="Josh Bavari">
+
+  
+  <meta name="description" content="Back in 2015, I had just started at CANVAS Technology and my task was clear: to create a web application that can service many operations &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://jbavari.github.io/blog/2019/01/29/3-years-of-elixir-reflections">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="Josh Bavari's Ramblings" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">Josh Bavari's Ramblings</a></h1>
+  
+    <h2>tech babbles on Ruby, Javascript, Rails, Phonegap/Cordova, Grunt, and more</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:jbavari.github.io" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+  <li><a href="/about">About</a></li>
+  <li><a href="/speaking">Speaking</a></li>
+  <li><a href="/knowledge">Knowledge</a></li>
+  <li><a href="/about/resume">Resume</a></li>
+  <li><a href="/about/cv">C.V.</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">3 Years of Elixir: Reflections</h1>
+    
+    
+      <p class="meta">
+        <span class="reading-time">about a 2 minute read</span>
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2019-01-29T07:30:00-07:00" pubdate data-updated="true">Jan 29<span>th</span>, 2019</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>Back in 2015, I had just started at <a href="http://canvas.technology">CANVAS Technology</a> and my task was clear: to create a web application that can service many operations concurrently from users, robots, and other integration services. Prior to this new venture, I had spent my last few years doing Ruby on Rails, Node.js JavaScript, mobile applications (cordova, minimal Objective-C, Java/Android). Only a few months before joining CANVAS had I just started playing with Elixir and Phoenix. I was so excited and relieved to find something that was geared exactly for what we were embarking on.</p>
+
+<p>What I want to outline in this post is the lessons I&rsquo;ve learned using Elixir these last 3+ years and help others learn quickly.</p>
+
+<h2>Upgrade sooner than later</h2>
+
+<p>Discuss pains of upgrading Elixir 1.3 &ndash;> 1.6, Ecto 1.0 &ndash;> 2.0, Phoenix 0.9 &ndash;> 1.3. It definitely hasn&rsquo;t been easy to update, this is mitigated by staying abreast of Elixir / phoenix changes and trying to implement early.</p>
+
+<h2>GenServers are your friend &ndash; but use them only if you must</h2>
+
+<p>Abstract away the API and the Server &ndash; link to post by <a href="https://pragdave.me/blog/2017/07/13/decoupling-interface-and-implementation-in-elixir.html">Dave Thomas explaining splitting the APIs, Servers, and Implementations in Elixir</a>.</p>
+
+<h2>Testing pains with GenServers and Ecto&rsquo;s concurrency model</h2>
+
+<p>Make sure to restart genservers / supervisors. Having a connection time out be longer for longer running genservers that aren&rsquo;t started every setup fixture.</p>
+
+<h2>Using docker for team / testing scenarios</h2>
+
+<p>Docker-compose for stack, testing with diff vars. Preload any databases by putting them in the postgres container root in <code>/tmp</code>.</p>
+
+<h2>Testing browsers with Hound / ChromeDriver</h2>
+
+<p>Use Hound and chromedriver.</p>
+
+<h2>Do not code everything to the <code>Repo</code> itself</h2>
+
+<p>It&rsquo;s not as easy to cut off your database addiction. Having an intermediate context API that cache is a good first step.</p>
+
+<h2>PubSub is your friend, use structs to pass messages</h2>
+
+<p>When using cast/gproc, pass the Structs, don&rsquo;t use tuples. Resist the simple solutiuons. Pass structs defined.</p>
+
+<h2>Learn ETS</h2>
+
+<p>Don&rsquo;t use a cache when the Erlang VM has one built in.</p>
+
+<h2>Use behaviours</h2>
+
+<p>Take a look how <a href="https://github.com/aaronrenner/crowdfundr">crowdfundr</a> app. Code to interfaces, not the implementations. Use the <code>impl</code> approach.</p>
+
+<h2>Nginx as a front-end for SSL termination</h2>
+
+<p>Links/discussion to the post, security wise, leave Nginx to handle the vulns and your app to handle the impl.</p>
+
+<h2>Releases with Distillery</h2>
+
+<p>Ship those tarballs, let it fly. Easier/safer than shiping your code. Should probably post about the replacing of ENV vars. Use a Config module for system set env variables instead of them getting baked into your <code>sys.config</code> file.</p>
+
+<h2>Clustering &ndash; using epmd / GenServers for node communication message passing</h2>
+
+<p>Link to swarm and libcluster &ndash; knowing that clustering comes out of the box with Erlang/Elixir.</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Josh Bavari</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2019-01-29T07:30:00-07:00" pubdate data-updated="true">Jan 29<span>th</span>, 2019</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/elixir/'>elixir</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://jbavari.github.io/blog/2019/01/29/3-years-of-elixir-reflections/" data-via="jbavari" data-counturl="http://jbavari.github.io/blog/2019/01/29/3-years-of-elixir-reflections/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2017/04/16/puppet-a-testing-handbook/" title="Previous Post: Puppet: A Testing Handbook">&laquo; Puppet: A Testing Handbook</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2019/02/23/the-victim-or-the-victor/" title="Next Post: The Victim or the victor">The Victim or the victor &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2019/02/23/the-victim-or-the-victor/">The Victim or the Victor</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2019/01/29/3-years-of-elixir-reflections/">3 Years of Elixir: Reflections</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2017/04/16/puppet-a-testing-handbook/">Puppet: A Testing Handbook</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2017/03/13/test-coverage-reports-in-elixir/">Test Coverage Reports in Elixir</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/12/29/multicast-service-discovery-in-electron/">Multicast Service Discovery in Electron</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/jbavari">@jbavari</a> on GitHub
+  
+  <script type="text/javascript">
+    $(document).ready(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'jbavari',
+            count: 0,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2019 - Josh Bavari -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+  <script src="//static.getclicky.com/js" type="text/javascript"></script>
+  <script type="text/javascript">try{ clicky.init(100896582); }catch(e){}</script>
+  <noscript><p><img alt="Clicky" width="1" height="1" src="//in.getclicky.com/100896582ns.gif" /></p></noscript>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'joshbavari';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://jbavari.github.io/blog/2019/01/29/3-years-of-elixir-reflections/';
+        var disqus_url = 'http://jbavari.github.io/blog/2019/01/29/3-years-of-elixir-reflections/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

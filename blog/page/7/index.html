@@ -9,7 +9,7 @@
   <meta name="author" content="Josh Bavari">
 
   
-  <meta name="description" content="I find myself lately in falling in love unit testing in Javascript with the Jasmine framework. It&rsquo;s really upped my trust levels that I&rsquo; &hellip;">
+  <meta name="description" content="I&rsquo;ve posted some slides I presented at the OKC Javascript User Group over Grunt.js titled Dont be a grunt, use grunt. I encourage any and all &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -70,6 +70,210 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/12/17/dont-be-a-grunt/">Dont Be a Grunt</a></h1>
+    
+    
+      <p class="meta">
+        <span class="reading-time">less than a 1 minute read</span>
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-12-17T10:18:00-07:00" pubdate data-updated="true">Dec 17<span>th</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>I&rsquo;ve posted some slides I presented at the <a href="http://okcjs.com">OKC Javascript User Group</a> over Grunt.js titled <a href="http://jbavari.github.io/Dont-Be-a-Grunt-Use-Grunt-Slides/">Dont be a grunt, use grunt</a>.</p>
+
+<p>I encourage any and all to take any ideas and information from the slides. I&rsquo;m hoping they provide value to anyone who may want to learn and use Grunt.</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/12/04/automating-local-ip-lookup-with-grunt-and-node/">Automating Local IP Lookup With Grunt and Node</a></h1>
+    
+    
+      <p class="meta">
+        <span class="reading-time">less than a 1 minute read</span>
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-12-04T15:18:00-07:00" pubdate data-updated="true">Dec 4<span>th</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>In the last few write-ups I&rsquo;ve done lately (see <a href="/blog/2013/12/02/automating-underlying-mobile-infrastructure-with-grunt">the servers post</a> and the <a href="/blog/2013/11/30/automating-phonegap-builds-with-grunt">phonegap builds post</a>), I&rsquo;ve been requiring the user to pass in the IP or the host in the command line. That works and all, but I usually have to go look up that ip using the good ol &lsquo;ifconfig&rsquo; command.</p>
+
+<p>Since I&rsquo;m obsesed with automation, I&rsquo;d rather be lazy and just have the IP Address look up be automatic.</p>
+
+<h2>Why am I writing this?</h2>
+
+<p>I work in a dozen of different places. At any given time I may be at home, work, a coffee shop, etc. Most times my ip address will be different. I really just want to boot the servers up to my current IP and have the mobile app point at that IP. (The actual device can&rsquo;t understand localhost or a local 0.0.0.0 IP address over wifi)</p>
+
+<p>Have you guessed it yet? I want to automatically set that ip address / hostname to my local IP without having to go look it up every time.</p>
+
+<p>I found this post on <a href="http://stackoverflow.com/questions/3653065/get-local-ip-address-in-node-js">stackoverflow</a> that pointed me at this <a href="http://nodejs.org/api/os.html#os_os_networkinterfaces">Node.js documentation</a> to look up the network interfaces. This lets us dig deeper with Grunt to get the IP Address, especially since grunt sits on Node.js.</p>
+
+<h3>Simple and (too) easy</h3>
+
+<p>There&rsquo;s a Node.js call that puts all of the config settings into nice JSON for you to work with.</p>
+
+<figure class='code'><figcaption><span>Node.js command for getting network interfaces</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="c1">//Gets a JSON much like running &#39;ifconfig&#39;</span>
+</span><span class='line'><span class="kd">var</span> <span class="nx">ifaces</span> <span class="o">=</span> <span class="nx">os</span><span class="p">.</span><span class="nx">networkInterfaces</span><span class="p">();</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The next key is to go through all the interfaces, and get the current local IP from the device from ethernet or wifi.</p>
+
+<p>My grunt config looks something like this:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">module</span><span class="p">.</span><span class="nx">exports</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">grunt</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="kd">var</span> <span class="nx">os</span><span class="o">=</span><span class="nx">require</span><span class="p">(</span><span class="s1">&#39;os&#39;</span><span class="p">);</span>
+</span><span class='line'>  <span class="kd">var</span> <span class="nx">ifaces</span><span class="o">=</span><span class="nx">os</span><span class="p">.</span><span class="nx">networkInterfaces</span><span class="p">();</span>
+</span><span class='line'>  <span class="kd">var</span> <span class="nx">lookupIpAddress</span> <span class="o">=</span> <span class="kc">null</span><span class="p">;</span>
+</span><span class='line'>  <span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">dev</span> <span class="k">in</span> <span class="nx">ifaces</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>      <span class="k">if</span><span class="p">(</span><span class="nx">dev</span> <span class="o">!=</span> <span class="s2">&quot;en1&quot;</span> <span class="o">&amp;&amp;</span> <span class="nx">dev</span> <span class="o">!=</span> <span class="s2">&quot;en0&quot;</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>          <span class="k">continue</span><span class="p">;</span>
+</span><span class='line'>      <span class="p">}</span>
+</span><span class='line'>      <span class="nx">ifaces</span><span class="p">[</span><span class="nx">dev</span><span class="p">].</span><span class="nx">forEach</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">details</span><span class="p">){</span>
+</span><span class='line'>        <span class="k">if</span> <span class="p">(</span><span class="nx">details</span><span class="p">.</span><span class="nx">family</span><span class="o">==</span><span class="s1">&#39;IPv4&#39;</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>          <span class="nx">lookupIpAddress</span> <span class="o">=</span> <span class="nx">details</span><span class="p">.</span><span class="nx">address</span><span class="p">;</span>
+</span><span class='line'>          <span class="k">break</span><span class="p">;</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>      <span class="p">});</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="c1">//If an IP Address is passed</span>
+</span><span class='line'>  <span class="c1">//we&#39;re going to use the ip/host from the param</span>
+</span><span class='line'>  <span class="c1">//passed over the command line </span>
+</span><span class='line'>  <span class="c1">//over the ip addressed that was looked up</span>
+</span><span class='line'>  <span class="kd">var</span> <span class="nx">ipAddress</span> <span class="o">=</span> <span class="nx">grunt</span><span class="p">.</span><span class="nx">option</span><span class="p">(</span><span class="s1">&#39;host&#39;</span><span class="p">)</span> <span class="o">||</span> <span class="nx">lookupIpAddress</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nx">grunt</span><span class="p">.</span><span class="nx">initConfig</span><span class="p">({</span>
+</span><span class='line'>      <span class="nx">bgShell</span><span class="o">:</span> <span class="p">{</span>
+</span><span class='line'>          <span class="nx">weinre</span><span class="o">:</span> <span class="p">{</span>
+</span><span class='line'>              <span class="nx">cmd</span><span class="o">:</span> <span class="s1">&#39;weinre --httpPort 8080 --boundHost=&#39;</span> <span class="o">+</span> <span class="nx">ipAddress</span><span class="p">,</span>
+</span><span class='line'>              <span class="nx">bg</span><span class="o">:</span> <span class="kc">false</span>
+</span><span class='line'>          <span class="p">},</span>
+</span><span class='line'>          <span class="nx">rails</span><span class="o">:</span> <span class="p">{</span>
+</span><span class='line'>              <span class="nx">cmd</span><span class="o">:</span> <span class="s1">&#39;cd ../raisemore_web &amp;&amp; rails s -p 3000 -b &#39;</span> <span class="o">+</span> <span class="nx">ipAddress</span>
+</span><span class='line'>          <span class="p">}</span>
+</span><span class='line'>      <span class="p">}</span>
+</span><span class='line'>  <span class="p">});</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="c1">//Load in the preprocess tasks</span>
+</span><span class='line'>  <span class="nx">grunt</span><span class="p">.</span><span class="nx">loadTasks</span><span class="p">(</span><span class="s1">&#39;preprocess&#39;</span><span class="p">);</span>
+</span><span class='line'>  <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;load-grunt-tasks&#39;</span><span class="p">)(</span><span class="nx">grunt</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="c1">//Tasks to have both servers at local ip and app at local ip</span>
+</span><span class='line'>  <span class="nx">grunt</span><span class="p">.</span><span class="nx">registerTask</span><span class="p">(</span><span class="s1">&#39;servers&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;env:dev&#39;</span><span class="p">,</span> <span class="s1">&#39;preprocess:dev&#39;</span><span class="p">,</span> <span class="s1">&#39;bgShell:weinre&#39;</span><span class="p">,</span> <span class="s1">&#39;bgShell:rails&#39;</span><span class="p">]);</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="c1">//Task to set up app files pointing at stage ip</span>
+</span><span class='line'>  <span class="c1">//and setting up weinre at current local ip</span>
+</span><span class='line'>  <span class="nx">grunt</span><span class="p">.</span><span class="nx">registerTask</span><span class="p">(</span><span class="s1">&#39;debug&#39;</span><span class="p">,</span> <span class="p">[</span> <span class="s1">&#39;env:stage&#39;</span><span class="p">,</span> <span class="s1">&#39;preprocess:stage&#39;</span><span class="p">,</span> <span class="s1">&#39;bgShell:weinre&#39;</span><span class="p">]);</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Now we can just do &lsquo;grunt servers&rsquo; to have both servers up at my current local ip or &lsquo;grunt debug&rsquo; to get app accessing the stage server and having weinre run locally to debug the app.</p>
+
+<p>Not much to it &ndash; call networkInterfaces(), go through JSON, get ipAddress &ndash; assign it to the option unless one was passed in. You&rsquo;re done.</p>
+
+<p>Cheers.</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -1188,6 +1392,14 @@ end
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2019/02/23/the-victim-or-the-victor/">The Victim or the Victor</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2019/01/29/3-years-of-elixir-reflections/">3 Years of Elixir: Reflections</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2017/04/16/puppet-a-testing-handbook/">Puppet: A Testing Handbook</a>
       </li>
     
@@ -1197,14 +1409,6 @@ end
     
       <li class="post">
         <a href="/blog/2016/12/29/multicast-service-discovery-in-electron/">Multicast Service Discovery in Electron</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2016/03/11/using-erlang-observer-on-a-remote-elixir-server/">Using Erlang Observer on a Remote Elixir Server</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2016/01/24/custom-json-encoding-in-phoenix/">Custom JSON Encoding in Phoenix</a>
       </li>
     
   </ul>

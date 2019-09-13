@@ -7,9 +7,9 @@ categories: life philosophy stoicism
 ---
 I was at the grocery the other day and I heard one worker asked another if they were on the clock. For some reason, it spurred some thoughts of my own.
 
-I first was caught off guard by this seemingly small comment, because in my own head I was playing back an event from my current day at the work. What does being on the clock be in a general form for work. For hourly workers, it's clear. The thought I was playing with here was the idea that most people are usually on the clock most of the time.
+I first was caught off guard by this seemingly small comment, because in my own head I was playing back an event from my current day at the work. What does being on the clock mean for me? For hourly workers, it's clear. The thought I was playing with here was the idea that most people are usually on the clock most of the time.
 
-Does our work even span futher into deeper spots of our minds. When you're not at work, you may think of work, as I was, and you might also have work going on in your subconscious. Not necessarily stressful type events, could even be positive things that you enjoy about your work.
+Does our work even span futher into deeper spots of our minds? When you're not at work, you may think of work, as I was, and you might also have work going on in your subconscious. Not necessarily stressful type events, it could even be positive things that you enjoy about your work.
 
 There are many books on the procrastination and avoidance of work. I don't aim to dive into that. I wanted to approach the idea from a stoic approach. Does work 'work' us by making think about it when we're not doing it? If the mind were not consumed with work, what would we be doing otherwise?
 

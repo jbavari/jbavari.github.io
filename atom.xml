@@ -4,7 +4,7 @@
   <title><![CDATA[Josh Bavari's Ramblings]]></title>
   <link href="http://jbavari.github.io/atom.xml" rel="self"/>
   <link href="http://jbavari.github.io/"/>
-  <updated>2019-03-02T17:47:20-07:00</updated>
+  <updated>2019-09-12T22:30:38-06:00</updated>
   <id>http://jbavari.github.io/</id>
   <author>
     <name><![CDATA[Josh Bavari]]></name>
@@ -12,6 +12,39 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[On the clock]]></title>
+    <link href="http://jbavari.github.io/blog/2019/09/12/on-the-clock/"/>
+    <updated>2019-09-12T21:55:00-06:00</updated>
+    <id>http://jbavari.github.io/blog/2019/09/12/on-the-clock</id>
+    <content type="html"><![CDATA[<p>I was at the grocery the other day and I heard one worker asked another if they were on the clock. For some reason, it spurred some thoughts of my own.</p>
+
+<p>I first was caught off guard by this seemingly small comment, because in my own head I was playing back an event from my current day at the work. What does being on the clock mean for me? For hourly workers, it&rsquo;s clear. The thought I was playing with here was the idea that most people are usually on the clock most of the time.</p>
+
+<p>Does our work even span futher into deeper spots of our minds? When you&rsquo;re not at work, you may think of work, as I was, and you might also have work going on in your subconscious. Not necessarily stressful type events, it could even be positive things that you enjoy about your work.</p>
+
+<p>There are many books on the procrastination and avoidance of work. I don&rsquo;t aim to dive into that. I wanted to approach the idea from a stoic approach. Does work &lsquo;work&rsquo; us by making think about it when we&rsquo;re not doing it? If the mind were not consumed with work, what would we be doing otherwise?</p>
+
+<p>In Meditations, Marcus states:</p>
+
+<blockquote><p>So you were born to feel “nice”? Instead of doing things and experiencing them? Don’t you see the plants, the birds, the ants and spiders and bees going about their individual tasks, putting the world in order, as best they can? And you’re not willing to do your job as a human being? Why aren’t you running to do what your nature demands?</p></blockquote>
+
+<p>That has sat deep with me lately, and I couldn&rsquo;t stop from myself from exploring this idea of work being a dread. For some, their work is more thrilling than the warm bed. That is not to say, they do not still enjoy that. I am sure that is a natural instinct. What is the cause for that override in one&rsquo;s mind?</p>
+
+<p>It must drive further in, from the purpose center of the brain and the being. When someone can turn their work into a form of play, and others cannot, we must ask what that driving force is. By understanding it, we may understand ourselves, and empower others to help themselves. &ldquo;What is good for the hive is good for the bee&rdquo;.</p>
+
+<p>Is this mindset really everything? Certainly it is not constant and certainly ebbs and flows, as is nature. As Epictetus states, &ldquo;there is nothing good or evil save in the will&rdquo;. Is work a negative thing while pleasure is good? The ying in the yang for happiness is sadness, so then the ying in work must have the yang in relaxation.</p>
+
+<p>In todays hyper speed of intelligence work, do we ever get off of the clock? Is it possible to be off the clock, if one had some way to measure?</p>
+
+<p>Or rather, is the clock not binary, but again an ebb and flow of time throughout ones life? In modern American society, most people work 40-60 hour work weeks. With life being half of your life, it aligns with one&rsquo;s own self interest to focus on the balance as best as possible.</p>
+
+<p>As I move forward in my working career, I aim to see it as my mission, my purpose, for what else would I be doing? I&rsquo;m fortunate to be able to work on challenging topics, evolving problems, and being surrounded by others on their own same like-missions. I aim to take the mindset of being fortuate to do these things and experiencing them.</p>
+
+<p>Embrace the clock. Find the flow.</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[The Victim or the victor]]></title>
@@ -2622,156 +2655,6 @@ Figuring how to plug in rendering steps between state changes. <code>this.setSta
 <p>When the schedule component&rsquo;s variable for <code>searchQuery</code> is updated, this method will be auto-magically re-evaluated, which causes the list to update.</p>
 
 <p>Hope this helps you understand Angular 2 and ng-models better! Enjoy!</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Windows and Webpack with TypeScript and Babel]]></title>
-    <link href="http://jbavari.github.io/blog/2015/10/20/windows-and-webpack-with-typescript-and-babel/"/>
-    <updated>2015-10-20T21:46:00-06:00</updated>
-    <id>http://jbavari.github.io/blog/2015/10/20/windows-and-webpack-with-typescript-and-babel</id>
-    <content type="html"><![CDATA[<p>I&rsquo;ve recently been diving into the land of <a href="https://webpack.github.io">Webpack</a> to handle all the heavy lifting of using <a href="https://babeljs.io">Babel</a> to compile my <a href="www.typescriptlang.org">TypeScript</a> and <a href="http://es6-features.org">ES6</a> into ES5 JavaScript to be used in <a href="http://ionic.io/2">Ionic 2</a>.</p>
-
-<p>The current set up I&rsquo;m working with involves having Webpack use the <a href="https://github.com/s-panferov/awesome-typescript-loader">awesome-typescript-loader</a> to load up TypeScript and compile the TypeScript files, as well as load up Babel and compile the ES6 JavaScript using Babel.</p>
-
-<h2>The set up</h2>
-
-<p>The file structure looks like this:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>./
-</span><span class='line'>  ./www
-</span><span class='line'>    ./app
-</span><span class='line'>      ./components
-</span><span class='line'>        ./datepipe.js
-</span><span class='line'>        ./app.ts</span></code></pre></td></tr></table></div></figure>
-
-
-<p>This worked great on my Mac. However, one thing I ran into on my Windows machine was this particular error:</p>
-
-<p><code>Cannot find module "./www/app/app.js"</code></p>
-
-<p>Take a look at the <a href="https://github.com/driftyco/ionic-conference-app/blob/master/webpack.config.js">webpack.config.js</a> in the <a href="https://github.com/driftyco/ionic-conference-app/">ionic-conference-app</a>, with a portion of it below:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="cm">/* snipped */</span>
-</span><span class='line'>  <span class="nx">module</span><span class="o">:</span> <span class="p">{</span>
-</span><span class='line'>    <span class="nx">loaders</span><span class="o">:</span> <span class="p">[</span>
-</span><span class='line'>      <span class="p">{</span>
-</span><span class='line'>        <span class="nx">test</span><span class="o">:</span> <span class="sr">/\.js$/</span><span class="p">,</span>
-</span><span class='line'>        <span class="nx">loader</span><span class="o">:</span> <span class="s2">&quot;awesome-typescript-loader?doTypeCheck=false&amp;useBabel=true&amp;useWebpackText=true&quot;</span><span class="p">,</span>
-</span><span class='line'>        <span class="nx">include</span><span class="o">:</span> <span class="sr">/www\/app\//</span><span class="p">,</span>
-</span><span class='line'>        <span class="nx">exclude</span><span class="o">:</span> <span class="sr">/node_modules/</span>
-</span><span class='line'>      <span class="p">},</span>
-</span><span class='line'>      <span class="p">{</span>
-</span><span class='line'>        <span class="nx">test</span><span class="o">:</span> <span class="sr">/\.ts$/</span><span class="p">,</span>
-</span><span class='line'>        <span class="nx">loader</span><span class="o">:</span> <span class="s2">&quot;awesome-typescript-loader&quot;</span><span class="p">,</span>
-</span><span class='line'>        <span class="nx">include</span><span class="o">:</span> <span class="sr">/www\/app\//</span><span class="p">,</span>
-</span><span class='line'>        <span class="nx">exclude</span><span class="o">:</span> <span class="sr">/node_modules/</span>
-</span><span class='line'>       <span class="p">}</span>
-</span><span class='line'>    <span class="p">]</span>
-</span><span class='line'>  <span class="p">},</span>
-</span><span class='line'><span class="cm">/* snipped */</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Webpack uses loaders to take the files and add them to the final build output. It knows where to get these files from the webpack config module loaders array, where each loader specifies the <code>include</code> paths, as per the <a href="https://webpack.github.io/docs/configuration.html#module-loaders">webpack docs</a>:</p>
-
-<blockquote><p>include: A condition that must be met</p>
-
-<p>A condition may be a RegExp, a string containing the absolute path, a function(absPath): bool, or an array of one of these combined with “and”.</p></blockquote>
-
-<p>Take note of the include line we had at first: <code>include: /www\/app\//,</code>, line 7 and 13 in the pasted snipped above.</p>
-
-<p>Sure this will work in a Unix based runtime. If you&rsquo;re running on a Windows machine, these paths may be a problem. As it doesn&rsquo;t understand the <code>/</code>. This tip came from Edward McLeod-Jones, who pointed out <a href="https://github.com/RisingStack/react-way-getting-started/issues/8#issue-94592829">this issue</a>.</p>
-
-<p>You might want to try to make RegEx fun, by doing this:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="nx">include</span><span class="o">:</span> <span class="sr">/www(\/|\\)app(\/|\\)/</span><span class="p">,</span>  <span class="c1">// &lt;--- Change the regex to support either type of folder separator`</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>However, since we&rsquo;re doing Node.js, it provides APIs to help us out with cross-platform changes like this with the <code>path</code> module.</p>
-
-<p>Do this instead:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">var</span> <span class="nx">path</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;path&#39;</span><span class="p">);</span>
-</span><span class='line'><span class="kd">var</span> <span class="nx">wwwPath</span> <span class="o">=</span> <span class="nx">path</span><span class="p">.</span><span class="nx">resolve</span><span class="p">(</span><span class="nx">__dirname</span><span class="p">,</span> <span class="s1">&#39;www&#39;</span><span class="p">);</span>
-</span><span class='line'><span class="kd">var</span> <span class="nx">outputPath</span> <span class="o">=</span> <span class="nx">path</span><span class="p">.</span><span class="nx">join</span><span class="p">(</span><span class="nx">wwwPath</span><span class="p">,</span> <span class="s1">&#39;build&#39;</span><span class="p">,</span> <span class="s1">&#39;js&#39;</span><span class="p">);</span>
-</span><span class='line'><span class="kd">var</span> <span class="nx">appPath</span> <span class="o">=</span> <span class="nx">path</span><span class="p">.</span><span class="nx">join</span><span class="p">(</span><span class="nx">wwwPath</span><span class="p">,</span> <span class="s1">&#39;app&#39;</span><span class="p">);</span>
-</span><span class='line'><span class="kd">var</span> <span class="nx">appJsPath</span> <span class="o">=</span> <span class="nx">path</span><span class="p">.</span><span class="nx">join</span><span class="p">(</span><span class="nx">appPath</span><span class="p">,</span> <span class="s1">&#39;app.js&#39;</span><span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'><span class="cm">/* snip */</span>
-</span><span class='line'>  <span class="nx">module</span><span class="o">:</span> <span class="p">{</span>
-</span><span class='line'>    <span class="nx">loaders</span><span class="o">:</span> <span class="p">[</span>
-</span><span class='line'>      <span class="p">{</span>
-</span><span class='line'>        <span class="nx">test</span><span class="o">:</span> <span class="sr">/\.js$/</span><span class="p">,</span>
-</span><span class='line'>        <span class="nx">loader</span><span class="o">:</span> <span class="s2">&quot;awesome-typescript-loader?doTypeCheck=false&amp;useBabel=true&amp;useWebpackText=true&quot;</span><span class="p">,</span>
-</span><span class='line'>        <span class="nx">include</span><span class="o">:</span> <span class="p">[</span><span class="nx">wwwPath</span><span class="p">],</span>
-</span><span class='line'>        <span class="c1">// include: /www(\/|\\)app(\/|\\)/,</span>
-</span><span class='line'>        <span class="nx">exclude</span><span class="o">:</span> <span class="sr">/node_modules/</span>
-</span><span class='line'>      <span class="p">},</span>
-</span><span class='line'>      <span class="p">{</span>
-</span><span class='line'>        <span class="nx">test</span><span class="o">:</span> <span class="sr">/\.ts$/</span><span class="p">,</span>
-</span><span class='line'>        <span class="nx">loader</span><span class="o">:</span> <span class="s2">&quot;awesome-typescript-loader&quot;</span><span class="p">,</span>
-</span><span class='line'>        <span class="c1">// include: /www(\/|\\)app(\/|\\)/,</span>
-</span><span class='line'>        <span class="nx">include</span><span class="o">:</span> <span class="p">[</span><span class="nx">wwwPath</span><span class="p">],</span>
-</span><span class='line'>        <span class="nx">exclude</span><span class="o">:</span> <span class="sr">/node_modules/</span>
-</span><span class='line'>       <span class="p">}</span>
-</span><span class='line'>    <span class="p">]</span>
-</span><span class='line'>  <span class="p">},</span>
-</span><span class='line'><span class="cm">/* snip */</span>
-</span></code></pre></td></tr></table></div></figure>
-
 ]]></content>
   </entry>
   

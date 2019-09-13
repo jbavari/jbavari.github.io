@@ -9,7 +9,7 @@
   <meta name="author" content="Josh Bavari">
 
   
-  <meta name="description" content="I&rsquo;ve been fortunate enough to be working on Angular 2 while being on the Ionic team. I really enjoyed Pascal Precht&rsquo;s post about &hellip;">
+  <meta name="description" content="I&rsquo;ve recently been diving into the land of Webpack to handle all the heavy lifting of using Babel to compile my TypeScript and ES6 into ES5 &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -70,6 +70,184 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/10/20/windows-and-webpack-with-typescript-and-babel/">Windows and Webpack With TypeScript and Babel</a></h1>
+    
+    
+      <p class="meta">
+        <span class="reading-time">less than a 1 minute read</span>
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-10-20T21:46:00-06:00" pubdate data-updated="true">Oct 20<span>th</span>, 2015</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>I&rsquo;ve recently been diving into the land of <a href="https://webpack.github.io">Webpack</a> to handle all the heavy lifting of using <a href="https://babeljs.io">Babel</a> to compile my <a href="www.typescriptlang.org">TypeScript</a> and <a href="http://es6-features.org">ES6</a> into ES5 JavaScript to be used in <a href="http://ionic.io/2">Ionic 2</a>.</p>
+
+<p>The current set up I&rsquo;m working with involves having Webpack use the <a href="https://github.com/s-panferov/awesome-typescript-loader">awesome-typescript-loader</a> to load up TypeScript and compile the TypeScript files, as well as load up Babel and compile the ES6 JavaScript using Babel.</p>
+
+<h2>The set up</h2>
+
+<p>The file structure looks like this:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>./
+</span><span class='line'>  ./www
+</span><span class='line'>    ./app
+</span><span class='line'>      ./components
+</span><span class='line'>        ./datepipe.js
+</span><span class='line'>        ./app.ts</span></code></pre></td></tr></table></div></figure>
+
+
+<p>This worked great on my Mac. However, one thing I ran into on my Windows machine was this particular error:</p>
+
+<p><code>Cannot find module "./www/app/app.js"</code></p>
+
+<p>Take a look at the <a href="https://github.com/driftyco/ionic-conference-app/blob/master/webpack.config.js">webpack.config.js</a> in the <a href="https://github.com/driftyco/ionic-conference-app/">ionic-conference-app</a>, with a portion of it below:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="cm">/* snipped */</span>
+</span><span class='line'>  <span class="nx">module</span><span class="o">:</span> <span class="p">{</span>
+</span><span class='line'>    <span class="nx">loaders</span><span class="o">:</span> <span class="p">[</span>
+</span><span class='line'>      <span class="p">{</span>
+</span><span class='line'>        <span class="nx">test</span><span class="o">:</span> <span class="sr">/\.js$/</span><span class="p">,</span>
+</span><span class='line'>        <span class="nx">loader</span><span class="o">:</span> <span class="s2">&quot;awesome-typescript-loader?doTypeCheck=false&amp;useBabel=true&amp;useWebpackText=true&quot;</span><span class="p">,</span>
+</span><span class='line'>        <span class="nx">include</span><span class="o">:</span> <span class="sr">/www\/app\//</span><span class="p">,</span>
+</span><span class='line'>        <span class="nx">exclude</span><span class="o">:</span> <span class="sr">/node_modules/</span>
+</span><span class='line'>      <span class="p">},</span>
+</span><span class='line'>      <span class="p">{</span>
+</span><span class='line'>        <span class="nx">test</span><span class="o">:</span> <span class="sr">/\.ts$/</span><span class="p">,</span>
+</span><span class='line'>        <span class="nx">loader</span><span class="o">:</span> <span class="s2">&quot;awesome-typescript-loader&quot;</span><span class="p">,</span>
+</span><span class='line'>        <span class="nx">include</span><span class="o">:</span> <span class="sr">/www\/app\//</span><span class="p">,</span>
+</span><span class='line'>        <span class="nx">exclude</span><span class="o">:</span> <span class="sr">/node_modules/</span>
+</span><span class='line'>       <span class="p">}</span>
+</span><span class='line'>    <span class="p">]</span>
+</span><span class='line'>  <span class="p">},</span>
+</span><span class='line'><span class="cm">/* snipped */</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Webpack uses loaders to take the files and add them to the final build output. It knows where to get these files from the webpack config module loaders array, where each loader specifies the <code>include</code> paths, as per the <a href="https://webpack.github.io/docs/configuration.html#module-loaders">webpack docs</a>:</p>
+
+<blockquote><p>include: A condition that must be met</p>
+
+<p>A condition may be a RegExp, a string containing the absolute path, a function(absPath): bool, or an array of one of these combined with “and”.</p></blockquote>
+
+<p>Take note of the include line we had at first: <code>include: /www\/app\//,</code>, line 7 and 13 in the pasted snipped above.</p>
+
+<p>Sure this will work in a Unix based runtime. If you&rsquo;re running on a Windows machine, these paths may be a problem. As it doesn&rsquo;t understand the <code>/</code>. This tip came from Edward McLeod-Jones, who pointed out <a href="https://github.com/RisingStack/react-way-getting-started/issues/8#issue-94592829">this issue</a>.</p>
+
+<p>You might want to try to make RegEx fun, by doing this:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="nx">include</span><span class="o">:</span> <span class="sr">/www(\/|\\)app(\/|\\)/</span><span class="p">,</span>  <span class="c1">// &lt;--- Change the regex to support either type of folder separator`</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>However, since we&rsquo;re doing Node.js, it provides APIs to help us out with cross-platform changes like this with the <code>path</code> module.</p>
+
+<p>Do this instead:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">var</span> <span class="nx">path</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;path&#39;</span><span class="p">);</span>
+</span><span class='line'><span class="kd">var</span> <span class="nx">wwwPath</span> <span class="o">=</span> <span class="nx">path</span><span class="p">.</span><span class="nx">resolve</span><span class="p">(</span><span class="nx">__dirname</span><span class="p">,</span> <span class="s1">&#39;www&#39;</span><span class="p">);</span>
+</span><span class='line'><span class="kd">var</span> <span class="nx">outputPath</span> <span class="o">=</span> <span class="nx">path</span><span class="p">.</span><span class="nx">join</span><span class="p">(</span><span class="nx">wwwPath</span><span class="p">,</span> <span class="s1">&#39;build&#39;</span><span class="p">,</span> <span class="s1">&#39;js&#39;</span><span class="p">);</span>
+</span><span class='line'><span class="kd">var</span> <span class="nx">appPath</span> <span class="o">=</span> <span class="nx">path</span><span class="p">.</span><span class="nx">join</span><span class="p">(</span><span class="nx">wwwPath</span><span class="p">,</span> <span class="s1">&#39;app&#39;</span><span class="p">);</span>
+</span><span class='line'><span class="kd">var</span> <span class="nx">appJsPath</span> <span class="o">=</span> <span class="nx">path</span><span class="p">.</span><span class="nx">join</span><span class="p">(</span><span class="nx">appPath</span><span class="p">,</span> <span class="s1">&#39;app.js&#39;</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="cm">/* snip */</span>
+</span><span class='line'>  <span class="nx">module</span><span class="o">:</span> <span class="p">{</span>
+</span><span class='line'>    <span class="nx">loaders</span><span class="o">:</span> <span class="p">[</span>
+</span><span class='line'>      <span class="p">{</span>
+</span><span class='line'>        <span class="nx">test</span><span class="o">:</span> <span class="sr">/\.js$/</span><span class="p">,</span>
+</span><span class='line'>        <span class="nx">loader</span><span class="o">:</span> <span class="s2">&quot;awesome-typescript-loader?doTypeCheck=false&amp;useBabel=true&amp;useWebpackText=true&quot;</span><span class="p">,</span>
+</span><span class='line'>        <span class="nx">include</span><span class="o">:</span> <span class="p">[</span><span class="nx">wwwPath</span><span class="p">],</span>
+</span><span class='line'>        <span class="c1">// include: /www(\/|\\)app(\/|\\)/,</span>
+</span><span class='line'>        <span class="nx">exclude</span><span class="o">:</span> <span class="sr">/node_modules/</span>
+</span><span class='line'>      <span class="p">},</span>
+</span><span class='line'>      <span class="p">{</span>
+</span><span class='line'>        <span class="nx">test</span><span class="o">:</span> <span class="sr">/\.ts$/</span><span class="p">,</span>
+</span><span class='line'>        <span class="nx">loader</span><span class="o">:</span> <span class="s2">&quot;awesome-typescript-loader&quot;</span><span class="p">,</span>
+</span><span class='line'>        <span class="c1">// include: /www(\/|\\)app(\/|\\)/,</span>
+</span><span class='line'>        <span class="nx">include</span><span class="o">:</span> <span class="p">[</span><span class="nx">wwwPath</span><span class="p">],</span>
+</span><span class='line'>        <span class="nx">exclude</span><span class="o">:</span> <span class="sr">/node_modules/</span>
+</span><span class='line'>       <span class="p">}</span>
+</span><span class='line'>    <span class="p">]</span>
+</span><span class='line'>  <span class="p">},</span>
+</span><span class='line'><span class="cm">/* snip */</span>
+</span></code></pre></td></tr></table></div></figure>
+
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -2038,71 +2216,6 @@ Do not use the &mdash;resource-rules flag or ResourceRules.plist. They have been
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/12/31/2014-in-review/">2014 in Review</a></h1>
-    
-    
-      <p class="meta">
-        <span class="reading-time">less than a 1 minute read</span>
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2014-12-31T14:37:00-07:00" pubdate data-updated="true">Dec 31<span>st</span>, 2014</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>2014 has been an interesting year and I&rsquo;d like to spend a minute to review it for myself as a reminder.</p>
-
-<p>January started out, I was working for my start up, <a href="http://raisemore.com">RaiseMore</a>. I wanted to make 2014 I wanted to share knowledge I had been gathering from our projects at RaiseMore. I made this my purpose for the year is to help others as much as I can, as I truly believe we are all in this together. &ldquo;Iron sharpens iron&rdquo;.</p>
-
-<p>I had been using Cordova, and set some goals up for the year to get more active and contribute to the project. It&rsquo;s really easy, hit <a href="http://wiki.apache.org/cordova/ContributorWorkflow">this link</a> for more information about how to contribute. I started by grabbing some Jira tasks to improve the <a href="http://plugins.cordova.io">Cordova plugin registry</a>. At the time, I thought the registry needed a face lift to help out the community.</p>
-
-<p>As a start up in OKC, we had been using tech that at the time hadnt been popular in OKC. As a team, we all be focused heavily on a platform built of an iOS/Android app, API server, database, and a few other back end services. All of the technologies we used were done in Ruby, Rails, Sinatra, Postgres, Cordova, JavaScript, some Grunt/Gulp build systems.</p>
-
-<p>The biggest challenge we had as a small team of 4 devs was how to manage the systems. Since they were all broken up into multiple projects, we all had to care a lot about one portion as well as have general knowledge on the other parts. Reflecting on this now &ndash; this worked really well for our team.</p>
-
-<p>By March, I had spoke few times at the Ruby group, a few at the JavaScript group, and after some convincing and encouragement from a great friend, Rob Sullivan, I worked up the courage to submit some talks to the Kansas City Developer conference in May.</p>
-
-<p>I saw a post by the Apache foundation, proposing a tweet-off to get a free ticket to ApacheCon 2014 in Denver. This would let me meet some of the great devs I had been collaborating/talking with through the Cordova IRC/Mailing list/google hangouts. I won the ticket, and with some help from friends, <a href="http://jbavari.github.io/blog/2014/04/14/apachecon-2014/">made it to Denver and met all the Cordova devs</a>. Just like Rob always tells me &ndash; if you don&rsquo;t ask, then it will always be a &lsquo;no&rsquo;. Glad I was pro-active and tweeted for the ticket!</p>
-
-<p>May hits and I find myself infront of 100+ devs that have come to see my <a href="http://jbavari.github.io/blog/2014/05/16/kcdc-javascript-build-system-showdown/">talk at Kansas City Dev Conf</a> &ndash; I had to admit and say I was very nervous. After my talk, I had a ton of great questions, feedback, and general appreciation for my sharing of knowledge. I then gave a second talk a few hours later over <a href="http://jbavari.github.io/blog/2014/05/17/moving-forward-with-phonegap-slash-cordova-plugins/">Moving forward with Cordova plugins</a> that talked about how to understand/create plugins for Cordova projects, including pushing them to the registry.</p>
-
-<p>After my second talk is where I met a now good friend, <a href="https://twitter.com/MountainDoofus">Ross Martin</a>, and we still talk and collaborate about an awesome Ionic app that he is making. Two big things in 2014 &ndash; sharing freely and talking through twitter. Its gold, folks.</p>
-
-<p>Come July, I&rsquo;ve decided it&rsquo;s time for me to face my biggest fear yet &ndash; moving out of Oklahoma and living alone. I had begun interviewing and networking with others around the country involved in tech. I highly recommend this &ndash; as I met some great connections now of people to talk to, to help, to bounce ideas off, and just generally respect. I had decided to move to Boulder, Colorado, as I had fallen in love with the mountains.</p>
-
-<p>Come October, I had been selected to speak at <a href="http://thunderplainsconf.com/">Thunder Plains</a>, which was a great reason to head back to my home town of Oklahoma, present, and catch up with all the great technologists in Oklahoma. That town is packed full of amazing people that are working together as <a href="http://techlahoma.org/">techlahoma</a> &ndash; Rob Sullivan, Jesse and Amanda Harlin, Vance Lucas, Jeremy Green, Jeff French, and way too many more to mention!</p>
-
-<p>I got a job at Mondo Robot, where I worked for a few months with them on a handful of interesting projects from August until November. Through my interaction with the Cordova community, I came to find a job working for Drifty, which you may know by the awesome <a href="http://ionicframework.com">Ionic Framework</a>.</p>
-
-<p>I can honestly say working for Drifty has been amazing. All day long I get to work on something I really believe in, find meaning in, and most importantly, aligns with my goals of helping others. All day long I get to work on a hobby with others who are just as excited and driven to win as I am. I couldn&rsquo;t ask for a better place to end up.</p>
-
-<p>The year I turned 30, 2014, has come to an end. Looking back, I can say I&rsquo;m happy of my progress, and striving to continue processes that keep me helping others to the best of my ability and keep giving back.</p>
-
-<p>Here&rsquo;s to an awesome 2015 for us all, lets make it awesome.</p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/4/">&larr; Older</a>
@@ -2120,6 +2233,10 @@ Do not use the &mdash;resource-rules flag or ResourceRules.plist. They have been
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2019/09/12/on-the-clock/">On the Clock</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2019/02/23/the-victim-or-the-victor/">The Victim or the Victor</a>
       </li>
     
@@ -2133,10 +2250,6 @@ Do not use the &mdash;resource-rules flag or ResourceRules.plist. They have been
     
       <li class="post">
         <a href="/blog/2017/03/13/test-coverage-reports-in-elixir/">Test Coverage Reports in Elixir</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2016/12/29/multicast-service-discovery-in-electron/">Multicast Service Discovery in Electron</a>
       </li>
     
   </ul>

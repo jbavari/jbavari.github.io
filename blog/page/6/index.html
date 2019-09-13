@@ -9,7 +9,7 @@
   <meta name="author" content="Josh Bavari">
 
   
-  <meta name="description" content="Recently the Cordova (as well as Phonegap) team has introduced the ability to remote debug Android 4.4+ from this issue. If you&rsquo;re like us, you &hellip;">
+  <meta name="description" content="I had a unique little situation pop up that needed a little more flexibility when it came to storing data in the db. We use Postgres at RaiseMore &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -70,6 +70,271 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/04/26/in-depth-dive-with-postgres-hstore-and-rails-4/">In Depth Dive With Postgres Hstore and Rails 4</a></h1>
+    
+    
+      <p class="meta">
+        <span class="reading-time">less than a 1 minute read</span>
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-04-26T12:08:00-06:00" pubdate data-updated="true">Apr 26<span>th</span>, 2014</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>I had a unique little situation pop up that needed a little more flexibility when it came to storing data in the db. We use Postgres at RaiseMore because we respect ourselves, so naturally, I wanted to take a swing using some Hstore options for our ever changing data schema.</p>
+
+<p>My intention is not to cover the basics of getting started with Rails 4 and <a href="http://www.postgresql.org/docs/9.3/static/hstore.html">Postgres HStore</a>, so <a href="http://tastehoneyco.com/blog/postgresql-array-and-hstore-column-reference/?utm_source=rubyweekly&amp;utm_medium=email/">read at Honey Co</a> or <a href="http://inopinatus.org/2013/07/12/using-arrays-of-hstore-with-rails-4/">here at inopinatus</a> to get started.</p>
+
+<h2>What I needed</h2>
+
+<p>Simple, to store a few bits of data about a communication &ndash; primarily the subject, message, date/time, and what networks it was sent out on. It may or may not have some of these fields, and the networks may or may not change in the future. This sounds perfect for HStore.</p>
+
+<p>First I started with a simple schema:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>CREATE TABLE comm_logs (
+</span><span class='line'>  id serial NOT NULL,
+</span><span class='line'>  user_id integer,
+</span><span class='line'>  history hstore
+</span><span class='line'>)</span></code></pre></td></tr></table></div></figure>
+
+
+<p>At first, I just wanted to store when a message was sent and on what networks. I figured I&rsquo;d just have an AR model with one hstore column and everything would fit into that. It looked like this:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>class CommunicationLogging &lt; ActiveRecord::Base
+</span><span class='line'>  def self.log(user_id, network, message, subject = nil)
+</span><span class='line'>      comm = CommunicationLogging.where('user_id = ?', user_id).first
+</span><span class='line'>      if comm.nil?
+</span><span class='line'>          comm = CommunicationLogging.new
+</span><span class='line'>          comm.user_id = user_id
+</span><span class='line'>          # Storing network as an array incase they decide to send to another network after this.
+</span><span class='line'>          comm.history = { 'message' =&gt; message, 'subject' =&gt; subject, 'network' =&gt; [network], 'time' =&gt; DateTime.now }}
+</span><span class='line'>      else 
+</span><span class='line'>          # Add history to array stored in network
+</span><span class='line'>          comm.history['network'].push(network)
+</span><span class='line'>      end
+</span><span class='line'>      comm.history_will_change!
+</span><span class='line'>      comm.save!
+</span><span class='line'>  end
+</span><span class='line'>end</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Pretty easy right? I ran into some difficulties REAL fast. The first was from JSON serialization. When I did this:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'># In Rails Console
+</span><span class='line'>CommunicationLogging.find(4).history['network']
+</span><span class='line'>=&gt; "[\"facebook\", \"twitter\"]" </span></code></pre></td></tr></table></div></figure>
+
+
+<p>It gave me a nice FAT serialized version of a Hash array. What good does a string do me? I want my object! BLEH!</p>
+
+<p>We still have to get this thing working, so lets proceed anyway and just do some manual converions with PostgreSQL&rsquo;s awesome <code>to_json</code> functionality.</p>
+
+<p>Our result:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>"{"c": "networks", "networks": "[\"facebook\", \"twitter\"]"}"</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Cool, so its gonna be nasty still. Ok, how about just using Rails to_json method:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>"{\"id\":11,\"event_user_id\":null,\"history\":null,\"networks\":{\"c\":\"networks\",\"networks\":\"[\\\"facebook\\\", \\\"twitter\\\"]\"}}"</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Thanks, but no thanks. I&rsquo;m pretty set on having an array of values instead of some manual labor on converting those values.</p>
+
+<p>I was learning real fast that storing arrays in hstore was going to be a challenge. The next stab I wanted to take was to simplify the storage and retrieval as well as using natural arrays.</p>
+
+<p>NOTE: I changed the way I attacked the problem here partly because I was doing it wrong. Hopefully you can learn from my mistakes? :&ndash;)</p>
+
+<p>This was my next stab, altering the table structure just a bit:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>CREATE TABLE communication_logs (
+</span><span class='line'>  id serial NOT NULL,
+</span><span class='line'>  user_id integer,
+</span><span class='line'>  history hstore[]
+</span><span class='line'>  networks hstore
+</span><span class='line'>)</span></code></pre></td></tr></table></div></figure>
+
+
+<p>What I did here was harness the awesome power of PostgreSQL&rsquo;s arrays and hstore. Taking this thing to the limit. I did this for two reasons:</p>
+
+<ul>
+<li>Constraints changed, we could send multiple communications out on multiple networks at any given time</li>
+<li>I wanted a log of history with whatever pieces of data may or may not be there</li>
+<li>Be able to quickly get the networks sent out per user</li>
+</ul>
+
+
+<p>Now my AR model is decorated with <a href="http://api.rubyonrails.org/classes/ActiveRecord/Store.html">store_accessor</a> to give me model attributes for the networks. It also stores the log of messages in an array naturally through the model, and accessed as a real HSTORE with array values (instead of json, yay).</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>class CommunicationLogging &lt; ActiveRecord::Base
+</span><span class='line'>  store_accessor :networks, :facebook, :twitter, :email, :sms, :push
+</span><span class='line'>
+</span><span class='line'>  def set_network(network)
+</span><span class='line'>      # for brevity only one listed
+</span><span class='line'>      case network.downcase
+</span><span class='line'>      when 'twitter'
+</span><span class='line'>          self.twitter = true
+</span><span class='line'>      end
+</span><span class='line'>  end
+</span><span class='line'>
+</span><span class='line'>  def self.log(user_id, network, message, subject = nil)
+</span><span class='line'>      comm = CommunicationLogging.where('user_id = ?', user_id).first
+</span><span class='line'>      if comm.nil?
+</span><span class='line'>          comm = CommunicationLogging.new
+</span><span class='line'>          comm.user_id = user_id
+</span><span class='line'>      end
+</span><span class='line'>
+</span><span class='line'>      comm.set_network(network)
+</span><span class='line'>
+</span><span class='line'>      history_log = { 'message' =&gt; message, 'subject' =&gt; subject, 'network' =&gt; network, 'time' =&gt; DateTime.now }
+</span><span class='line'>      comm.history.push(history_log)
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>      comm.networks_will_change!
+</span><span class='line'>      comm.history_will_change!
+</span><span class='line'>      comm.save!
+</span><span class='line'>  end
+</span><span class='line'>end</span></code></pre></td></tr></table></div></figure>
+
+
+<p>So what happens when I to_json my fields now in PostgreSQL?</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>// Networks
+</span><span class='line'>"{"twitter": "true"}"
+</span><span class='line'>
+</span><span class='line'>// History
+</span><span class='line'>"[{"time": "2014-04-27T10:15:50-05:00", "message": "asf", "network": "twitter", "subject": "asd"}]"</span></code></pre></td></tr></table></div></figure>
+
+
+<p>And rails?</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'># Networks
+</span><span class='line'>"{"twitter":\"true"}" 
+</span><span class='line'>
+</span><span class='line'># History
+</span><span class='line'>"[{"time":"2014-04-27T10:15:50-05:00","message":"asf","network":"twitter","subject":"asd"}]" </span></code></pre></td></tr></table></div></figure>
+
+
+<p>Beautiful.</p>
+
+<p>I had a lot of fun using PostgreSQL and Rails 4. I didn&rsquo;t find a lot of in-depth knowledge on it so I wanted to shed some light on the topic and hope this would push someone else who might be considering to try it out to give it a go.</p>
+
+<p>I&rsquo;d like to follow up this post with another article on how to search these bad boys.</p>
+
+<p>In closing:</p>
+
+<ul>
+<li>I will definitely use hstore more in the future. I like the freedom to just store whatever I want</li>
+<li>I need to reach out to the Rails team and see what I can do about improving the array support in Active Record</li>
+<li>I hope you try it out as well</li>
+</ul>
+
+
+<h3>Additional Resources</h3>
+
+<ul>
+<li><a href="http://postgresguide.com/sexy/hstore.html">Postgres Guide on HStore</a></li>
+<li><a href="http://mikecoutermarsh.com/using-hstore-with-rails-4/">Mike Countermash&rsquo;s guide to Hstore with Rails 4</a></li>
+<li><a href="http://platformonrails.wordpress.com/2013/03/17/enabling-postgresql-hstore-with-rails-4/">Platform on Rails &ndash; Enabling PostgreSQL Hstore in Rails 4</a></li>
+<li><a href="http://blog.remarkablelabs.com/2012/12/a-love-affair-with-postgresql-rails-4-countdown-to-2013">RemarkableLabs &ndash; A love affair with PostgreSQL [Rails 4 Countdown to 2013]</a></li>
+</ul>
+
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -1029,137 +1294,6 @@ You are free to change it!</p>
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/01/14/making-rails-and-postgres-arrays-play-nice/">Making Rails and Postgres Arrays Play Nice</a></h1>
-    
-    
-      <p class="meta">
-        <span class="reading-time">less than a 1 minute read</span>
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2014-01-14T12:01:00-07:00" pubdate data-updated="true">Jan 14<span>th</span>, 2014</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Lately I&rsquo;ve had a small need to store an array of string values in a Postgres array instead of making foreign tables and dealing with the fun ActiveRecord fancies there are to play with.</p>
-
-<p>Digging into the topic, I was looking for some pre-existing knowledge on the topic. Turns out the people at <a href="http://blog.relatabase.com/rails-postgres-arrays">Relatabase</a> and <a href="https://coderwall.com/p/sud9ja">Stuart Liston at CoderWall</a> had some great knowledge to share on this.</p>
-
-<p>Being the simpleton that I am, I found a ton of knowledge on how to query them, how to add them to your models, but still lacked some basic knowledge of how to USE them. Maybe you&rsquo;re like me, and this will help.</p>
-
-<p>Adding to Stuart&rsquo;s code, lets assume we&rsquo;ve added the postgres column:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">AddTechToCompanies</span> <span class="o">&lt;</span> <span class="ss">ActiveRecord</span><span class="p">:</span><span class="ss">:Migration</span>
-</span><span class='line'>  <span class="k">def</span> <span class="nf">change</span>
-</span><span class='line'>    <span class="n">add_column</span> <span class="ss">:companies</span><span class="p">,</span> <span class="ss">:technology_used</span><span class="p">,</span> <span class="ss">:string</span><span class="p">,</span> <span class="ss">array</span><span class="p">:</span> <span class="kp">true</span><span class="p">,</span> <span class="ss">default</span><span class="p">:</span> <span class="s1">&#39;{}&#39;</span>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'><span class="k">end</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Using <a href="http://guides.rubyonrails.org/active_record_querying.html#scopes">Ruby Scopes</a> and the proper Postgres querying syntax:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">Company</span> <span class="o">&lt;</span> <span class="ss">ActiveRecord</span><span class="p">:</span><span class="ss">:Base</span>
-</span><span class='line'>  <span class="n">scope</span> <span class="ss">:any_tech</span><span class="p">,</span> <span class="o">-&gt;</span> <span class="p">(</span><span class="n">tech</span><span class="p">){</span><span class="n">where</span><span class="p">(</span><span class="s1">&#39;? = ANY(technology_used)&#39;</span><span class="p">,</span> <span class="n">tech</span><span class="p">)}</span>
-</span><span class='line'>  <span class="n">scope</span> <span class="ss">:all_tech</span><span class="p">,</span> <span class="o">-&gt;</span> <span class="p">(</span><span class="n">tech</span><span class="p">){</span><span class="n">where</span><span class="p">(</span><span class="s1">&#39;? = ALL(technology_used)&#39;</span><span class="p">,</span> <span class="n">tech</span><span class="p">)}</span>
-</span><span class='line'><span class="k">end</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Simple enough and easy to read. Lets tackle the simple task of adding a company with a few properties: Name, website, and technology_used.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="c1">#..snip..</span>
-</span><span class='line'><span class="n">company</span> <span class="o">=</span> <span class="no">Company</span><span class="o">.</span><span class="n">new</span>
-</span><span class='line'><span class="n">company</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;RaiseMore&quot;</span>
-</span><span class='line'><span class="n">company</span><span class="o">.</span><span class="n">website_url</span> <span class="o">=</span> <span class="s2">&quot;http://www.raisemore.com&quot;</span>
-</span><span class='line'><span class="n">company</span><span class="o">.</span><span class="n">technology_used</span> <span class="o">=</span> <span class="o">[</span><span class="s1">&#39;Ruby&#39;</span><span class="p">,</span> <span class="s1">&#39;Rails&#39;</span><span class="p">,</span> <span class="s1">&#39;Sinatra&#39;</span><span class="p">,</span> <span class="s1">&#39;JavaScript&#39;</span><span class="p">,</span> <span class="s1">&#39;Redis&#39;</span><span class="p">,</span> <span class="s1">&#39;PhoneGap&#39;</span><span class="p">,</span> <span class="s1">&#39;Sidekiq&#39;</span><span class="o">]</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">company</span><span class="o">.</span><span class="n">save!</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>This will add our basic info, as well as get us our data back by doing this:</p>
-
-<figure class='code'><figcaption><span>Interactive Console Output</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">rails_company</span> <span class="o">=</span> <span class="no">Company</span><span class="o">.</span><span class="n">any_tech</span><span class="p">(</span><span class="s1">&#39;Rails&#39;</span><span class="p">)</span>
-</span><span class='line'>
-</span><span class='line'><span class="no">Company</span> <span class="no">Load</span> <span class="p">(</span><span class="mi">2</span><span class="o">.</span><span class="mi">6</span><span class="n">ms</span><span class="p">)</span>  <span class="no">SELECT</span> <span class="s2">&quot;companies&quot;</span><span class="o">.</span><span class="n">*</span> <span class="no">FROM</span> <span class="s2">&quot;companies&quot;</span> <span class="no">WHERE</span> <span class="p">(</span><span class="s1">&#39;Rails&#39;</span> <span class="o">=</span> <span class="no">ANY</span><span class="p">(</span><span class="n">technology_used</span><span class="p">))</span>
-</span><span class='line'> <span class="o">=&gt;</span> <span class="c1">#&lt;ActiveRecord::Relation [#&lt;Company id: 1, name: &quot;RaiseMore&quot;, founded: &quot;2011&quot;, website_url: &quot;http://www.raisemore.com&quot;, logo_url: &quot;http://res.cloudinary.com/hfjjoialf/image/upload/v1...&quot;, description: &quot;We are an event fundraising platform focused on hel...&quot;, company_type: &quot;Start up&quot;, market: &quot;Charity Fundraising&quot;, technology_used: [&quot;Rails&quot;, &quot;Postgres&quot;, &quot;Sinatra&quot;, &quot;PhoneGap&quot;, &quot;JavaScript&quot;, &quot;HTML5&quot;, &quot;Redis&quot;], interns_needed: true, twitter_id: &quot;@raise_more&quot;, created_at: &quot;2014-01-13 21:49:39&quot;, updated_at: &quot;2014-01-13 21:49:39&quot;&gt;]&gt; </span>
-</span><span class='line'>
-</span><span class='line'><span class="n">rails_company</span><span class="o">.</span><span class="n">technology_used</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">=&gt;</span> <span class="o">[</span><span class="s2">&quot;Rails&quot;</span><span class="p">,</span> <span class="s2">&quot;Postgres&quot;</span><span class="p">,</span> <span class="s2">&quot;Sinatra&quot;</span><span class="p">,</span> <span class="s2">&quot;PhoneGap&quot;</span><span class="p">,</span> <span class="s2">&quot;JavaScript&quot;</span><span class="p">,</span> <span class="s2">&quot;HTML5&quot;</span><span class="p">,</span> <span class="s2">&quot;Redis&quot;</span><span class="o">]</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Cool, so saving the array data is easy. What about updating? As <a href="http://blog.relatabase.com/rails-postgres-arrays">the relatabase post points out</a>,</p>
-
-<p><code>One huge caveat of this approach is that rails doesn’t clone the array when saving the original for dirty checking, so any in-place modification to the array won’t register that it’s changed.</code></p>
-
-<p>This leaves us with these options:</p>
-
-<ul>
-<li>set the dirty flag ourselves: <code>rails_company.technology_used_will_change!</code></li>
-<li>update using update_attributes: <code>rails_company.update_attributes(:technology_used =&gt; ['Rails', 'Redis', 'Go', 'Erlang'] )</code></li>
-</ul>
-
-
-<h2>Overall results</h2>
-
-<p>The way Rails handles arrays is not as complete as a like, but hey, we are skipping a step by getting around foreign key tables. It&rsquo;s not like you should expect much. I&rsquo;d say they are allowed for small use projects, but if you really need to do some searching or have referential integrity, stick with foreign key tables.</p>
-
-<p>Also, check out the following resources:</p>
-
-<p><a href="http://adamsanderson.github.io/railsconf_2013/?full#1">Postgres &ndash; The Best Tool You&rsquo;re Already Using</a></p>
-
-<p><a href="http://reefpoints.dockyard.com/ruby/2012/09/18/rails-4-sneak-peek-postgresql-array-support.html">Rails 4.0 Sneak Peek: PostgreSQL array support</a></p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/7/">&larr; Older</a>
@@ -1177,6 +1311,10 @@ You are free to change it!</p>
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2019/09/12/on-the-clock/">On the Clock</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2019/02/23/the-victim-or-the-victor/">The Victim or the Victor</a>
       </li>
     
@@ -1190,10 +1328,6 @@ You are free to change it!</p>
     
       <li class="post">
         <a href="/blog/2017/03/13/test-coverage-reports-in-elixir/">Test Coverage Reports in Elixir</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2016/12/29/multicast-service-discovery-in-electron/">Multicast Service Discovery in Electron</a>
       </li>
     
   </ul>

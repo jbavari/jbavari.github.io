@@ -3,7 +3,7 @@ layout: post
 title: "The Victim or the victor"
 date: 2019-02-23 07:14
 comments: true
-categories: self-awareness attitude positivity
+categories: self-awareness attitude positivity stoicism philosophy
 ---
 
 When I was a younger boy, my grandma would tell me stories of my grandfather going to war. Like most men during world war 2, he did not want to go to leave his new bride and head to where death is ever looming. One thing I remember her saying to me as a life lesson is that you're given a choice in life that most always boils down to your attitude. She said, "just like your grandpa, you can chose to be a victim, or go get the courage to become a victor. The choice is always yours."

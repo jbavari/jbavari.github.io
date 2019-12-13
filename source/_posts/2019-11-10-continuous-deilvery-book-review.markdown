@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "Continuous Deployment - Book Review"
+title: "Continuous Delivery - Book Review"
 date: 2019-11-10 11:16
 comments: true
 categories:

@@ -6,6 +6,8 @@ comments: true
 categories:
 ---
 
+I'm still diving into the [Continuous Delivery book](https://www.amazon.com/Continuous-Delivery-Deployment-Automation-Addison-Wesley/dp/0321601912/ref=sr_1_4?crid=3LLBV00FE8TG3&keywords=continuous+delivery&qid=1576211505&sprefix=continuous+deliv%2Caps%2C192&sr=8-4). I wanted to sketch out some (very) sparse notes in an attempt to retain the material.
+
 # Chapter 1
 
 ## Common release Anti-patterns

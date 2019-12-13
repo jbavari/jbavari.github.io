@@ -9,8 +9,7 @@
   <meta name="author" content="Josh Bavari">
 
   
-  <meta name="description" content="Chapter 1 Common release Anti-patterns Deploying software manually
-Deploying to a production-like environment only after Development is complete &hellip;">
+  <meta name="description" content="I&rsquo;m still diving into the Continuous Delivery book. I wanted to sketch out some (very) sparse notes in an attempt to retain the material. &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -77,7 +76,7 @@ Deploying to a production-like environment only after Development is complete &h
       
   <header>
     
-      <h1 class="entry-title"><a href="/blog/2019/11/10/continuous-deployment-book-review/">Continuous Deployment - Book Review</a></h1>
+      <h1 class="entry-title"><a href="/blog/2019/11/10/continuous-deilvery-book-review/">Continuous Deployment - Book Review</a></h1>
     
     
       <p class="meta">
@@ -101,7 +100,9 @@ Deploying to a production-like environment only after Development is complete &h
   </header>
 
 
-  <div class="entry-content"><h1>Chapter 1</h1>
+  <div class="entry-content"><p>I&rsquo;m still diving into the <a href="https://www.amazon.com/Continuous-Delivery-Deployment-Automation-Addison-Wesley/dp/0321601912/ref=sr_1_4?crid=3LLBV00FE8TG3&amp;keywords=continuous+delivery&amp;qid=1576211505&amp;sprefix=continuous+deliv%2Caps%2C192&amp;sr=8-4">Continuous Delivery book</a>. I wanted to sketch out some (very) sparse notes in an attempt to retain the material.</p>
+
+<h1>Chapter 1</h1>
 
 <h2>Common release Anti-patterns</h2>
 
@@ -277,7 +278,26 @@ Deploying to a production-like environment only after Development is complete &h
   </header>
 
 
-  <div class="entry-content">
+  <div class="entry-content"><p>I&rsquo;ve recently read and held a nerd book club at work regarding Clean Architecture. Overall, I found this read easy to grok and entertain a few new ideas about software development. Uncle Bob also had a few things <a href="https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html">on his blog post</a> about this topic.</p>
+
+<p>If I could wrap up one picture that encompases the book:</p>
+
+<p><img src="https://blog.cleancoder.com/uncle-bob/images/2012-08-13-the-clean-architecture/CleanArchitecture.jpg" alt="This image" /></p>
+
+<p>I&rsquo;ve also recently read parts of Domain Driven Design that introduce this same concept. I think Uncle Bob does a great job of sharing some great examples of the book of how architecture is an art, one that can morph with the needs of the project at hand, and is subject to trade-offs through the entire lifecycle of software. I love that the book starts off expressing the idea that thinking of delivery early on is a wise decision to incorporate into the architecture design.</p>
+
+<p>Some other great points I found worthy of mention:</p>
+
+<ul>
+<li>How to think of the division of software with regards to firmware and hardware abstraction layers.</li>
+<li>Most things are details &ndash; the framework, the database, the GUI, firmware &ndash; keep it separated from the internal domain layers of your business logic however possible.</li>
+<li>SOLID Principles are important &ndash; also integrate into architecture design.</li>
+<li>Architecture design with traditional monolith, service oriented, and micro-service anti-pattern warnings.</li>
+<li>The idea that there is no silver bullet &ndash; <a href="https://twitter.com/codepitbull/status/784691906005635072">A good developer is like a werewolf: afraid of silver bullets</a></li>
+</ul>
+
+
+<p>This book club also gave the team some time to reflect and dive into the design of our current projects. Overall, this was a great book for a team to cover and come up with some action items to drive better software going forward.</p>
 </div>
   
   
@@ -978,7 +998,7 @@ well as a &lsquo;repository&rsquo; for testing puppet.</p>
   <ul id="recent_posts">
     
       <li class="post">
-        <a href="/blog/2019/11/10/continuous-deployment-book-review/">Continuous Deployment - Book Review</a>
+        <a href="/blog/2019/11/10/continuous-deilvery-book-review/">Continuous Deployment - Book Review</a>
       </li>
     
       <li class="post">

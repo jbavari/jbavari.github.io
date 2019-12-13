@@ -4,7 +4,7 @@
   <title><![CDATA[Category: development | Josh Bavari's Thoughts]]></title>
   <link href="http://jbavari.github.io/blog/categories/development/atom.xml" rel="self"/>
   <link href="http://jbavari.github.io/"/>
-  <updated>2019-12-12T21:16:47-07:00</updated>
+  <updated>2019-12-12T21:32:46-07:00</updated>
   <id>http://jbavari.github.io/</id>
   <author>
     <name><![CDATA[Josh Bavari]]></name>
@@ -18,7 +18,26 @@
     <link href="http://jbavari.github.io/blog/2019/10/08/clean-architecture-book-review/"/>
     <updated>2019-10-08T21:48:00-06:00</updated>
     <id>http://jbavari.github.io/blog/2019/10/08/clean-architecture-book-review</id>
-    <content type="html"><![CDATA[
+    <content type="html"><![CDATA[<p>I&rsquo;ve recently read and held a nerd book club at work regarding Clean Architecture. Overall, I found this read easy to grok and entertain a few new ideas about software development. Uncle Bob also had a few things <a href="https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html">on his blog post</a> about this topic.</p>
+
+<p>If I could wrap up one picture that encompases the book:</p>
+
+<p><img src="https://blog.cleancoder.com/uncle-bob/images/2012-08-13-the-clean-architecture/CleanArchitecture.jpg" alt="This image" /></p>
+
+<p>I&rsquo;ve also recently read parts of Domain Driven Design that introduce this same concept. I think Uncle Bob does a great job of sharing some great examples of the book of how architecture is an art, one that can morph with the needs of the project at hand, and is subject to trade-offs through the entire lifecycle of software. I love that the book starts off expressing the idea that thinking of delivery early on is a wise decision to incorporate into the architecture design.</p>
+
+<p>Some other great points I found worthy of mention:</p>
+
+<ul>
+<li>How to think of the division of software with regards to firmware and hardware abstraction layers.</li>
+<li>Most things are details &ndash; the framework, the database, the GUI, firmware &ndash; keep it separated from the internal domain layers of your business logic however possible.</li>
+<li>SOLID Principles are important &ndash; also integrate into architecture design.</li>
+<li>Architecture design with traditional monolith, service oriented, and micro-service anti-pattern warnings.</li>
+<li>The idea that there is no silver bullet &ndash; <a href="https://twitter.com/codepitbull/status/784691906005635072">A good developer is like a werewolf: afraid of silver bullets</a></li>
+</ul>
+
+
+<p>This book club also gave the team some time to reflect and dive into the design of our current projects. Overall, this was a great book for a team to cover and come up with some action items to drive better software going forward.</p>
 ]]></content>
   </entry>
   

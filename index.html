@@ -9,7 +9,8 @@
   <meta name="author" content="Josh Bavari">
 
   
-  <meta name="description" content="I was at the grocery the other day and I heard one worker asked another if they were on the clock. For some reason, it spurred some thoughts of my &hellip;">
+  <meta name="description" content="Chapter 1 Common release Anti-patterns Deploying software manually
+Deploying to a production-like environment only after Development is complete &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -70,6 +71,219 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2019/11/10/continuous-deployment-book-review/">Continuous Deployment - Book Review</a></h1>
+    
+    
+      <p class="meta">
+        <span class="reading-time">less than a 1 minute read</span>
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2019-11-10T11:16:00-07:00" pubdate data-updated="true">Nov 10<span>th</span>, 2019</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h1>Chapter 1</h1>
+
+<h2>Common release Anti-patterns</h2>
+
+<ul>
+<li>Deploying software manually</li>
+<li>Deploying to a production-like environment only after Development is complete</li>
+<li>Manual configuration management of production environments</li>
+</ul>
+
+
+<h2>Stages of a deployment pipeline</h2>
+
+<ul>
+<li>The commit stage &ndash; compile, unit test, analysis, build installers</li>
+<li>Automated acceptance testing</li>
+<li>Automated capacity testing</li>
+<li>Manual testing &ndash; showcases, exploratory, testing</li>
+<li>Release</li>
+</ul>
+
+
+<h3>Deploying to a production-like environment only after Development is complete</h3>
+
+<h4>Problems</h4>
+
+<ul>
+<li>Ensure teams are working towards production type releases on a regular cadence, not in extended periods of time.</li>
+<li>Manual configurations cause issues &ndash; work towards trying to automate those portions.</li>
+<li>Scripts to do the deployments are better than manual steps written up. Documentation goes out of date, requires extra effort to keep alignment.</li>
+<li>Need tighter collaboration between development and deployment teams.</li>
+<li>Deploying to staging faster (where environments are closer to production) helps uncover issues, bind the dev/ops teams, and drives fixes to deployments faster.</li>
+<li>The bigger diff between deployment and production environments</li>
+</ul>
+
+
+<h4>Solutions</h4>
+
+<ul>
+<li>Rehearse deployments to a staging or production-like environment several times before actually going to production.</li>
+<li>Make sure everyone who is doing the deployments are working together on the deployments from the start of the project.</li>
+<li>Make the cornerstone of deployment a means of testing both software and deployments throughout the process.</li>
+</ul>
+
+
+<h3>Manual configuration management of production environments</h3>
+
+<h4>Signs of this anti-pattern</h4>
+
+<ul>
+<li>Having deployed successfully to many times to staging, the deployment to production fails.</li>
+<li>The operations teams take longer to prepare an environment for a release.</li>
+<li>You cannot step back to a prior configuration of your system.</li>
+<li>Servers in the operating environments, unintentionally, have different versions of operating systems, third-party infrastructure, libraries, or patch levels.</li>
+<li>Configuration of the system is carried out by modifying the configuration directly on production systems.</li>
+</ul>
+
+
+<h4>Solutions</h4>
+
+<ul>
+<li>All aspects of testing, staging, and production specifically the configuration of any third-party elements of the system should be applied from version control through an automated process.</li>
+<li>The only way to make changes to production should be done through an automated process.</li>
+<li>Make it possible to see at a glance what the currently released version of every piece of software is.</li>
+<li>Make releases boring &ndash; to the point where they are cheap, low-risk, frequent, rapid, and predictable.</li>
+</ul>
+
+
+<h2>How to achieve these solutions?</h2>
+
+<ul>
+<li>Automate &ndash; make it repeatable without failure.</li>
+<li>Frequent &ndash; make deltas between releases smaller to reduce risk and get immediate feedback.</li>
+</ul>
+
+
+<p>Three criteria to make feedback to be useful:
+* Any change, whatever kind, needs to trigger the feedback process.
+* The feedback must be delivered as soon as possible.
+* The delivery team must receive feedback and then act on it.</p>
+
+<p>How to get this feedback?</p>
+
+<p>Working software decomposed into 4 components:</p>
+
+<ul>
+<li>Executable code</li>
+<li>Configuration</li>
+<li>Host environment</li>
+<li>Data</li>
+</ul>
+
+
+<p>You should aim to have the executable code to be reused everywhere it is needed and never rebuilt.</p>
+
+<p>Any change to an applications configuration, in whichever environment, should be tested with a representative range of the example systems.</p>
+
+<p>If the environments are to changed, the whole system should be tested with the changes to the environment.</p>
+
+<p>Finally, if the structure of the data changes, the change must also be tested.</p>
+
+<p>The authors mention a few simple feedback checks:</p>
+
+<ul>
+<li>The software should fulfill certain requirements such as test coverage and other technology-specific metrics.</li>
+<li>The software&rsquo;s functional acceptance tests must pass. This is a test on the business acceptance criteria.</li>
+<li>The software&rsquo;s nonfunctional tests must pass &ndash; in regards to capacity, availability, security, and so on to meet it&rsquo;s users needs.</li>
+</ul>
+
+
+<p>Another key point the authors bring up that implementing a deployment pipeline is resource-intensive, especially once you have a comprehensive automated test suite. One of the key objectives is to optimize for human resource usage: we want to free the people to do the interesting work and leave repetition to machines.</p>
+
+<p>The authors suggest to aim for 75% or so of the codebase.</p>
+
+<h3>Breaking down the steps of the pipeline</h3>
+
+<p>If tests fail in the early stages of the pipeline, they should not advance. We should aim to build a high confidence in the software in the first set of tests.</p>
+
+<hr />
+
+<p>Random notes:</p>
+
+<p>CH1 &ndash; author recommends to get cross-functional groups all along the process. Also aim to have retrospections with the entire crew of developers, infra/operations, and testing</p>
+
+<p>Being able to react to feedback also means broadcasting information. Using big, visible dashboards and other notification mechanisms. Also aim to make one is present in each team room.</p>
+
+<p>Feedback is no good unless it is acted on.</p>
+
+<p>Authors make a point here that by giving more of the pull/self-service model, you can increase velocity:
+* Testers can select older versions of software to test with
+* Support staff can deploy a released version into an environment to reproduce a defect.
+* Operations staff can select a known good build to deploy into production as part of disaster recovery
+* Releases can happen at a push of a button.</p>
+
+<p>Note here applying to work:
+* In each PR, it should address:
+* Change in code
+* Change in configuration (if any)
+* Change in host environment (if any)
+* Change in structures of data</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2019/10/08/clean-architecture-book-review/">Clean Architecture - Book Review</a></h1>
+    
+    
+      <p class="meta">
+        <span class="reading-time">less than a 1 minute read</span>
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2019-10-08T21:48:00-06:00" pubdate data-updated="true">Oct 8<span>th</span>, 2019</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content">
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -749,249 +963,6 @@ well as a &lsquo;repository&rsquo; for testing puppet.</p>
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2016/01/24/adding-additional-static-paths-in-phoenix/">Adding Additional Static Paths in Phoenix</a></h1>
-    
-    
-      <p class="meta">
-        <span class="reading-time">less than a 1 minute read</span>
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2016-01-24T19:24:00-07:00" pubdate data-updated="true">Jan 24<span>th</span>, 2016</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Phoenix is awesome.</p>
-
-<p>A problem I ran into lately is how to add additional static paths to be served.</p>
-
-<p>If you take a look in your <code>lib/endpoint.ex</code> file, you&rsquo;ll see the plug used for adding static paths:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='elixir'><span class='line'><span class="n">plug</span> <span class="no">Plug</span><span class="o">.</span><span class="no">Static</span><span class="p">,</span>
-</span><span class='line'>  <span class="ss">at:</span> <span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="ss">from:</span> <span class="ss">:electronify</span><span class="p">,</span> <span class="ss">gzip:</span> <span class="no">false</span><span class="p">,</span>
-</span><span class='line'>  <span class="ss">only:</span> <span class="err">~</span><span class="n">w</span><span class="p">(</span><span class="n">css</span> <span class="n">fonts</span> <span class="n">images</span> <span class="n">js</span> <span class="n">favicon</span><span class="o">.</span><span class="n">ico</span> <span class="n">robots</span><span class="o">.</span><span class="n">txt</span><span class="p">)</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>I wanted to add another folder to be served, &lsquo;zips&rsquo;, that I had to edit the <code>only:</code> line in the plug specification as such:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='elixir'><span class='line'><span class="n">plug</span> <span class="no">Plug</span><span class="o">.</span><span class="no">Static</span><span class="p">,</span>
-</span><span class='line'>  <span class="ss">at:</span> <span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="ss">from:</span> <span class="ss">:electronify</span><span class="p">,</span> <span class="ss">gzip:</span> <span class="no">false</span><span class="p">,</span>
-</span><span class='line'>  <span class="ss">only:</span> <span class="err">~</span><span class="n">w</span><span class="p">(</span><span class="n">css</span> <span class="n">fonts</span> <span class="n">images</span> <span class="n">js</span> <span class="n">favicon</span><span class="o">.</span><span class="n">ico</span> <span class="n">robots</span><span class="o">.</span><span class="n">txt</span> <span class="n">zips</span><span class="p">)</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>There you have it, now I can access the files in the <code>zips</code> folder in <code>priv/static/zips</code> through the URL. Cheers!</p>
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2016/01/16/shipping-data-with-protocol-buffers-in-elixir/">Shipping Data With Protocol Buffers in Elixir</a></h1>
-    
-    
-      <p class="meta">
-        <span class="reading-time">less than a 1 minute read</span>
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2016-01-16T22:49:00-07:00" pubdate data-updated="true">Jan 16<span>th</span>, 2016</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Lately, I&rsquo;ve needed some data shipped across to various nodes to exchange data in a variety of places on a problem I was working on. There were a few ways to get that data shipped across, as the usual suspects are JSON, XML, or Google&rsquo;s <a href="https://developers.google.com/protocol-buffers/?hl=en">Protocol Buffers</a>.</p>
-
-<p>For this specific problem, we were needing to get that data shared from C++ nodes to Elixir/Erlang.</p>
-
-<p>Since the team was using Protocol buffers already, I decided to give them a run in Elixir using <a href="https://github.com/bitwalker/exprotobuf">exprotobuf</a>.</p>
-
-<p>Note: <a href="https://github.com/jbavari/elixir-zeromq-protobuf-uploader">the client for this experiement is on github</a>.</p>
-
-<h2>The idea</h2>
-
-<p>The idea here is &ndash; we&rsquo;ll capture pieces of data from one node and ship it to the server for processing. We define the data structure by a <code>.proto</code> file, then turn our data into binary form by encoding it, and finally shipping it to it&rsquo;s destination. We could do the same thing with JSON, but we want the data as light as possible.</p>
-
-<p>We&rsquo;ll use <a href="http://zeromq.org/">ZeroMQ</a> to ship the data and use the Elixir package <a href="https://github.com/zeromq/exzmq">exzmq</a> to encode in protocol buffers.</p>
-
-<h2>The process</h2>
-
-<p>First we define our protocol buffer format for an image message we want to send with data, its width, height, and bits per pixel:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class='protobuf'><span class='line'><span class="kd">message</span> <span class="nc">ImageMsg</span> <span class="p">{</span>
-</span><span class='line'>  <span class="k">optional</span> <span class="kt">bytes</span> <span class="na">data</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
-</span><span class='line'>  <span class="k">optional</span> <span class="kt">int32</span> <span class="na">width</span> <span class="o">=</span> <span class="mi">2</span><span class="p">;</span>
-</span><span class='line'>  <span class="k">optional</span> <span class="kt">int32</span> <span class="na">height</span> <span class="o">=</span> <span class="mi">3</span><span class="p">;</span>
-</span><span class='line'>  <span class="k">optional</span> <span class="kt">int32</span> <span class="na">bpp</span> <span class="o">=</span> <span class="mi">4</span><span class="p">;</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>We set up our application to use <code>exprotobuf</code> in our <code>mix.exs</code> file:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='elixir'><span class='line'><span class="k">def</span> <span class="n">application</span> <span class="k">do</span>
-</span><span class='line'><span class="k">    </span><span class="p">[</span><span class="ss">applications:</span> <span class="p">[</span><span class="ss">:logger</span><span class="p">,</span> <span class="ss">:exzmq</span><span class="p">,</span> <span class="ss">:exprotobuf</span><span class="p">],</span>
-</span><span class='line'>     <span class="ss">mod:</span> <span class="p">{</span><span class="no">Zmq2</span><span class="p">,</span> <span class="p">[]}]</span>
-</span><span class='line'><span class="k">end</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>as well as including it as a dependency:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class='elixir'><span class='line'><span class="k">defp</span> <span class="n">deps</span> <span class="k">do</span>
-</span><span class='line'><span class="k">  </span><span class="p">[</span>
-</span><span class='line'>    <span class="p">{</span><span class="ss">:exzmq</span><span class="p">,</span> <span class="ss">git:</span> <span class="s2">&quot;https://github.com/zeromq/exzmq&quot;</span><span class="p">},</span>
-</span><span class='line'>    <span class="p">{</span><span class="ss">:exprotobuf</span><span class="p">,</span> <span class="s2">&quot;1.0.0-rc1&quot;</span><span class="p">}</span>
-</span><span class='line'>  <span class="p">]</span>
-</span><span class='line'><span class="k">end</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Finally we create an Elixir struct from this <a href="https://github.com/jbavari/elixir-zeromq-protobuf-uploader/blob/master/lib/proto/imagemsg.proto">proto file</a> as such:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='elixir'><span class='line'><span class="k">defmodule</span> <span class="no">Zmq2</span><span class="o">.</span><span class="no">Protobuf</span> <span class="k">do</span>
-</span><span class='line'><span class="k">  </span><span class="kn">use</span> <span class="no">Protobuf</span><span class="p">,</span> <span class="ss">from:</span> <span class="no">Path</span><span class="o">.</span><span class="n">wildcard</span><span class="p">(</span><span class="no">Path</span><span class="o">.</span><span class="n">expand</span><span class="p">(</span><span class="s2">&quot;./proto/imagemsg.proto&quot;</span><span class="p">,</span> <span class="n">__DIR__</span><span class="p">))</span>
-</span><span class='line'><span class="k">end</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Now that we have our protobuf file read in, let&rsquo;s get an images binary data, create an elixir structure from our protobuf file, and send that data over a Zero MQ socket (using <code>exzmq</code>):</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-</pre></td><td class='code'><pre><code class='elixir'><span class='line'><span class="k">def</span> <span class="n">check_file</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="n">socket</span><span class="p">)</span> <span class="k">do</span>
-</span><span class='line'><span class="k">  </span><span class="no">IO</span><span class="o">.</span><span class="n">puts</span> <span class="s2">&quot;Sending image from file path: </span><span class="si">#{</span><span class="no">Path</span><span class="o">.</span><span class="n">expand</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="n">__DIR__</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="k">case</span> <span class="no">File</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="no">Path</span><span class="o">.</span><span class="n">expand</span><span class="p">(</span><span class="n">file_path</span><span class="p">))</span> <span class="k">do</span>
-</span><span class='line'><span class="k">    </span><span class="p">{</span><span class="ss">:error</span><span class="p">,</span> <span class="ss">:enoent</span><span class="p">}</span> <span class="o">-&gt;</span>
-</span><span class='line'>      <span class="no">IO</span><span class="o">.</span><span class="n">puts</span> <span class="s2">&quot;No file at the path: </span><span class="si">#{</span><span class="n">file_path</span><span class="si">}</span><span class="s2">&quot;</span>
-</span><span class='line'>    <span class="p">{</span><span class="ss">:ok</span><span class="p">,</span> <span class="n">img_data</span><span class="p">}</span> <span class="o">-&gt;</span>
-</span><span class='line'>      <span class="n">send_image_data</span><span class="p">(</span><span class="n">socket</span><span class="p">,</span> <span class="n">img_data</span><span class="p">)</span>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'><span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">def</span> <span class="n">send_image_data</span><span class="p">(</span><span class="n">socket</span><span class="p">,</span> <span class="n">img_data</span><span class="p">)</span> <span class="k">do</span>
-</span><span class='line'><span class="k">  </span><span class="n">img_message</span> <span class="o">=</span> <span class="no">Zmq2</span><span class="o">.</span><span class="no">Protobuf</span><span class="o">.</span><span class="no">ImageMsg</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="ss">data:</span> <span class="n">img_data</span><span class="p">)</span>
-</span><span class='line'>  <span class="n">encoded_data</span> <span class="o">=</span> <span class="no">Zmq2</span><span class="o">.</span><span class="no">Protobuf</span><span class="o">.</span><span class="no">ImageMsg</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="n">img_message</span><span class="p">)</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="no">IO</span><span class="o">.</span><span class="n">puts</span> <span class="s2">&quot;The encoded data: </span><span class="si">#{</span><span class="n">inspect</span> <span class="n">encoded_data</span><span class="si">}</span><span class="s2">&quot;</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="no">Exzmq</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">socket</span><span class="p">,</span> <span class="p">[</span><span class="n">encoded_data</span><span class="p">])</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="no">IO</span><span class="o">.</span><span class="n">puts</span> <span class="s2">&quot;Sent request - awaiting reply\n\n&quot;</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="c1"># {:ok, r} =</span>
-</span><span class='line'>  <span class="k">case</span> <span class="no">Exzmq</span><span class="o">.</span><span class="n">recv</span><span class="p">(</span><span class="n">socket</span><span class="p">)</span> <span class="k">do</span>
-</span><span class='line'><span class="k">    </span><span class="p">{</span><span class="ss">:ok</span><span class="p">,</span> <span class="n">r</span><span class="p">}</span> <span class="o">-&gt;</span> <span class="no">IO</span><span class="o">.</span><span class="n">puts</span><span class="p">(</span><span class="s2">&quot;Received reply </span><span class="si">#{</span><span class="n">inspect</span> <span class="n">r</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-</span><span class='line'>    <span class="n">_</span> <span class="o">-&gt;</span> <span class="p">{</span><span class="ss">:error</span><span class="p">,</span> <span class="s2">&quot;No Reply&quot;</span><span class="p">}</span>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">end</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>And there we have it, a message sent serialized with protocol buffers. We can now apply this same strategy over any different protocol buffer messages we define, and ship them over any protocl we&rsquo;d like.</p>
-
-<h3>Some inspiration</h3>
-
-<p>Along the R&amp;D process, I came across <a href="http://dbeck.github.io">David Beck&rsquo;s blog</a>. David has an experiment where he was <a href="http://dbeck.github.io/Wrapping-up-my-Elixir-TCP-experiments/">sending several million messages in TCP</a> where he explores some ultra-efficient methods of sending messages, it&rsquo;s a great read. He also covers <a href="http://dbeck.github.io/5-lessons-learnt-from-choosing-zeromq-and-protobuf/">zeromq and protocol buffers</a> that goes more in depth into Protocol buffers and some lessons learned.</p>
-
-<p>Alas, we move on!</p>
-
-<p>Cheers</p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/2/">&larr; Older</a>
@@ -1007,6 +978,14 @@ well as a &lsquo;repository&rsquo; for testing puppet.</p>
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2019/11/10/continuous-deployment-book-review/">Continuous Deployment - Book Review</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2019/10/08/clean-architecture-book-review/">Clean Architecture - Book Review</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2019/09/12/on-the-clock/">On the Clock</a>
       </li>
     
@@ -1016,14 +995,6 @@ well as a &lsquo;repository&rsquo; for testing puppet.</p>
     
       <li class="post">
         <a href="/blog/2019/01/29/3-years-of-elixir-reflections/">3 Years of Elixir: Reflections</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2017/04/16/puppet-a-testing-handbook/">Puppet: A Testing Handbook</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2017/03/13/test-coverage-reports-in-elixir/">Test Coverage Reports in Elixir</a>
       </li>
     
   </ul>

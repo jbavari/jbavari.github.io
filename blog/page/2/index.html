@@ -9,7 +9,7 @@
   <meta name="author" content="Josh Bavari">
 
   
-  <meta name="description" content="As a developer, you should be focused on spending some of your own time learning and staying up to date with technology that is always moving. I &hellip;">
+  <meta name="description" content="Phoenix is awesome. A problem I ran into lately is how to add additional static paths to be served. If you take a look in your lib/endpoint.ex file, &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -70,6 +70,249 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2016/01/24/adding-additional-static-paths-in-phoenix/">Adding Additional Static Paths in Phoenix</a></h1>
+    
+    
+      <p class="meta">
+        <span class="reading-time">less than a 1 minute read</span>
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2016-01-24T19:24:00-07:00" pubdate data-updated="true">Jan 24<span>th</span>, 2016</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Phoenix is awesome.</p>
+
+<p>A problem I ran into lately is how to add additional static paths to be served.</p>
+
+<p>If you take a look in your <code>lib/endpoint.ex</code> file, you&rsquo;ll see the plug used for adding static paths:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='elixir'><span class='line'><span class="n">plug</span> <span class="no">Plug</span><span class="o">.</span><span class="no">Static</span><span class="p">,</span>
+</span><span class='line'>  <span class="ss">at:</span> <span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="ss">from:</span> <span class="ss">:electronify</span><span class="p">,</span> <span class="ss">gzip:</span> <span class="no">false</span><span class="p">,</span>
+</span><span class='line'>  <span class="ss">only:</span> <span class="err">~</span><span class="n">w</span><span class="p">(</span><span class="n">css</span> <span class="n">fonts</span> <span class="n">images</span> <span class="n">js</span> <span class="n">favicon</span><span class="o">.</span><span class="n">ico</span> <span class="n">robots</span><span class="o">.</span><span class="n">txt</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>I wanted to add another folder to be served, &lsquo;zips&rsquo;, that I had to edit the <code>only:</code> line in the plug specification as such:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='elixir'><span class='line'><span class="n">plug</span> <span class="no">Plug</span><span class="o">.</span><span class="no">Static</span><span class="p">,</span>
+</span><span class='line'>  <span class="ss">at:</span> <span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="ss">from:</span> <span class="ss">:electronify</span><span class="p">,</span> <span class="ss">gzip:</span> <span class="no">false</span><span class="p">,</span>
+</span><span class='line'>  <span class="ss">only:</span> <span class="err">~</span><span class="n">w</span><span class="p">(</span><span class="n">css</span> <span class="n">fonts</span> <span class="n">images</span> <span class="n">js</span> <span class="n">favicon</span><span class="o">.</span><span class="n">ico</span> <span class="n">robots</span><span class="o">.</span><span class="n">txt</span> <span class="n">zips</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>There you have it, now I can access the files in the <code>zips</code> folder in <code>priv/static/zips</code> through the URL. Cheers!</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2016/01/16/shipping-data-with-protocol-buffers-in-elixir/">Shipping Data With Protocol Buffers in Elixir</a></h1>
+    
+    
+      <p class="meta">
+        <span class="reading-time">less than a 1 minute read</span>
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2016-01-16T22:49:00-07:00" pubdate data-updated="true">Jan 16<span>th</span>, 2016</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Lately, I&rsquo;ve needed some data shipped across to various nodes to exchange data in a variety of places on a problem I was working on. There were a few ways to get that data shipped across, as the usual suspects are JSON, XML, or Google&rsquo;s <a href="https://developers.google.com/protocol-buffers/?hl=en">Protocol Buffers</a>.</p>
+
+<p>For this specific problem, we were needing to get that data shared from C++ nodes to Elixir/Erlang.</p>
+
+<p>Since the team was using Protocol buffers already, I decided to give them a run in Elixir using <a href="https://github.com/bitwalker/exprotobuf">exprotobuf</a>.</p>
+
+<p>Note: <a href="https://github.com/jbavari/elixir-zeromq-protobuf-uploader">the client for this experiement is on github</a>.</p>
+
+<h2>The idea</h2>
+
+<p>The idea here is &ndash; we&rsquo;ll capture pieces of data from one node and ship it to the server for processing. We define the data structure by a <code>.proto</code> file, then turn our data into binary form by encoding it, and finally shipping it to it&rsquo;s destination. We could do the same thing with JSON, but we want the data as light as possible.</p>
+
+<p>We&rsquo;ll use <a href="http://zeromq.org/">ZeroMQ</a> to ship the data and use the Elixir package <a href="https://github.com/zeromq/exzmq">exzmq</a> to encode in protocol buffers.</p>
+
+<h2>The process</h2>
+
+<p>First we define our protocol buffer format for an image message we want to send with data, its width, height, and bits per pixel:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='protobuf'><span class='line'><span class="kd">message</span> <span class="nc">ImageMsg</span> <span class="p">{</span>
+</span><span class='line'>  <span class="k">optional</span> <span class="kt">bytes</span> <span class="na">data</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+</span><span class='line'>  <span class="k">optional</span> <span class="kt">int32</span> <span class="na">width</span> <span class="o">=</span> <span class="mi">2</span><span class="p">;</span>
+</span><span class='line'>  <span class="k">optional</span> <span class="kt">int32</span> <span class="na">height</span> <span class="o">=</span> <span class="mi">3</span><span class="p">;</span>
+</span><span class='line'>  <span class="k">optional</span> <span class="kt">int32</span> <span class="na">bpp</span> <span class="o">=</span> <span class="mi">4</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>We set up our application to use <code>exprotobuf</code> in our <code>mix.exs</code> file:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='elixir'><span class='line'><span class="k">def</span> <span class="n">application</span> <span class="k">do</span>
+</span><span class='line'><span class="k">    </span><span class="p">[</span><span class="ss">applications:</span> <span class="p">[</span><span class="ss">:logger</span><span class="p">,</span> <span class="ss">:exzmq</span><span class="p">,</span> <span class="ss">:exprotobuf</span><span class="p">],</span>
+</span><span class='line'>     <span class="ss">mod:</span> <span class="p">{</span><span class="no">Zmq2</span><span class="p">,</span> <span class="p">[]}]</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>as well as including it as a dependency:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='elixir'><span class='line'><span class="k">defp</span> <span class="n">deps</span> <span class="k">do</span>
+</span><span class='line'><span class="k">  </span><span class="p">[</span>
+</span><span class='line'>    <span class="p">{</span><span class="ss">:exzmq</span><span class="p">,</span> <span class="ss">git:</span> <span class="s2">&quot;https://github.com/zeromq/exzmq&quot;</span><span class="p">},</span>
+</span><span class='line'>    <span class="p">{</span><span class="ss">:exprotobuf</span><span class="p">,</span> <span class="s2">&quot;1.0.0-rc1&quot;</span><span class="p">}</span>
+</span><span class='line'>  <span class="p">]</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Finally we create an Elixir struct from this <a href="https://github.com/jbavari/elixir-zeromq-protobuf-uploader/blob/master/lib/proto/imagemsg.proto">proto file</a> as such:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='elixir'><span class='line'><span class="k">defmodule</span> <span class="no">Zmq2</span><span class="o">.</span><span class="no">Protobuf</span> <span class="k">do</span>
+</span><span class='line'><span class="k">  </span><span class="kn">use</span> <span class="no">Protobuf</span><span class="p">,</span> <span class="ss">from:</span> <span class="no">Path</span><span class="o">.</span><span class="n">wildcard</span><span class="p">(</span><span class="no">Path</span><span class="o">.</span><span class="n">expand</span><span class="p">(</span><span class="s2">&quot;./proto/imagemsg.proto&quot;</span><span class="p">,</span> <span class="n">__DIR__</span><span class="p">))</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Now that we have our protobuf file read in, let&rsquo;s get an images binary data, create an elixir structure from our protobuf file, and send that data over a Zero MQ socket (using <code>exzmq</code>):</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+</pre></td><td class='code'><pre><code class='elixir'><span class='line'><span class="k">def</span> <span class="n">check_file</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="n">socket</span><span class="p">)</span> <span class="k">do</span>
+</span><span class='line'><span class="k">  </span><span class="no">IO</span><span class="o">.</span><span class="n">puts</span> <span class="s2">&quot;Sending image from file path: </span><span class="si">#{</span><span class="no">Path</span><span class="o">.</span><span class="n">expand</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="n">__DIR__</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">case</span> <span class="no">File</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="no">Path</span><span class="o">.</span><span class="n">expand</span><span class="p">(</span><span class="n">file_path</span><span class="p">))</span> <span class="k">do</span>
+</span><span class='line'><span class="k">    </span><span class="p">{</span><span class="ss">:error</span><span class="p">,</span> <span class="ss">:enoent</span><span class="p">}</span> <span class="o">-&gt;</span>
+</span><span class='line'>      <span class="no">IO</span><span class="o">.</span><span class="n">puts</span> <span class="s2">&quot;No file at the path: </span><span class="si">#{</span><span class="n">file_path</span><span class="si">}</span><span class="s2">&quot;</span>
+</span><span class='line'>    <span class="p">{</span><span class="ss">:ok</span><span class="p">,</span> <span class="n">img_data</span><span class="p">}</span> <span class="o">-&gt;</span>
+</span><span class='line'>      <span class="n">send_image_data</span><span class="p">(</span><span class="n">socket</span><span class="p">,</span> <span class="n">img_data</span><span class="p">)</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">def</span> <span class="n">send_image_data</span><span class="p">(</span><span class="n">socket</span><span class="p">,</span> <span class="n">img_data</span><span class="p">)</span> <span class="k">do</span>
+</span><span class='line'><span class="k">  </span><span class="n">img_message</span> <span class="o">=</span> <span class="no">Zmq2</span><span class="o">.</span><span class="no">Protobuf</span><span class="o">.</span><span class="no">ImageMsg</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="ss">data:</span> <span class="n">img_data</span><span class="p">)</span>
+</span><span class='line'>  <span class="n">encoded_data</span> <span class="o">=</span> <span class="no">Zmq2</span><span class="o">.</span><span class="no">Protobuf</span><span class="o">.</span><span class="no">ImageMsg</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="n">img_message</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="no">IO</span><span class="o">.</span><span class="n">puts</span> <span class="s2">&quot;The encoded data: </span><span class="si">#{</span><span class="n">inspect</span> <span class="n">encoded_data</span><span class="si">}</span><span class="s2">&quot;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="no">Exzmq</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">socket</span><span class="p">,</span> <span class="p">[</span><span class="n">encoded_data</span><span class="p">])</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="no">IO</span><span class="o">.</span><span class="n">puts</span> <span class="s2">&quot;Sent request - awaiting reply\n\n&quot;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="c1"># {:ok, r} =</span>
+</span><span class='line'>  <span class="k">case</span> <span class="no">Exzmq</span><span class="o">.</span><span class="n">recv</span><span class="p">(</span><span class="n">socket</span><span class="p">)</span> <span class="k">do</span>
+</span><span class='line'><span class="k">    </span><span class="p">{</span><span class="ss">:ok</span><span class="p">,</span> <span class="n">r</span><span class="p">}</span> <span class="o">-&gt;</span> <span class="no">IO</span><span class="o">.</span><span class="n">puts</span><span class="p">(</span><span class="s2">&quot;Received reply </span><span class="si">#{</span><span class="n">inspect</span> <span class="n">r</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</span><span class='line'>    <span class="n">_</span> <span class="o">-&gt;</span> <span class="p">{</span><span class="ss">:error</span><span class="p">,</span> <span class="s2">&quot;No Reply&quot;</span><span class="p">}</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>And there we have it, a message sent serialized with protocol buffers. We can now apply this same strategy over any different protocol buffer messages we define, and ship them over any protocl we&rsquo;d like.</p>
+
+<h3>Some inspiration</h3>
+
+<p>Along the R&amp;D process, I came across <a href="http://dbeck.github.io">David Beck&rsquo;s blog</a>. David has an experiment where he was <a href="http://dbeck.github.io/Wrapping-up-my-Elixir-TCP-experiments/">sending several million messages in TCP</a> where he explores some ultra-efficient methods of sending messages, it&rsquo;s a great read. He also covers <a href="http://dbeck.github.io/5-lessons-learnt-from-choosing-zeromq-and-protobuf/">zeromq and protocol buffers</a> that goes more in depth into Protocol buffers and some lessons learned.</p>
+
+<p>Alas, we move on!</p>
+
+<p>Cheers</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -1994,367 +2237,6 @@ Figuring how to plug in rendering steps between state changes. <code>this.setSta
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2015/11/05/using-ionic-2-dot-0-generators/">Using Ionic 2.0 Generators</a></h1>
-    
-    
-      <p class="meta">
-        <span class="reading-time">less than a 1 minute read</span>
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2015-11-05T21:49:00-07:00" pubdate data-updated="true">Nov 5<span>th</span>, 2015</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>At the time of writing this, Ionic 2.0 is still in alpha.</p>
-
-<p>Ionic 2.0 builds on a ton of new technologies, such as Angular v2, TypeScript (with decorators), and ES6. If you&rsquo;ve never dabbled in these technologies, you can use the generators available in the <a href="http://npmjs.org/package/ionic"><code>ionic-cli</code></a> to get ramped up quickly!</p>
-
-<h2>Getting started</h2>
-
-<p>First, install the <code>alpha</code> version of the Ionic CLI: <code>npm install -g ionic@alpha</code>, currently version 2.0.0-alpha.19.</p>
-
-<p>Start an app with the tabs template: <code>ionic start MyIonic2App tabs --v2</code>.</p>
-
-<p>Change directories and serve the app in the browser: <code>cd MyIonic2App &amp;&amp; ionic serve</code>.</p>
-
-<p>You&rsquo;ll see, we&rsquo;ve got a basic tabs starter now avilable at <code>MyIonic2App</code> directory.</p>
-
-<h2>Generating a few pages</h2>
-
-<p>Let&rsquo;s say we want to link to a new page, &lsquo;About&rsquo;, from one of the tabs. First, let&rsquo;s generate our page with this command: <code>ionic generate page About</code>. NOTE: You can also use the generate alias, <code>ionic g</code>.</p>
-
-<p>You&rsquo;ll see a few files added:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>~/Development/testing/MyIonic2App<span class="nv">$ </span>ionic g page About
-</span><span class='line'>√ Create www/app/about/about.html
-</span><span class='line'>√ Create www/app/about/about.js
-</span><span class='line'>√ Create www/app/about/about.scss
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h2>Adding link on view to the About page</h2>
-
-<p>Let&rsquo;s add the link to the main tab page in <code>www/app/dash/dash.html</code>, via the <code>(click)</code> handler on an anchor, like so:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>&lt;ion-card&gt;
-</span><span class='line'>  &lt;ion-card-header&gt;
-</span><span class='line'>    Go to about page
-</span><span class='line'>  &lt;/ion-card-header&gt;
-</span><span class='line'>  &lt;ion-card-content&gt;
-</span><span class='line'>    &lt;button <span class="o">(</span>click<span class="o">)=</span><span class="s2">&quot;goToAboutPage()&quot;</span>&gt;About this&lt;/button&gt;
-</span><span class='line'>  &lt;/ion-card-content&gt;
-</span><span class='line'>&lt;/ion-card&gt;
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h2>Navigating to the page</h2>
-
-<p>Modify the Dashboard TypeScript file (<code>www/app/dash/dash.ts</code>) to import our new about page, add the click event handler, and push the page on the nav controller, all like so:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kr">import</span> <span class="p">{</span><span class="nx">Page</span><span class="p">,</span> <span class="nx">NavController</span><span class="p">}</span> <span class="nx">from</span> <span class="s1">&#39;ionic/ionic&#39;</span><span class="p">;</span>
-</span><span class='line'><span class="kr">import</span> <span class="p">{</span><span class="nx">About</span><span class="p">}</span> <span class="nx">from</span> <span class="s1">&#39;../about/about&#39;</span><span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'><span class="err">@</span><span class="nx">Page</span><span class="p">({</span>
-</span><span class='line'>  <span class="nx">templateUrl</span><span class="o">:</span> <span class="s1">&#39;app/dash/dash.html&#39;</span><span class="p">,</span>
-</span><span class='line'><span class="p">})</span>
-</span><span class='line'><span class="kr">export</span> <span class="kr">class</span> <span class="nx">Dash</span> <span class="p">{</span>
-</span><span class='line'>  <span class="nx">constructor</span><span class="p">(</span><span class="nx">nav</span><span class="o">:</span> <span class="nx">NavController</span><span class="p">,</span> <span class="nx">view</span><span class="o">:</span> <span class="nx">ViewController</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>    <span class="k">this</span><span class="p">.</span><span class="nx">nav</span> <span class="o">=</span> <span class="nx">nav</span><span class="p">;</span>
-</span><span class='line'>    <span class="k">this</span><span class="p">.</span><span class="nx">view</span> <span class="o">=</span> <span class="nx">view</span><span class="p">;</span>
-</span><span class='line'>  <span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="nx">goToAboutPage</span><span class="p">()</span> <span class="p">{</span>
-</span><span class='line'>    <span class="k">this</span><span class="p">.</span><span class="nx">nav</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">About</span><span class="p">);</span>
-</span><span class='line'>  <span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h2>Try it out!</h2>
-
-<p>Look in your browser, you should have an anchor available to click/tap that will then navigate you to the About page, fresh for you to get working!</p>
-
-<p>Here&rsquo;s a GIF of what it looks like:</p>
-
-<p><img class="[pic]" src="/images/IonicV2Generators.gif" title="[250] [250] [Ionic 2.0- Page generator example]" ></p>
-
-<p>I&rsquo;d like to also note, Ionic 2 is much smoother than a GIF would allow.</p>
-
-<h2>Wiring up sass</h2>
-
-<p>If you want to use the custom sass styles on the about page, first wire in the <code>about.scss</code> page in your <code>www/app/app.scss</code> sass file, like so: <code>@import 'about/about';</code>.</p>
-
-<h2>A quick note on naming conventions</h2>
-
-<p>For Ionic 2.0, we&rsquo;ve contributed to a <a href="https://en.wikipedia.org/wiki/Naming_convention_%28programming%29#Multiple-word_identifiers">naming convention</a> of kabob-casing for file names (my-about-page.html) and css classes (.my-about-page), and using PascalCasing for JavaScript classes in ES6 / TypeScript (MyAboutPage).</p>
-
-<h2>Other generators</h2>
-
-<p>Check out all the generators available: <code>ionic g --list</code></p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>~/Development/testing/MyIonic2App<span class="nv">$ </span>ionic g --list
-</span><span class='line'>Available generators:
-</span><span class='line'> * component
-</span><span class='line'> * directive
-</span><span class='line'> * injectable
-</span><span class='line'> * page
-</span><span class='line'> * page-login
-</span><span class='line'> * page-sidemenu
-</span><span class='line'> * page-signup
-</span><span class='line'> * pipe
-</span><span class='line'> * tabs
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h1>Final words</h1>
-
-<p>We hope you find the generators help you get started with ramping up quickly and building some awesome Ionic applications! Enjoy.</p>
-
-<p>We&rsquo;d love your feedback, drop us a line at <a href="https://github.com/driftyco/ionic2/issues">Ionic v2 Github Issues</a>.</p>
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2015/10/21/angular-2-and-ng-model/">Angular 2 and Ng-model</a></h1>
-    
-    
-      <p class="meta">
-        <span class="reading-time">less than a 1 minute read</span>
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2015-10-21T23:00:00-06:00" pubdate data-updated="true">Oct 21<span>st</span>, 2015</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Angular 2 introduces <code>ng-model</code> from Angular 1 in a completely different manner. Due to this, I wanted to make a quick post on how to use Angular 2&rsquo;s <code>ng-model</code> to build components that alert its parents app/component of changes.</p>
-
-<p>I&rsquo;m going to use the <a href="https://github.com/driftyco/ionic-conference-app">Ionic 2 conference app</a> as an example.</p>
-
-<p>In this post, we&rsquo;ll look at the schedule page in the app and see how it uses the <code>ion-search-bar</code> to update its <code>searchQuery</code> to filter out sessions from the schedule when the user changes the search input.</p>
-
-<h2>The set up</h2>
-
-<p>On the <a href="https://github.com/driftyco/ionic-conference-app/blob/master/www/app/schedule/schedule.js#L24">schedule component</a>, we set up the search query as a simple string, as such: <code>this.searchQuery = '';</code>.</p>
-
-<p>Then in our <a href="https://github.com/driftyco/ionic-conference-app/blob/master/www/app/schedule/schedule.html#L21">schedule page template</a>, we tell the <code>ion-search-bar</code> to use the <code>ng-model</code> directive and tell it to two-way bind using the schedule component&rsquo;s <code>searchQuery</code> variable.</p>
-
-<p>The template is like this:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="nt">&lt;ion</span><span class="na">-search-bar</span> <span class="err">[(</span><span class="na">ng-model</span><span class="err">)]=&quot;</span><span class="na">searchQuery</span><span class="err">&quot;</span> <span class="na">placeholder=</span><span class="s">&quot;Search&quot;</span><span class="nt">&gt;</span><span class="err">&lt;</span>/ion-search-bar&gt;
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Now, in the search bar, we need to take that <code>searchQuery</code> as an ngModel, and ensure the search-bar has a <a href="https://github.com/angular/angular/blob/master/modules/angular2/src/core/forms/directives/ng_control.ts#L14">value accessor</a> implemented, so that we may tell the schedule component of when things change to update its shadow DOM if need be.</p>
-
-<p>The <a href="https://github.com/driftyco/ionic2/blob/master/ionic/components/search-bar/search-bar.ts#L46-L62">ion-search-bar</a> will take an <code>ngControl</code> as part of it&rsquo;s injection, and sets up the <a href="https://github.com/driftyco/ionic2/blob/master/ionic/components/search-bar/search-bar.ts#L61">value accessor</a> to itself, like so:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="nx">constructor</span><span class="p">(</span>
-</span><span class='line'>  <span class="nx">elementRef</span><span class="o">:</span> <span class="nx">ElementRef</span><span class="p">,</span>
-</span><span class='line'>  <span class="nx">config</span><span class="o">:</span> <span class="nx">Config</span><span class="p">,</span>
-</span><span class='line'>  <span class="nx">ngControl</span><span class="o">:</span> <span class="nx">NgControl</span><span class="p">,</span>
-</span><span class='line'>  <span class="nx">renderer</span><span class="o">:</span> <span class="nx">Renderer</span>
-</span><span class='line'><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>  <span class="kr">super</span><span class="p">(</span><span class="nx">elementRef</span><span class="p">,</span> <span class="nx">config</span><span class="p">);</span>
-</span><span class='line'>  <span class="k">this</span><span class="p">.</span><span class="nx">renderer</span> <span class="o">=</span> <span class="nx">renderer</span><span class="p">;</span>
-</span><span class='line'>  <span class="k">this</span><span class="p">.</span><span class="nx">elementRef</span> <span class="o">=</span> <span class="nx">elementRef</span><span class="p">;</span>
-</span><span class='line'>  <span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="nx">ngControl</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>    <span class="c1">// They don&#39;t want to do anything that works, so we won&#39;t do anything that breaks</span>
-</span><span class='line'>    <span class="k">return</span><span class="p">;</span>
-</span><span class='line'>  <span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="k">this</span><span class="p">.</span><span class="nx">ngControl</span> <span class="o">=</span> <span class="nx">ngControl</span><span class="p">;</span>
-</span><span class='line'>  <span class="k">this</span><span class="p">.</span><span class="nx">ngControl</span><span class="p">.</span><span class="nx">valueAccessor</span> <span class="o">=</span> <span class="k">this</span><span class="p">;</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>NOTE: <code>ngModel</code> extends the <code>ngControl</code> class in angular (<a href="https://github.com/angular/angular/blob/master/modules/angular2/src/core/forms/directives/ng_model.ts#L44">source code</a>). The <a href="https://github.com/angular/angular/blob/master/modules/angular2/src/core/forms/directives/ng_control.ts#L14"><code>valueAccessor</code></a> is a <a href="https://github.com/angular/angular/blob/master/modules/angular2/src/core/forms/directives/control_value_accessor.ts">ControlValueAccessor</a> is an interface that provides certain methods, like so:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kr">export</span> <span class="kr">interface</span> <span class="nx">ControlValueAccessor</span> <span class="p">{</span>
-</span><span class='line'>  <span class="nx">writeValue</span><span class="p">(</span><span class="nx">obj</span><span class="o">:</span> <span class="nx">any</span><span class="p">)</span><span class="o">:</span> <span class="k">void</span><span class="p">;</span>
-</span><span class='line'>  <span class="nx">registerOnChange</span><span class="p">(</span><span class="nx">fn</span><span class="o">:</span> <span class="nx">any</span><span class="p">)</span><span class="o">:</span> <span class="k">void</span><span class="p">;</span>
-</span><span class='line'>  <span class="nx">registerOnTouched</span><span class="p">(</span><span class="nx">fn</span><span class="o">:</span> <span class="nx">any</span><span class="p">)</span><span class="o">:</span> <span class="k">void</span><span class="p">;</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>The <code>ControlValueAccessor</code> gives us a method to write the new value, a method to register to listen to the changes, and the register on touched function to allow components to use.</p>
-
-<p>Those are implemented in the search-bar, as seen <a href="https://github.com/driftyco/ionic2/blob/master/ionic/components/search-bar/search-bar.ts#L82-L92">here</a>.</p>
-
-<p>You can see that the <code>writeValue</code> method on <code>search-bar</code> updates it&rsquo;s local <code>value</code>, so that it&rsquo;s internal <code>&lt;input&gt;</code> element can update its value it shows. When that internal input is changed, it calls the <a href="https://github.com/driftyco/ionic2/blob/master/ionic/components/search-bar/search-bar.ts#L94-L98">inputChanged</a> event on the <code>search-bar</code>, which alerts other components that it has changed, as well as updating its current value.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='js'><span class='line'>  <span class="nx">inputChanged</span><span class="p">(</span><span class="nx">event</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>    <span class="k">this</span><span class="p">.</span><span class="nx">writeValue</span><span class="p">(</span><span class="nx">event</span><span class="p">.</span><span class="nx">target</span><span class="p">.</span><span class="nx">value</span><span class="p">);</span>
-</span><span class='line'>    <span class="k">this</span><span class="p">.</span><span class="nx">onChange</span><span class="p">(</span><span class="nx">event</span><span class="p">.</span><span class="nx">target</span><span class="p">.</span><span class="nx">value</span><span class="p">);</span>
-</span><span class='line'>  <span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>Filtering out sessions</h3>
-
-<p>Since the <code>onChange</code> event is called, the <code>schedule</code> component will see this and cause re-evaluation on its <code>searchQuery</code> variable, and filters the code.</p>
-
-<p>That makes our filtering method super easy, <a href="https://github.com/driftyco/ionic-conference-app/blob/master/www/app/schedule/schedule.js#L54">as seen here</a>, copied below for convenience:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="nx">getSessionsForTheDay</span><span class="p">()</span> <span class="p">{</span>
-</span><span class='line'>  <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="k">this</span><span class="p">.</span><span class="nx">searchQuery</span> <span class="o">||</span> <span class="k">this</span><span class="p">.</span><span class="nx">searchQuery</span><span class="p">.</span><span class="nx">trim</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;&#39;</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>    <span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="nx">sessionsForTheDay</span><span class="p">;</span>
-</span><span class='line'>  <span class="p">}</span>
-</span><span class='line'>  <span class="kd">var</span> <span class="nx">talks</span> <span class="o">=</span> <span class="p">[];</span>
-</span><span class='line'>  <span class="k">this</span><span class="p">.</span><span class="nx">sessionsForTheDay</span><span class="p">.</span><span class="nx">forEach</span><span class="p">((</span><span class="nx">session</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
-</span><span class='line'>    <span class="kd">var</span> <span class="nx">matched</span> <span class="o">=</span> <span class="nx">session</span><span class="p">.</span><span class="nx">talks</span><span class="p">.</span><span class="nx">filter</span><span class="p">((</span><span class="nx">v</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
-</span><span class='line'>      <span class="k">if</span><span class="p">(</span><span class="nx">v</span><span class="p">.</span><span class="nx">name</span><span class="p">.</span><span class="nx">toLowerCase</span><span class="p">().</span><span class="nx">indexOf</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">searchQuery</span><span class="p">.</span><span class="nx">toLowerCase</span><span class="p">())</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>        <span class="k">return</span> <span class="kc">true</span><span class="p">;</span>
-</span><span class='line'>      <span class="p">}</span>
-</span><span class='line'>      <span class="k">return</span> <span class="kc">false</span><span class="p">;</span>
-</span><span class='line'>    <span class="p">});</span>
-</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="nx">matched</span><span class="p">.</span><span class="nx">length</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>      <span class="nx">session</span><span class="p">.</span><span class="nx">talks</span> <span class="o">=</span> <span class="nx">matched</span><span class="p">;</span>
-</span><span class='line'>      <span class="nx">talks</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">session</span><span class="p">);</span>
-</span><span class='line'>    <span class="p">}</span>
-</span><span class='line'>  <span class="p">});</span>
-</span><span class='line'>  <span class="k">return</span> <span class="nx">talks</span><span class="p">;</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>When the schedule component&rsquo;s variable for <code>searchQuery</code> is updated, this method will be auto-magically re-evaluated, which causes the list to update.</p>
-
-<p>Hope this helps you understand Angular 2 and ng-models better! Enjoy!</p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/3/">&larr; Older</a>
@@ -2372,6 +2254,14 @@ Figuring how to plug in rendering steps between state changes. <code>this.setSta
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2019/11/10/continuous-deployment-book-review/">Continuous Deployment - Book Review</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2019/10/08/clean-architecture-book-review/">Clean Architecture - Book Review</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2019/09/12/on-the-clock/">On the Clock</a>
       </li>
     
@@ -2381,14 +2271,6 @@ Figuring how to plug in rendering steps between state changes. <code>this.setSta
     
       <li class="post">
         <a href="/blog/2019/01/29/3-years-of-elixir-reflections/">3 Years of Elixir: Reflections</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2017/04/16/puppet-a-testing-handbook/">Puppet: A Testing Handbook</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2017/03/13/test-coverage-reports-in-elixir/">Test Coverage Reports in Elixir</a>
       </li>
     
   </ul>

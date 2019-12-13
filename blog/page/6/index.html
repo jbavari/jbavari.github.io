@@ -9,7 +9,7 @@
   <meta name="author" content="Josh Bavari">
 
   
-  <meta name="description" content="I had a unique little situation pop up that needed a little more flexibility when it came to storing data in the db. We use Postgres at RaiseMore &hellip;">
+  <meta name="description" content="I spoke about the different Javascript Build systems at KCDC. I wanted to make sure my slides are available to any who wanted to view them. A few &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -70,6 +70,118 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/05/16/kcdc-javascript-build-system-showdown/">KCDC - Javascript Build System Showdown</a></h1>
+    
+    
+      <p class="meta">
+        <span class="reading-time">less than a 1 minute read</span>
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-05-16T10:44:00-06:00" pubdate data-updated="true">May 16<span>th</span>, 2014</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>I spoke about the different Javascript Build systems at KCDC. I wanted to make sure my slides are available to any who wanted to view them.</p>
+
+<p>A few things about the slides:</p>
+
+<p>There is a Gruntfile.js that contains tasks that I talked about in the presentation. There is also a gulpfile.js that does the same tasks as the Gruntfile. It will show you the differences between the two systems.</p>
+
+<p>The slides are found <a href="http://jbavari.github.io/JavascriptBuildSystemShowdown/#/">here</a>, and the repo for the files <a href="https://github.com/jbavari/JavascriptBuildSystemShowdown">here</a>.</p>
+
+<p>I hope this is helpful for some out there,
+Enjoy!</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/05/07/pow-and-weird-starting-issues/">Pow and Weird Starting Issues</a></h1>
+    
+    
+      <p class="meta">
+        <span class="reading-time">less than a 1 minute read</span>
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-05-07T14:56:00-06:00" pubdate data-updated="true">May 7<span>th</span>, 2014</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Lately I&rsquo;ve been getting this weird error from Pow in Rails 4:</p>
+
+<p><code>Bundler::GemNotFound: Could not find rake-10.3.1 in any of the sources</code></p>
+
+<p>Read more below to see what I did.</p>
+
+<p>In boot.rb:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>require 'rubygems'
+</span><span class='line'># Set up gems listed in the Gemfile.
+</span><span class='line'>ENV['BUNDLE_GEMFILE'] ||= File.expand_path('../../Gemfile', __FILE__)
+</span><span class='line'>
+</span><span class='line'>require 'bundler/setup' if File.exists?(ENV['BUNDLE_GEMFILE'])
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>In config.ru:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>require ::File.expand_path('../config/environment',  __FILE__)
+</span><span class='line'>run Rails.application</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Hope this helps.</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -935,365 +1047,6 @@
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/03/01/its-not-the-tools-its-you/">Its Not the Tools - Its You</a></h1>
-    
-    
-      <p class="meta">
-        <span class="reading-time">less than a 1 minute read</span>
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2014-03-01T02:16:00-07:00" pubdate data-updated="true">Mar 1<span>st</span>, 2014</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><h1>Reminder &ndash; you write the code, not the tools</h1>
-
-<p>Duh, right?</p>
-
-<p>There&rsquo;s a lot of debate I see about people saying you have to use a certain language or tool
-to write good software or create apps. This is simply not the fact.</p>
-
-<p>Case and point &ndash; if you write an app in iOS and it works great, the user simply does not care if it
-was written in Objective-C, PhoneGap, or some other hybrid tool. (NOTE: unless the user is a troll)</p>
-
-<p>I personally do a lot of work lately with Cordova/PhoneGap. I actively contribute to Cordova as well.
-When I hear purists come down on the technology, I really wonder why.</p>
-
-<p>Certainly, there can be some bad apps created with it. The same can be said for Objective-C!
-Whatever the tool/language is, it can always be used in the wrong or inefficient way.</p>
-
-<p>The truth is, there are some awesome technologies coming out from all kinds of directions.
-What makes the tech better? The tools/languages/software used, or the overall look/feel/usage?</p>
-
-<h2>Why am I writing this?</h2>
-
-<p>Lately, I&rsquo;ve been trying to grow as a developer and really fine tune my craft.
-I&rsquo;m writing this to remind myself &amp; hopefully remind others, any products/apps we make are only as good as we can make them.
-<strong>NOT</strong> the tools we use to make them. (NOTE: sometimes a tool can improve performance, or some other aspect, but its still up to you to learn and adapt)</p>
-
-<h2>If your app/product sucks, its your fault</h2>
-
-<p>That&rsquo;s right &ndash; true responsibility.</p>
-
-<p>Think about this &ndash; these days developers can make awesome, usable softare with only a text editor and some command line tools.</p>
-
-<p>Now, given some additional IDEs, SDKs, Frameworks, ETC., the same developer could make more software, generally quicker.
-Was it the tools that made the finalized product awesome?</p>
-
-<p>That being said, if you are using a tool/system/framework, and it truly does suck &ndash; guess what?
-You are free to change it!</p>
-
-<h2>The weakness is you</h2>
-
-<p>What makes someone great at anything is when they know what they are weak at and actively improve on those weaknesses.</p>
-
-<p>One thing I wanted to focus fire this year was hitting my weak points.</p>
-
-<p>It&rsquo;s always difficult to take a true honest look at yourself and evaluate what actions you should take. However, if you really want to improve and get ahead, there&rsquo;s no other way.</p>
-
-<h3>Some of my weaknesses</h3>
-
-<ul>
-<li>Writing tests for my code &amp; taking a TDD approach</li>
-<li>Actively testing my product (thoroughly)</li>
-<li>Reading and keeping up to date with knowledge (blogs/books/etc)</li>
-<li>Communicating and expressing my ideas</li>
-</ul>
-
-
-<h3>What I&rsquo;m trying</h3>
-
-<ul>
-<li>Expecting small improvements.</li>
-<li>Iterate quickly.</li>
-<li>Evaluate often.</li>
-<li>Always be learning.</li>
-</ul>
-
-
-<h3>What I&rsquo;m doing</h3>
-
-<ul>
-<li>Starting to write tests for older code &amp; refactoring when needed, especially in Javascript &amp; Ruby</li>
-<li>Getting together active test runners for iOS, Android, and the Web (CasperJS).</li>
-<li>Evaluating weekly my tests I&rsquo;m writing &ndash; Using <a href="http://codeclimate.com">Code climate</a> to evaluate the quality/complexity of our code</li>
-<li>Looking at other open source projects and how they write tests</li>
-<li>Reading some BDD/TDD books to learn</li>
-</ul>
-
-
-<h2>The big picture</h2>
-
-<p>Next time you are getting frustrated with your tools, programming language, etc &ndash; remember, it&rsquo;s up to you to improve it, or improve yourself. Cheers.</p>
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/01/24/grunt-orchestration-of-applescript/">Grunt.js Orchestration & Organization of Applescript Actions</a></h1>
-    
-    
-      <p class="meta">
-        <span class="reading-time">less than a 1 minute read</span>
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2014-01-24T14:14:00-07:00" pubdate data-updated="true">Jan 24<span>th</span>, 2014</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Lately I&rsquo;ve learned a little about AppleScript. If you&rsquo;re not familiar, I suggest reading the <a href="https://developer.apple.com/library/mac/documentation/applescript/conceptual/applescriptlangguide/introduction/ASLR_intro.html#//apple_ref/doc/uid/TP40000983-CH208-SW1">AppleScript Language Guide</a> to get a little more background information about it. In a nutshell, however, its basically a scripting language developed by Apple to do Inter-application communication using AppleEvents (yes, I used the language from the Wiki page).</p>
-
-<p>In the last few months, I&rsquo;ve been absolutely obsessed with automating the boring tasks that wear me out. This is just another platform to add automation events. Imagine making a script that will open all your dev programs, set them up how you want them, launch a build process, focus a device simulator, and then begin clicking around that simulator. That is my vision for now.</p>
-
-<p>In this post, I&rsquo;d like to address some ways I&rsquo;m leveraging AppleScript to automate some of my boring tasks. I won&rsquo;t focus much on the syntax, or how to navigate the language, but rather the methods I&rsquo;ve used to learn this knowledge. I&rsquo;ll be using <a href="http://gruntjs.com/">Grunt.js</a> to handle all my orchestration of applescript actions.</p>
-
-<h2>Requirements</h2>
-
-<p>You must be using an Apple device such as a Mac. That&rsquo;s about it</p>
-
-<h2>A Handy Tip</h2>
-
-<p>You might want to ensure you have Accessibility options turned on. You can learn about how to do that <a href="http://www.macosxautomation.com/applescript/uiscripting/">here</a></p>
-
-<h2>Getting started</h2>
-
-<p>It&rsquo;s really easy folks, just pop open your favorite text editor or use the native AppleScript Editor and start cranking it out.</p>
-
-<p>Let&rsquo;s look an easy script that will do the following:</p>
-
-<ul>
-<li>Execute XCode run command</li>
-<li>Open Safari</li>
-<li>Run the Web Inspector for the Simulator running</li>
-</ul>
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-</pre></td><td class='code'><pre><code class='applescript'><span class='line'><span class="k">on</span> <span class="nv">open_developer_window</span><span class="p">()</span>
-</span><span class='line'>  <span class="k">try</span>
-</span><span class='line'>      <span class="k">tell</span> <span class="nb">application</span> <span class="s2">&quot;Safari&quot;</span>
-</span><span class='line'>          <span class="nb">activate</span>
-</span><span class='line'>      <span class="k">end</span> <span class="k">tell</span>
-</span><span class='line'>      <span class="k">tell</span> <span class="nb">application</span> <span class="s2">&quot;System Events&quot;</span>
-</span><span class='line'>          <span class="k">tell</span> <span class="nv">process</span> <span class="s2">&quot;Safari&quot;</span>
-</span><span class='line'>              <span class="k">tell</span> <span class="na">menu</span> <span class="nv">bar</span> <span class="mi">1</span>
-</span><span class='line'>                  <span class="k">tell</span> <span class="na">menu</span> <span class="nv">bar</span> <span class="nb">item</span> <span class="mi">8</span>
-</span><span class='line'>                      <span class="k">tell</span> <span class="na">menu</span> <span class="mi">1</span>
-</span><span class='line'>                          <span class="k">tell</span> <span class="na">menu</span> <span class="nb">item</span> <span class="mi">4</span>
-</span><span class='line'>                              <span class="k">tell</span> <span class="na">menu</span> <span class="mi">1</span>
-</span><span class='line'>                                  <span class="nv">click</span> <span class="na">menu</span> <span class="nb">item</span> <span class="mi">2</span>
-</span><span class='line'>                              <span class="k">end</span> <span class="k">tell</span>
-</span><span class='line'>                          <span class="k">end</span> <span class="k">tell</span>
-</span><span class='line'>                      <span class="k">end</span> <span class="k">tell</span>
-</span><span class='line'>                  <span class="k">end</span> <span class="k">tell</span>
-</span><span class='line'>              <span class="k">end</span> <span class="k">tell</span>
-</span><span class='line'>          <span class="k">end</span> <span class="k">tell</span>
-</span><span class='line'>      <span class="k">end</span> <span class="k">tell</span>
-</span><span class='line'>      <span class="no">return</span> <span class="s2">&quot;Yo good job&quot;</span>
-</span><span class='line'>  <span class="nb">on</span> <span class="k">error</span> <span class="nv">error_message</span>
-</span><span class='line'>      <span class="no">return</span> <span class="nv">error_message</span>
-</span><span class='line'>  <span class="k">end</span> <span class="k">try</span>
-</span><span class='line'><span class="k">end</span> <span class="nv">open_developer_window</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h2>The problem</h2>
-
-<p>After finding out how powerful AppleScript is, I began cranking out scripts for all my boring tasks. It became pretty nasty to manage having hundreds of lines into a single script.</p>
-
-<p>The good news is, AppleScript has a way to import other scripts to use their methods, just by calling <code>load script &lt;name&gt;</code>.</p>
-
-<p>The bad news is, it gets pretty sloppy trying to do the applescript &lsquo;load script&rsquo; command, as it became pretty nasty pretty quick.</p>
-
-<p>Thats where Grunt came in. I figured instead of having a few include scripts &ndash; make the applescript files have just the functionality I wanted</p>
-
-<h2>Using Grunt Shell</h2>
-
-<p>I chose to use the <a href="https://github.com/sindresorhus/grunt-shell">Grunt shell</a> plugin to execute these scripts. You can easily do it over shell by executing <code>osascript &lt;name_of_script&gt;</code>.</p>
-
-<p>What I did was create a nice layout for my applescript tasks as follows:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-</pre></td><td class='code'><pre><code class='applescript'><span class='line'><span class="nv">Applescripts</span>
-</span><span class='line'><span class="err">|</span>
-</span><span class='line'><span class="o">+</span><span class="c">---+--iPhone simulator tasks</span>
-</span><span class='line'>  <span class="err">|</span>  <span class="err">|</span>
-</span><span class='line'>  <span class="err">|</span>  <span class="o">+</span><span class="c">-- reset_simulator.applescript</span>
-</span><span class='line'>  <span class="err">|</span>
-</span><span class='line'>  <span class="o">+</span><span class="c">--safari tasks</span>
-</span><span class='line'>  <span class="err">|</span>  <span class="err">|</span>
-</span><span class='line'>  <span class="err">|</span>  <span class="o">+</span><span class="c">-- start_safari_dev_console.applescript</span>
-</span><span class='line'>  <span class="err">|</span>  <span class="o">+</span><span class="c">-- dev_console_test_runner.applescript</span>
-</span><span class='line'>  <span class="err">|</span>
-</span><span class='line'>  <span class="o">+</span><span class="c">--XCode tasks</span>
-</span><span class='line'>     <span class="err">|</span>
-</span><span class='line'>     <span class="o">+</span><span class="c">-- open_ios_project_file.applescript</span>
-</span><span class='line'>     <span class="o">+</span><span class="c">-- run_simulator.applescript</span>
-</span><span class='line'>     <span class="o">+</span><span class="c">-- select_simulator_6.applescript</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Then, I created Grunt tasks for each applescript task as I wanted, as such:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">grunt</span><span class="p">.</span><span class="nx">initConfig</span><span class="p">({</span>
-</span><span class='line'>  <span class="nx">shell</span><span class="o">:</span> <span class="p">{</span>
-</span><span class='line'>      <span class="nx">start_safari_dev_console</span><span class="o">:</span> <span class="p">{</span>
-</span><span class='line'>          <span class="nx">command</span><span class="o">:</span> <span class="p">[</span><span class="s1">&#39;osascript ./applescripts/safari_tasks/start_safari_dev_console.applescript&#39;</span><span class="p">].</span><span class="nx">join</span><span class="p">(</span><span class="s2">&quot;&amp;&amp;&quot;</span><span class="p">)</span>
-</span><span class='line'>      <span class="p">},</span>
-</span><span class='line'>      <span class="nx">dev_console_test_runner</span><span class="o">:</span> <span class="p">{</span>
-</span><span class='line'>          <span class="nx">command</span><span class="o">:</span> <span class="p">[</span><span class="s1">&#39;osascript ./applescripts/safari_tasks/dev_console_test_runner.applescript&#39;</span><span class="p">].</span><span class="nx">join</span><span class="p">(</span><span class="s2">&quot;&amp;&amp;&quot;</span><span class="p">)</span>
-</span><span class='line'>      <span class="p">},</span>
-</span><span class='line'>      <span class="nx">open_ios_project_file</span><span class="o">:</span> <span class="p">{</span>
-</span><span class='line'>          <span class="nx">command</span><span class="o">:</span> <span class="p">[</span><span class="s1">&#39;osascript ./applescripts/xcode_tasks/open_ios_project_file.applescript&#39;</span><span class="p">].</span><span class="nx">join</span><span class="p">(</span><span class="s2">&quot;&amp;&amp;&quot;</span><span class="p">)</span>
-</span><span class='line'>      <span class="p">},</span>
-</span><span class='line'>      <span class="nx">run_simulator</span><span class="o">:</span> <span class="p">{</span>
-</span><span class='line'>          <span class="nx">command</span><span class="o">:</span> <span class="p">[</span><span class="s1">&#39;osascript ./applescripts/xcode_tasks/run_simulator.applescript&#39;</span><span class="p">].</span><span class="nx">join</span><span class="p">(</span><span class="s2">&quot;&amp;&amp;&quot;</span><span class="p">)</span>
-</span><span class='line'>      <span class="p">},</span>
-</span><span class='line'>      <span class="nx">simulator_6</span><span class="o">:</span> <span class="p">{</span>
-</span><span class='line'>          <span class="nx">command</span><span class="o">:</span> <span class="p">[</span><span class="s1">&#39;osascript ./applescripts/xcode_tasks/simulator_6.applescript&#39;</span><span class="p">].</span><span class="nx">join</span><span class="p">(</span><span class="s2">&quot;&amp;&amp;&quot;</span><span class="p">)</span>
-</span><span class='line'>      <span class="p">},</span>
-</span><span class='line'>      <span class="nx">reset_simulator</span><span class="o">:</span> <span class="p">{</span>
-</span><span class='line'>          <span class="nx">command</span><span class="o">:</span> <span class="p">[</span><span class="s1">&#39;osascript ./applescripts/simulator_tasks/reset_simulator.applescript&#39;</span><span class="p">].</span><span class="nx">join</span><span class="p">(</span><span class="s2">&quot;&amp;&amp;&quot;</span><span class="p">)</span>
-</span><span class='line'>      <span class="p">}</span>
-</span><span class='line'>  <span class="p">}</span>
-</span><span class='line'><span class="p">});</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Followed by a few set of tasks:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">grunt</span><span class="p">.</span><span class="nx">registerTask</span><span class="p">(</span><span class="s1">&#39;run_sim&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;shell:run_simulator&#39;</span><span class="p">,</span> <span class="s1">&#39;shell:start_safari_dev_console&#39;</span><span class="p">]);</span>
-</span><span class='line'>
-</span><span class='line'><span class="nx">grunt</span><span class="p">.</span><span class="nx">registerTask</span><span class="p">(</span><span class="s1">&#39;start_project&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;shell:open_ios_project_file&#39;</span><span class="p">,</span> <span class="s1">&#39;shell:simulator_6&#39;</span><span class="p">,</span> <span class="s1">&#39;run_sim&#39;</span><span class="p">]);</span>
-</span><span class='line'>
-</span><span class='line'><span class="nx">grunt</span><span class="p">.</span><span class="nx">registerTask</span><span class="p">(</span><span class="s1">&#39;restart_sim&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;shell:reset_simulator&#39;</span><span class="p">,</span> <span class="s1">&#39;run_sim&#39;</span><span class="p">]);</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h2>Useful tools</h2>
-
-<p>After learning the basic structure of AppleScript, it&rsquo;s easy to see how the structures are laid out. The hard part, is figuring out how they are actually laid out. There&rsquo;s an awesome built in tool, called &ldquo;Accessibility Inspector&rdquo;. This tool will tell you the control you are focusing on an application.</p>
-
-<p>The second tool that is EXTREMELY helpful is a tool called <a href="http://pfiddlesoft.com/uibrowser/">UI Browser</a>. This is a tool that you can select an application, hover over that application, and UI Browser will tell you that controls. It even has a drop down of common actions, like clicking, filling in text, and other common uses.</p>
-
-<h2>Overall results</h2>
-
-<p>Altogether, I&rsquo;m pretty happy with how my little Applescript trials went. It&rsquo;s very easy now to chain together applescript tasks using Grunt.</p>
-
-<p>On a side note.. Apparently applescript is already used in some grunt plugins, as I&rsquo;ve found tucked away in some projects code.</p>
-
-<p>Happy coding.</p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/7/">&larr; Older</a>
@@ -1311,6 +1064,14 @@ You are free to change it!</p>
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2019/11/10/continuous-deployment-book-review/">Continuous Deployment - Book Review</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2019/10/08/clean-architecture-book-review/">Clean Architecture - Book Review</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2019/09/12/on-the-clock/">On the Clock</a>
       </li>
     
@@ -1320,14 +1081,6 @@ You are free to change it!</p>
     
       <li class="post">
         <a href="/blog/2019/01/29/3-years-of-elixir-reflections/">3 Years of Elixir: Reflections</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2017/04/16/puppet-a-testing-handbook/">Puppet: A Testing Handbook</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2017/03/13/test-coverage-reports-in-elixir/">Test Coverage Reports in Elixir</a>
       </li>
     
   </ul>

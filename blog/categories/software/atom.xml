@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: software | Josh Bavari's Thoughts]]></title>
+  <link href="http://jbavari.github.io/blog/categories/software/atom.xml" rel="self"/>
+  <link href="http://jbavari.github.io/"/>
+  <updated>2019-12-12T21:16:47-07:00</updated>
+  <id>http://jbavari.github.io/</id>
+  <author>
+    <name><![CDATA[Josh Bavari]]></name>
+    <email><![CDATA[jbavari@gmail.com]]></email>
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Clean Architecture - Book Review]]></title>
+    <link href="http://jbavari.github.io/blog/2019/10/08/clean-architecture-book-review/"/>
+    <updated>2019-10-08T21:48:00-06:00</updated>
+    <id>http://jbavari.github.io/blog/2019/10/08/clean-architecture-book-review</id>
+    <content type="html"><![CDATA[
+]]></content>
+  </entry>
+  
+</feed>

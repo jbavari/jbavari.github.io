@@ -4,7 +4,7 @@
   <title><![CDATA[Josh Bavari's Thoughts]]></title>
   <link href="http://jbavari.github.io/atom.xml" rel="self"/>
   <link href="http://jbavari.github.io/"/>
-  <updated>2019-10-10T21:16:40-06:00</updated>
+  <updated>2019-12-12T21:16:47-07:00</updated>
   <id>http://jbavari.github.io/</id>
   <author>
     <name><![CDATA[Josh Bavari]]></name>
@@ -12,6 +12,163 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Continuous Deployment - Book Review]]></title>
+    <link href="http://jbavari.github.io/blog/2019/11/10/continuous-deployment-book-review/"/>
+    <updated>2019-11-10T11:16:00-07:00</updated>
+    <id>http://jbavari.github.io/blog/2019/11/10/continuous-deployment-book-review</id>
+    <content type="html"><![CDATA[<h1>Chapter 1</h1>
+
+<h2>Common release Anti-patterns</h2>
+
+<ul>
+<li>Deploying software manually</li>
+<li>Deploying to a production-like environment only after Development is complete</li>
+<li>Manual configuration management of production environments</li>
+</ul>
+
+
+<h2>Stages of a deployment pipeline</h2>
+
+<ul>
+<li>The commit stage &ndash; compile, unit test, analysis, build installers</li>
+<li>Automated acceptance testing</li>
+<li>Automated capacity testing</li>
+<li>Manual testing &ndash; showcases, exploratory, testing</li>
+<li>Release</li>
+</ul>
+
+
+<h3>Deploying to a production-like environment only after Development is complete</h3>
+
+<h4>Problems</h4>
+
+<ul>
+<li>Ensure teams are working towards production type releases on a regular cadence, not in extended periods of time.</li>
+<li>Manual configurations cause issues &ndash; work towards trying to automate those portions.</li>
+<li>Scripts to do the deployments are better than manual steps written up. Documentation goes out of date, requires extra effort to keep alignment.</li>
+<li>Need tighter collaboration between development and deployment teams.</li>
+<li>Deploying to staging faster (where environments are closer to production) helps uncover issues, bind the dev/ops teams, and drives fixes to deployments faster.</li>
+<li>The bigger diff between deployment and production environments</li>
+</ul>
+
+
+<h4>Solutions</h4>
+
+<ul>
+<li>Rehearse deployments to a staging or production-like environment several times before actually going to production.</li>
+<li>Make sure everyone who is doing the deployments are working together on the deployments from the start of the project.</li>
+<li>Make the cornerstone of deployment a means of testing both software and deployments throughout the process.</li>
+</ul>
+
+
+<h3>Manual configuration management of production environments</h3>
+
+<h4>Signs of this anti-pattern</h4>
+
+<ul>
+<li>Having deployed successfully to many times to staging, the deployment to production fails.</li>
+<li>The operations teams take longer to prepare an environment for a release.</li>
+<li>You cannot step back to a prior configuration of your system.</li>
+<li>Servers in the operating environments, unintentionally, have different versions of operating systems, third-party infrastructure, libraries, or patch levels.</li>
+<li>Configuration of the system is carried out by modifying the configuration directly on production systems.</li>
+</ul>
+
+
+<h4>Solutions</h4>
+
+<ul>
+<li>All aspects of testing, staging, and production specifically the configuration of any third-party elements of the system should be applied from version control through an automated process.</li>
+<li>The only way to make changes to production should be done through an automated process.</li>
+<li>Make it possible to see at a glance what the currently released version of every piece of software is.</li>
+<li>Make releases boring &ndash; to the point where they are cheap, low-risk, frequent, rapid, and predictable.</li>
+</ul>
+
+
+<h2>How to achieve these solutions?</h2>
+
+<ul>
+<li>Automate &ndash; make it repeatable without failure.</li>
+<li>Frequent &ndash; make deltas between releases smaller to reduce risk and get immediate feedback.</li>
+</ul>
+
+
+<p>Three criteria to make feedback to be useful:
+* Any change, whatever kind, needs to trigger the feedback process.
+* The feedback must be delivered as soon as possible.
+* The delivery team must receive feedback and then act on it.</p>
+
+<p>How to get this feedback?</p>
+
+<p>Working software decomposed into 4 components:</p>
+
+<ul>
+<li>Executable code</li>
+<li>Configuration</li>
+<li>Host environment</li>
+<li>Data</li>
+</ul>
+
+
+<p>You should aim to have the executable code to be reused everywhere it is needed and never rebuilt.</p>
+
+<p>Any change to an applications configuration, in whichever environment, should be tested with a representative range of the example systems.</p>
+
+<p>If the environments are to changed, the whole system should be tested with the changes to the environment.</p>
+
+<p>Finally, if the structure of the data changes, the change must also be tested.</p>
+
+<p>The authors mention a few simple feedback checks:</p>
+
+<ul>
+<li>The software should fulfill certain requirements such as test coverage and other technology-specific metrics.</li>
+<li>The software&rsquo;s functional acceptance tests must pass. This is a test on the business acceptance criteria.</li>
+<li>The software&rsquo;s nonfunctional tests must pass &ndash; in regards to capacity, availability, security, and so on to meet it&rsquo;s users needs.</li>
+</ul>
+
+
+<p>Another key point the authors bring up that implementing a deployment pipeline is resource-intensive, especially once you have a comprehensive automated test suite. One of the key objectives is to optimize for human resource usage: we want to free the people to do the interesting work and leave repetition to machines.</p>
+
+<p>The authors suggest to aim for 75% or so of the codebase.</p>
+
+<h3>Breaking down the steps of the pipeline</h3>
+
+<p>If tests fail in the early stages of the pipeline, they should not advance. We should aim to build a high confidence in the software in the first set of tests.</p>
+
+<hr />
+
+<p>Random notes:</p>
+
+<p>CH1 &ndash; author recommends to get cross-functional groups all along the process. Also aim to have retrospections with the entire crew of developers, infra/operations, and testing</p>
+
+<p>Being able to react to feedback also means broadcasting information. Using big, visible dashboards and other notification mechanisms. Also aim to make one is present in each team room.</p>
+
+<p>Feedback is no good unless it is acted on.</p>
+
+<p>Authors make a point here that by giving more of the pull/self-service model, you can increase velocity:
+* Testers can select older versions of software to test with
+* Support staff can deploy a released version into an environment to reproduce a defect.
+* Operations staff can select a known good build to deploy into production as part of disaster recovery
+* Releases can happen at a push of a button.</p>
+
+<p>Note here applying to work:
+* In each PR, it should address:
+* Change in code
+* Change in configuration (if any)
+* Change in host environment (if any)
+* Change in structures of data</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Clean Architecture - Book Review]]></title>
+    <link href="http://jbavari.github.io/blog/2019/10/08/clean-architecture-book-review/"/>
+    <updated>2019-10-08T21:48:00-06:00</updated>
+    <id>http://jbavari.github.io/blog/2019/10/08/clean-architecture-book-review</id>
+    <content type="html"><![CDATA[
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[On the clock]]></title>
@@ -2350,311 +2507,6 @@ Figuring how to plug in rendering steps between state changes. <code>this.setSta
 <p>Under the hood of Angular 2 lies <a href="https://github.com/Reactive-Extensions/RxJS">RxJs</a> that builds on promises, focusing on being repeatable.</p>
 
 <p>Enjoy!</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Using Ionic 2.0 Generators]]></title>
-    <link href="http://jbavari.github.io/blog/2015/11/05/using-ionic-2-dot-0-generators/"/>
-    <updated>2015-11-05T21:49:00-07:00</updated>
-    <id>http://jbavari.github.io/blog/2015/11/05/using-ionic-2-dot-0-generators</id>
-    <content type="html"><![CDATA[<p>At the time of writing this, Ionic 2.0 is still in alpha.</p>
-
-<p>Ionic 2.0 builds on a ton of new technologies, such as Angular v2, TypeScript (with decorators), and ES6. If you&rsquo;ve never dabbled in these technologies, you can use the generators available in the <a href="http://npmjs.org/package/ionic"><code>ionic-cli</code></a> to get ramped up quickly!</p>
-
-<h2>Getting started</h2>
-
-<p>First, install the <code>alpha</code> version of the Ionic CLI: <code>npm install -g ionic@alpha</code>, currently version 2.0.0-alpha.19.</p>
-
-<p>Start an app with the tabs template: <code>ionic start MyIonic2App tabs --v2</code>.</p>
-
-<p>Change directories and serve the app in the browser: <code>cd MyIonic2App &amp;&amp; ionic serve</code>.</p>
-
-<p>You&rsquo;ll see, we&rsquo;ve got a basic tabs starter now avilable at <code>MyIonic2App</code> directory.</p>
-
-<h2>Generating a few pages</h2>
-
-<p>Let&rsquo;s say we want to link to a new page, &lsquo;About&rsquo;, from one of the tabs. First, let&rsquo;s generate our page with this command: <code>ionic generate page About</code>. NOTE: You can also use the generate alias, <code>ionic g</code>.</p>
-
-<p>You&rsquo;ll see a few files added:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>~/Development/testing/MyIonic2App<span class="nv">$ </span>ionic g page About
-</span><span class='line'>√ Create www/app/about/about.html
-</span><span class='line'>√ Create www/app/about/about.js
-</span><span class='line'>√ Create www/app/about/about.scss
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h2>Adding link on view to the About page</h2>
-
-<p>Let&rsquo;s add the link to the main tab page in <code>www/app/dash/dash.html</code>, via the <code>(click)</code> handler on an anchor, like so:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>&lt;ion-card&gt;
-</span><span class='line'>  &lt;ion-card-header&gt;
-</span><span class='line'>    Go to about page
-</span><span class='line'>  &lt;/ion-card-header&gt;
-</span><span class='line'>  &lt;ion-card-content&gt;
-</span><span class='line'>    &lt;button <span class="o">(</span>click<span class="o">)=</span><span class="s2">&quot;goToAboutPage()&quot;</span>&gt;About this&lt;/button&gt;
-</span><span class='line'>  &lt;/ion-card-content&gt;
-</span><span class='line'>&lt;/ion-card&gt;
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h2>Navigating to the page</h2>
-
-<p>Modify the Dashboard TypeScript file (<code>www/app/dash/dash.ts</code>) to import our new about page, add the click event handler, and push the page on the nav controller, all like so:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kr">import</span> <span class="p">{</span><span class="nx">Page</span><span class="p">,</span> <span class="nx">NavController</span><span class="p">}</span> <span class="nx">from</span> <span class="s1">&#39;ionic/ionic&#39;</span><span class="p">;</span>
-</span><span class='line'><span class="kr">import</span> <span class="p">{</span><span class="nx">About</span><span class="p">}</span> <span class="nx">from</span> <span class="s1">&#39;../about/about&#39;</span><span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'><span class="err">@</span><span class="nx">Page</span><span class="p">({</span>
-</span><span class='line'>  <span class="nx">templateUrl</span><span class="o">:</span> <span class="s1">&#39;app/dash/dash.html&#39;</span><span class="p">,</span>
-</span><span class='line'><span class="p">})</span>
-</span><span class='line'><span class="kr">export</span> <span class="kr">class</span> <span class="nx">Dash</span> <span class="p">{</span>
-</span><span class='line'>  <span class="nx">constructor</span><span class="p">(</span><span class="nx">nav</span><span class="o">:</span> <span class="nx">NavController</span><span class="p">,</span> <span class="nx">view</span><span class="o">:</span> <span class="nx">ViewController</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>    <span class="k">this</span><span class="p">.</span><span class="nx">nav</span> <span class="o">=</span> <span class="nx">nav</span><span class="p">;</span>
-</span><span class='line'>    <span class="k">this</span><span class="p">.</span><span class="nx">view</span> <span class="o">=</span> <span class="nx">view</span><span class="p">;</span>
-</span><span class='line'>  <span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="nx">goToAboutPage</span><span class="p">()</span> <span class="p">{</span>
-</span><span class='line'>    <span class="k">this</span><span class="p">.</span><span class="nx">nav</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">About</span><span class="p">);</span>
-</span><span class='line'>  <span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h2>Try it out!</h2>
-
-<p>Look in your browser, you should have an anchor available to click/tap that will then navigate you to the About page, fresh for you to get working!</p>
-
-<p>Here&rsquo;s a GIF of what it looks like:</p>
-
-<p><img class="[pic]" src="http://jbavari.github.io/images/IonicV2Generators.gif" title="[250] [250] [Ionic 2.0- Page generator example]" ></p>
-
-<p>I&rsquo;d like to also note, Ionic 2 is much smoother than a GIF would allow.</p>
-
-<h2>Wiring up sass</h2>
-
-<p>If you want to use the custom sass styles on the about page, first wire in the <code>about.scss</code> page in your <code>www/app/app.scss</code> sass file, like so: <code>@import 'about/about';</code>.</p>
-
-<h2>A quick note on naming conventions</h2>
-
-<p>For Ionic 2.0, we&rsquo;ve contributed to a <a href="https://en.wikipedia.org/wiki/Naming_convention_%28programming%29#Multiple-word_identifiers">naming convention</a> of kabob-casing for file names (my-about-page.html) and css classes (.my-about-page), and using PascalCasing for JavaScript classes in ES6 / TypeScript (MyAboutPage).</p>
-
-<h2>Other generators</h2>
-
-<p>Check out all the generators available: <code>ionic g --list</code></p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>~/Development/testing/MyIonic2App<span class="nv">$ </span>ionic g --list
-</span><span class='line'>Available generators:
-</span><span class='line'> * component
-</span><span class='line'> * directive
-</span><span class='line'> * injectable
-</span><span class='line'> * page
-</span><span class='line'> * page-login
-</span><span class='line'> * page-sidemenu
-</span><span class='line'> * page-signup
-</span><span class='line'> * pipe
-</span><span class='line'> * tabs
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h1>Final words</h1>
-
-<p>We hope you find the generators help you get started with ramping up quickly and building some awesome Ionic applications! Enjoy.</p>
-
-<p>We&rsquo;d love your feedback, drop us a line at <a href="https://github.com/driftyco/ionic2/issues">Ionic v2 Github Issues</a>.</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Angular 2 and ng-model]]></title>
-    <link href="http://jbavari.github.io/blog/2015/10/21/angular-2-and-ng-model/"/>
-    <updated>2015-10-21T23:00:00-06:00</updated>
-    <id>http://jbavari.github.io/blog/2015/10/21/angular-2-and-ng-model</id>
-    <content type="html"><![CDATA[<p>Angular 2 introduces <code>ng-model</code> from Angular 1 in a completely different manner. Due to this, I wanted to make a quick post on how to use Angular 2&rsquo;s <code>ng-model</code> to build components that alert its parents app/component of changes.</p>
-
-<p>I&rsquo;m going to use the <a href="https://github.com/driftyco/ionic-conference-app">Ionic 2 conference app</a> as an example.</p>
-
-<p>In this post, we&rsquo;ll look at the schedule page in the app and see how it uses the <code>ion-search-bar</code> to update its <code>searchQuery</code> to filter out sessions from the schedule when the user changes the search input.</p>
-
-<h2>The set up</h2>
-
-<p>On the <a href="https://github.com/driftyco/ionic-conference-app/blob/master/www/app/schedule/schedule.js#L24">schedule component</a>, we set up the search query as a simple string, as such: <code>this.searchQuery = '';</code>.</p>
-
-<p>Then in our <a href="https://github.com/driftyco/ionic-conference-app/blob/master/www/app/schedule/schedule.html#L21">schedule page template</a>, we tell the <code>ion-search-bar</code> to use the <code>ng-model</code> directive and tell it to two-way bind using the schedule component&rsquo;s <code>searchQuery</code> variable.</p>
-
-<p>The template is like this:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="nt">&lt;ion</span><span class="na">-search-bar</span> <span class="err">[(</span><span class="na">ng-model</span><span class="err">)]=&quot;</span><span class="na">searchQuery</span><span class="err">&quot;</span> <span class="na">placeholder=</span><span class="s">&quot;Search&quot;</span><span class="nt">&gt;</span><span class="err">&lt;</span>/ion-search-bar&gt;
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Now, in the search bar, we need to take that <code>searchQuery</code> as an ngModel, and ensure the search-bar has a <a href="https://github.com/angular/angular/blob/master/modules/angular2/src/core/forms/directives/ng_control.ts#L14">value accessor</a> implemented, so that we may tell the schedule component of when things change to update its shadow DOM if need be.</p>
-
-<p>The <a href="https://github.com/driftyco/ionic2/blob/master/ionic/components/search-bar/search-bar.ts#L46-L62">ion-search-bar</a> will take an <code>ngControl</code> as part of it&rsquo;s injection, and sets up the <a href="https://github.com/driftyco/ionic2/blob/master/ionic/components/search-bar/search-bar.ts#L61">value accessor</a> to itself, like so:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="nx">constructor</span><span class="p">(</span>
-</span><span class='line'>  <span class="nx">elementRef</span><span class="o">:</span> <span class="nx">ElementRef</span><span class="p">,</span>
-</span><span class='line'>  <span class="nx">config</span><span class="o">:</span> <span class="nx">Config</span><span class="p">,</span>
-</span><span class='line'>  <span class="nx">ngControl</span><span class="o">:</span> <span class="nx">NgControl</span><span class="p">,</span>
-</span><span class='line'>  <span class="nx">renderer</span><span class="o">:</span> <span class="nx">Renderer</span>
-</span><span class='line'><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>  <span class="kr">super</span><span class="p">(</span><span class="nx">elementRef</span><span class="p">,</span> <span class="nx">config</span><span class="p">);</span>
-</span><span class='line'>  <span class="k">this</span><span class="p">.</span><span class="nx">renderer</span> <span class="o">=</span> <span class="nx">renderer</span><span class="p">;</span>
-</span><span class='line'>  <span class="k">this</span><span class="p">.</span><span class="nx">elementRef</span> <span class="o">=</span> <span class="nx">elementRef</span><span class="p">;</span>
-</span><span class='line'>  <span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="nx">ngControl</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>    <span class="c1">// They don&#39;t want to do anything that works, so we won&#39;t do anything that breaks</span>
-</span><span class='line'>    <span class="k">return</span><span class="p">;</span>
-</span><span class='line'>  <span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="k">this</span><span class="p">.</span><span class="nx">ngControl</span> <span class="o">=</span> <span class="nx">ngControl</span><span class="p">;</span>
-</span><span class='line'>  <span class="k">this</span><span class="p">.</span><span class="nx">ngControl</span><span class="p">.</span><span class="nx">valueAccessor</span> <span class="o">=</span> <span class="k">this</span><span class="p">;</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>NOTE: <code>ngModel</code> extends the <code>ngControl</code> class in angular (<a href="https://github.com/angular/angular/blob/master/modules/angular2/src/core/forms/directives/ng_model.ts#L44">source code</a>). The <a href="https://github.com/angular/angular/blob/master/modules/angular2/src/core/forms/directives/ng_control.ts#L14"><code>valueAccessor</code></a> is a <a href="https://github.com/angular/angular/blob/master/modules/angular2/src/core/forms/directives/control_value_accessor.ts">ControlValueAccessor</a> is an interface that provides certain methods, like so:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kr">export</span> <span class="kr">interface</span> <span class="nx">ControlValueAccessor</span> <span class="p">{</span>
-</span><span class='line'>  <span class="nx">writeValue</span><span class="p">(</span><span class="nx">obj</span><span class="o">:</span> <span class="nx">any</span><span class="p">)</span><span class="o">:</span> <span class="k">void</span><span class="p">;</span>
-</span><span class='line'>  <span class="nx">registerOnChange</span><span class="p">(</span><span class="nx">fn</span><span class="o">:</span> <span class="nx">any</span><span class="p">)</span><span class="o">:</span> <span class="k">void</span><span class="p">;</span>
-</span><span class='line'>  <span class="nx">registerOnTouched</span><span class="p">(</span><span class="nx">fn</span><span class="o">:</span> <span class="nx">any</span><span class="p">)</span><span class="o">:</span> <span class="k">void</span><span class="p">;</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>The <code>ControlValueAccessor</code> gives us a method to write the new value, a method to register to listen to the changes, and the register on touched function to allow components to use.</p>
-
-<p>Those are implemented in the search-bar, as seen <a href="https://github.com/driftyco/ionic2/blob/master/ionic/components/search-bar/search-bar.ts#L82-L92">here</a>.</p>
-
-<p>You can see that the <code>writeValue</code> method on <code>search-bar</code> updates it&rsquo;s local <code>value</code>, so that it&rsquo;s internal <code>&lt;input&gt;</code> element can update its value it shows. When that internal input is changed, it calls the <a href="https://github.com/driftyco/ionic2/blob/master/ionic/components/search-bar/search-bar.ts#L94-L98">inputChanged</a> event on the <code>search-bar</code>, which alerts other components that it has changed, as well as updating its current value.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='js'><span class='line'>  <span class="nx">inputChanged</span><span class="p">(</span><span class="nx">event</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>    <span class="k">this</span><span class="p">.</span><span class="nx">writeValue</span><span class="p">(</span><span class="nx">event</span><span class="p">.</span><span class="nx">target</span><span class="p">.</span><span class="nx">value</span><span class="p">);</span>
-</span><span class='line'>    <span class="k">this</span><span class="p">.</span><span class="nx">onChange</span><span class="p">(</span><span class="nx">event</span><span class="p">.</span><span class="nx">target</span><span class="p">.</span><span class="nx">value</span><span class="p">);</span>
-</span><span class='line'>  <span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>Filtering out sessions</h3>
-
-<p>Since the <code>onChange</code> event is called, the <code>schedule</code> component will see this and cause re-evaluation on its <code>searchQuery</code> variable, and filters the code.</p>
-
-<p>That makes our filtering method super easy, <a href="https://github.com/driftyco/ionic-conference-app/blob/master/www/app/schedule/schedule.js#L54">as seen here</a>, copied below for convenience:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="nx">getSessionsForTheDay</span><span class="p">()</span> <span class="p">{</span>
-</span><span class='line'>  <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="k">this</span><span class="p">.</span><span class="nx">searchQuery</span> <span class="o">||</span> <span class="k">this</span><span class="p">.</span><span class="nx">searchQuery</span><span class="p">.</span><span class="nx">trim</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;&#39;</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>    <span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="nx">sessionsForTheDay</span><span class="p">;</span>
-</span><span class='line'>  <span class="p">}</span>
-</span><span class='line'>  <span class="kd">var</span> <span class="nx">talks</span> <span class="o">=</span> <span class="p">[];</span>
-</span><span class='line'>  <span class="k">this</span><span class="p">.</span><span class="nx">sessionsForTheDay</span><span class="p">.</span><span class="nx">forEach</span><span class="p">((</span><span class="nx">session</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
-</span><span class='line'>    <span class="kd">var</span> <span class="nx">matched</span> <span class="o">=</span> <span class="nx">session</span><span class="p">.</span><span class="nx">talks</span><span class="p">.</span><span class="nx">filter</span><span class="p">((</span><span class="nx">v</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
-</span><span class='line'>      <span class="k">if</span><span class="p">(</span><span class="nx">v</span><span class="p">.</span><span class="nx">name</span><span class="p">.</span><span class="nx">toLowerCase</span><span class="p">().</span><span class="nx">indexOf</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">searchQuery</span><span class="p">.</span><span class="nx">toLowerCase</span><span class="p">())</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>        <span class="k">return</span> <span class="kc">true</span><span class="p">;</span>
-</span><span class='line'>      <span class="p">}</span>
-</span><span class='line'>      <span class="k">return</span> <span class="kc">false</span><span class="p">;</span>
-</span><span class='line'>    <span class="p">});</span>
-</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="nx">matched</span><span class="p">.</span><span class="nx">length</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>      <span class="nx">session</span><span class="p">.</span><span class="nx">talks</span> <span class="o">=</span> <span class="nx">matched</span><span class="p">;</span>
-</span><span class='line'>      <span class="nx">talks</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">session</span><span class="p">);</span>
-</span><span class='line'>    <span class="p">}</span>
-</span><span class='line'>  <span class="p">});</span>
-</span><span class='line'>  <span class="k">return</span> <span class="nx">talks</span><span class="p">;</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>When the schedule component&rsquo;s variable for <code>searchQuery</code> is updated, this method will be auto-magically re-evaluated, which causes the list to update.</p>
-
-<p>Hope this helps you understand Angular 2 and ng-models better! Enjoy!</p>
 ]]></content>
   </entry>
   

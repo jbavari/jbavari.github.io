@@ -9,7 +9,7 @@
   <meta name="author" content="Josh Bavari">
 
   
-  <meta name="description" content="I&rsquo;ve recently been diving into the land of Webpack to handle all the heavy lifting of using Babel to compile my TypeScript and ES6 into ES5 &hellip;">
+  <meta name="description" content="At the time of writing this, Ionic 2.0 is still in alpha. Ionic 2.0 builds on a ton of new technologies, such as Angular v2, TypeScript (with &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -70,6 +70,367 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/11/05/using-ionic-2-dot-0-generators/">Using Ionic 2.0 Generators</a></h1>
+    
+    
+      <p class="meta">
+        <span class="reading-time">less than a 1 minute read</span>
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-11-05T21:49:00-07:00" pubdate data-updated="true">Nov 5<span>th</span>, 2015</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>At the time of writing this, Ionic 2.0 is still in alpha.</p>
+
+<p>Ionic 2.0 builds on a ton of new technologies, such as Angular v2, TypeScript (with decorators), and ES6. If you&rsquo;ve never dabbled in these technologies, you can use the generators available in the <a href="http://npmjs.org/package/ionic"><code>ionic-cli</code></a> to get ramped up quickly!</p>
+
+<h2>Getting started</h2>
+
+<p>First, install the <code>alpha</code> version of the Ionic CLI: <code>npm install -g ionic@alpha</code>, currently version 2.0.0-alpha.19.</p>
+
+<p>Start an app with the tabs template: <code>ionic start MyIonic2App tabs --v2</code>.</p>
+
+<p>Change directories and serve the app in the browser: <code>cd MyIonic2App &amp;&amp; ionic serve</code>.</p>
+
+<p>You&rsquo;ll see, we&rsquo;ve got a basic tabs starter now avilable at <code>MyIonic2App</code> directory.</p>
+
+<h2>Generating a few pages</h2>
+
+<p>Let&rsquo;s say we want to link to a new page, &lsquo;About&rsquo;, from one of the tabs. First, let&rsquo;s generate our page with this command: <code>ionic generate page About</code>. NOTE: You can also use the generate alias, <code>ionic g</code>.</p>
+
+<p>You&rsquo;ll see a few files added:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>~/Development/testing/MyIonic2App<span class="nv">$ </span>ionic g page About
+</span><span class='line'>√ Create www/app/about/about.html
+</span><span class='line'>√ Create www/app/about/about.js
+</span><span class='line'>√ Create www/app/about/about.scss
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>Adding link on view to the About page</h2>
+
+<p>Let&rsquo;s add the link to the main tab page in <code>www/app/dash/dash.html</code>, via the <code>(click)</code> handler on an anchor, like so:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>&lt;ion-card&gt;
+</span><span class='line'>  &lt;ion-card-header&gt;
+</span><span class='line'>    Go to about page
+</span><span class='line'>  &lt;/ion-card-header&gt;
+</span><span class='line'>  &lt;ion-card-content&gt;
+</span><span class='line'>    &lt;button <span class="o">(</span>click<span class="o">)=</span><span class="s2">&quot;goToAboutPage()&quot;</span>&gt;About this&lt;/button&gt;
+</span><span class='line'>  &lt;/ion-card-content&gt;
+</span><span class='line'>&lt;/ion-card&gt;
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>Navigating to the page</h2>
+
+<p>Modify the Dashboard TypeScript file (<code>www/app/dash/dash.ts</code>) to import our new about page, add the click event handler, and push the page on the nav controller, all like so:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kr">import</span> <span class="p">{</span><span class="nx">Page</span><span class="p">,</span> <span class="nx">NavController</span><span class="p">}</span> <span class="nx">from</span> <span class="s1">&#39;ionic/ionic&#39;</span><span class="p">;</span>
+</span><span class='line'><span class="kr">import</span> <span class="p">{</span><span class="nx">About</span><span class="p">}</span> <span class="nx">from</span> <span class="s1">&#39;../about/about&#39;</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="err">@</span><span class="nx">Page</span><span class="p">({</span>
+</span><span class='line'>  <span class="nx">templateUrl</span><span class="o">:</span> <span class="s1">&#39;app/dash/dash.html&#39;</span><span class="p">,</span>
+</span><span class='line'><span class="p">})</span>
+</span><span class='line'><span class="kr">export</span> <span class="kr">class</span> <span class="nx">Dash</span> <span class="p">{</span>
+</span><span class='line'>  <span class="nx">constructor</span><span class="p">(</span><span class="nx">nav</span><span class="o">:</span> <span class="nx">NavController</span><span class="p">,</span> <span class="nx">view</span><span class="o">:</span> <span class="nx">ViewController</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">this</span><span class="p">.</span><span class="nx">nav</span> <span class="o">=</span> <span class="nx">nav</span><span class="p">;</span>
+</span><span class='line'>    <span class="k">this</span><span class="p">.</span><span class="nx">view</span> <span class="o">=</span> <span class="nx">view</span><span class="p">;</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nx">goToAboutPage</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">this</span><span class="p">.</span><span class="nx">nav</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">About</span><span class="p">);</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>Try it out!</h2>
+
+<p>Look in your browser, you should have an anchor available to click/tap that will then navigate you to the About page, fresh for you to get working!</p>
+
+<p>Here&rsquo;s a GIF of what it looks like:</p>
+
+<p><img class="[pic]" src="/images/IonicV2Generators.gif" title="[250] [250] [Ionic 2.0- Page generator example]" ></p>
+
+<p>I&rsquo;d like to also note, Ionic 2 is much smoother than a GIF would allow.</p>
+
+<h2>Wiring up sass</h2>
+
+<p>If you want to use the custom sass styles on the about page, first wire in the <code>about.scss</code> page in your <code>www/app/app.scss</code> sass file, like so: <code>@import 'about/about';</code>.</p>
+
+<h2>A quick note on naming conventions</h2>
+
+<p>For Ionic 2.0, we&rsquo;ve contributed to a <a href="https://en.wikipedia.org/wiki/Naming_convention_%28programming%29#Multiple-word_identifiers">naming convention</a> of kabob-casing for file names (my-about-page.html) and css classes (.my-about-page), and using PascalCasing for JavaScript classes in ES6 / TypeScript (MyAboutPage).</p>
+
+<h2>Other generators</h2>
+
+<p>Check out all the generators available: <code>ionic g --list</code></p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>~/Development/testing/MyIonic2App<span class="nv">$ </span>ionic g --list
+</span><span class='line'>Available generators:
+</span><span class='line'> * component
+</span><span class='line'> * directive
+</span><span class='line'> * injectable
+</span><span class='line'> * page
+</span><span class='line'> * page-login
+</span><span class='line'> * page-sidemenu
+</span><span class='line'> * page-signup
+</span><span class='line'> * pipe
+</span><span class='line'> * tabs
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h1>Final words</h1>
+
+<p>We hope you find the generators help you get started with ramping up quickly and building some awesome Ionic applications! Enjoy.</p>
+
+<p>We&rsquo;d love your feedback, drop us a line at <a href="https://github.com/driftyco/ionic2/issues">Ionic v2 Github Issues</a>.</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/10/21/angular-2-and-ng-model/">Angular 2 and Ng-model</a></h1>
+    
+    
+      <p class="meta">
+        <span class="reading-time">less than a 1 minute read</span>
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-10-21T23:00:00-06:00" pubdate data-updated="true">Oct 21<span>st</span>, 2015</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Angular 2 introduces <code>ng-model</code> from Angular 1 in a completely different manner. Due to this, I wanted to make a quick post on how to use Angular 2&rsquo;s <code>ng-model</code> to build components that alert its parents app/component of changes.</p>
+
+<p>I&rsquo;m going to use the <a href="https://github.com/driftyco/ionic-conference-app">Ionic 2 conference app</a> as an example.</p>
+
+<p>In this post, we&rsquo;ll look at the schedule page in the app and see how it uses the <code>ion-search-bar</code> to update its <code>searchQuery</code> to filter out sessions from the schedule when the user changes the search input.</p>
+
+<h2>The set up</h2>
+
+<p>On the <a href="https://github.com/driftyco/ionic-conference-app/blob/master/www/app/schedule/schedule.js#L24">schedule component</a>, we set up the search query as a simple string, as such: <code>this.searchQuery = '';</code>.</p>
+
+<p>Then in our <a href="https://github.com/driftyco/ionic-conference-app/blob/master/www/app/schedule/schedule.html#L21">schedule page template</a>, we tell the <code>ion-search-bar</code> to use the <code>ng-model</code> directive and tell it to two-way bind using the schedule component&rsquo;s <code>searchQuery</code> variable.</p>
+
+<p>The template is like this:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="nt">&lt;ion</span><span class="na">-search-bar</span> <span class="err">[(</span><span class="na">ng-model</span><span class="err">)]=&quot;</span><span class="na">searchQuery</span><span class="err">&quot;</span> <span class="na">placeholder=</span><span class="s">&quot;Search&quot;</span><span class="nt">&gt;</span><span class="err">&lt;</span>/ion-search-bar&gt;
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Now, in the search bar, we need to take that <code>searchQuery</code> as an ngModel, and ensure the search-bar has a <a href="https://github.com/angular/angular/blob/master/modules/angular2/src/core/forms/directives/ng_control.ts#L14">value accessor</a> implemented, so that we may tell the schedule component of when things change to update its shadow DOM if need be.</p>
+
+<p>The <a href="https://github.com/driftyco/ionic2/blob/master/ionic/components/search-bar/search-bar.ts#L46-L62">ion-search-bar</a> will take an <code>ngControl</code> as part of it&rsquo;s injection, and sets up the <a href="https://github.com/driftyco/ionic2/blob/master/ionic/components/search-bar/search-bar.ts#L61">value accessor</a> to itself, like so:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="nx">constructor</span><span class="p">(</span>
+</span><span class='line'>  <span class="nx">elementRef</span><span class="o">:</span> <span class="nx">ElementRef</span><span class="p">,</span>
+</span><span class='line'>  <span class="nx">config</span><span class="o">:</span> <span class="nx">Config</span><span class="p">,</span>
+</span><span class='line'>  <span class="nx">ngControl</span><span class="o">:</span> <span class="nx">NgControl</span><span class="p">,</span>
+</span><span class='line'>  <span class="nx">renderer</span><span class="o">:</span> <span class="nx">Renderer</span>
+</span><span class='line'><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>  <span class="kr">super</span><span class="p">(</span><span class="nx">elementRef</span><span class="p">,</span> <span class="nx">config</span><span class="p">);</span>
+</span><span class='line'>  <span class="k">this</span><span class="p">.</span><span class="nx">renderer</span> <span class="o">=</span> <span class="nx">renderer</span><span class="p">;</span>
+</span><span class='line'>  <span class="k">this</span><span class="p">.</span><span class="nx">elementRef</span> <span class="o">=</span> <span class="nx">elementRef</span><span class="p">;</span>
+</span><span class='line'>  <span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="nx">ngControl</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="c1">// They don&#39;t want to do anything that works, so we won&#39;t do anything that breaks</span>
+</span><span class='line'>    <span class="k">return</span><span class="p">;</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">this</span><span class="p">.</span><span class="nx">ngControl</span> <span class="o">=</span> <span class="nx">ngControl</span><span class="p">;</span>
+</span><span class='line'>  <span class="k">this</span><span class="p">.</span><span class="nx">ngControl</span><span class="p">.</span><span class="nx">valueAccessor</span> <span class="o">=</span> <span class="k">this</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>NOTE: <code>ngModel</code> extends the <code>ngControl</code> class in angular (<a href="https://github.com/angular/angular/blob/master/modules/angular2/src/core/forms/directives/ng_model.ts#L44">source code</a>). The <a href="https://github.com/angular/angular/blob/master/modules/angular2/src/core/forms/directives/ng_control.ts#L14"><code>valueAccessor</code></a> is a <a href="https://github.com/angular/angular/blob/master/modules/angular2/src/core/forms/directives/control_value_accessor.ts">ControlValueAccessor</a> is an interface that provides certain methods, like so:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kr">export</span> <span class="kr">interface</span> <span class="nx">ControlValueAccessor</span> <span class="p">{</span>
+</span><span class='line'>  <span class="nx">writeValue</span><span class="p">(</span><span class="nx">obj</span><span class="o">:</span> <span class="nx">any</span><span class="p">)</span><span class="o">:</span> <span class="k">void</span><span class="p">;</span>
+</span><span class='line'>  <span class="nx">registerOnChange</span><span class="p">(</span><span class="nx">fn</span><span class="o">:</span> <span class="nx">any</span><span class="p">)</span><span class="o">:</span> <span class="k">void</span><span class="p">;</span>
+</span><span class='line'>  <span class="nx">registerOnTouched</span><span class="p">(</span><span class="nx">fn</span><span class="o">:</span> <span class="nx">any</span><span class="p">)</span><span class="o">:</span> <span class="k">void</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The <code>ControlValueAccessor</code> gives us a method to write the new value, a method to register to listen to the changes, and the register on touched function to allow components to use.</p>
+
+<p>Those are implemented in the search-bar, as seen <a href="https://github.com/driftyco/ionic2/blob/master/ionic/components/search-bar/search-bar.ts#L82-L92">here</a>.</p>
+
+<p>You can see that the <code>writeValue</code> method on <code>search-bar</code> updates it&rsquo;s local <code>value</code>, so that it&rsquo;s internal <code>&lt;input&gt;</code> element can update its value it shows. When that internal input is changed, it calls the <a href="https://github.com/driftyco/ionic2/blob/master/ionic/components/search-bar/search-bar.ts#L94-L98">inputChanged</a> event on the <code>search-bar</code>, which alerts other components that it has changed, as well as updating its current value.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'>  <span class="nx">inputChanged</span><span class="p">(</span><span class="nx">event</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">this</span><span class="p">.</span><span class="nx">writeValue</span><span class="p">(</span><span class="nx">event</span><span class="p">.</span><span class="nx">target</span><span class="p">.</span><span class="nx">value</span><span class="p">);</span>
+</span><span class='line'>    <span class="k">this</span><span class="p">.</span><span class="nx">onChange</span><span class="p">(</span><span class="nx">event</span><span class="p">.</span><span class="nx">target</span><span class="p">.</span><span class="nx">value</span><span class="p">);</span>
+</span><span class='line'>  <span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Filtering out sessions</h3>
+
+<p>Since the <code>onChange</code> event is called, the <code>schedule</code> component will see this and cause re-evaluation on its <code>searchQuery</code> variable, and filters the code.</p>
+
+<p>That makes our filtering method super easy, <a href="https://github.com/driftyco/ionic-conference-app/blob/master/www/app/schedule/schedule.js#L54">as seen here</a>, copied below for convenience:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="nx">getSessionsForTheDay</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>  <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="k">this</span><span class="p">.</span><span class="nx">searchQuery</span> <span class="o">||</span> <span class="k">this</span><span class="p">.</span><span class="nx">searchQuery</span><span class="p">.</span><span class="nx">trim</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;&#39;</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="nx">sessionsForTheDay</span><span class="p">;</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>  <span class="kd">var</span> <span class="nx">talks</span> <span class="o">=</span> <span class="p">[];</span>
+</span><span class='line'>  <span class="k">this</span><span class="p">.</span><span class="nx">sessionsForTheDay</span><span class="p">.</span><span class="nx">forEach</span><span class="p">((</span><span class="nx">session</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+</span><span class='line'>    <span class="kd">var</span> <span class="nx">matched</span> <span class="o">=</span> <span class="nx">session</span><span class="p">.</span><span class="nx">talks</span><span class="p">.</span><span class="nx">filter</span><span class="p">((</span><span class="nx">v</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+</span><span class='line'>      <span class="k">if</span><span class="p">(</span><span class="nx">v</span><span class="p">.</span><span class="nx">name</span><span class="p">.</span><span class="nx">toLowerCase</span><span class="p">().</span><span class="nx">indexOf</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">searchQuery</span><span class="p">.</span><span class="nx">toLowerCase</span><span class="p">())</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>        <span class="k">return</span> <span class="kc">true</span><span class="p">;</span>
+</span><span class='line'>      <span class="p">}</span>
+</span><span class='line'>      <span class="k">return</span> <span class="kc">false</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">});</span>
+</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="nx">matched</span><span class="p">.</span><span class="nx">length</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>      <span class="nx">session</span><span class="p">.</span><span class="nx">talks</span> <span class="o">=</span> <span class="nx">matched</span><span class="p">;</span>
+</span><span class='line'>      <span class="nx">talks</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">session</span><span class="p">);</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>  <span class="p">});</span>
+</span><span class='line'>  <span class="k">return</span> <span class="nx">talks</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>When the schedule component&rsquo;s variable for <code>searchQuery</code> is updated, this method will be auto-magically re-evaluated, which causes the list to update.</p>
+
+<p>Hope this helps you understand Angular 2 and ng-models better! Enjoy!</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -1640,582 +2001,6 @@ Do not use the &mdash;resource-rules flag or ResourceRules.plist. They have been
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2015/08/12/writing-unit-tests-for-electron-and-angularjs/">Writing Unit Tests for Electron and AngularJS</a></h1>
-    
-    
-      <p class="meta">
-        <span class="reading-time">less than a 1 minute read</span>
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2015-08-12T19:53:00-06:00" pubdate data-updated="true">Aug 12<span>th</span>, 2015</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Unit testing is something most of us dev&rsquo;s don&rsquo;t think much of. Until we encounter some simple to solve bugs or have regressions in code that drives us crazy.</p>
-
-<p>JavaScript testing itself is hard with no clear cut path to take. Most times, you&rsquo;ll have to decide important things for yourself as far as which testing framework to use and the tools to do them.</p>
-
-<p>I enjoy Jasmine testing framework right now. For my node projects, I like to use the node package <a href="https://github.com/mhevery/jasmine-node">jasmine-node</a>. However, Electron is basically a web browser with node conveniences, so we want to test browser related things.</p>
-
-<p>Since Electron applications take a unique approach to combining elements from the browser with conveniences from node, such as <code>require</code>, <code>__dirname</code>, <code>global</code> and other keywords specific to node, testing gets a little more complicated.</p>
-
-<p>I&rsquo;m going to outline a few of the approaches I took. I&rsquo;m sure they are not perfect, I&rsquo;m still learning and I&rsquo;m outlining that here.</p>
-
-<h2>Tools of the trade</h2>
-
-<p>I outlined <a href="http://jbavari.github.io/blog/2014/06/11/unit-testing-angularjs-services/">some things I did to test AngularJS</a> in a previous post. I pretty much use the same tools and set up:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='sh'><span class='line'>npm install -g karma karma-jasmine karma-phantomjs-launcher karma-spec-reporter phantomjs
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Now I&rsquo;ve got my <code>karma.config.js</code> file:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="c1">//..snip..</span>
-</span><span class='line'><span class="c1">// list of files / patterns to load in the browser</span>
-</span><span class='line'><span class="nx">files</span><span class="o">:</span> <span class="p">[</span>
-</span><span class='line'>  <span class="s1">&#39;www/lib/angular/angular.min.js&#39;</span><span class="p">,</span>
-</span><span class='line'>  <span class="s1">&#39;node_modules/angular-mocks/angular-mocks.js&#39;</span><span class="p">,</span>
-</span><span class='line'>  <span class="s1">&#39;www/js/**/*.js&#39;</span><span class="p">,</span>
-</span><span class='line'>  <span class="s1">&#39;spec/**/*.js&#39;</span>
-</span><span class='line'><span class="p">]</span>
-</span><span class='line'><span class="c1">//..snip..</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Now we&rsquo;re set up to do some testing!</p>
-
-<h2>Exposing <code>require</code> to AngularJS service</h2>
-
-<p>I first wanted a one stop shop for all my node conveniences in one angular js service to contain what Electron provides.</p>
-
-<p>Here&rsquo;s my service:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="nx">angular</span><span class="p">.</span><span class="nx">module</span><span class="p">(</span><span class="s1">&#39;app.services&#39;</span><span class="p">)</span>
-</span><span class='line'><span class="p">.</span><span class="nx">factory</span><span class="p">(</span><span class="s1">&#39;NodeService&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
-</span><span class='line'>  <span class="kd">var</span> <span class="nx">fixPath</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;fix-path&#39;</span><span class="p">),</span>
-</span><span class='line'>      <span class="nx">fs</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;fs&#39;</span><span class="p">),</span>
-</span><span class='line'>      <span class="nx">ipc</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;ipc&#39;</span><span class="p">),</span>
-</span><span class='line'>      <span class="nx">opn</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;opn&#39;</span><span class="p">),</span>
-</span><span class='line'>      <span class="nx">path</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;path&#39;</span><span class="p">),</span>
-</span><span class='line'>      <span class="nx">shell</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;shell&#39;</span><span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="c1">//Fixes the path issue with node being run outside of this GUI  </span>
-</span><span class='line'>  <span class="nx">fixPath</span><span class="p">();</span>
-</span><span class='line'>  <span class="nx">process</span><span class="p">.</span><span class="nx">env</span><span class="p">.</span><span class="nx">PATH</span> <span class="o">=</span> <span class="nx">process</span><span class="p">.</span><span class="nx">env</span><span class="p">.</span><span class="nx">PATH</span> <span class="o">+</span> <span class="s1">&#39;:/usr/local/bin&#39;</span><span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="c1">//Path from root -&gt; &#39;www&#39;</span>
-</span><span class='line'>  <span class="c1">//__dirname == &#39;www&#39; dir</span>
-</span><span class='line'>  <span class="kd">var</span> <span class="nx">appJsonPath</span> <span class="o">=</span> <span class="nx">path</span><span class="p">.</span><span class="nx">join</span><span class="p">(</span><span class="nx">__dirname</span><span class="p">,</span> <span class="s1">&#39;package.json&#39;</span><span class="p">);</span>
-</span><span class='line'>  <span class="kd">var</span> <span class="nx">appJson</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="nx">appJsonPath</span><span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="k">return</span> <span class="p">{</span>
-</span><span class='line'>    <span class="nx">appJson</span><span class="o">:</span> <span class="nx">appJson</span><span class="p">,</span>
-</span><span class='line'>    <span class="nx">fixPath</span><span class="o">:</span> <span class="nx">fixPath</span><span class="p">,</span>
-</span><span class='line'>    <span class="nx">fs</span><span class="o">:</span> <span class="nx">fs</span><span class="p">,</span>
-</span><span class='line'>    <span class="nx">ipc</span><span class="o">:</span> <span class="nx">ipc</span><span class="p">,</span>
-</span><span class='line'>    <span class="nx">opn</span><span class="o">:</span> <span class="nx">opn</span><span class="p">,</span>
-</span><span class='line'>    <span class="nx">path</span><span class="o">:</span> <span class="nx">path</span><span class="p">;</span>
-</span><span class='line'>  <span class="p">};</span>
-</span><span class='line'><span class="p">});</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h2>Test set up for Service</h2>
-
-<p>Now, hopefully I have all my node conveniences in one place (<code>require</code>, <code>__dirname</code>, etc).</p>
-
-<p>Let&rsquo;s get a simple test up:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="nx">describe</span><span class="p">(</span><span class="s1">&#39;#NodeService&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
-</span><span class='line'>  <span class="kd">var</span> <span class="nx">NodeService</span><span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="nx">beforeEach</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
-</span><span class='line'>      <span class="c1">//Ensure angular modules available</span>
-</span><span class='line'>    <span class="nx">module</span><span class="p">(</span><span class="s1">&#39;app.services&#39;</span><span class="p">);</span>
-</span><span class='line'>  <span class="p">});</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="nx">beforeEach</span><span class="p">(</span><span class="nx">inject</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">_NodeService_</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>    <span class="nx">NodeService</span> <span class="o">=</span> <span class="nx">_NodeService_</span><span class="p">;</span>
-</span><span class='line'>  <span class="p">}));</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="nx">it</span><span class="p">(</span><span class="s1">&#39;should have node service defined&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
-</span><span class='line'>    <span class="nx">expect</span><span class="p">(</span><span class="nx">NodeService</span><span class="p">).</span><span class="nx">toBeDefined</span><span class="p">();</span>
-</span><span class='line'>  <span class="p">});</span>
-</span><span class='line'><span class="p">});</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>If we run this test without anything else, we&rsquo;ll see immediately a problem:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='sh'><span class='line'>ReferenceError: Can<span class="err">&#39;</span>t find variable: require
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>My approach to this is simple &ndash; create a faked out global variable that represents <code>require</code> and does what you want, such as:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">var</span> <span class="nx">fakePackageJson</span> <span class="o">=</span> <span class="p">{</span> <span class="nx">name</span><span class="o">:</span> <span class="s2">&quot;Fake package.json name&quot;</span> <span class="p">};</span>
-</span><span class='line'><span class="nb">window</span><span class="p">.</span><span class="nx">require</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">requirePath</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;Requiring:&#39;</span><span class="p">,</span> <span class="nx">requirePath</span><span class="p">);</span>
-</span><span class='line'>  <span class="k">switch</span><span class="p">(</span><span class="nx">requirePath</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>    <span class="k">case</span> <span class="s1">&#39;ipc&#39;</span><span class="o">:</span>
-</span><span class='line'>      <span class="k">return</span> <span class="nx">ipcSpy</span><span class="p">;</span>
-</span><span class='line'>    <span class="k">case</span> <span class="s1">&#39;fs&#39;</span><span class="o">:</span>
-</span><span class='line'>      <span class="k">return</span> <span class="nx">fsSpy</span><span class="p">;</span>
-</span><span class='line'>    <span class="k">case</span> <span class="s1">&#39;/spec/package.json&#39;</span><span class="o">:</span>
-</span><span class='line'>      <span class="k">return</span> <span class="nx">fakePackageJson</span><span class="p">;</span>
-</span><span class='line'>  <span class="p">}</span>
-</span><span class='line'><span class="p">};</span>
-</span><span class='line'><span class="nb">window</span><span class="p">.</span><span class="nx">__dirname</span> <span class="o">=</span> <span class="s1">&#39;/some/fake/path&#39;</span><span class="p">;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h2>Package.json test setup</h2>
-
-<p>Let&rsquo;s define some quick <code>scripts</code> to run from our package.json to help others run our tests:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='json'><span class='line'><span class="err">//..snip..</span>
-</span><span class='line'>  <span class="s2">&quot;scripts&quot;</span><span class="err">:</span> <span class="p">{</span>
-</span><span class='line'>    <span class="nt">&quot;test&quot;</span><span class="p">:</span> <span class="s2">&quot;karma start&quot;</span>
-</span><span class='line'>  <span class="p">}</span>
-</span><span class='line'><span class="err">//..snip</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Now when we run our tests, we&rsquo;ll have the faked out node modules passed back.</p>
-
-<p>This is just one approach to take to setting up some faking out for node modules using Electron, Angular JS, and Jasmine.</p>
-
-<p>Hope this helps.</p>
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2015/05/08/comparisons-of-nw-dot-js-and-electron/">Comparisons of nw.js and Electron</a></h1>
-    
-    
-      <p class="meta">
-        <span class="reading-time">less than a 1 minute read</span>
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2015-05-08T17:11:00-06:00" pubdate data-updated="true">May 8<span>th</span>, 2015</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>In the last few months, I&rsquo;ve been playing around with two tools to help bridge the gap between the web and native desktop applications. There are two main tools that come to mind &ndash; nw.js (formerly known as Node Webkit) and Electron (formerly known as Atom Shell).</p>
-
-<p>This post focuses on using both, the differences between the two, and focusing on issues that I&rsquo;ve encountered.</p>
-
-<p>Outline:</p>
-
-<ul>
-<li>Getting started &ndash; package.json</li>
-<li>Native Menus (application menu)</li>
-<li>Shell execution (child processes)</li>
-<li>Packaging / run</li>
-<li>Icons</li>
-<li>Performance</li>
-</ul>
-
-
-<h1>Nw.js</h1>
-
-<h2>Getting started</h2>
-
-<p>Nw.js and Electron share a lot of the same steps for getting started. The only real difference between the two is how they are run, and how they handle the node process internally.</p>
-
-<p>With Nw.js, your app is bundled together. With Electron, the application is set up differently &ndash; with the main node process the handle running the browser process, and the rendering process, which handles all things from the browser (the event loop).</p>
-
-<p>To get running, <a href="">download the nw.js app</a> or the <a href="">electron app</a>. Both of these applications look at your <code>package.json</code> file to get running by looking at the <code>main</code> attribute.</p>
-
-<h2>Bootstrapping</h2>
-
-<p>For nw.js, the <code>main</code> attribute should specify which html file to start loading when your application launched. With Electron, your <code>main</code> attribute should specify a JavaScript file to be run.</p>
-
-<p>You also specify attributes about the nw.js window that runs via the <code>window</code> attribute, things like <code>toolbar</code>, <code>width</code>, and <code>height</code>, notably.</p>
-
-<p>With Electron, the JS file that you specify will launch the browser window and specify other attributes like width, height, and other window attributes.</p>
-
-<p>For convenience sake, I also created a node run script to execute the Nw.js app with my current folder. To run the node-webkit app, you simply type <code>npm run nwjs</code>. I also included a livereload script to watch my <code>www</code> folder to live reload my changes in the nw.js app.</p>
-
-<p>Here&rsquo;s a quick look at the <code>package.json</code> file used to bootstrap nw.js:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-</pre></td><td class='code'><pre><code class='json'><span class='line'><span class="p">{</span>
-</span><span class='line'>  <span class="nt">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;nwjs-app&quot;</span><span class="p">,</span>
-</span><span class='line'>  <span class="nt">&quot;version&quot;</span><span class="p">:</span> <span class="s2">&quot;1.0.0&quot;</span><span class="p">,</span>
-</span><span class='line'>  <span class="nt">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
-</span><span class='line'>  <span class="nt">&quot;main&quot;</span><span class="p">:</span> <span class="s2">&quot;www/index.html&quot;</span><span class="p">,</span>
-</span><span class='line'>  <span class="nt">&quot;scripts&quot;</span><span class="p">:</span> <span class="p">{</span>
-</span><span class='line'>    <span class="nt">&quot;nwjs&quot;</span><span class="p">:</span> <span class="s2">&quot;/Applications/nwjs.app/Contents/MacOS/nwjs . &amp; node livereload&quot;</span><span class="p">,</span>
-</span><span class='line'>    <span class="nt">&quot;electron&quot;</span><span class="p">:</span> <span class="s2">&quot;/Applications/Electron.app/Contents/MacOS/Electron . &amp; node livereload&quot;</span>
-</span><span class='line'>  <span class="p">},</span>
-</span><span class='line'>  <span class="nt">&quot;window&quot;</span><span class="p">:</span> <span class="p">{</span>
-</span><span class='line'>    <span class="nt">&quot;toolbar&quot;</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
-</span><span class='line'>    <span class="nt">&quot;width&quot;</span><span class="p">:</span> <span class="mi">800</span><span class="p">,</span>
-</span><span class='line'>    <span class="nt">&quot;height&quot;</span><span class="p">:</span> <span class="mi">500</span>
-</span><span class='line'>  <span class="p">}</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Here&rsquo;s a quick look at the <code>package.json</code> file used to bootstrap Electron:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-</pre></td><td class='code'><pre><code class='json'><span class='line'><span class="p">{</span>
-</span><span class='line'>  <span class="nt">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;nwjs-app&quot;</span><span class="p">,</span>
-</span><span class='line'>  <span class="nt">&quot;version&quot;</span><span class="p">:</span> <span class="s2">&quot;1.0.0&quot;</span><span class="p">,</span>
-</span><span class='line'>  <span class="nt">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
-</span><span class='line'>  <span class="nt">&quot;main&quot;</span><span class="p">:</span> <span class="s2">&quot;src/main.js&quot;</span><span class="p">,</span>
-</span><span class='line'>  <span class="nt">&quot;scripts&quot;</span><span class="p">:</span> <span class="p">{</span>
-</span><span class='line'>    <span class="nt">&quot;nwjs&quot;</span><span class="p">:</span> <span class="s2">&quot;/Applications/nwjs.app/Contents/MacOS/nwjs . &amp; node livereload&quot;</span><span class="p">,</span>
-</span><span class='line'>    <span class="nt">&quot;electron&quot;</span><span class="p">:</span> <span class="s2">&quot;/Applications/Electron.app/Contents/MacOS/Electron . &amp; node livereload&quot;</span>
-</span><span class='line'>  <span class="p">},</span>
-</span><span class='line'>  <span class="nt">&quot;window&quot;</span><span class="p">:</span> <span class="p">{</span>
-</span><span class='line'>    <span class="nt">&quot;toolbar&quot;</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
-</span><span class='line'>    <span class="nt">&quot;width&quot;</span><span class="p">:</span> <span class="mi">800</span><span class="p">,</span>
-</span><span class='line'>    <span class="nt">&quot;height&quot;</span><span class="p">:</span> <span class="mi">500</span>
-</span><span class='line'>  <span class="p">}</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Additionally for Electron, my <code>main.js</code> file looks like the following:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-<span class='line-number'>39</span>
-<span class='line-number'>40</span>
-<span class='line-number'>41</span>
-<span class='line-number'>42</span>
-<span class='line-number'>43</span>
-<span class='line-number'>44</span>
-<span class='line-number'>45</span>
-<span class='line-number'>46</span>
-<span class='line-number'>47</span>
-<span class='line-number'>48</span>
-<span class='line-number'>49</span>
-<span class='line-number'>50</span>
-<span class='line-number'>51</span>
-<span class='line-number'>52</span>
-</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">var</span> <span class="nx">app</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;app&#39;</span><span class="p">);</span>  <span class="c1">// Module to control application life.</span>
-</span><span class='line'><span class="kd">var</span> <span class="nx">BrowserWindow</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;browser-window&#39;</span><span class="p">);</span>  <span class="c1">// Module to create native browser window.</span>
-</span><span class='line'><span class="kd">var</span> <span class="nx">Menu</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;menu&#39;</span><span class="p">);</span>
-</span><span class='line'><span class="kd">var</span> <span class="nx">ipc</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;ipc&#39;</span><span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'><span class="c1">// var menu = new Menu();</span>
-</span><span class='line'><span class="c1">// Report crashes to our server.</span>
-</span><span class='line'><span class="c1">// require(&#39;crash-reporter&#39;).start();</span>
-</span><span class='line'>
-</span><span class='line'><span class="c1">// Keep a global reference of the window object, if you don&#39;t, the window will</span>
-</span><span class='line'><span class="c1">// be closed automatically when the javascript object is GCed.</span>
-</span><span class='line'><span class="kd">var</span> <span class="nx">mainWindow</span> <span class="o">=</span> <span class="kc">null</span><span class="p">;</span>
-</span><span class='line'><span class="kd">var</span> <span class="nx">menu</span><span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'><span class="kd">var</span> <span class="nx">browserOptions</span> <span class="o">=</span> <span class="p">{</span>
-</span><span class='line'>  <span class="nx">height</span><span class="o">:</span> <span class="mi">600</span><span class="p">,</span>
-</span><span class='line'>  <span class="nx">title</span><span class="o">:</span> <span class="s1">&#39;Electron App&#39;</span><span class="p">,</span>
-</span><span class='line'>  <span class="nx">width</span><span class="o">:</span> <span class="mi">800</span>
-</span><span class='line'><span class="p">};</span>
-</span><span class='line'>
-</span><span class='line'><span class="c1">// Quit when all windows are closed.</span>
-</span><span class='line'><span class="nx">app</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">&#39;window-all-closed&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
-</span><span class='line'>  <span class="k">if</span> <span class="p">(</span><span class="nx">process</span><span class="p">.</span><span class="nx">platform</span> <span class="o">!=</span> <span class="s1">&#39;darwin&#39;</span><span class="p">)</span>
-</span><span class='line'>    <span class="nx">app</span><span class="p">.</span><span class="nx">quit</span><span class="p">();</span>
-</span><span class='line'><span class="p">});</span>
-</span><span class='line'>
-</span><span class='line'><span class="c1">// This method will be called when Electron has done everything</span>
-</span><span class='line'><span class="c1">// initialization and ready for creating browser windows.</span>
-</span><span class='line'><span class="nx">app</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">&#39;ready&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
-</span><span class='line'>  <span class="c1">// Create the browser window.</span>
-</span><span class='line'>  <span class="nx">mainWindow</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">BrowserWindow</span><span class="p">(</span><span class="nx">browserOptions</span><span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="c1">// and load the index.html of the app.</span>
-</span><span class='line'>  <span class="nx">mainWindow</span><span class="p">.</span><span class="nx">loadUrl</span><span class="p">(</span><span class="s1">&#39;file://&#39;</span> <span class="o">+</span> <span class="nx">__dirname</span> <span class="o">+</span> <span class="s1">&#39;/www/index.html&#39;</span><span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="c1">// Emitted when the window is closed.</span>
-</span><span class='line'>  <span class="nx">mainWindow</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">&#39;closed&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
-</span><span class='line'>    <span class="c1">// Dereference the window object, usually you would store windows</span>
-</span><span class='line'>    <span class="c1">// in an array if your app supports multi windows, this is the time</span>
-</span><span class='line'>    <span class="c1">// when you should delete the corresponding element.</span>
-</span><span class='line'>    <span class="nx">mainWindow</span> <span class="o">=</span> <span class="kc">null</span><span class="p">;</span>
-</span><span class='line'>  <span class="p">});</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="nx">ipc</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">&#39;update-application-menu&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">event</span><span class="p">,</span> <span class="nx">template</span><span class="p">,</span> <span class="nx">keystrokesByCommand</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>    <span class="c1">//Go through the templates, wrap their click events back to the browser</span>
-</span><span class='line'>    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;update-application-menu - template&#39;</span><span class="p">);</span>
-</span><span class='line'>    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">template</span><span class="p">);</span>
-</span><span class='line'>    <span class="nx">translateTemplate</span><span class="p">(</span><span class="nx">template</span><span class="p">,</span> <span class="nx">keystrokesByCommand</span><span class="p">);</span>
-</span><span class='line'>    <span class="nx">menu</span> <span class="o">=</span> <span class="nx">Menu</span>
-</span><span class='line'>    <span class="nx">Menu</span><span class="p">.</span><span class="nx">setApplicationMenu</span><span class="p">(</span><span class="nx">menu</span><span class="p">);</span>
-</span><span class='line'>  <span class="p">});</span>
-</span><span class='line'><span class="p">});</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h2>Native Menus</h2>
-
-<h3>Electron</h3>
-
-<p>Due to the way electron is split up into two processes, the main process (that handles native menus) and the browser process (mainly your app), menus are mainly available to be set on the main process.</p>
-
-<p>If you want your app to change your application menus, you&rsquo;ll need to use the <a href="https://github.com/atom/electron/blob/master/docs/api/ipc-main-process.md"><code>ipc</code></a> module electron provides to get a message out to the main process to update the menus.</p>
-
-<p>Other than that, the menu system is super easy if you wish to use static menus.</p>
-
-<h3>Nw.js</h3>
-
-<p>It&rsquo;s dead simple. Since it&rsquo;s all one bundled process, just call the set menu, and you&rsquo;re good. It&rsquo;s easy to set short cuts and modify the menus.</p>
-
-<h2>Shell execution</h2>
-
-<p>In nw.js, you&rsquo;re good to go when it comes to making external shell calls.</p>
-
-<p>When it comes to electron, make sure you spawn your child processes with the <code>pipe</code> stdio option. Without that option, you may run into some errors (due to the fact electron doesnt have a stdout it manages easily).</p>
-
-<h2>Packaging / running</h2>
-
-<p>It&rsquo;s really easy on both platforms. Just set up your package.json/index.html/main.js file and run the appropriate command.</p>
-
-<p>I don&rsquo;t have a lot of experience with nw.js, so I cant speak to the packaging process.</p>
-
-<p>For electron, to run I like to use <a href="https://github.com/mafintosh/electron-prebuilt">electron-prebuilt</a> to run my <code>www</code> files as an app, using <a href="https://github.com/maxogden/electron-packager">electron-packager</a> to package into an <code>.app</code> file, and <a href="https://github.com/loopline-systems/electron-builder">electron-builder</a> to create installers (dmg/setup.exe).</p>
-
-<h2>Icons</h2>
-
-<p>To get custom icons for your app files for Mac, you need an <code>.icns</code> file that bundles up all your icons in all the formats/sizes for your dock icon, your cmd+tab icon, and your running icon.</p>
-
-<p>I used this as a <a href="http://stackoverflow.com/questions/12306223/how-to-manually-create-icns-files-using-iconutil">walkthrough</a>.</p>
-
-<p>I first started with a size of 1024x1024 pixels, then used the following commands:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="err">#</span> <span class="nx">Enter</span> <span class="nx">app</span><span class="p">.</span><span class="nx">iconset</span><span class="p">,</span> <span class="nx">drop</span> <span class="k">in</span> <span class="nx">icon</span><span class="p">.</span><span class="nx">png</span> <span class="nx">as</span> <span class="nx">a</span> <span class="mi">1024</span> <span class="nx">x</span> <span class="mi">1024</span> <span class="nx">image</span><span class="p">.</span>
-</span><span class='line'><span class="err">#</span> <span class="nx">Run</span> <span class="nx">the</span> <span class="nx">following</span> <span class="nx">commands</span><span class="o">:</span>
-</span><span class='line'><span class="nx">sips</span> <span class="o">-</span><span class="nx">z</span> <span class="mi">16</span> <span class="mi">16</span>     <span class="nx">icon</span><span class="p">.</span><span class="nx">png</span> <span class="o">--</span><span class="nx">out</span> <span class="p">.</span><span class="o">/</span><span class="nx">icon_16x16</span><span class="p">.</span><span class="nx">png</span>
-</span><span class='line'><span class="nx">sips</span> <span class="o">-</span><span class="nx">z</span> <span class="mi">32</span> <span class="mi">32</span>     <span class="nx">icon</span><span class="p">.</span><span class="nx">png</span> <span class="o">--</span><span class="nx">out</span> <span class="p">.</span><span class="o">/</span><span class="nx">icon_16x16</span><span class="err">@</span><span class="mi">2</span><span class="nx">x</span><span class="p">.</span><span class="nx">png</span>
-</span><span class='line'><span class="nx">sips</span> <span class="o">-</span><span class="nx">z</span> <span class="mi">32</span> <span class="mi">32</span>     <span class="nx">icon</span><span class="p">.</span><span class="nx">png</span> <span class="o">--</span><span class="nx">out</span> <span class="p">.</span><span class="o">/</span><span class="nx">icon_32x32</span><span class="p">.</span><span class="nx">png</span>
-</span><span class='line'><span class="nx">sips</span> <span class="o">-</span><span class="nx">z</span> <span class="mi">64</span> <span class="mi">64</span>     <span class="nx">icon</span><span class="p">.</span><span class="nx">png</span> <span class="o">--</span><span class="nx">out</span> <span class="p">.</span><span class="o">/</span><span class="nx">icon_32x32</span><span class="err">@</span><span class="mi">2</span><span class="nx">x</span><span class="p">.</span><span class="nx">png</span>
-</span><span class='line'><span class="nx">sips</span> <span class="o">-</span><span class="nx">z</span> <span class="mi">128</span> <span class="mi">128</span>   <span class="nx">icon</span><span class="p">.</span><span class="nx">png</span> <span class="o">--</span><span class="nx">out</span> <span class="p">.</span><span class="o">/</span><span class="nx">icon_128x128</span><span class="p">.</span><span class="nx">png</span>
-</span><span class='line'><span class="nx">sips</span> <span class="o">-</span><span class="nx">z</span> <span class="mi">256</span> <span class="mi">256</span>   <span class="nx">icon</span><span class="p">.</span><span class="nx">png</span> <span class="o">--</span><span class="nx">out</span> <span class="p">.</span><span class="o">/</span><span class="nx">icon_128x128</span><span class="err">@</span><span class="mi">2</span><span class="nx">x</span><span class="p">.</span><span class="nx">png</span>
-</span><span class='line'><span class="nx">sips</span> <span class="o">-</span><span class="nx">z</span> <span class="mi">256</span> <span class="mi">256</span>   <span class="nx">icon</span><span class="p">.</span><span class="nx">png</span> <span class="o">--</span><span class="nx">out</span> <span class="p">.</span><span class="o">/</span><span class="nx">icon_256x256</span><span class="p">.</span><span class="nx">png</span>
-</span><span class='line'><span class="nx">sips</span> <span class="o">-</span><span class="nx">z</span> <span class="mi">512</span> <span class="mi">512</span>   <span class="nx">icon</span><span class="p">.</span><span class="nx">png</span> <span class="o">--</span><span class="nx">out</span> <span class="p">.</span><span class="o">/</span><span class="nx">icon_256x256</span><span class="err">@</span><span class="mi">2</span><span class="nx">x</span><span class="p">.</span><span class="nx">png</span>
-</span><span class='line'><span class="nx">sips</span> <span class="o">-</span><span class="nx">z</span> <span class="mi">512</span> <span class="mi">512</span>   <span class="nx">icon</span><span class="p">.</span><span class="nx">png</span> <span class="o">--</span><span class="nx">out</span> <span class="p">.</span><span class="o">/</span><span class="nx">icon_512x512</span><span class="p">.</span><span class="nx">png</span>
-</span><span class='line'><span class="nx">cp</span> <span class="nx">icon</span><span class="p">.</span><span class="nx">png</span> <span class="nx">icon_512x512</span><span class="err">@</span><span class="mi">2</span><span class="nx">x</span><span class="p">.</span><span class="nx">png</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Then just run:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="nx">iconutil</span> <span class="o">-</span><span class="nx">c</span> <span class="nx">icns</span> <span class="nx">app</span><span class="p">.</span><span class="nx">iconset</span> <span class="o">-</span><span class="nx">o</span> <span class="p">.</span><span class="o">/</span><span class="nx">app</span><span class="o">-</span><span class="nx">dir</span><span class="o">/</span><span class="nx">YourAppName</span><span class="p">.</span><span class="nx">app</span><span class="o">/</span><span class="nx">Contents</span><span class="o">/</span><span class="nx">Resources</span><span class="o">/</span><span class="nx">app</span><span class="p">.</span><span class="nx">icns</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>You should now have your app with icons ready to go.</p>
-
-<h2>Performance</h2>
-
-<p>I didn&rsquo;t see a lot of major performance bumps from using either platform. It&rsquo;s JavaScript after all.</p>
-
-<h2>Closing words</h2>
-
-<p>Most of all, have fun with developing with these tools! They&rsquo;re open source and free, so when you get a chance, share some knowledge, post an issue, respond to an issue, or even submit a PR.</p>
-
-<p>We&rsquo;re all in this together.</p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/4/">&larr; Older</a>
@@ -2233,6 +2018,14 @@ Do not use the &mdash;resource-rules flag or ResourceRules.plist. They have been
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2019/11/10/continuous-deployment-book-review/">Continuous Deployment - Book Review</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2019/10/08/clean-architecture-book-review/">Clean Architecture - Book Review</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2019/09/12/on-the-clock/">On the Clock</a>
       </li>
     
@@ -2242,14 +2035,6 @@ Do not use the &mdash;resource-rules flag or ResourceRules.plist. They have been
     
       <li class="post">
         <a href="/blog/2019/01/29/3-years-of-elixir-reflections/">3 Years of Elixir: Reflections</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2017/04/16/puppet-a-testing-handbook/">Puppet: A Testing Handbook</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2017/03/13/test-coverage-reports-in-elixir/">Test Coverage Reports in Elixir</a>
       </li>
     
   </ul>

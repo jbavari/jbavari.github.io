@@ -9,7 +9,7 @@
   <meta name="author" content="Josh Bavari">
 
   
-  <meta name="description" content="At the time of writing this, Ionic 2.0 is still in alpha. Ionic 2.0 builds on a ton of new technologies, such as Angular v2, TypeScript (with &hellip;">
+  <meta name="description" content="This is the second post in a series covering the new Ionic Generators in Ionic 2.0. In the first post, we discussed generating pages, let&rsquo;s &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -70,6 +70,194 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/11/06/ionic-2-dot-0-generators-services/">Ionic 2.0 Generators - Services</a></h1>
+    
+    
+      <p class="meta">
+        <span class="reading-time">less than a 1 minute read</span>
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-11-06T01:23:00-07:00" pubdate data-updated="true">Nov 6<span>th</span>, 2015</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>This is the second post in a series covering the new Ionic Generators in Ionic 2.0. In the <a href="http://jbavari.github.io/blog/2015/11/05/using-ionic-2-dot-0-generators/">first post</a>, we discussed generating pages, let&rsquo;s focus now on generating some services to consume some JSON data via an http request.</p>
+
+<h2>Get the tools</h2>
+
+<p>Run this to get started:</p>
+
+<figure class='code'><figcaption><span>Install Ionic CLI and start an Ionic application</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>npm install -g ionic@alpha
+</span><span class='line'>ionic start MyIonic2App tabs --v2
+</span><span class='line'><span class="nb">cd </span>MyIonic2App
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>Generate the service</h2>
+
+<p><code>ionic g injectable MyDataService</code></p>
+
+<p>You should see the service:</p>
+
+<figure class='code'><figcaption><span>Run generate command</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>~/Development/testing/MyIonic2App<span class="nv">$ </span>ionic g injectable MyDataService
+</span><span class='line'>√ Create www/app/my-data-service/my-data-service.js
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The basic blueprint of the generated service is as follows:</p>
+
+<figure class='code'><figcaption><span>Generated Data Service</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kr">import</span> <span class="p">{</span><span class="nx">Injectable</span><span class="p">}</span> <span class="nx">from</span> <span class="s1">&#39;angular2/angular2&#39;</span><span class="p">;</span>
+</span><span class='line'><span class="kr">import</span> <span class="p">{</span><span class="nx">Http</span><span class="p">}</span> <span class="nx">from</span> <span class="s1">&#39;angular2/http&#39;</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="err">@</span><span class="nx">Injectable</span><span class="p">()</span>
+</span><span class='line'><span class="kr">export</span> <span class="kr">class</span> <span class="nx">MyDataService</span> <span class="p">{</span>
+</span><span class='line'>  <span class="nx">constructor</span><span class="p">(</span><span class="nx">http</span><span class="o">:</span> <span class="nx">Http</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">this</span><span class="p">.</span><span class="nx">http</span> <span class="o">=</span> <span class="nx">http</span><span class="p">;</span>
+</span><span class='line'>    <span class="k">this</span><span class="p">.</span><span class="nx">data</span> <span class="o">=</span> <span class="kc">null</span><span class="p">;</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nx">retrieveData</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>    <span class="c1">//Here, we&#39;re going to get a JSON data file, use the `map` call to parse json</span>
+</span><span class='line'>    <span class="c1">// and finally subscribe to the observable and set our data</span>
+</span><span class='line'>    <span class="c1">//to the value it provides once the http request is complete.</span>
+</span><span class='line'>    <span class="k">this</span><span class="p">.</span><span class="nx">http</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">&#39;path/to/data.json&#39;</span><span class="p">)</span>
+</span><span class='line'>      <span class="p">.</span><span class="nx">map</span><span class="p">(</span><span class="nx">res</span> <span class="o">=&gt;</span> <span class="nx">res</span><span class="p">.</span><span class="nx">json</span><span class="p">())</span>
+</span><span class='line'>      <span class="p">.</span><span class="nx">subscribe</span><span class="p">(</span><span class="nx">data</span> <span class="o">=&gt;</span> <span class="p">{</span>
+</span><span class='line'>        <span class="k">this</span><span class="p">.</span><span class="nx">data</span> <span class="o">=</span> <span class="nx">data</span><span class="p">;</span>
+</span><span class='line'>      <span class="p">},</span> <span class="nx">error</span> <span class="o">=&gt;</span> <span class="p">{</span>
+</span><span class='line'>        <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;Error with http.get: &#39;</span><span class="p">,</span> <span class="nx">error</span><span class="p">);</span>
+</span><span class='line'>      <span class="p">});</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>Wiring it in to be used</h2>
+
+<p>Adjust <code>www/app/app.js</code> to import the data service, as well as provide it for all of its components:</p>
+
+<figure class='code'><figcaption><span>www/app/app.js</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kr">import</span> <span class="p">{</span><span class="nx">MyDataService</span><span class="p">}</span> <span class="nx">from</span> <span class="s1">&#39;./my-data-service/my-data-service&#39;</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="err">@</span><span class="nx">App</span><span class="p">({</span>
+</span><span class='line'>  <span class="nx">template</span><span class="o">:</span> <span class="s1">&#39;&lt;ion-nav [root]=&quot;root&quot;&gt;&lt;/ion-nav&gt;&#39;</span><span class="p">,</span>
+</span><span class='line'>  <span class="nx">providers</span><span class="o">:</span> <span class="p">[</span><span class="nx">Friends</span><span class="p">,</span> <span class="nx">MyDataService</span><span class="p">]</span>
+</span><span class='line'><span class="p">})</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>Use the service</h2>
+
+<p>We&rsquo;ll use the tabs starter dashboard page to pull data.</p>
+
+<p>Let&rsquo;s modify <code>www/app/dash/dash.ts</code> &ndash; adding an import for <code>MyDataService</code>, adding <code>MyDataService</code> to the constructore as an injected dependency, and finally adding the call to <code>retrieveData</code> in the constructore method.</p>
+
+<figure class='code'><figcaption><span>www/app/dash/dash.ts</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kr">import</span> <span class="p">{</span><span class="nx">Page</span><span class="p">,</span> <span class="nx">NavController</span><span class="p">,</span> <span class="nx">ViewController</span><span class="p">}</span> <span class="nx">from</span> <span class="s1">&#39;ionic/ionic&#39;</span><span class="p">;</span>
+</span><span class='line'><span class="kr">import</span> <span class="p">{</span><span class="nx">MyDataService</span><span class="p">}</span> <span class="nx">from</span> <span class="s1">&#39;../my-data-service/my-data-service&#39;</span><span class="p">;</span>
+</span><span class='line'><span class="kr">import</span> <span class="p">{</span><span class="nx">About</span><span class="p">}</span> <span class="nx">from</span> <span class="s1">&#39;../about/about&#39;</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="err">@</span><span class="nx">Page</span><span class="p">({</span>
+</span><span class='line'>  <span class="nx">templateUrl</span><span class="o">:</span> <span class="s1">&#39;app/dash/dash.html&#39;</span><span class="p">,</span>
+</span><span class='line'><span class="p">})</span>
+</span><span class='line'><span class="kr">export</span> <span class="kr">class</span> <span class="nx">Dash</span> <span class="p">{</span>
+</span><span class='line'>  <span class="nx">constructor</span><span class="p">(</span><span class="nx">nav</span><span class="o">:</span> <span class="nx">NavController</span><span class="p">,</span> <span class="nx">view</span><span class="o">:</span> <span class="nx">ViewController</span><span class="p">,</span> <span class="nx">data</span><span class="o">:</span> <span class="nx">MyDataService</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">this</span><span class="p">.</span><span class="nx">nav</span> <span class="o">=</span> <span class="nx">nav</span><span class="p">;</span>
+</span><span class='line'>    <span class="k">this</span><span class="p">.</span><span class="nx">view</span> <span class="o">=</span> <span class="nx">view</span><span class="p">;</span>
+</span><span class='line'>    <span class="nx">data</span><span class="p">.</span><span class="nx">retrieveData</span><span class="p">();</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nx">goToAboutPage</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">this</span><span class="p">.</span><span class="nx">nav</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">About</span><span class="p">);</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>Additional information</h2>
+
+<p>If you&rsquo;ve used Angular 1, you&rsquo;re probably familiar with promises to return your data from http requests.</p>
+
+<p>Under the hood of Angular 2 lies <a href="https://github.com/Reactive-Extensions/RxJS">RxJs</a> that builds on promises, focusing on being repeatable.</p>
+
+<p>Enjoy!</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -1782,225 +1970,6 @@ If the &mdash;production flag is specified or the NODE_ENV environment variable 
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2015/08/14/codesigning-electron-applications/">Codesigning Electron Applications</a></h1>
-    
-    
-      <p class="meta">
-        <span class="reading-time">less than a 1 minute read</span>
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2015-08-14T11:30:00-06:00" pubdate data-updated="true">Aug 14<span>th</span>, 2015</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Lately I&rsquo;ve been busy at work creating and maintaining <a href="http://lab.ionic.io">Ionic Lab</a>. It&rsquo;s been a fun and challenging problem using HTML/CSS/JavaScript to create native OSX/Windows applications.</p>
-
-<p>I&rsquo;m going to admit &ndash; I&rsquo;ve gotten a few hybrid projects on the App store. Honestly though I had a lot of help.</p>
-
-<p>This time I was mostly on my own.</p>
-
-<p>I&rsquo;m not great at the native dev and half the problems I occur are with the platform I am dealing with. In this I mean &ndash; Android I deal with how Google does signing and releasing and how Apple does signing and releasing.</p>
-
-<p>I&rsquo;m going to cover mainly Apple policies to release an app on your own with or without the App store. With Electron, we&rsquo;re going to make a native build, so we&rsquo;ll need to know how to do this.</p>
-
-<h2>Mac&rsquo;s Gatekeeper</h2>
-
-<p>On Mac OSX, there&rsquo;s an application that checks all the applications you download and run to see if they are valid and trusted.</p>
-
-<p>Certainly you&rsquo;ve seen the message from an app you&rsquo;ve downloaded: <code>"App can't be opened because it is from an unidentified developer."</code></p>
-
-<p>If you create and app and do not codesign it with a valid Apple dev account, your users will see this. It&rsquo;s not a good thing.</p>
-
-<h2>How to codesign</h2>
-
-<p>The main tool of codesigning is the CLI tool <code>codesign</code>.</p>
-
-<p>I really found a lot of help from <a href="https://developer.apple.com/library/mac/technotes/tn2206/_index.html#//apple_ref/doc/uid/DTS40007919-CH1-TNTAG400">OSX Code Signing in Depth</a>.</p>
-
-<p>It&rsquo;s pretty clear right away what you need to run and how to verify what you need to run. I&rsquo;d like to go over how to do it with Electron, specifically.</p>
-
-<p>I posted the script below. I want to highlight the issues I ran into as a result of my ignorance.</p>
-
-<p>One issue I ran into &ndash; I was using the &ldquo;Mac Development&rdquo; certificate to sign &ndash; and when I ran the verify command (<code>codesign -vvvv -d "/path/to/MyApp.app"</code>) it gave me a good to go signal. When I ran the security CLI command (<code>spctl --assess -vvvv "/path/to/MyApp.app"</code>), it was rejected.</p>
-
-<p>My error: I thought &ldquo;Mac Development&rdquo; was a &ldquo;Developer-ID application&rdquo;.</p>
-
-<p>It&rsquo;s not. I was an account admin. In the Apple Member Center for Certificate Administration, I could only set up a &ldquo;Mac Development&rdquo; type certificate. Apple member center would not let met set up a &ldquo;Developer ID Application&rdquo; certificate. You need a &lsquo;team agent&rsquo; to set one up for you. (That or become a team agent)</p>
-
-<p>That being said &ndash; ensure you sign with a certificate type of &ldquo;Developer ID Application&rdquo; to sign with, and you&rsquo;re good to go.</p>
-
-<p>I set up my codesign script like <a href="https://github.com/nwjs/nw.js/issues/616#issuecomment-30844482">the following</a>. There&rsquo;s comments to help understand:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-<span class='line-number'>39</span>
-<span class='line-number'>40</span>
-<span class='line-number'>41</span>
-<span class='line-number'>42</span>
-<span class='line-number'>43</span>
-<span class='line-number'>44</span>
-<span class='line-number'>45</span>
-</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="c"># Invoke this script with a relative `.app` path</span>
-</span><span class='line'><span class="c"># EX:</span>
-</span><span class='line'><span class="c"># codesign.sh &quot;dist/osx/MyApp-darwin-x64/MyApp.app&quot;</span>
-</span><span class='line'>
-</span><span class='line'><span class="c"># I had better luck using the iPhoneOS codesign_allocate</span>
-</span><span class='line'><span class="nb">export </span><span class="nv">CODESIGN_ALLOCATE</span><span class="o">=</span><span class="s2">&quot;/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/usr/bin/codesign_allocate&quot;</span>
-</span><span class='line'>
-</span><span class='line'><span class="c"># Next two are specified in Apple docs:</span>
-</span><span class='line'><span class="c"># export CODESIGN_ALLOCATE=&quot;/Applications/Xcode.app/Contents/Developer/usr/bin/codesign_allocate&quot;</span>
-</span><span class='line'><span class="c"># export CODESIGN_ALLOCATE=&quot;/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/codesign_allocate&quot;</span>
-</span><span class='line'>
-</span><span class='line'><span class="c"># However, neither worked, and gave error:</span>
-</span><span class='line'><span class="c"># /Users/JoshBavari/Development/ionic-gui/dist/osx/MyApp-darwin-x64/MyApp.app/Contents/Frameworks/Electron Framework.framework/Electron Framework: cannot find code object on disk</span>
-</span><span class='line'>
-</span><span class='line'><span class="c">#Run the following to get a list of certs</span>
-</span><span class='line'><span class="c"># security find-identity</span>
-</span><span class='line'><span class="nv">app</span><span class="o">=</span><span class="s2">&quot;$PWD/$1&quot;</span>
-</span><span class='line'><span class="nv">identity</span><span class="o">=</span><span class="s2">&quot;&lt;ENTER_ID_OF_RESULT_FROM_SECURITY_FIND_IDENTITY_COMMAND&gt;&quot;</span>
-</span><span class='line'>
-</span><span class='line'><span class="nb">echo</span> <span class="s2">&quot;### signing frameworks&quot;</span>
-</span><span class='line'>codesign --deep --force --verify --verbose --sign <span class="s2">&quot;$identity&quot;</span> <span class="s2">&quot;$app/Contents/Frameworks/Electron Framework.framework/Electron Framework&quot;</span>
-</span><span class='line'>codesign --deep --force --verify --verbose --sign <span class="s2">&quot;$identity&quot;</span> <span class="s2">&quot;$app/Contents/Frameworks/Electron Framework.framework/&quot;</span>
-</span><span class='line'>/Versions/A<span class="s2">&quot;</span>
-</span><span class='line'><span class="s2">codesign --deep --force --verify --verbose --sign &quot;</span><span class="nv">$identity</span><span class="s2">&quot; &quot;</span><span class="nv">$app</span>/Contents/Frameworks/Electron Framework.framework/Versions/Current/Electron Framework<span class="s2">&quot;</span>
-</span><span class='line'><span class="s2">codesign --deep --force --verify --verbose --sign &quot;</span><span class="nv">$identity</span><span class="s2">&quot; &quot;</span><span class="nv">$app</span>/Contents/Frameworks/Electron Helper EH.app/Contents/MacOS/Electron Helper EH<span class="s2">&quot;</span>
-</span><span class='line'><span class="s2">codesign --deep --force --verify --verbose --sign &quot;</span><span class="nv">$identity</span><span class="s2">&quot; &quot;</span><span class="nv">$app</span>/Contents/Frameworks/Electron Helper NP.app/Contents/MacOS/Electron Helper NP<span class="s2">&quot;</span>
-</span><span class='line'><span class="s2">codesign --deep --force --verify --verbose --sign &quot;</span><span class="nv">$identity</span><span class="s2">&quot; &quot;</span><span class="nv">$app</span>/Contents/Frameworks/Electron Helper NP.app/Contents/MacOS/Electron Helper NP<span class="s2">&quot;</span>
-</span><span class='line'><span class="s2">codesign --deep --force --verify --verbose --sign &quot;</span><span class="nv">$identity</span><span class="s2">&quot; &quot;</span><span class="nv">$app</span>/Contents/Frameworks/MyApp Helper.app/Contents/MacOS/MyApp Helper<span class="s2">&quot;</span>
-</span><span class='line'><span class="s2">codesign --deep --force --verify --verbose --sign &quot;</span><span class="nv">$identity</span><span class="s2">&quot; &quot;</span><span class="nv">$app</span>/Contents/Frameworks/Mantle.framework/Mantle<span class="s2">&quot;</span>
-</span><span class='line'><span class="s2">codesign --deep --force --verify --verbose --sign &quot;</span><span class="nv">$identity</span><span class="s2">&quot; &quot;</span><span class="nv">$app</span>/Contents/Frameworks/Mantle.framework/Versions/A<span class="s2">&quot;</span>
-</span><span class='line'><span class="s2">codesign --deep --force --verify --verbose --sign &quot;</span><span class="nv">$identity</span><span class="s2">&quot; &quot;</span><span class="nv">$app</span>/Contents/Frameworks/ReactiveCocoa.framework/ReactiveCocoa<span class="s2">&quot;</span>
-</span><span class='line'><span class="s2">codesign --deep --force --verify --verbose --sign &quot;</span><span class="nv">$identity</span><span class="s2">&quot; &quot;</span><span class="nv">$app</span>/Contents/Frameworks/ReactiveCocoa.framework/Versions/A<span class="s2">&quot;</span>
-</span><span class='line'><span class="s2">codesign --deep --force --verify --verbose --sign &quot;</span><span class="nv">$identity</span><span class="s2">&quot; &quot;</span><span class="nv">$app</span>/Contents/Frameworks/Squirrel.framework/Squirrel<span class="s2">&quot;</span>
-</span><span class='line'><span class="s2">codesign --deep --force --verify --verbose --sign &quot;</span><span class="nv">$identity</span><span class="s2">&quot; &quot;</span><span class="nv">$app</span>/Contents/Frameworks/Squirrel.framework/Versions/A<span class="s2">&quot;</span>
-</span><span class='line'>
-</span><span class='line'><span class="s2">echo &quot;</span><span class="c">### signing app&quot;</span>
-</span><span class='line'>codesign --deep --force --verify --verbose --sign <span class="s2">&quot;$identity&quot;</span> <span class="s2">&quot;$app&quot;</span>
-</span><span class='line'>
-</span><span class='line'>
-</span><span class='line'><span class="nb">echo</span> <span class="s2">&quot;### Zipping app&quot;</span>
-</span><span class='line'>ditto -c -k --sequesterRsrc --keepParent dist/osx/MyApp-darwin-x64/MyApp.app/ dist/osx/MyApp-Mac.zip
-</span><span class='line'>
-</span><span class='line'><span class="nb">echo</span> <span class="s2">&quot;### verifying signature&quot;</span>,
-</span><span class='line'>codesign -vvvv -d <span class="s2">&quot;$app&quot;</span>
-</span><span class='line'>sudo spctl -a -vvvv <span class="s2">&quot;$app&quot;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h2>Pitfalls</h2>
-
-<p>Since I wasn&rsquo;t very familiar with the Apple specifics I&rsquo;d like to high light a few pitfalls I ran into with my ignorance.</p>
-
-<p>A &lsquo;Developer-ID signed app&rsquo; means setting up a certificate (private key + cert) with &ldquo;type&rdquo; as &ldquo;Developer ID Application&rdquo;. This does <em>NOT</em> mean a &ldquo;Mac Development&rdquo; certificate. From the OSX Codesigning guide:</p>
-
-<blockquote><p>Like Gatekeeper, spctl will only accept Developer ID-signed apps and apps downloaded from the Mac App Store by default. It will reject apps signed with Mac App Store development or distribution certificates.</p></blockquote>
-
-<h1>Issues</h1>
-
-<p>Most users say to specify this environment variable:</p>
-
-<p><code>export CODESIGN_ALLOCATE="/Applications/Xcode.app/Contents/Developer/usr/bin/codesign_allocate"</code></p>
-
-<p>For some reason, I couldn&rsquo;t use the default codesign allocate as specified in the Github issue above. Instead, I had to go with this Environment variable for CODESIGN_ALLOCATE for <code>iPhoneOS.platform</code>:</p>
-
-<p><code>export CODESIGN_ALLOCATE="/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/usr/bin/codesign_allocate"</code></p>
-
-<h1>Hints</h1>
-
-<p>Only include signed code in directories that should contain signed code.
-Only include resources in directories that should contain
-resources.
-Do not use the &mdash;resource-rules flag or ResourceRules.plist. They have been obsoleted and will be rejected.</p>
-
-<h2>A little note on signing frameworks [5]:</h2>
-
-<h3>Signing Frameworks</h3>
-
-<p>When you sign frameworks, you have to sign a specific version. So, let’s say your framework is called CSMail, you’d sign CSMail.framework/Versions/A. If you try and just sign the top level folder it will silently fail, as will CSMail.framework/Versions/Current (see “Symbolic Links” below).</p>
-
-<h3>Symbolic Links</h3>
-
-<p>Any symbolic links will be silently ignored and this extends to the path you give to the codesign command line utility. I think there’s actually a problem with symbolic links: you can add them to a Resources folder and it won’t invalidate the signature (whereas you cannot add normal files). I’ve reported this to Apple (rdar://problem/6050445).</p>
-
-<h1>Helpful links</h1>
-
-<ol>
-<li><a href="https://developer.apple.com/library/mac/documentation/Security/Conceptual/CodeSigningGuide/AboutCS/AboutCS.html">Apple Code Signing Overview</a></li>
-<li><a href="https://developer.apple.com/library/mac/technotes/tn2206/_index.html#//apple_ref/doc/uid/DTS40007919-CH1-TNTAG205">Apple OS X Code Signing In Depth</a></li>
-<li><a href="https://developer.apple.com/library/mac/documentation/MacOSX/Conceptual/BPFrameworks/Concepts/FrameworkAnatomy.html">Apple Anatomy of Framework Bundles</a></li>
-<li><a href="https://developer.apple.com/library/mac/documentation/Darwin/Reference/ManPages/man1/codesign.1.html#//apple_ref/doc/man/1/codesign">Apple codesign Man Page</a></li>
-<li><a href="http://sutes.co.uk/2008/07/code-signing.html">Chris Suter&rsquo;s Blog &ndash; Code signing</a></li>
-<li><a href="http://stackoverflow.com/questions/27871099/creating-symlinks-in-osx-frameworks-inside-app-bundle">Stackoverflow &ndash; Creating Symlinks in OSX Frameworks</a></li>
-<li><a href="http://successfulsoftware.net/2012/08/30/how-to-sign-your-mac-os-x-app-for-gatekeeper/">How to sign your Mac OSX app for Gatekeeper</a></li>
-<li><a href="http://furbo.org/2013/10/17/code-signing-and-mavericks/">Codesigning and Mavericks</a>
-9 <a href="http://www.pracucci.com/atom-electron-signing-mac-app.html">Atom Electron &ndash; Signing Mac App</a></li>
-<li><a href="http://blog.hoachuck.biz/blog/2013/10/29/codesign-useful-info-in-xcode-5-dot-0-1/">Codesign &ndash; useful info in Xcode > 5.0</a></li>
-<li><a href="http://www.saschawise.com/blog/2015/08/12/electron-for-the-mac-app-store.html">Electron for the Mac App Store</a></li>
-<li><a href="https://github.com/nwjs/nw.js/issues/616#issuecomment-30844482">nw.js issue about code signing</a>.</li>
-</ol>
-
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/4/">&larr; Older</a>
@@ -2018,7 +1987,7 @@ Do not use the &mdash;resource-rules flag or ResourceRules.plist. They have been
   <ul id="recent_posts">
     
       <li class="post">
-        <a href="/blog/2019/11/10/continuous-deilvery-book-review/">Continuous Deployment - Book Review</a>
+        <a href="/blog/2019/11/10/continuous-deilvery-book-review/">Continuous Delivery - Book Review</a>
       </li>
     
       <li class="post">

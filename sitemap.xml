@@ -245,6 +245,12 @@
         <lastmod>2019-09-12T22:31:55-06:00</lastmod>
     </url>
     <url>
+        <loc>
+            http://jbavari.github.io/blog/2015/12/03/correctly-using-es6-fat-arrows-and-event-handlers/
+        </loc>
+        <lastmod>2019-09-12T22:31:55-06:00</lastmod>
+    </url>
+    <url>
         <loc>http://jbavari.github.io/blog/2015/12/04/using-json-serializers-in-sinatra/</loc>
         <lastmod>2019-09-12T22:31:55-06:00</lastmod>
     </url>
@@ -322,7 +328,7 @@
     </url>
     <url>
         <loc>http://jbavari.github.io/blog/2019/11/10/continuous-deilvery-book-review/</loc>
-        <lastmod>2019-12-12T21:32:20-07:00</lastmod>
+        <lastmod>2019-12-12T21:33:00-07:00</lastmod>
     </url>
     <url>
         <loc>http://jbavari.github.io/research/</loc>
@@ -330,7 +336,7 @@
     </url>
     <url>
         <loc>http://jbavari.github.io/</loc>
-        <lastmod>2019-12-12T21:32:20-07:00</lastmod>
+        <lastmod>2019-12-12T21:33:00-07:00</lastmod>
     </url>
     <url>
         <loc>http://jbavari.github.io/about/</loc>
@@ -346,7 +352,7 @@
     </url>
     <url>
         <loc>http://jbavari.github.io/blog/archives/</loc>
-        <lastmod>2019-12-12T21:32:20-07:00</lastmod>
+        <lastmod>2019-12-12T21:33:00-07:00</lastmod>
     </url>
     <url>
         <loc>http://jbavari.github.io/system/</loc>

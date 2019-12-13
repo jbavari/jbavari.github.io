@@ -5,11 +5,13 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>Category: oauth - Josh Bavari's Thoughts</title>
+  <title>Correctly using ES6 fat arrows and event handlers - Josh Bavari's Thoughts</title>
   <meta name="author" content="Josh Bavari">
 
   
-  <meta name="description" content="Category: oauth">
+  <meta name="description" content="Compatability table:
+http://kangax.github.io/compat-table/es6 Private properties &ndash; Symbol:
+http://blog.keithcirkel.co.uk/metaprogramming-in-es6 &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -18,7 +20,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://jbavari.github.ioblog/categories/oauth">
+  <link rel="canonical" href="http://jbavari.github.io/blog/2015/12/03/correctly-using-es6-fat-arrows-and-event-handlers">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <link href="/atom.xml" rel="alternate" title="Josh Bavari's Thoughts" type="application/atom+xml">
@@ -69,36 +71,96 @@
   <div id="main">
     <div id="content">
       <div>
-<article role="article">
+<article class="hentry" role="article">
   
   <header>
-    <h1 class="entry-title">Category: Oauth</h1>
+    
+      <h1 class="entry-title">Correctly Using ES6 Fat Arrows and Event Handlers</h1>
+    
+    
+      <p class="meta">
+        <span class="reading-time">less than a 1 minute read</span>
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-12-03T12:13:00-07:00" pubdate data-updated="true">Dec 3<span>rd</span>, 2015</time>
+        
+      </p>
     
   </header>
-  
-  <div id="blog-archives" class="category">
 
 
+<div class="entry-content"><p>Compatability table:
+<a href="http://kangax.github.io/compat-table/es6">http://kangax.github.io/compat-table/es6</a></p>
 
-  
-  <h2>2014</h2>
+<p>Private properties &ndash; Symbol:
+<a href="http://blog.keithcirkel.co.uk/metaprogramming-in-es6-symbols/">http://blog.keithcirkel.co.uk/metaprogramming-in-es6-symbols/</a>
+<a href="https://curiosity-driven.org/private-properties-in-javascript">https://curiosity-driven.org/private-properties-in-javascript</a></p>
 
-<article>
-  
-<h1><a href="/blog/2014/06/04/handling-angularjs-popups-for-oauth/">Handling AngularJS Popups for OAuth on Rails</a></h1>
-<time datetime="2014-06-04T22:56:00-06:00" pubdate><span class='month'>Jun</span> <span class='day'>04</span> <span class='year'>2014</span></time>
-
-<footer>
-  <span class="categories">posted in <a class='category' href='/blog/categories/angularjs/'>angularjs</a>, <a class='category' href='/blog/categories/javascript/'>javascript</a>, <a class='category' href='/blog/categories/oauth/'>oauth</a>, <a class='category' href='/blog/categories/popups/'>popups</a>, <a class='category' href='/blog/categories/rails/'>rails</a></span>
-</footer>
-
-
-</article>
-
+<p>Babel installation and such:
+<a href="http://babeljs.io/docs/plugins/preset-es2015/#installation">http://babeljs.io/docs/plugins/preset-es2015/#installation</a></p>
 </div>
 
+
+  <footer>
+    <p class="meta">
+      
   
+
+<span class="byline author vcard">Posted by <span class="fn">Josh Bavari</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-12-03T12:13:00-07:00" pubdate data-updated="true">Dec 3<span>rd</span>, 2015</time>
+      
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://jbavari.github.io/blog/2015/12/03/correctly-using-es6-fat-arrows-and-event-handlers/" data-via="jbavari" data-counturl="http://jbavari.github.io/blog/2015/12/03/correctly-using-es6-fat-arrows-and-event-handlers/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2015/12/03/playing-with-safari-9-force-touch-api/" title="Previous Post: Playing with Safari 9 Force Touch API">&laquo; Playing with Safari 9 Force Touch API</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2015/12/04/using-json-serializers-in-sinatra/" title="Next Post: Using JSON serializers in Sinatra">Using JSON serializers in Sinatra &raquo;</a>
+      
+    </p>
+  </footer>
 </article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
 
 </div>
 
@@ -185,7 +247,10 @@
       var disqus_shortname = 'joshbavari';
       
         
-        var disqus_script = 'count.js';
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://jbavari.github.io/blog/2015/12/03/correctly-using-es6-fat-arrows-and-event-handlers/';
+        var disqus_url = 'http://jbavari.github.io/blog/2015/12/03/correctly-using-es6-fat-arrows-and-event-handlers/';
+        var disqus_script = 'embed.js';
       
     (function () {
       var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;

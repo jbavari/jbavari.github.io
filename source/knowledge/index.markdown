@@ -9,7 +9,46 @@ footer: true
 
 I love reading and learning. I'm putting this page together to keep track of all my knowledge sources.
 
-# Books
+## 2019
+
+### Business / Leadership
+
+* [What got you here won't get you there](https://www.amazon.com/What-Got-Here-Wont-There/dp/1401301304/ref=sr_1_1?crid=3SAB6261QD8JT&keywords=what+got+you+here+wont+get+you+there&qid=1576209696&sprefix=what+got+y%2Caps%2C179&sr=8-1)
+* [Daring Greatly](https://www.audible.com/pd/Daring-Greatly-Audiobook/B07DX9W2CG?qid=1576209674&sr=1-1&pf_rd_p=e81b7c27-6880-467a-b5a7-13cef5d729fe&pf_rd_r=MFT7R7AYJXBH5682NZVK&ref=a_search_c3_lProduct_1_1)
+* [Dare To Lead](https://www.amazon.com/Dare-Lead-Brave-Conversations-Hearts/dp/B07DJYFLX8/ref=sr_1_1?crid=2MWSP006TRPFF&keywords=dare+to+lead+brene+brown&qid=1570762120&s=audible&sprefix=dare+to+lead%2Caudible%2C179&sr=1-1)
+* [The Dichotomy of Leadership: Balancing the Challenges of Extreme Ownership to Lead and Win](https://www.amazon.com/Dichotomy-Leadership-Balancing-Challenges-Ownership/dp/B07BN5NGQ5/ref=sr_1_1?crid=58IXL95SLEIL&keywords=the+dichotomy+of+leadership&qid=1570762159&s=audible&sprefix=the+dic%2Caudible%2C181&sr=1-1)
+* [The Manager's Path: A Guide for Tech Leaders Navigating Growth and Change](https://www.amazon.com/Managers-Path-Leaders-Navigating-Growth/dp/B07SV4VDWC/ref=sr_1_2?keywords=a+managers+path&qid=1570761858&sr=8-2)
+
+### Entrepreneurship
+
+* [The Dip](https://www.amazon.com/Dip-extraordinary-benefits-knowing-Paperback/dp/B00IIAZ3P6/ref=tmm_pap_swatch_0?_encoding=UTF8&qid=1576210402&sr=8-1)
+
+### Self-Development
+
+* Re-read [The 7 Habits of Highly Effective People](https://www.amazon.com/Habits-Highly-Effective-People-Powerful/dp/0743269519)
+* [Un-F\*ck yourself](https://www.audible.com/pd/Unfu-k-Yourself-Audiobook/B0731R4RFX)
+* [Getting Things Done](https://www.audible.com/pd/Getting-Things-Done-Audiobook/B01B6WSMHI?qid=1576209800&sr=1-1&pf_rd_p=e81b7c27-6880-467a-b5a7-13cef5d729fe&pf_rd_r=Q2YYDX3H0D05F4JSAQBD&ref=a_search_c3_lProduct_1_1)
+* [StrengthsFinder 2.0](https://www.amazon.com/StrengthsFinder-2-0-Tom-Rath/dp/159562015X/ref=sxts_sxwds-bia?keywords=strengthsfinder&pd_rd_i=159562015X&pd_rd_r=20823cb1-11ec-422b-857e-0598186a531a&pd_rd_w=tiYBg&pd_rd_wg=5WnVE&pf_rd_p=1cb3f32a-ccfd-479b-8a13-b22f56c942c6&pf_rd_r=PV598GNQRV9EN6TYM8FM&psc=1&qid=1576209899)
+
+### Philosophy
+
+* [In my own way](https://www.amazon.com/In-My-Own-Way/dp/B07PH2L7NH/ref=sr_1_1?keywords=in+my+own+way+alan+watts&qid=1570762096&s=books&sr=1-1)
+* [Out of Your Mind](https://www.audible.com/pd/Out-of-Your-Mind-Audiobook/B0161LXWGK)
+* [Discourses: Complete Books 1-4](https://www.amazon.com/Discourses-Complete-Adapted-Contemporary-Classics/dp/B07BB1HTYL/ref=sr_1_1?keywords=discourses+complete+books&qid=1570761989&sr=8-1)
+
+### Psychology
+
+* [Switch: How to Change Things When Change is Hard](https://www.amazon.com/Switch-Change-Things-When-Hard/dp/0385528752/ref=sr_1_1?crid=16BWN17YUENAU&keywords=switch+how+to+change+things+when+change+is+hard&qid=1570762283&sprefix=switch%3A+how+to+ch%2Caps%2C179&sr=8-1)
+* [Introducing Cognitive Behavioral Therapy](https://www.amazon.com/Introducing-Cognitive-Behavioural-Therapy-Work-ebook/dp/B00KFEJK3O/ref=sr_1_5?keywords=introducing+cognitive+behavioral+therapy&qid=1570762329&sr=8-5)
+
+### Technology
+
+#### Architecture
+
+* [Continuous Delivery: Reliable Software Releases through Build, Test, and Deployment Automation](https://www.amazon.com/Continuous-Delivery-Deployment-Automation-Addison-Wesley/dp/0321601912/ref=sr_1_1?keywords=continuous+delivery&qid=1576209741&sr=8-1)
+* [Clean Architecture](https://www.amazon.com/Clean-Architecture-Craftsmans-Software-Structure/dp/0134494164/ref=sr_1_1?keywords=clean+architecture&qid=1570762521&sr=8-1)
+* [Enterprise Integration Patterns](https://www.amazon.com/Enterprise-Integration-Patterns-Designing-Deploying/dp/0321200683/ref=sr_1_1?crid=1SCN214HGSNQG&keywords=enterprise+integration+patterns&qid=1570762548&sprefix=enterpris%2Caps%2C183&sr=8-1)
+
 
 ## 2018
 
@@ -23,7 +62,6 @@ I love reading and learning. I'm putting this page together to keep track of all
 * [The Five Dysfunctions of a Team: A Leadership Fable](https://www.amazon.com/Five-Dysfunctions-Team-Leadership-Fable/dp/0787960756/ref=sr_1_3?ie=UTF8&qid=1524424912&sr=8-3&keywords=5+dysfunctions+of+a+team+book)
 * [Lead Your Tribe, Love Your Work: An Entrepreneur's Guide to Creating a Culture that Matters](https://www.amazon.com/gp/product/0998646504/ref=oh_aui_detailpage_o05_s00?ie=UTF8&psc=1)
 * [Managing Humans: Biting and Humorous Tales of a Software Engineering Manager](https://www.amazon.com/Managing-Humans-Humorous-Software-Engineering/dp/1430243147)
-
 
 ### Communication
 
@@ -45,6 +83,10 @@ I love reading and learning. I'm putting this page together to keep track of all
 
 * [Blink: The Power of Thinking Without Thinking](https://www.amazon.com/Blink-Power-Thinking-Without/dp/0316010669/ref=sr_1_2?ie=UTF8&qid=1524425072&sr=8-2&keywords=blink)
 
+### Science Fiction
+
+* [Brave New World](https://www.amazon.com/Brave-New-World-Revisited/dp/0060776099/ref=sr_1_2?keywords=brave+new+world&qid=1576209864&sr=8-2)
+* [Twenty Thousand Leagues Under the Sea](https://www.amazon.com/000-Leagues-Under-Wordsworth-Classics/dp/1853260312)
 
 ## 2017
 
@@ -58,6 +100,7 @@ I love reading and learning. I'm putting this page together to keep track of all
 * [The Art of Possibility - Transforming Professional and Personal Life](https://www.audible.com/pd/Self-Development/The-Art-of-Possibility-Audiobook/B004GMOPFO)
 * [High Performance Habits - How Extraordinary People Become That Way](https://www.audible.com/pd/Business/High-Performance-Habits-Audiobook/B076BXLDVP)
 * [How to Fail at Almost Everything and Still Win Big](https://www.audible.com/pd/Business/How-to-Fail-at-Almost-Everything-and-Still-Win-Big-Audiobook/B00FTUQFO6)
+* [Who Moved My Cheese](https://www.amazon.com/Who-Moved-My-Cheese-Mazing/dp/0091816971/ref=sr_1_1?crid=NTVOXBK5FTC&keywords=who+moved+my+cheese&qid=1576209955&s=books&sprefix=who+moved+my+%2Cstripbooks%2C171&sr=1-1)
 
 ### Self-Development
 
@@ -80,7 +123,6 @@ into this philosophy because it has influenced me so much in this last year.
 ### Programming / Computing
 
 * [Programming Pheonix](https://pragprog.com/book/phoenix14/programming-phoenix-1-4)
-* [Pro Puppet](https://www.amazon.com/Pro-Puppet-Spencer-Krum/dp/1430260408)
 * [Metaprogramming Elixir](https://pragprog.com/book/cmelixir/metaprogramming-elixir)
 * [The Little Elixir & OTP Guidebook](https://www.manning.com/books/the-little-elixir-and-otp-guidebook)
 * [Learn You Some Erlang For Great Good](http://learnyousomeerlang.com/) - Fred Hebert
@@ -126,6 +168,11 @@ into this philosophy because it has influenced me so much in this last year.
 * [Grit - The Power of Passion and Perseverance](https://www.audible.com/pd/Science-Technology/Grit-Audiobook/B01D3AC5BA)
 
 
+### Programming / Computing
+
+* [Programming Elixir](https://pragprog.com/book/elixir16/programming-elixir-1-6)
+* [Programming Pheonix](https://pragprog.com/book/phoenix14/programming-phoenix-1-4)
+* [The Little Elixir & OTP Guidebook](https://www.manning.com/books/the-little-elixir-and-otp-guidebook)
 
 
 ## 2015 and earlier
@@ -152,11 +199,6 @@ into this philosophy because it has influenced me so much in this last year.
 * Failing Forward - John Maxwell
 * Man and His Symbols - Carl Jung
 
-
-### Programming / Computing
-
-* [Programming Elixir](https://pragprog.com/book/elixir16/programming-elixir-1-6)
-* [Programming Pheonix](https://pragprog.com/book/phoenix14/programming-phoenix-1-4)
 
 
 ### Psychology
@@ -186,7 +228,6 @@ into this philosophy because it has influenced me so much in this last year.
 * [Elixir Cookbook](https://www.packtpub.com/application-development/elixir-cookbook)
 * [Postgres 9 Administration Cookbook](https://www.packtpub.com/big-data-and-business-intelligence/postgresql-9-administration-cookbook-second-edition)
 * [Pro Puppet](http://www.apress.com/us/book/9781430260400)
-* [The Little Elixir & OTP Guidebook](https://www.manning.com/books/the-little-elixir-and-otp-guidebook)
 
 
 ### Financials

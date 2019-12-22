@@ -9,7 +9,7 @@
   <meta name="author" content="Josh Bavari">
 
   
-  <meta name="description" content="I spoke about how plugins work and how to create plugins in Cordova at KCDC. I wanted to make sure my slides are available to any who wanted to view &hellip;">
+  <meta name="description" content="I spoke about the different Javascript Build systems at KCDC. I wanted to make sure my slides are available to any who wanted to view them. A few &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -70,48 +70,6 @@
     <div id="content">
       <div class="blog-index">
   
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/05/17/moving-forward-with-phonegap-slash-cordova-plugins/">Moving Forward With Phonegap / Cordova Plugins</a></h1>
-    
-    
-      <p class="meta">
-        <span class="reading-time">less than a 1 minute read</span>
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2014-05-17T15:24:00-06:00" pubdate data-updated="true">May 17<span>th</span>, 2014</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>I spoke about how plugins work and how to create plugins in Cordova at KCDC. I wanted to make sure my slides are available to any who wanted to view them.</p>
-
-<p>The slides are located <a href="http://jbavari.github.io/MovingForwardWithCordovaPlugins/">here</a>.</p>
-
-<p>I hope this is helpful for some out there,
-Enjoy!</p>
-</div>
-  
-  
-
-
-    </article>
   
   
     <article>
@@ -1003,6 +961,85 @@ Enjoy!</p>
 <p>Boom! Now I&rsquo;ve got Livereload being injected into each of the rails/rack apps I configured and handling all the other business. I just have to sit back and code.</p>
 
 <p>Hope this helps any who may be wanting a similar set up with subdomains with rails/rack &amp; node.js hosted apps.</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/03/11/how-to-be-a-good-imitator-in-phonegap-slash-cordova/">How to Be a Good Imitator in PhoneGap/Cordova</a></h1>
+    
+    
+      <p class="meta">
+        <span class="reading-time">less than a 1 minute read</span>
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-03-11T01:02:00-06:00" pubdate data-updated="true">Mar 11<span>th</span>, 2014</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>If you found your way here, then you&rsquo;re probably seeking knowlege about Phonegap/Cordova. I want to first remind you what the purpose of the PhoneGap / Cordova project is:</p>
+
+<blockquote><p><a href="http://phonegap.com/2012/05/09/phonegap-beliefs-goals-and-philosophy/">The ultimate purpose of PhoneGap is to cease to exist.</a></p></blockquote>
+
+<p>What this means is &ndash; you should really start getting ready to make Native-like apps regardless of what technology is used.</p>
+
+<p>How can we give native apps a better feel from PhoneGap / Cordova? Or stated another way, what are some tricks we can use to make the application feel more native?</p>
+
+<p>The answer then, is to be a better imitator, you must first understand what you are imitating.</p>
+
+<h2>The chameleons change color to their surroundings</h2>
+
+<p>Simply stated &ndash; you adapt to what your surroundings are.</p>
+
+<p>Our surroundings for PhoneGap / Cordova are quite wide:</p>
+
+<ul>
+<li>iOS</li>
+<li>Android</li>
+<li>Windows Phone</li>
+<li>BlackBerry</li>
+<li>Firefox OS</li>
+</ul>
+
+
+<p>That is a lot to adapt to. It may take a little time to familiarize yourself with each platform. If you do though, your users will thank you.</p>
+
+<h2>Some suggestions</h2>
+
+<ul>
+<li>Put navigation items near the top in Android, for iOS put them near the bottom. Users are used to having their navigation in the same place.</li>
+<li>In Android / Windows Phone &ndash; mind the Back button! Users use their phones natively, and if you try to change this, they will hate your app.</li>
+<li>Dont use the same button styles for each platform! Buttons on iOS do not look like buttons on Android &ndash; if you try this though, your users will notice and find it odd. <a href="http://goratchet.com/components/">See these great examples from Ratchet.js (look for the Base/iOS/Android buttons near the top)</a></li>
+<li>Use Native-like loading animations. iOS generally has a small circle &ndash; if you try using this instead of your own custom loading icon, users will most likely blame their phone over your app. <a href="http://mercury.io/blog/the-psychology-of-waiting-loading-animations-and-facebook">See this study by Facebook for loading animations</a></li>
+<li>Test on actual devices. You cant get a native feel from clicking on a simulator.</li>
+</ul>
+
+
+<p>References:</p>
+
+<p><a href="http://www.tricedesigns.com/2013/03/11/performance-ux-considerations-for-successful-phonegap-apps/">Performance UX Considerations for successful PhoneGap apps</a></p>
+
+<p><a href="http://www.mikedellanoce.com/2012/09/10-tips-for-getting-that-native-ios.html">Tips for getting that native feel</a></p>
 </div>
   
   

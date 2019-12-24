@@ -4,7 +4,7 @@
   <title><![CDATA[Josh Bavari's Thoughts]]></title>
   <link href="http://jbavari.github.io/atom.xml" rel="self"/>
   <link href="http://jbavari.github.io/"/>
-  <updated>2019-12-22T14:28:58-07:00</updated>
+  <updated>2019-12-23T21:01:40-07:00</updated>
   <id>http://jbavari.github.io/</id>
   <author>
     <name><![CDATA[Josh Bavari]]></name>
@@ -12,6 +12,37 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Take Action Now]]></title>
+    <link href="http://jbavari.github.io/blog/2019/12/23/take-action-now/"/>
+    <updated>2019-12-23T20:52:00-07:00</updated>
+    <id>http://jbavari.github.io/blog/2019/12/23/take-action-now</id>
+    <content type="html"><![CDATA[<p>I feel that there is a lot of things I can say about the world today. First, there is a lot of bullcrap that we churn through in our minds. You know the sort that I&rsquo;m talking about &ndash; the self deception. The thought that I&rsquo;m going places, without taking the action to take those steps to start that path. Those new years resolutions. Those goals that you write down, but do not get action items defined and set up on the calendar. Those same action items you don&rsquo;t check in on from time to time. Things that we tell ourselves that we&rsquo;ll get to tomorrow. We rarely do. We think in terms of intentions &ndash; and judging ourselves retroactively based on those intentions rather than the actions.</p>
+
+<p>Our actions become who we are. This much is true by everyone. Most people carry a picture of themselves in their mind that they think they are. In those that really are that person of action, rarely spend time thinking of what they should be doing. They are currently working towards being what they should be, instead of thinking of it. &ldquo;A good plan, violently executed now, is better than a perfect plan next week.&rdquo; &ndash; George Patton.</p>
+
+<p>They used to call George Patton &ndash; old blood and guts. Here&rsquo;s his thoughts on embracing your part to play, regardless of the role:</p>
+
+<p>&ldquo;All of the real heroes are not storybook combat fighters, either. Every single man in this Army plays a vital role &hellip; . Don’t ever think that your job is unimportant. Every man has a job to do and he must do it. Every man is a vital link in the great chain.&rdquo;</p>
+
+<p>This same mindset exists in today&rsquo;s day and age. We all have a crucial role to play in the world of hate. We must lay steadfast in our power in the world. Strive the be the best at what you do. We all pay our part back to mankind. When we embrace what our purpose is &ndash; and strive to better in that department &ndash; we make the world a better place.</p>
+
+<p>When you find yourself becoming paralyzed by needing a perfect plan, remember: you came here to serve, to take action, to think through a plan, and to execute. Don&rsquo;t get hung up on the plan phase too long or you won&rsquo;t get to play your part. Only your actions echo through time.</p>
+
+<p>Here&rsquo;s a trick to take action sooner &ndash; if you&rsquo;re starting a new project or path, think of a few things that you have done already towards that goal.</p>
+
+<p>For example, when setting a weight loss goal: &ldquo;I want to get down to 185&rdquo;. You could tell yourself, &ldquo;I&rsquo;m at 205, down from 220. I&rsquo;m already down 20%&rdquo;.</p>
+
+<p>Citing some psychology tricks I&rsquo;ve pulled from the book, &ldquo;Switch: How to change things when change is hard&rdquo;. This book tells a story about sales tactics &ndash; one store gives customers a &lsquo;buy 8, get one free card&rsquo;. Another store gives customers &lsquo;buy 10, get one free&rsquo;, but they give the first 2 items starting off the bat. The second store sees an 80% return in customers. The psychology here is, they&rsquo;ve gotten started, the momentum is there.</p>
+
+<p>Remember, physics always wins. Momentum exists in our mind, overcome that by using the gravity of starting conditions to help it along.</p>
+
+<p>Keep a calendar to keep momentum going. Put an &lsquo;X&rsquo; on the date to remind yourself of the building momentum. Once it starts, it will be harder to stop.</p>
+
+<p>Take action now. Get started. That starting momentum can carry you along.</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Continuous Delivery - Book Review]]></title>
@@ -2368,166 +2399,6 @@ Figuring how to plug in rendering steps between state changes. <code>this.setSta
 <p>Don&rsquo;t forget that the only difference between a victor and a victim, is their mindset.</p>
 
 <p>Remember, there is no luck, only the work you put in and the effect you see afterwards.</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Ionic 2.0 Generators - Services]]></title>
-    <link href="http://jbavari.github.io/blog/2015/11/06/ionic-2-dot-0-generators-services/"/>
-    <updated>2015-11-06T01:23:00-07:00</updated>
-    <id>http://jbavari.github.io/blog/2015/11/06/ionic-2-dot-0-generators-services</id>
-    <content type="html"><![CDATA[<p>This is the second post in a series covering the new Ionic Generators in Ionic 2.0. In the <a href="http://jbavari.github.io/blog/2015/11/05/using-ionic-2-dot-0-generators/">first post</a>, we discussed generating pages, let&rsquo;s focus now on generating some services to consume some JSON data via an http request.</p>
-
-<h2>Get the tools</h2>
-
-<p>Run this to get started:</p>
-
-<figure class='code'><figcaption><span>Install Ionic CLI and start an Ionic application</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>npm install -g ionic@alpha
-</span><span class='line'>ionic start MyIonic2App tabs --v2
-</span><span class='line'><span class="nb">cd </span>MyIonic2App
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h2>Generate the service</h2>
-
-<p><code>ionic g injectable MyDataService</code></p>
-
-<p>You should see the service:</p>
-
-<figure class='code'><figcaption><span>Run generate command</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>~/Development/testing/MyIonic2App<span class="nv">$ </span>ionic g injectable MyDataService
-</span><span class='line'>√ Create www/app/my-data-service/my-data-service.js
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>The basic blueprint of the generated service is as follows:</p>
-
-<figure class='code'><figcaption><span>Generated Data Service</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kr">import</span> <span class="p">{</span><span class="nx">Injectable</span><span class="p">}</span> <span class="nx">from</span> <span class="s1">&#39;angular2/angular2&#39;</span><span class="p">;</span>
-</span><span class='line'><span class="kr">import</span> <span class="p">{</span><span class="nx">Http</span><span class="p">}</span> <span class="nx">from</span> <span class="s1">&#39;angular2/http&#39;</span><span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'><span class="err">@</span><span class="nx">Injectable</span><span class="p">()</span>
-</span><span class='line'><span class="kr">export</span> <span class="kr">class</span> <span class="nx">MyDataService</span> <span class="p">{</span>
-</span><span class='line'>  <span class="nx">constructor</span><span class="p">(</span><span class="nx">http</span><span class="o">:</span> <span class="nx">Http</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>    <span class="k">this</span><span class="p">.</span><span class="nx">http</span> <span class="o">=</span> <span class="nx">http</span><span class="p">;</span>
-</span><span class='line'>    <span class="k">this</span><span class="p">.</span><span class="nx">data</span> <span class="o">=</span> <span class="kc">null</span><span class="p">;</span>
-</span><span class='line'>  <span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="nx">retrieveData</span><span class="p">()</span> <span class="p">{</span>
-</span><span class='line'>    <span class="c1">//Here, we&#39;re going to get a JSON data file, use the `map` call to parse json</span>
-</span><span class='line'>    <span class="c1">// and finally subscribe to the observable and set our data</span>
-</span><span class='line'>    <span class="c1">//to the value it provides once the http request is complete.</span>
-</span><span class='line'>    <span class="k">this</span><span class="p">.</span><span class="nx">http</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">&#39;path/to/data.json&#39;</span><span class="p">)</span>
-</span><span class='line'>      <span class="p">.</span><span class="nx">map</span><span class="p">(</span><span class="nx">res</span> <span class="o">=&gt;</span> <span class="nx">res</span><span class="p">.</span><span class="nx">json</span><span class="p">())</span>
-</span><span class='line'>      <span class="p">.</span><span class="nx">subscribe</span><span class="p">(</span><span class="nx">data</span> <span class="o">=&gt;</span> <span class="p">{</span>
-</span><span class='line'>        <span class="k">this</span><span class="p">.</span><span class="nx">data</span> <span class="o">=</span> <span class="nx">data</span><span class="p">;</span>
-</span><span class='line'>      <span class="p">},</span> <span class="nx">error</span> <span class="o">=&gt;</span> <span class="p">{</span>
-</span><span class='line'>        <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;Error with http.get: &#39;</span><span class="p">,</span> <span class="nx">error</span><span class="p">);</span>
-</span><span class='line'>      <span class="p">});</span>
-</span><span class='line'>  <span class="p">}</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h2>Wiring it in to be used</h2>
-
-<p>Adjust <code>www/app/app.js</code> to import the data service, as well as provide it for all of its components:</p>
-
-<figure class='code'><figcaption><span>www/app/app.js</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kr">import</span> <span class="p">{</span><span class="nx">MyDataService</span><span class="p">}</span> <span class="nx">from</span> <span class="s1">&#39;./my-data-service/my-data-service&#39;</span><span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'><span class="err">@</span><span class="nx">App</span><span class="p">({</span>
-</span><span class='line'>  <span class="nx">template</span><span class="o">:</span> <span class="s1">&#39;&lt;ion-nav [root]=&quot;root&quot;&gt;&lt;/ion-nav&gt;&#39;</span><span class="p">,</span>
-</span><span class='line'>  <span class="nx">providers</span><span class="o">:</span> <span class="p">[</span><span class="nx">Friends</span><span class="p">,</span> <span class="nx">MyDataService</span><span class="p">]</span>
-</span><span class='line'><span class="p">})</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h2>Use the service</h2>
-
-<p>We&rsquo;ll use the tabs starter dashboard page to pull data.</p>
-
-<p>Let&rsquo;s modify <code>www/app/dash/dash.ts</code> &ndash; adding an import for <code>MyDataService</code>, adding <code>MyDataService</code> to the constructore as an injected dependency, and finally adding the call to <code>retrieveData</code> in the constructore method.</p>
-
-<figure class='code'><figcaption><span>www/app/dash/dash.ts</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kr">import</span> <span class="p">{</span><span class="nx">Page</span><span class="p">,</span> <span class="nx">NavController</span><span class="p">,</span> <span class="nx">ViewController</span><span class="p">}</span> <span class="nx">from</span> <span class="s1">&#39;ionic/ionic&#39;</span><span class="p">;</span>
-</span><span class='line'><span class="kr">import</span> <span class="p">{</span><span class="nx">MyDataService</span><span class="p">}</span> <span class="nx">from</span> <span class="s1">&#39;../my-data-service/my-data-service&#39;</span><span class="p">;</span>
-</span><span class='line'><span class="kr">import</span> <span class="p">{</span><span class="nx">About</span><span class="p">}</span> <span class="nx">from</span> <span class="s1">&#39;../about/about&#39;</span><span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'><span class="err">@</span><span class="nx">Page</span><span class="p">({</span>
-</span><span class='line'>  <span class="nx">templateUrl</span><span class="o">:</span> <span class="s1">&#39;app/dash/dash.html&#39;</span><span class="p">,</span>
-</span><span class='line'><span class="p">})</span>
-</span><span class='line'><span class="kr">export</span> <span class="kr">class</span> <span class="nx">Dash</span> <span class="p">{</span>
-</span><span class='line'>  <span class="nx">constructor</span><span class="p">(</span><span class="nx">nav</span><span class="o">:</span> <span class="nx">NavController</span><span class="p">,</span> <span class="nx">view</span><span class="o">:</span> <span class="nx">ViewController</span><span class="p">,</span> <span class="nx">data</span><span class="o">:</span> <span class="nx">MyDataService</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>    <span class="k">this</span><span class="p">.</span><span class="nx">nav</span> <span class="o">=</span> <span class="nx">nav</span><span class="p">;</span>
-</span><span class='line'>    <span class="k">this</span><span class="p">.</span><span class="nx">view</span> <span class="o">=</span> <span class="nx">view</span><span class="p">;</span>
-</span><span class='line'>    <span class="nx">data</span><span class="p">.</span><span class="nx">retrieveData</span><span class="p">();</span>
-</span><span class='line'>  <span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="nx">goToAboutPage</span><span class="p">()</span> <span class="p">{</span>
-</span><span class='line'>    <span class="k">this</span><span class="p">.</span><span class="nx">nav</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">About</span><span class="p">);</span>
-</span><span class='line'>  <span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h2>Additional information</h2>
-
-<p>If you&rsquo;ve used Angular 1, you&rsquo;re probably familiar with promises to return your data from http requests.</p>
-
-<p>Under the hood of Angular 2 lies <a href="https://github.com/Reactive-Extensions/RxJS">RxJs</a> that builds on promises, focusing on being repeatable.</p>
-
-<p>Enjoy!</p>
 ]]></content>
   </entry>
   

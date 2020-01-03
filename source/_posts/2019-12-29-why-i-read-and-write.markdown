@@ -1,17 +1,19 @@
 ---
 layout: post
 title: "Why I read and write"
-date: 2020-12-29 17:00
+date: 2019-12-29 17:00
 comments: true
 categories: development reading audiobook knowledge
 published: false
 ---
 
-In today's current society, the internet has enabled an entire species to read and listen on a global scale. Reading and listening is the de facto mechanism in which to share human knowledge to many generations past. There are endless amounts of digital content one can get through the medium of the internet.
+Let me ask you a quick question: if you know that reading is essential to certain parts of learning and growth, then you already know why you read, but is it deeper than that? Is it something engrained in our subconscious minds through hudreds if not thousands of years of evolution?
+
+In today's current society, the internet has enabled an entire species to read and listen on a global scale. Reading and listening is the de facto mechanism in which to share human knowledge to many generations past. There are endless amounts of digital content one can get through the medium of the internet. (I try and [talk about that here](/blog/2020/01/02/knowledge-consumption-routine/))
 
 (NOTE: I'm going to bucket the 'watch' category into listen and/or read. People read tons of online junk anyway!)
 
-We know it in old caves as wall scrapings and paintings. There is the knowledge those cavemen passed along to their tribe. The unfortunate thing about that was that only those who veered onto the wall could read the message. The other issue would be - whose cave was this, anyway?! They might actually be wrong or have a different method of thinking than we did.
+We know it in old caves as wall carvings and paintings. There is the knowledge those cavemen passed along to their tribe. The unfortunate thing about that was that only those who veered onto the wall could read the message. The other issue would be - whose cave was this, anyway?! (and what are these large dinosaurs?!) These messages might be wrong or have a different method of thinking than we currently do now. There's no way to remediate the differences, since the author may not always be available for disucssion.
 
 The internet, in some sense, eased this burden by providing an infinite level of walls that tribes could erect mass cave paintings in the endless amount of caves.
 
@@ -43,7 +45,7 @@ Let's dive into how I select each of these.
 
 For the 2019 year, I wanted to aim for reading two books a month aimed at two topics: personal growth and professional acumen growth. Sometimes, the books would be both. Other times, it would be totally random. It just so happens that what I read for joy is also in lined with what I love: psychology - how the human mind works.
 
-I often joke that if I didn't go the computer science route, I would have gone to neuroscience or psychology. I'm a hobbyist at best in reading and studying psychology and the human mind. 
+I often joke that if I didn't go the computer science route, I would have gone to neuroscience or psychology. I'm a hobbyist at best in reading and studying psychology and the human mind.
 
 Certainly hitting the ripe age of 35 has triggered me to think more about philosophy, the meaning of the world, the strive to hold off suffering, and the ability to see the world anew.
 

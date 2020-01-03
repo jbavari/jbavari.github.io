@@ -7,28 +7,39 @@ categories: development reading audiobook knowledge
 published: false
 ---
 
-I love having conversations with other people about reading. Topics in the realm of what they read, why they read, how much they read, where they read, and the habits of how they read. The amount of choices available to any person at any time are at an all time high and ever rising. 
+I love having conversations with other people about reading. Topics in the realm of what they read, why they read, how much they read, where they read, and the habits of how they read. The amount of choices available to any person at any time are at an all time high and ever rising.
 
-The internet is a big reading knowledge black hole - not in the sense that it's pulling everything in to it, but that it's ever growing and endless. The amount of words written is expanding universal levels! OK, I'm getting way off topic of the point of this post. But.. Try and think for a second that everything that has been written by humans in their lifetime, some captured, some lost in time. The sheer amount of numbers is exponential.
+Knowledge itself is an enormous black hole - not in the sense that it's pulling everything in to it, but that it's ever growing and potentially endless. The amount of words written is expanding universal levels! OK, I'm getting way off topic of the point of this post. But.. Try and think for a second that everything that has been written by humans in their lifetime, some captured, some lost in time. The sheer amount of numbers is exponential.
 
-Anyways, I wish I could find some way to calculate the amount of hours I consume reading on the internet, books, kindle, as well as audio based content.
+That being said, I've recently taken the [Sparketypes quiz](https://www.goodlifeproject.com/sparketypes/) from Jonathan Fields (came across while reading the book Start Finishing). Turns out, I'm a Maven and a Sage. Which for those unaware, a Maven is someone who loves learning for learning sake and a Sage is one who enjoys sharing and teaching others things.
 
-I'm going to try and outline my reading habits in this quick little post.
+So if all that there is to know is a black hole, I'm an scientist flying through space attempting to observe and learn it all while radioing back home the messages.
+
+Anyways...
+
+I wish I could find some way to calculate the amount of hours I consume reading on the internet, books, kindle, as well as audio based content.
+
+I'm going to try and outline my reading habits in this quick little post in an attempt to shed some new ideas for others looking for a good reading routine.
 
 I read and consume many bits of information:
 
 * Daily email newsletters
 * Internet blogs and articles
 * Physical books
-* Audible 
+* Audible
 * E-books on my Kindle
 
-Additionally, I have some habits in my reading that others have asked me about. I try and read:
+Additionally, I have some habits in my reading that others have asked me about. I honestly cannot remember where I learned the habit of reading whenever I can. I think it was Bill Gates or someone who said they read when they're in line, when they're waiting for someone to meet up with, etc etc. That's exactly the approach I go for. I try and read during:
 
 * The morning rise
 * The daily walk(s)
 * Throughout the day
 * Wrapping up the night
+* While I'm driving (audiobooks)
+* When I'm waiting for a friend to arrive, using my Kindle app
+* Sometimes during lunch (I keep my kindle with me at most times)
+* While I'm out for lunch or dinner
+* Literally any chance I can get when my brain is enaged
 
 Now, I'll try to outline my consumption of these mediums and habits!
 
@@ -38,7 +49,7 @@ Now, I'll try to outline my consumption of these mediums and habits!
 
 I subscribe to a lot of interesting fellows in the psychology, self help, and other various 'betterment' email newsletters. I really enjoy some of their articles as brainstorming seeds and kicking off discovery of new ideas. I'll estimate I spend anywhere from 5-10 minutes on either the post itself or links to other articles on the website.
 
-* Seth Godin 
+* Seth Godin
 * The Daily Stoic
 * Mark Manson (Mondays)
 * Nir Eyal
@@ -49,13 +60,13 @@ I subscribe to a lot of interesting fellows in the psychology, self help, and ot
 I'd say I spend about 5-20 minutes sometimes longer, varying from available article content and the interest of content to me.
 
 * Hacker News posts - any that tickle my brain (it's a lot)
-* Related professional topics in my work hours (elixir posts, postgres, programming, system design, etc)
+* Related professional topics in my work hours (software related, leadership articles, system design, etc)
 
 ## Physical books
 
-At anytime, I have a stack of about 2-3 books that I want to read. I get these from many sources, and right now, there is no rhyme or reason to my choosing of a physical book over an e-book. 
+At anytime, I have a stack of about 2-3 books that I want to read. I get these from many sources, and right now, there is no rhyme or reason to my choosing of a physical book over an e-book.
 
-How I choose the books is still a mystery to me. At the time of writing this, I have a few piled up on my bookshelf ready to be read. At the time of writing this, my queue is: Black Box Thinking, The Black Swan, Getting to Yes, and Aware. 
+How I choose the books is still a mystery to me. At the time of writing this, I have a few piled up on my bookshelf ready to be read. At the time of writing this, my queue is: Black Box Thinking, The Black Swan, Getting to Yes, and Aware.
 
 I'll usually ask for books for any gifts any want to give me as a go-to when someone asks what I'd like.
 
@@ -63,7 +74,7 @@ I'll usually ask for books for any gifts any want to give me as a go-to when som
 
 I walk my dog every morning. This time on the walk is some prime time for mindfulness as well as listening to some quality audiobook content. I'm a huge audible fan.
 
-I love having some positive thoughts shared on my walk. As of late, it's been focused on leadership, mindfulness, and philosophy. Nothing better than getting a day started with some positive thoughts filling up your subconscious.
+I love having some positive thoughts shared on my walk. As of late, it's been focused on leadership, mindfulness, and philosophy. Nothing better than getting a day started with some positive thoughts filling up your subconscious, as our minds tend to absorb whatever is in the community consciousness. At the time of writing this, i've been listening to Stillness is the Key and The Art of Power.
 
 ## E-books on my kindle
 
@@ -85,11 +96,11 @@ From here, I at get at least 15-30 minutes of reading time, pending more if I'm 
 
 ## The daily walk(s)
 
-Once the clock finally hits 8:30 AM or so, my little dog Amaya demands a walk. Great! Now I get some time to listen to my audio book while we go on our daily 1.5 mile walk. Sometimes more, sometimes less. Regardless, this gets me about 10 hours of listening a month. Some other stats from audible - my minimum listening time was in November of this year, at 5h 52m. My maximum, oddly enough not due to the weather, is at 20h 48m!
+Once the clock finally hits 8:30 AM or so, my little dog Amaya demands a walk. Great! Now I get some time to listen to my audio book while we go on our daily 1.5 mile walk. Sometimes more, sometimes less. Regardless, this gets me about 10 hours of listening a month. Audible also gives some other fun stats for listening - my minimum listening time was in November of this year, at 5h 52m. My maximum, oddly enough not due to the weather, is December with 20h 48m!
 
 ## Throughout the day
 
-While the day rolls along, I try to sneak in some reading time anyway I can. I might bust out my kindle over lunch while I'm at work. I might read a few internet articles / blogs / or whatever else I might find interesting throughout the day. 
+While the day rolls along, I try to sneak in some reading time anyway I can. I might bust out my kindle over lunch while I'm at work. I might read a few internet articles / blogs / or whatever else I might find interesting throughout the day.
 
 While I'm at work, I try to look up blog posts that are relevant either to leadership, management, programming, communication, or any other issue I am currently working through during my very dynamic days.
 
@@ -105,10 +116,10 @@ Again, these numbers are mainly hail mary estimates.
 
 Morning: 15m-30m (daily newsletter) + 30m-1h (book reading) + 50m (audible) = 1h 30m - 2h 20m
 
-Day: 15m - 1h 
+Day: 15m - 1h
 
 Night: 15m - 30m
 
 Coming to a guessed grand total for a minimum of 2 hours to a maximum of 3 hours and 50 minutes.
 
-Not bad for some small habits at play. This is definitely how I enjoy spending my time.
+For just a small time investment, I can steal quite a good chunk of learning time. Since I'm being sucked into the knowledge black hole, I tend to lose track of times in my small reading habits. That's OK by me though, since the constant reading habits help enforce knowledge retention since many books seem to cover similiar material, thus being stored to my long term storage!

@@ -9,6 +9,18 @@ footer: true
 
 I love reading and learning. I'm putting this page together to keep track of all my knowledge sources.
 
+## 2020
+
+### Currently reading
+
+* [Start Finishing: How to go from an idea to Done](https://www.amazon.com/Start-Finishing-How-Idea-Done-ebook/dp/B07SL9YNGD)
+* [What you do is who you are](https://www.audible.com/pd/What-You-Do-Is-Who-You-Are-Audiobook/0062967584)
+* [Black Box Thinking](https://www.amazon.com/Black-Box-Thinking-People-Mistakes-But/dp/1591848229/ref=tmm_hrd_swatch_0?_encoding=UTF8&qid=1578168067&sr=8-1)
+
+### Philosophy
+
+* [The Art of Power](https://www.audible.com/pd/The-Art-of-Power-Audiobook/B002VA3JRI)
+
 ## 2019
 
 ### Business / Leadership
@@ -29,6 +41,7 @@ I love reading and learning. I'm putting this page together to keep track of all
 * [Un-F\*ck yourself](https://www.audible.com/pd/Unfu-k-Yourself-Audiobook/B0731R4RFX)
 * [Getting Things Done](https://www.audible.com/pd/Getting-Things-Done-Audiobook/B01B6WSMHI?qid=1576209800&sr=1-1&pf_rd_p=e81b7c27-6880-467a-b5a7-13cef5d729fe&pf_rd_r=Q2YYDX3H0D05F4JSAQBD&ref=a_search_c3_lProduct_1_1)
 * [StrengthsFinder 2.0](https://www.amazon.com/StrengthsFinder-2-0-Tom-Rath/dp/159562015X/ref=sxts_sxwds-bia?keywords=strengthsfinder&pd_rd_i=159562015X&pd_rd_r=20823cb1-11ec-422b-857e-0598186a531a&pd_rd_w=tiYBg&pd_rd_wg=5WnVE&pf_rd_p=1cb3f32a-ccfd-479b-8a13-b22f56c942c6&pf_rd_r=PV598GNQRV9EN6TYM8FM&psc=1&qid=1576209899)
+* [Stillness is the key](https://www.audible.com/pd/Stillness-Is-the-Key-Audiobook/0593147952)
 
 ### Philosophy
 
@@ -49,7 +62,7 @@ I love reading and learning. I'm putting this page together to keep track of all
 * [Continuous Delivery: Reliable Software Releases through Build, Test, and Deployment Automation](https://www.amazon.com/Continuous-Delivery-Deployment-Automation-Addison-Wesley/dp/0321601912/ref=sr_1_1?keywords=continuous+delivery&qid=1576209741&sr=8-1)
 * [Clean Architecture](https://www.amazon.com/Clean-Architecture-Craftsmans-Software-Structure/dp/0134494164/ref=sr_1_1?keywords=clean+architecture&qid=1570762521&sr=8-1)
 * [Enterprise Integration Patterns](https://www.amazon.com/Enterprise-Integration-Patterns-Designing-Deploying/dp/0321200683/ref=sr_1_1?crid=1SCN214HGSNQG&keywords=enterprise+integration+patterns&qid=1570762548&sprefix=enterpris%2Caps%2C183&sr=8-1)
-
+* [Domain Driven Design](https://www.amazon.com/Domain-Driven-Design-Tackling-Complexity-Software/dp/0321125215/ref=asc_df_0321125215/?tag=hyprod-20&linkCode=df0&hvadid=312118197030&hvpos=1o1&hvnetw=g&hvrand=5112489882660528073&hvpone=&hvptwo=&hvqmt=&hvdev=c&hvdvcmdl=&hvlocint=&hvlocphy=9028820&hvtargid=pla-449269547899&psc=1)
 
 ## 2018
 

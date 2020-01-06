@@ -3,7 +3,7 @@ layout: post
 title: "Clean Architecture - Book Review"
 date: 2019-10-08 21:48
 comments: true
-categories: software architecture development
+categories: software architecture development book review
 ---
 
 I've recently read and held a nerd book club at work regarding Clean Architecture. Overall, I found this read easy to grok and entertain a few new ideas about software development. Uncle Bob also had a few things [on his blog post](https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html) about this topic.

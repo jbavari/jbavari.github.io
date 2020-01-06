@@ -7,28 +7,23 @@ categories: development reading audiobook knowledge
 published: false
 ---
 
-Let me ask you a quick question: if you know that reading is essential to certain parts of learning and growth, then you already know why you read, but is it deeper than that? Is it something engrained in our subconscious minds through hudreds if not thousands of years of evolution?
+Let me ask you a quick question: if you know that reading is essential to certain parts of learning and growth, then you already know why you read, but is it deeper than that? Is it something engrained in our subconscious minds through hundreds if not thousands of years of evolution?
 
-In today's current society, the internet has enabled an entire species to read and listen on a global scale. Reading and listening is the de facto mechanism in which to share human knowledge to many generations past. There are endless amounts of digital content one can get through the medium of the internet. (I try and [talk about that here](/blog/2020/01/02/knowledge-consumption-routine/))
+In today's current society, the internet has enabled an entire species to read and listen on a global scale. Reading and listening is the de facto mechanism in which to share human knowledge to many generations past. There are endless amounts of digital content one can get through the medium of the internet. (I try and [dive into that here](/blog/2020/01/02/knowledge-consumption-routine/))
 
 (NOTE: I'm going to bucket the 'watch' category into listen and/or read. People read tons of online junk anyway!)
 
-We know it in old caves as wall carvings and paintings. There is the knowledge those cavemen passed along to their tribe. The unfortunate thing about that was that only those who veered onto the wall could read the message. The other issue would be - whose cave was this, anyway?! (and what are these large dinosaurs?!) These messages might be wrong or have a different method of thinking than we currently do now. There's no way to remediate the differences, since the author may not always be available for disucssion.
+We know it in old caves as wall carvings and paintings. There is the knowledge those cavemen passed along to their tribe. The unfortunate thing about that was that only those who veered onto the wall could read the message. The other issue would be - whose cave was this, anyway?! (and what are these large dinosaurs?!) These messages might be wrong or have a different method of thinking than we currently do now. There's no way to remediate the differences, since the author may not always be available for discussion.
 
 The internet, in some sense, eased this burden by providing an infinite level of walls that tribes could erect mass cave paintings in the endless amount of caves.
 
 However, the internet has also enabled another mystery to the human mind: the paradox of choice. How does one today pick what to absorb next? in the millions of physical books, digitial e-books (and scanned copies of ancients), audio books, journals, online journals, blogs, and the bucket category of 'web pages' out in the world?
 
-Capturing the knowledge itself once found is a near impossible task, I'm not going to even touch on that topic because it's thoroughly argued over enough on Hacker news. I'm going to attempt to share how I got to my filter to make reading an absolute enjoyable part of my life.
+> “Learning to choose is hard. Learning to choose well is harder. And learning to choose well in a world of unlimited possibilities is harder still, perhaps too hard.” ― Barry Schwartz, The Paradox of Choice: Why More Is Less
+
+Capturing the knowledge itself once found is a near impossible task, I'm not going to even touch on that topic because it's thoroughly argued over enough on Hacker news. I'm going to attempt to share how I got to my filter to make reading an absolute enjoyable part of my life. Hop on over to my [knowledge](/knowledge) page, as I try to capture my knowledge sources there.
 
 What isn't clear to me as of late is 'why' I read what I read. I'm attempting to write this post to enlighten myself and others about this filter that occurs when I move on to my next book.
-
-### Add bit about idea of the barry schwartz - paradox of choice quotes
-
-
-I love reading, it's my absolute joy in the world. I try to capture the book list in my [knowledge](/knowledge) page.
-
-The 2019 results are mostly in (although, at the time of writing this, there are a few more days left in the year to finish a few more books). What is clear though, that most of my reading is in the form of Audible. That is the main source of my content at this time. I have just recently got another Kindle Paperwhite, which I've replaced with my phone on my bedside stand. This little action has triggered the old habit of reading.
 
 # My Caves
 
@@ -45,13 +40,58 @@ Let's dive into how I select each of these.
 
 For the 2019 year, I wanted to aim for reading two books a month aimed at two topics: personal growth and professional acumen growth. Sometimes, the books would be both. Other times, it would be totally random. It just so happens that what I read for joy is also in lined with what I love: psychology - how the human mind works.
 
-I often joke that if I didn't go the computer science route, I would have gone to neuroscience or psychology. I'm a hobbyist at best in reading and studying psychology and the human mind.
+I chose these two topics because they are areas that I would like to strengthen a bit more.
 
-Certainly hitting the ripe age of 35 has triggered me to think more about philosophy, the meaning of the world, the strive to hold off suffering, and the ability to see the world anew.
+When it comes to choosing email newsletters, I may easily follow the newsletters of authors that I've enjoyed reading their books. The first that come to mind are Seth Godin, Nir Eyal, Daniel Pink, and Ryan Holiday. Many of these authors share a common stereotype - sales, marketing, psychology, and connection with vulnerability.
 
-I've driven into professional development - being a manager for the last year or so has given me a 'eyes wide open' view to the world of management. Most of my reading has been more than management though - it's more on leadership. [LINK TO BLOG POST TALKING ABOUT WHY MANAGERS ARE GOOD LEADERS - QBQ BLOG POST]
+I often joke that if I didn't go the computer science route, I would have gone to neuroscience or psychology. I'm a hobbyist psychologist, with no patients who need my help.
 
+Certainly hitting the ripe age of 35 has triggered me to think more about philosophy, the meaning of the world, the strive to end or defer suffering, and the ability to see the world anew.
 
+I've driven into professional development - being a manager for the last year or so has given me a 'eyes wide open' view to the world of management. Most of my reading has been more than management though - it's more on leadership. However, I know and understand that [the best managers are the best leaders](https://qbq.com/leadership-management/).
+
+When I go to pick the next book, I apply the following pattern:
+
+* Look for the latest area of researchers in the domain.
+* Look for the oldest area of researchers in the domain.
+* Look at any book references that came about in the last book I read. (Many times the references are where the author pulled some of her knowledge from, so that's another great source.)
+* I keep a rolling list of reads that may be interesting - either from emails, books references from TED or Ignite talks, and more.
+
+Some examples of this pattern:
+
+"Well Geez, Josh. I seem to be ultra distracted lately and not being able to finish anything. What does the research say on this?"
+
+> I then look up books in the focus domain. I find a few: Indistractable, Get out of your own way, The art of communicating, The art of thinking clearly, The Organized Mind, and Atomic Habits. These all seem like good reads. What knowledge sources did these authors pull from? Are there any TED talks about this? Do these speakers have any references or leads they throw out in the talk? What about friends recommmendations? Who is the most focused person I know? What suggestions do they have on the topic, or leads, or books, etc?
+
+Certainly there is more to the pattern than what I posted above, but that's my first stab at trying to understand my pattern.
+
+# But, why?
+
+Why such the obsession with the human mind? In this world of a growing number of human mind and intelligence, I want to know what drives people. Certainly, there is the book [Drive](https://www.amazon.com/Drive-Surprising-Truth-About-Motivates/dp/1594484805), but I'm not concerned with the drive that people have in the competitive world of business. But rather, why do people do what they do? What is the engine in their minds and hearts and what fuel is driving it?
+
+Recently, I took one of the many online quizes and learning that I'm a Maven type. This seemed to align with my intuition, which makes a ton of sense to my obsessions with learning for learning sake.
+
+But still.. What am I looking to learn? I lean an ear towards psychology, philosophy, science, and technology. Why?
+
+If I had another life to live (which I know is not reality), I would spend that life hopefully learning all the things I didn't learn the first time around.
+
+If I absolutely had to put a reasoning to my thirst for knowledge, it would be this: 
+
+I have a deep joy of learning. It's the true lesson that I learned from college. (Paul Graham [also wrote an essay on this](http://www.paulgraham.com/lesson.html)). I have a deep fear about not knowing. I'm not content with the 'it is what it is' phrase. In the last year though, I've tried to change that phrase to be 'I accept it for how it is' - but not until learning why. Once I can learn every 1% of the why, I am more willing to accept the why.
+
+Yet, I've still not found the answer to what lies in the heart of man to drive the decisions he makes. Maslow's hierarchy of needs surely comes close to these ideals, but are those same motiviations still in tact today the same as when Maslow thought up the idea in 1943?
+
+Certainly most parts of this world still seek the bottom layers of Maslow's needs, but what about the higher levels today in the first world?
+
+Maybe I'll never learn why I read what I read. Certainly writing this post hasn't lead me any closer to understand my own drive, so what chance do I have in getting closer to understanding others? I guess I will have to accept that asking one person and their answer must suffice.
+
+The last bit I will sketch out is that in today's day and age, we know and understand that the subconscious mind drives us - like the rider on the elephant, it goes where it will go no matter the tugging and please from the riders. Even asking someone their drives will still not reveal their elephants desires, because they themselves do not know it.
+
+# Closing notes
+
+As per the book, Psycho Cybernetics, it is our own self-image that we seek to align with our actions. Perhaps my self-image is one that I am a seeker of knowledge, no matter the effort or cost. Surely, the Sparketypes quiz I took that states I'm a maven lines up with that self-image. Even if the quiz was a placebo to enhance this self-image, I'm taking it.
+
+I'll continue to read to absorb as much knowledge as I can, and attempt to write as much as I can to help share this knowledge. All for the sake of knowledge.
 
 # NOTES
 Listening to: https://soundcloud.com/mpmcgn/twit-one-lecko-mio while writing. Great stuff.

@@ -4,7 +4,6 @@ title: "Why I read"
 date: 2019-12-29 17:00
 comments: true
 categories: development reading audiobook knowledge
-published: false
 ---
 
 Let me ask you a quick question: if you know that reading is essential to certain parts of learning and growth, then you already know why you read, but is it deeper than that? Is it something engrained in our subconscious minds through hundreds if not thousands of years of evolution?

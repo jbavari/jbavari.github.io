@@ -181,21 +181,21 @@ Take some time during a project to do a post-mortem. This isn't to say the proje
 
 # Part 3 - Working the Plan
 
-# Chapter 8 - weave your project into your schedule
+## Chapter 8 - weave your project into your schedule
 
-## Basic rules
+### Basic rules
 
 The weekly block schedule, the Five projects rule, and your project road map together create a plan that you can follow and space to do the work.
 
 Momentum planning is Charlie's term for the continual process of making and adjusting plans across all time perspectives. This means, doing weekly reviews, morning planning, and triaging. This also means weaving in the time blocking, project pyramid, and the Five Projects rule.
 
-## Make sure your environment is working for you
+### Make sure your environment is working for you
 
 The environment can define the working conditions. Charlie gives an example of how during his graduate school time, most of his best writing happened in 6 years over about 60 days. This was because he tackled writing at the library.
 
 The environment you work in is very important - providing for your focus, momentum, and creativity.
 
-## Stacking and Batching
+### Stacking and Batching
 
 Charlie makes the good point that it takes 16 minutes to refocus after being pulled from focus. There are some tricks he suggested, calling them stacking and batching.
 
@@ -203,7 +203,7 @@ Stacking = doing multiple things at once, when concentration is not required. Th
 
 The second is batching - the example being that you set up admin blocks (described before) to check email, do your paperwork, etc. Batch them up together to tackle in one go around.
 
-## Reducing the dread-to-work ratio
+### Reducing the dread-to-work ratio
 
 Referencing the famous Mark Twain comment of eating a frog in the morning. Do it as early as possible, so that the rest of the day does not sap your creative and cognitive functions, while also decreasing the dread-to-work ratio of your day.
 
@@ -213,13 +213,13 @@ Charlie states that the time you dread the task itself, the distinction becomes 
 
 However, not all frogs can be done early in the morning, as they may require focus blocks. There will always be frogs, it's best to address them for what they are and set up some time to get them done.
 
-## 5 / 10 / 15 split
+### 5 / 10 / 15 split
 
 This little time split reminds you to keep 5 projects at max, with 10 minutes for momentum planning before you start your day, and 15 minutes at the end of your day. This keeps you focused on the daily level.
 
 Try to not plan too far out ahead, the example being you do not plan every gas break, stop light, and every other part of your travel if you are taking a car trip.
 
-# Chapter 9 - Build Daily Momentum
+## Chapter 9 - Build Daily Momentum
 
 Make sure you celebrate small wins. Lean more on your success pack to help you identify wins.
 

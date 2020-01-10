@@ -4,7 +4,6 @@ title: "Knowledge consumption routine"
 date: 2020-01-02 17:00
 comments: true
 categories: development reading audiobook knowledge
-published: false
 ---
 
 I love having conversations with other people about reading. Topics in the realm of what they read, why they read, how much they read, where they read, and the habits of how they read. The amount of choices available to any person at any time are at an all time high and ever rising.
@@ -45,28 +44,30 @@ Now, I'll try to outline my consumption of these mediums and habits!
 
 # The content mediums
 
-## Daily Email Newsletters
+## Regularly Occurring Email Newsletters
 
-I subscribe to a lot of interesting fellows in the psychology, self help, and other various 'betterment' email newsletters. I really enjoy some of their articles as brainstorming seeds and kicking off discovery of new ideas. I'll estimate I spend anywhere from 5-10 minutes on either the post itself or links to other articles on the website.
+I subscribe to a lot of interesting fellows in the psychology, self help, and other various 'self-improvement' email newsletters. I really enjoy some of their articles as brainstorming seeds and kicking off discovery of new ideas. I'll estimate I spend anywhere from 5-10 minutes on either the post itself or links to other articles on the website.
 
-* Seth Godin
-* The Daily Stoic
-* Mark Manson (Mondays)
-* Nir Eyal
-* Daniel Pink
+* [Seth Godin](https://seths.blog/subscribe/) - varies in length, great thoughts about anything in marketing, sales, psychology, and all around thought provoking material.
+* [The Daily Stoic](https://dailystoic.com/new-start-here/) - daily writings of the stoicism philosophy, from Ryan Holiday's interpretations.
+* [Ryan Holiday's newsletter](https://ryanholiday.net/reading-newsletter/) - book recommendations from Ryan Holiday himself.
+* [Mark Manson (Mondays)](https://markmanson.net/newsletter) - spitballed content from Mark Manson's email.
+* [Nir Eyal](https://www.nirandfar.com/subscribe/) - behavioral design newletter.
+* [Daniel Pink](https://www.danpink.com/ac/latest-newsletter/) - author of Drive, A Whole New Mind, and more - weekly content.
+* [QBQ](https://qbq.com) - from the author John G Miller, ideas about accountability.
 
 ## Internet blogs and articles
 
 I'd say I spend about 5-20 minutes sometimes longer, varying from available article content and the interest of content to me.
 
-* Hacker News posts - any that tickle my brain (it's a lot)
+* [Hacker News](https://news.ycombinator.com) posts - any that tickle my brain (it's a lot)
 * Related professional topics in my work hours (software related, leadership articles, system design, etc)
 
 ## Physical books
 
 At anytime, I have a stack of about 2-3 books that I want to read. I get these from many sources, and right now, there is no rhyme or reason to my choosing of a physical book over an e-book.
 
-How I choose the books is still a mystery to me. At the time of writing this, I have a few piled up on my bookshelf ready to be read. At the time of writing this, my queue is: Black Box Thinking, The Black Swan, Getting to Yes, and Aware.
+How I choose the books is still a mystery to me. At the time of writing this, I have a few piled up on my bookshelf ready to be read; my queue consists of: Black Box Thinking, The Black Swan, Getting to Yes, and Aware.
 
 I'll usually ask for books for any gifts any want to give me as a go-to when someone asks what I'd like.
 

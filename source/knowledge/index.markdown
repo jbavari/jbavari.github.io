@@ -13,13 +13,16 @@ I love reading and learning. I'm putting this page together to keep track of all
 
 ### Currently reading
 
-* [Start Finishing: How to go from an idea to Done](https://www.amazon.com/Start-Finishing-How-Idea-Done-ebook/dp/B07SL9YNGD)
 * [What you do is who you are](https://www.audible.com/pd/What-You-Do-Is-Who-You-Are-Audiobook/0062967584)
 * [Black Box Thinking](https://www.amazon.com/Black-Box-Thinking-People-Mistakes-But/dp/1591848229/ref=tmm_hrd_swatch_0?_encoding=UTF8&qid=1578168067&sr=8-1)
 
 ### Philosophy
 
 * [The Art of Power](https://www.audible.com/pd/The-Art-of-Power-Audiobook/B002VA3JRI)
+
+### Productivity
+
+* [Start Finishing: How to go from an idea to Done](https://www.amazon.com/Start-Finishing-How-Idea-Done-ebook/dp/B07SL9YNGD)
 
 ## 2019
 

@@ -4,7 +4,6 @@ title: "Start Finishing - Book Review"
 date: 2020-01-03 21:55
 comments: true
 categories: book review
-published: false
 ---
 
 I'm currently diving into a book recommended by Seth Godin - Start Finishing. This book is primarily aimed at supplying people with additional approachs to tackling 'important problems'.

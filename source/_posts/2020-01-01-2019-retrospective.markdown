@@ -67,7 +67,7 @@ I did as one did - immediately went to a doctor to get it checked out. The ultra
 
 Fast forward to the end of the year - I'm still dealing with some pain in my elbow, I get some odd popping sounds when I do a bicep curl, something is not right.
 
-Again, that acceptance word - I had to accept that I had an injury I needed to nurse. I had to accept that I was not resting appropriately. I had to accept that taking time off, doing physical therapy, and getting back on the track was the best way to continue training until my old age.
+Again, that acceptance word - I had to accept that I had an injury I needed to nurse. I had to accept that I was not resting appropriately. I had to accept that taking time off, doing physical therapy, and getting back on the track was the best way to continue training until my old age. I also want to accept the mindset that I have an injury, I am *not* injured. That mindset is important.
 
 ## Acceptance of fate
 

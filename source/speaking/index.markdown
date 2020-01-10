@@ -13,7 +13,7 @@ None planned as of now.
 
 ## Speaking History
 
-* [Ng-vegas](http://www.ng-vegas.org/) - [Ionic - The Happy Path to Mobile Apps](http://jbavari.github.io/ionic-present/#/)
+* [Ng-vegas](https://www.youtube.com/channel/UC7BRj6uzK1M2MVOuq8zTVKQ) - [Ionic - The Happy Path to Mobile Apps](https://www.youtube.com/watch?v=yv8Ii2nrVnA) - [Presentation deck](http://jbavari.github.io/ionic-present/#/)
 * [Rocky Mountain AngularJS](http://www.meetup.com/RockyMountainAngularJS) - [Ionic Framework](http://www.meetup.com/RockyMountainAngularJS/events/218502072/)
 * [OKC ThunderPlains](http://thunderplainsconf.com/) - [Mobile Applications with JS and Ionic](http://jbavari.github.io/MobileApplicationsWithJsAndIonic/) ([video](https://www.youtube.com/watch?v=T97mEDEVUMk))
 * [OKC Ruby](http://www.okcruby.org/blog/2014/06/24/july-2014-meeting/) - [Using the Invoker gem for multiple processes and applications](http://jbavari.github.io/InvokerPresentation/#/)

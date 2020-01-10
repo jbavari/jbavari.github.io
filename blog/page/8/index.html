@@ -9,7 +9,7 @@
   <meta name="author" content="Josh Bavari">
 
   
-  <meta name="description" content="Lately I&rsquo;ve had a small need to store an array of string values in a Postgres array instead of making foreign tables and dealing with the fun &hellip;">
+  <meta name="description" content="I&rsquo;ve posted some slides I presented at the OKC Javascript User Group over Grunt.js titled Dont be a grunt, use grunt. I encourage any and all &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -70,137 +70,6 @@
     <div id="content">
       <div class="blog-index">
   
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/01/14/making-rails-and-postgres-arrays-play-nice/">Making Rails and Postgres Arrays Play Nice</a></h1>
-    
-    
-      <p class="meta">
-        <span class="reading-time">less than a 1 minute read</span>
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2014-01-14T12:01:00-07:00" pubdate data-updated="true">Jan 14<span>th</span>, 2014</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Lately I&rsquo;ve had a small need to store an array of string values in a Postgres array instead of making foreign tables and dealing with the fun ActiveRecord fancies there are to play with.</p>
-
-<p>Digging into the topic, I was looking for some pre-existing knowledge on the topic. Turns out the people at <a href="http://blog.relatabase.com/rails-postgres-arrays">Relatabase</a> and <a href="https://coderwall.com/p/sud9ja">Stuart Liston at CoderWall</a> had some great knowledge to share on this.</p>
-
-<p>Being the simpleton that I am, I found a ton of knowledge on how to query them, how to add them to your models, but still lacked some basic knowledge of how to USE them. Maybe you&rsquo;re like me, and this will help.</p>
-
-<p>Adding to Stuart&rsquo;s code, lets assume we&rsquo;ve added the postgres column:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">AddTechToCompanies</span> <span class="o">&lt;</span> <span class="ss">ActiveRecord</span><span class="p">:</span><span class="ss">:Migration</span>
-</span><span class='line'>  <span class="k">def</span> <span class="nf">change</span>
-</span><span class='line'>    <span class="n">add_column</span> <span class="ss">:companies</span><span class="p">,</span> <span class="ss">:technology_used</span><span class="p">,</span> <span class="ss">:string</span><span class="p">,</span> <span class="ss">array</span><span class="p">:</span> <span class="kp">true</span><span class="p">,</span> <span class="ss">default</span><span class="p">:</span> <span class="s1">&#39;{}&#39;</span>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'><span class="k">end</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Using <a href="http://guides.rubyonrails.org/active_record_querying.html#scopes">Ruby Scopes</a> and the proper Postgres querying syntax:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">Company</span> <span class="o">&lt;</span> <span class="ss">ActiveRecord</span><span class="p">:</span><span class="ss">:Base</span>
-</span><span class='line'>  <span class="n">scope</span> <span class="ss">:any_tech</span><span class="p">,</span> <span class="o">-&gt;</span> <span class="p">(</span><span class="n">tech</span><span class="p">){</span><span class="n">where</span><span class="p">(</span><span class="s1">&#39;? = ANY(technology_used)&#39;</span><span class="p">,</span> <span class="n">tech</span><span class="p">)}</span>
-</span><span class='line'>  <span class="n">scope</span> <span class="ss">:all_tech</span><span class="p">,</span> <span class="o">-&gt;</span> <span class="p">(</span><span class="n">tech</span><span class="p">){</span><span class="n">where</span><span class="p">(</span><span class="s1">&#39;? = ALL(technology_used)&#39;</span><span class="p">,</span> <span class="n">tech</span><span class="p">)}</span>
-</span><span class='line'><span class="k">end</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Simple enough and easy to read. Lets tackle the simple task of adding a company with a few properties: Name, website, and technology_used.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="c1">#..snip..</span>
-</span><span class='line'><span class="n">company</span> <span class="o">=</span> <span class="no">Company</span><span class="o">.</span><span class="n">new</span>
-</span><span class='line'><span class="n">company</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;RaiseMore&quot;</span>
-</span><span class='line'><span class="n">company</span><span class="o">.</span><span class="n">website_url</span> <span class="o">=</span> <span class="s2">&quot;http://www.raisemore.com&quot;</span>
-</span><span class='line'><span class="n">company</span><span class="o">.</span><span class="n">technology_used</span> <span class="o">=</span> <span class="o">[</span><span class="s1">&#39;Ruby&#39;</span><span class="p">,</span> <span class="s1">&#39;Rails&#39;</span><span class="p">,</span> <span class="s1">&#39;Sinatra&#39;</span><span class="p">,</span> <span class="s1">&#39;JavaScript&#39;</span><span class="p">,</span> <span class="s1">&#39;Redis&#39;</span><span class="p">,</span> <span class="s1">&#39;PhoneGap&#39;</span><span class="p">,</span> <span class="s1">&#39;Sidekiq&#39;</span><span class="o">]</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">company</span><span class="o">.</span><span class="n">save!</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>This will add our basic info, as well as get us our data back by doing this:</p>
-
-<figure class='code'><figcaption><span>Interactive Console Output</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">rails_company</span> <span class="o">=</span> <span class="no">Company</span><span class="o">.</span><span class="n">any_tech</span><span class="p">(</span><span class="s1">&#39;Rails&#39;</span><span class="p">)</span>
-</span><span class='line'>
-</span><span class='line'><span class="no">Company</span> <span class="no">Load</span> <span class="p">(</span><span class="mi">2</span><span class="o">.</span><span class="mi">6</span><span class="n">ms</span><span class="p">)</span>  <span class="no">SELECT</span> <span class="s2">&quot;companies&quot;</span><span class="o">.</span><span class="n">*</span> <span class="no">FROM</span> <span class="s2">&quot;companies&quot;</span> <span class="no">WHERE</span> <span class="p">(</span><span class="s1">&#39;Rails&#39;</span> <span class="o">=</span> <span class="no">ANY</span><span class="p">(</span><span class="n">technology_used</span><span class="p">))</span>
-</span><span class='line'> <span class="o">=&gt;</span> <span class="c1">#&lt;ActiveRecord::Relation [#&lt;Company id: 1, name: &quot;RaiseMore&quot;, founded: &quot;2011&quot;, website_url: &quot;http://www.raisemore.com&quot;, logo_url: &quot;http://res.cloudinary.com/hfjjoialf/image/upload/v1...&quot;, description: &quot;We are an event fundraising platform focused on hel...&quot;, company_type: &quot;Start up&quot;, market: &quot;Charity Fundraising&quot;, technology_used: [&quot;Rails&quot;, &quot;Postgres&quot;, &quot;Sinatra&quot;, &quot;PhoneGap&quot;, &quot;JavaScript&quot;, &quot;HTML5&quot;, &quot;Redis&quot;], interns_needed: true, twitter_id: &quot;@raise_more&quot;, created_at: &quot;2014-01-13 21:49:39&quot;, updated_at: &quot;2014-01-13 21:49:39&quot;&gt;]&gt; </span>
-</span><span class='line'>
-</span><span class='line'><span class="n">rails_company</span><span class="o">.</span><span class="n">technology_used</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">=&gt;</span> <span class="o">[</span><span class="s2">&quot;Rails&quot;</span><span class="p">,</span> <span class="s2">&quot;Postgres&quot;</span><span class="p">,</span> <span class="s2">&quot;Sinatra&quot;</span><span class="p">,</span> <span class="s2">&quot;PhoneGap&quot;</span><span class="p">,</span> <span class="s2">&quot;JavaScript&quot;</span><span class="p">,</span> <span class="s2">&quot;HTML5&quot;</span><span class="p">,</span> <span class="s2">&quot;Redis&quot;</span><span class="o">]</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Cool, so saving the array data is easy. What about updating? As <a href="http://blog.relatabase.com/rails-postgres-arrays">the relatabase post points out</a>,</p>
-
-<p><code>One huge caveat of this approach is that rails doesn’t clone the array when saving the original for dirty checking, so any in-place modification to the array won’t register that it’s changed.</code></p>
-
-<p>This leaves us with these options:</p>
-
-<ul>
-<li>set the dirty flag ourselves: <code>rails_company.technology_used_will_change!</code></li>
-<li>update using update_attributes: <code>rails_company.update_attributes(:technology_used =&gt; ['Rails', 'Redis', 'Go', 'Erlang'] )</code></li>
-</ul>
-
-
-<h2>Overall results</h2>
-
-<p>The way Rails handles arrays is not as complete as a like, but hey, we are skipping a step by getting around foreign key tables. It&rsquo;s not like you should expect much. I&rsquo;d say they are allowed for small use projects, but if you really need to do some searching or have referential integrity, stick with foreign key tables.</p>
-
-<p>Also, check out the following resources:</p>
-
-<p><a href="http://adamsanderson.github.io/railsconf_2013/?full#1">Postgres &ndash; The Best Tool You&rsquo;re Already Using</a></p>
-
-<p><a href="http://reefpoints.dockyard.com/ruby/2012/09/18/rails-4-sneak-peek-postgresql-array-support.html">Rails 4.0 Sneak Peek: PostgreSQL array support</a></p>
-</div>
-  
-  
-
-
-    </article>
   
   
     <article>

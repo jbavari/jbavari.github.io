@@ -9,7 +9,7 @@
   <meta name="author" content="Josh Bavari">
 
   
-  <meta name="description" content="I recently have been working a lot using Leaflet.js to do some mapping. In some of my models, I use the lovely Geo package for Elixir point and &hellip;">
+  <meta name="description" content="When I was a younger boy, my grandma would tell me stories of my grandfather going to war. Like most men during world war 2, he did not want to go to &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -70,6 +70,525 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2019/02/23/the-victim-or-the-victor/">The Victim or the Victor</a></h1>
+    
+    
+      <p class="meta">
+        <span class="reading-time">less than a 1 minute read</span>
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2019-02-23T07:14:00-07:00" pubdate data-updated="true">Feb 23<span>rd</span>, 2019</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>When I was a younger boy, my grandma would tell me stories of my grandfather going to war. Like most men during world war 2, he did not want to go to leave his new bride and head to where death is ever looming. One thing I remember her saying to me as a life lesson is that you&rsquo;re given a choice in life that most always boils down to your attitude. She said, &ldquo;just like your grandpa, you can chose to be a victim, or go get the courage to become a victor. The choice is always yours.&rdquo;</p>
+
+<p>What does this mean? This means, when given any situation, your belief about the situation will in turn guide your thoughts and actions. This belief is so strong that even the way you think and address the situation happens whether or not your are conscious about it. The obvious choice would to be to see yourself as given a challenge that you must rise to and become a victor over.</p>
+
+<p>The opposite is true &ndash; you could be given a challenge and say, &lsquo;why me&rsquo;. From this victim midset, you have now set yourself up for failure from the start. You&rsquo;ve seen the challenge become the burden.</p>
+
+<p>That thought has always been on my mind throughout the years, but I have to admit I haven&rsquo;t always been as couragous as I could have been. You always assume when the time comes, you&rsquo;ll be ready. The fact is, it comes and hits you in the face right when you&rsquo;re planning for it. &ldquo;Everyone has a plan until you&rsquo;re punched in the face&rdquo;. The point is, the mindset of preparation is the key to success. My study of <a href="http://thedailystoic.com">stoicism</a> has lead me lately to living as if it has already happened, being unphased by things we should expect happen, and turning my &lsquo;have to&rsquo;s into &#8216;get to&rsquo;s.</p>
+
+<p>How do you break this cycle? You start by examining your internal thoughts first. Now that you are conscious about your thoughts, you can then analyze how to course-correct. Until then, you might be in the default victim midset and not even know it.</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2019/01/29/3-years-of-elixir-reflections/">3 Years of Elixir: Reflections</a></h1>
+    
+    
+      <p class="meta">
+        <span class="reading-time">less than a 1 minute read</span>
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2019-01-29T07:30:00-07:00" pubdate data-updated="true">Jan 29<span>th</span>, 2019</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Back in 2015, I had just started at <a href="http://canvas.technology">CANVAS Technology</a> and my task was clear: to create a web application that can service many operations concurrently from users, robots, and other integration services. Prior to this new venture, I had spent my last few years doing Ruby on Rails, Node.js JavaScript, mobile applications (cordova, minimal Objective-C, Java/Android). Only a few months before joining CANVAS had I just started playing with Elixir and Phoenix. I was so excited and relieved to find something that was geared exactly for what we were embarking on.</p>
+
+<p>What I want to outline in this post is the lessons I&rsquo;ve learned using Elixir these last 3+ years and help others learn quickly.</p>
+
+<h2>Upgrade sooner than later</h2>
+
+<p>Discuss pains of upgrading Elixir 1.3 &ndash;> 1.6, Ecto 1.0 &ndash;> 2.0, Phoenix 0.9 &ndash;> 1.3. It definitely hasn&rsquo;t been easy to update, this is mitigated by staying abreast of Elixir / phoenix changes and trying to implement early.</p>
+
+<h2>GenServers are your friend &ndash; but use them only if you must</h2>
+
+<p>Abstract away the API and the Server &ndash; link to post by <a href="https://pragdave.me/blog/2017/07/13/decoupling-interface-and-implementation-in-elixir.html">Dave Thomas explaining splitting the APIs, Servers, and Implementations in Elixir</a>.</p>
+
+<h2>Testing pains with GenServers and Ecto&rsquo;s concurrency model</h2>
+
+<p>Make sure to restart genservers / supervisors. Having a connection time out be longer for longer running genservers that aren&rsquo;t started every setup fixture.</p>
+
+<h2>Using docker for team / testing scenarios</h2>
+
+<p>Docker-compose for stack, testing with diff vars. Preload any databases by putting them in the postgres container root in <code>/tmp</code>.</p>
+
+<h2>Testing browsers with Hound / ChromeDriver</h2>
+
+<p>Use Hound and chromedriver.</p>
+
+<h2>Do not code everything to the <code>Repo</code> itself</h2>
+
+<p>It&rsquo;s not as easy to cut off your database addiction. Having an intermediate context API that cache is a good first step.</p>
+
+<h2>PubSub is your friend, use structs to pass messages</h2>
+
+<p>When using cast/gproc, pass the Structs, don&rsquo;t use tuples. Resist the simple solutiuons. Pass structs defined.</p>
+
+<h2>Learn ETS</h2>
+
+<p>Don&rsquo;t use a cache when the Erlang VM has one built in.</p>
+
+<h2>Use behaviours</h2>
+
+<p>Take a look how <a href="https://github.com/aaronrenner/crowdfundr">crowdfundr</a> app. Code to interfaces, not the implementations. Use the <code>impl</code> approach.</p>
+
+<h2>Nginx as a front-end for SSL termination</h2>
+
+<p>Links/discussion to the post, security wise, leave Nginx to handle the vulns and your app to handle the impl.</p>
+
+<h2>Releases with Distillery</h2>
+
+<p>Ship those tarballs, let it fly. Easier/safer than shiping your code. Should probably post about the replacing of ENV vars. Use a Config module for system set env variables instead of them getting baked into your <code>sys.config</code> file.</p>
+
+<h2>Clustering &ndash; using epmd / GenServers for node communication message passing</h2>
+
+<p>Link to swarm and libcluster &ndash; knowing that clustering comes out of the box with Erlang/Elixir.</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2017/04/16/puppet-a-testing-handbook/">Puppet: A Testing Handbook</a></h1>
+    
+    
+      <p class="meta">
+        <span class="reading-time">less than a 1 minute read</span>
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2017-04-16T13:09:00-06:00" pubdate data-updated="true">Apr 16<span>th</span>, 2017</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><ul>
+<li>Explain why the post &ndash; job required, growing pains, need for stability and health of the repo</li>
+<li>Why to test</li>
+<li>What to test</li>
+<li>How to test
+<strong> Lint &ndash; Rake file
+</strong> Parser &ndash; rake file with globbing to run easier
+<strong> Rspec &ndash; spec type tests to run on puppet code (syntax mainly)
+</strong> Beaker &ndash; run tests on provisioned VM to ensure correct</li>
+</ul>
+
+
+<p>Cover:</p>
+
+<p>puppet-lint
+puppet parser validate &lt;manifest.pp>
+puppet-rspec &ndash; A gem that runs rspec unit tests on a module (Based on compiled catalog)
+Beaker</p>
+
+<hr />
+
+<p>Part of my role at work is managing a fleet of robots, servers, and other
+infrastructure responsible for running our business. Due to the nature of our
+business, we run within customer warehouses.</p>
+
+<p>Being a one man operation, one of my main concerns is keeping all the systems
+stable and proper working conditions. I am not the only developer touching our
+puppet code, but I&rsquo;m the one responsible for the system(s).</p>
+
+<p>As I embarked on the journey to add reliability to our infrastructure, something
+very clear came up: there&rsquo;s a lot of information about testing puppet, but most
+of it is fractured, out of date, or hard to understand. <a href="https://www.slideshare.net/PuppetLabs/puppetconf-2016-the-future-of-testing-puppet-code-gareth-rushgrove-puppet?qid=eee7d5c2-f52e-4ceb-8000-42e4fc174721&amp;v=&amp;b=&amp;from_search=2">See this slideshow from 2016 about the state of testing puppet</a>.</p>
+
+<p>I&rsquo;m writing this post up to act as a handbook of sorts for testing puppet, as
+well as a &lsquo;repository&rsquo; for testing puppet.</p>
+
+<h1>Testing resources</h1>
+
+<ul>
+<li><a href="http://puppet-lint.com/">Puppet-lint</a> &ndash; Useful for linting your puppet code</li>
+<li><a href="http://rspec-puppet.com/">Rspec Puppet</a> &ndash; Rspec tests for puppet code</li>
+<li><a href="https://docs.puppet.com/puppet/4.10/tests_smoke.html">Puppet: module smoke testing</a></li>
+<li><a href="http://www.example42.com/tutorials/PuppetTutorial/#slide-80">Slideshow about all things puppet</a></li>
+<li><a href="https://www.safaribooksonline.com/library/view/extending-puppet-/9781785885686/">Extending Puppet &ndash; Second Edition</a></li>
+<li><a href="https://github.com/puppetlabs/beaker/">Beaker</a></li>
+<li><a href="http://www.xkyle.com/getting-started-puppet-acceptance-tests-with-beaker/">Getting Started Puppet Acceptance Tests With Beaker</a></li>
+<li><a href="https://github.com/puppetlabs/puppetlabs-mysql/tree/master/spec">Great example of testing &ndash; Puppet MySQL module</a></li>
+<li><a href="https://github.com/puppetlabs/puppetlabs_spec_helper">Puppetlabs Spec Helper</a></li>
+<li><a href="https://www.puppetcookbook.com/posts/simple-syntax-check-manifests.html">Puppet Cookbook &ndash; Simple Syntax Check</a></li>
+<li><a href="http://www.cakesolutions.net/teamblogs/testing-puppet">Testing Puppet</a></li>
+</ul>
+
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2017/03/13/test-coverage-reports-in-elixir/">Test Coverage Reports in Elixir</a></h1>
+    
+    
+      <p class="meta">
+        <span class="reading-time">less than a 1 minute read</span>
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2017-03-13T18:38:00-06:00" pubdate data-updated="true">Mar 13<span>th</span>, 2017</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Lately I&rsquo;ve been learning a ton more about Elixir and really working towards refactoring and hardening the system.</p>
+
+<p>On my current project, I&rsquo;ve got about 200 tests that exercise various parts of the system. Lately though, I&rsquo;ve been trying to analyze which parts of the system aren&rsquo;t being covered, and of course, theres tools to help with that.</p>
+
+<p>The two I looked at were <a href="https://github.com/parroty/excoveralls">Coveralls</a> and <a href="https://github.com/alfert/coverex">Coverex</a>. I&rsquo;m going to be using <code>coverex</code> in this post.</p>
+
+<p>Getting started is a breeze, check the readme for that. I&rsquo;ll cover it briefly for a bit here, my modifying our <code>mix.exs</code> file:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='elixir'><span class='line'>  <span class="c1"># in `def project`, we add test_coverage</span>
+</span><span class='line'>  <span class="ss">test_coverage:</span> <span class="p">[</span>
+</span><span class='line'>    <span class="ss">tool:</span> <span class="no">Coverex</span><span class="o">.</span><span class="no">Task</span>
+</span><span class='line'>  <span class="p">],</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="c1"># in deps, add the depedency for only test environment</span>
+</span><span class='line'>  <span class="p">{</span><span class="ss">:coverex</span><span class="p">,</span> <span class="s2">&quot;~&gt; 1.4.10&quot;</span><span class="p">,</span> <span class="ss">only:</span> <span class="ss">:test</span><span class="p">},</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>After setup, running <code>mix test --cover</code> generates some reports in your projects <code>./cover</code> folder &ndash; with <code>functions.html</code> and <code>modules.html</code>. These give you your standard coverage reports with lines covered / ratio covered.</p>
+
+<p>For my project, I had quite a bit of generated files using <a href="https://github.com/bitwalker/exprotobuf">exprotobuf</a>. The coverage report was getting butchered from not using these many files in my tests.</p>
+
+<p>According to the docs, we can add a keyword for <code>ignore_modules</code> in the keyword list <code>test_coverage</code> and the coverage reports will ignore those modules.</p>
+
+<p>However, for my generated list of modules, I had quite the growing list to ignore and it quickly became unwieldy to put that list of modules in my <code>mix.exs</code> file.</p>
+
+<p>Since we can&rsquo;t access other modules from our mix file, I had a quick solution. I created a <code>.coverignore</code> file in the project directory, lumped in all the modules I wanted to ignore (from the <code>modules.html</code> generated file) and put them all in the <code>.coverignore</code> file.</p>
+
+<p>I ensured all the modules I wanted to ignore were all newline delimited (<code>\n</code>).</p>
+
+<p>From there, I modified my <code>mix.exs</code> file as such:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='elixir'><span class='line'>  <span class="c1"># Near the top</span>
+</span><span class='line'>  <span class="nv">@ignore_modules</span> <span class="no">File</span><span class="o">.</span><span class="n">read!</span><span class="p">(</span><span class="s2">&quot;./.coverignore&quot;</span><span class="p">)</span> <span class="o">|&gt;</span> <span class="no">String</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;\n&quot;</span><span class="p">)</span> <span class="o">|&gt;</span> <span class="no">Enum</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="err">&amp;</span><span class="p">(</span><span class="no">String</span><span class="o">.</span><span class="n">to_atom</span><span class="p">(</span><span class="nv">&amp;1</span><span class="p">)))</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="c1"># in def project</span>
+</span><span class='line'>  <span class="ss">test_coverage:</span> <span class="p">[</span>
+</span><span class='line'>    <span class="ss">tool:</span> <span class="no">Coverex</span><span class="o">.</span><span class="no">Task</span><span class="p">,</span>
+</span><span class='line'>    <span class="ss">ignore_modules:</span> <span class="nv">@ignore_modules</span>
+</span><span class='line'>  <span class="p">],</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Boom, that does it! Now we&rsquo;ve got a manageable list of modules to ignore in a separate file so we can keep our mix file clean.</p>
+
+<p>All in all, <code>coverex</code> is a great module, and I would suggest using it if you do not want to ship data to coveralls.</p>
+
+<p>Hope this helps, happy coding. Cheers!</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2016/12/29/multicast-service-discovery-in-electron/">Multicast Service Discovery in Electron</a></h1>
+    
+    
+      <p class="meta">
+        <span class="reading-time">less than a 1 minute read</span>
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2016-12-29T14:01:00-07:00" pubdate data-updated="true">Dec 29<span>th</span>, 2016</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>I’ve been playing around with mDNS lately for broadcasting some services for applications to auto-connect with.</p>
+
+<p>The first experiment I had was setting up a server that broadcasts a TCP endpoint for an Electron application to discover and connect for the application data.</p>
+
+<p>This was so easily done that I challenged myself to see how fast I can whip out a blog post.</p>
+
+<p>First, get an Ubuntu server up (I used a Vagrant VM).</p>
+
+<p>Run the commands:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>sudo apt-get install avahi-utils</span></code></pre></td></tr></table></div></figure>
+
+
+<p>From here, the service for avahi (mdns) should be auto-started. Edit the configuration to enable broadcasting:</p>
+
+<p><code>vim /etc/avahi/avahi-daemon.conf</code> – here’s a config that’s minimally broadcasting only the IPv4 address:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>[server]
+</span><span class='line'>host-name=webserver
+</span><span class='line'>domain-name=local
+</span><span class='line'>use-ipv4=yes
+</span><span class='line'>use-ipv6=no
+</span><span class='line'>allow-interfaces=eth1
+</span><span class='line'>deny-interfaces=eth0
+</span><span class='line'>ratelimit-interval-usec=1000000
+</span><span class='line'>ratelimit-burst=1000
+</span><span class='line'>
+</span><span class='line'>[wide-area]
+</span><span class='line'>enable-wide-area=yes
+</span><span class='line'>
+</span><span class='line'>[publish]
+</span><span class='line'>publish-addresses=yes
+</span><span class='line'>publish-hinfo=yes
+</span><span class='line'>publish-workstation=no
+</span><span class='line'>publish-domain=yes</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Now, create a service configuration: <code>vim /etc/avahi/services/mywebserver.service</code>, with this contents:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>&lt;service-group&gt;
+</span><span class='line'>  &lt;name&gt;Webserver&lt;/name&gt;
+</span><span class='line'>  &lt;service&gt;
+</span><span class='line'>    &lt;type&gt;_http._tcp&lt;/type&gt;
+</span><span class='line'>    &lt;port&gt;80&lt;/port&gt;
+</span><span class='line'>  &lt;/service&gt;
+</span><span class='line'>&lt;/service-group&gt;</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Simple as that. Just restart the avahi-daemon – <code>sudo service avahi-daemon restart</code>.</p>
+
+<p>This should now have your server broadcasting that it has a webserver running at port 80, named <code>Webserver</code>.</p>
+
+<p>To check the service is broadcasting, run <code>avahi-browse _http._tcp -tr</code> – this should show your server as servername.local, with <code>Webserver</code>, pointing to its IP and port.</p>
+
+<p>Example:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>+   eth1 IPv4 webserver                              Web Site             local
+</span><span class='line'>=   eth1 IPv4 webserver                              Web Site             local
+</span><span class='line'>   hostname = [webserver.local]
+</span><span class='line'>   address = [192.168.0.101]
+</span><span class='line'>   port = [80]
+</span><span class='line'>   txt = []</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Now for the electron portion, in your application, install the node mdns module: <code>npm install --save mdns</code>.</p>
+
+<p>This will add the node module to your project, but since it has native compilation steps, you must build it with <code>electron-rebuild</code>. Do this: <code>npm install --save-dev electron-rebuild</code>.</p>
+
+<p>Then run: <code>./node_modules/.bin/electron-rebuild</code> – this will rebuild the mdns module for your electron node version correctly.</p>
+
+<p>To do the DNS lookups, simply run the steps from the node mdns <code>README</code>. Set the discovery type to <code>http</code> and it will find your service. From there, you can grab the address and then get the data from the web server (or html page redirection) as you so wish!</p>
+
+<p>Happy coding!</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2016/03/11/using-erlang-observer-on-a-remote-elixir-server/">Using Erlang Observer on a Remote Elixir Server</a></h1>
+    
+    
+      <p class="meta">
+        <span class="reading-time">less than a 1 minute read</span>
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2016-03-11T14:01:00-07:00" pubdate data-updated="true">Mar 11<span>th</span>, 2016</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>I’ve been using Elixir a ton at work and in some fun side projects and I’m absolutely in love with it.</p>
+
+<p>One tool I especially love is the Erlang Observer tool, that shows you IO, memory, and CPU usage used by your app and the Erlang VM.</p>
+
+<p>Once I got some apps deployed, I wanted to observe them remotely. I found a few <a href="https://groups.google.com/forum/#!topic/elixir-lang-talk/312PlJLSgLw">google forum</a> posts and the <a href="http://elixir-lang.org/docs/stable/iex/IEx.html">IEx docs</a>, but I wanted to wrap up this knowledge for when I need it in the future.</p>
+
+<p>I’m going to monitor a Phoenix app in this quick blog post.</p>
+
+<p>First, fire up your Phoenix server on say, a VPS, giving it a node name:</p>
+
+<p><code>iex --name server@64.16.134.61 --cookie jbavari -S mix phoenix.server</code></p>
+
+<p>Then on your remote viewing machine, say your Mac, run the following:</p>
+
+<p><code>iex --name josh@192.168.1.1 --cookie jbavari</code></p>
+
+<p>Now we’re set up to do some remote observations!</p>
+
+<p>Fire up <code>:observer.start</code> on your local machine, which should open up the Erlang observer.</p>
+
+<p>Now from the menu, select ‘Nodes’, then you should see your node there. If not, click the connect to node button, type in your <code>server@64.16.134.61</code> node address and you should be able to view your node via the observer!</p>
+
+<p>Enjoy!</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -1074,1079 +1593,6 @@ Figuring how to plug in rendering steps between state changes. <code>this.setSta
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2015/12/12/using-brew-to-install-old-versions/">Using Brew to Install Old Versions</a></h1>
-    
-    
-      <p class="meta">
-        <span class="reading-time">less than a 1 minute read</span>
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2015-12-12T13:50:00-07:00" pubdate data-updated="true">Dec 12<span>th</span>, 2015</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>I just wanted to share a quick little tidbit on how to install older brew versions.</p>
-
-<p>I was having some issues with an older version of Elixir failing tests (1.0.1), and the latest version (1.1.1) is working fine.</p>
-
-<p>Just running <code>brew install elixir</code> gets latest.</p>
-
-<p>To get 1.0.1 installed, I first went to the <a href="https://github.com/Homebrew/homebrew">homebrew github repo</a>, looked at the <code>Library/Formula</code> folder, found the <code>elixir.rb</code> formula to install elixir, looked in the history, found 1.0.1, and then executed the following line:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>brew install https://raw.githubusercontent.com/Homebrew/homebrew/8506ced146655c24920f3cc5b20e6bc9e6e703cc/Library/Formula/elixir.rb</span></code></pre></td></tr></table></div></figure>
-
-
-<p>That did it, I easily got 1.0.1 installed, and going back to 1.1.1 was super easy.</p>
-
-<p>Hope this helps, enjoy! Cheers!</p>
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2015/12/07/adding-postgresql-geometric-type-support-to-elixir/">Adding PostgreSQL Geometric Type Support to Elixir</a></h1>
-    
-    
-      <p class="meta">
-        <span class="reading-time">less than a 1 minute read</span>
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2015-12-07T18:04:00-07:00" pubdate data-updated="true">Dec 7<span>th</span>, 2015</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>In the last week or so, I&rsquo;ve had a blast playing around with basic Postgres <a href="http://www.postgresql.org/docs/9.4/static/datatype-geometric.html">geometric types</a> to do basic earth distance queries.</p>
-
-<p>From my favorite blog, <a href="http://datachomp.com/archives/radius-queries-in-postgres/">Datachomp shows how to use radius queries in postgres</a> to find the closest place to get a burrito fix. Since I&rsquo;ve been on an <a href="http://elixir-lang.org/">Elixir</a> kick lately, I figured it was time to contribute back to the open source world by adding first class burrito, err, geometric type support.</p>
-
-<h2>Initial reaction</h2>
-
-<p>I immediately made an Ecto model trying to use the point type in my model:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-</pre></td><td class='code'><pre><code class='elixir'><span class='line'><span class="k">defmodule</span> <span class="no">MyApp</span><span class="o">.</span><span class="no">LocationPoint</span> <span class="k">do</span>
-</span><span class='line'><span class="k">  </span><span class="kn">use</span> <span class="no">MyApp</span><span class="o">.</span><span class="no">Web</span><span class="p">,</span> <span class="ss">:model</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="n">schema</span> <span class="s2">&quot;location_point&quot;</span> <span class="k">do</span>
-</span><span class='line'><span class="k">    </span><span class="n">field</span> <span class="ss">:name</span><span class="p">,</span> <span class="ss">:string</span>
-</span><span class='line'>    <span class="n">field</span> <span class="ss">:date</span><span class="p">,</span> <span class="no">Ecto</span><span class="o">.</span><span class="no">DateTime</span>
-</span><span class='line'>    <span class="n">field</span> <span class="ss">:location</span><span class="p">,</span> <span class="ss">:point</span>
-</span><span class='line'>    <span class="n">timestamps</span>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="nv">@required_fields</span> <span class="err">~</span><span class="n">w</span><span class="p">(</span><span class="n">name</span> <span class="n">date</span><span class="p">)</span>
-</span><span class='line'>  <span class="nv">@optional_fields</span> <span class="err">~</span><span class="n">w</span><span class="p">(</span><span class="n">location</span><span class="p">)</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="nv">@doc</span> <span class="sd">&quot;&quot;&quot;</span>
-</span><span class='line'><span class="sd">  Creates a changeset based on the `model` and `params`.</span>
-</span><span class='line'>
-</span><span class='line'><span class="sd">  If no params are provided, an invalid changeset is returned</span>
-</span><span class='line'><span class="sd">  with no validation performed.</span>
-</span><span class='line'><span class="sd">  &quot;&quot;&quot;</span>
-</span><span class='line'>  <span class="k">def</span> <span class="n">changeset</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">params</span> <span class="p">\\</span> <span class="ss">:empty</span><span class="p">)</span> <span class="k">do</span>
-</span><span class='line'><span class="k">    </span><span class="n">model</span>
-</span><span class='line'>    <span class="o">|&gt;</span> <span class="n">cast</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="nv">@required_fields</span><span class="p">,</span> <span class="nv">@optional_fields</span><span class="p">)</span>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'><span class="k">end</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Right away, when I ran the commands to retrieve this location from <code>iex</code>, it gave me some errors:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='elixir'><span class='line'><span class="err">$</span> <span class="n">iex</span> <span class="o">-</span><span class="no">S</span> <span class="n">mix</span>
-</span><span class='line'><span class="err">$</span> <span class="n">alias</span> <span class="no">MyApp</span><span class="o">.</span><span class="no">Repo</span>
-</span><span class='line'><span class="err">$</span> <span class="n">alias</span> <span class="no">MyApp</span><span class="o">.</span><span class="no">LocationPoint</span>
-</span><span class='line'><span class="err">$</span> <span class="no">Repo</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="no">LocationPoint</span><span class="p">)</span>
-</span><span class='line'><span class="err">$</span> <span class="o">**</span> <span class="p">(</span><span class="no">ArgumentError</span><span class="p">)</span> <span class="n">no</span> <span class="n">extension</span> <span class="n">found</span> <span class="n">for</span> <span class="n">oid</span> <span class="err">`</span><span class="m">600</span><span class="err">`</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Right away, I knew this mission was up to me to get point support into Postgrex.</p>
-
-<p>In this post, I&rsquo;ll outline how to add type support to Postgres via the Elixir package, <a href="https://github.com/ericmj/postgrex">postgrex</a>. We will walk through adding the <code>Point</code> data type in Postgres.</p>
-
-<p>This post will cover:</p>
-
-<ul>
-<li>How to see how postgres stores its types (built in and composite)</li>
-<li>How postgrex does its type lookups</li>
-<li>Finding the source type &ndash; adding it to postgres senders</li>
-<li>Looking up postgres source code for data mapping</li>
-<li>Adding new type <code>Point</code> type</li>
-<li>Adding built in <code>Type</code> structs</li>
-<li>Adding encode method</li>
-<li>Adding decode method</li>
-</ul>
-
-
-<h1>How Postgres stores its types</h1>
-
-<p>Postgres stores its types in a special system table called <code>pg_type</code> (<a href="http://www.postgresql.org/docs/9.4/static/catalog-pg-type.html">docs</a>). It defines a few things about the type:</p>
-
-<ul>
-<li>Its <code>typelem</code> &ndash; how the type is stored &ndash; array, or otherwise</li>
-<li>Its <code>typsend</code> &ndash; Output conversion function (binary format), or 0 if none</li>
-<li>Its <code>typarray</code> &ndash; an oid to another array type that has its send method</li>
-</ul>
-
-
-<h1>How Postgrex does type lookups</h1>
-
-<p>Postgrex at it&rsquo;s core is a simple data adapter into PostgreSQL from Elixir. It&rsquo;s an awesome library, and if you&rsquo;re using <a href="https://github.com/elixir-lang/ecto">Ecto</a>, you&rsquo;re already using it!</p>
-
-<p>First, let&rsquo;s look at how they are loading most types, by looking them up in the <code>pg_type</code> table in postgres:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-</pre></td><td class='code'><pre><code class='elixir'><span class='line'>  <span class="c1">### BOOTSTRAP TYPES AND EXTENSIONS ###</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="nv">@doc</span> <span class="no">false</span>
-</span><span class='line'>  <span class="k">def</span> <span class="n">bootstrap_query</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">version</span><span class="p">)</span> <span class="k">do</span>
-</span><span class='line'><span class="k">    </span><span class="p">{</span><span class="n">rngsubtype</span><span class="p">,</span> <span class="n">join_range</span><span class="p">}</span> <span class="o">=</span>
-</span><span class='line'>      <span class="k">if</span> <span class="n">version</span> <span class="o">&gt;=</span> <span class="p">{</span><span class="m">9</span><span class="p">,</span> <span class="m">2</span><span class="p">,</span> <span class="m">0</span><span class="p">}</span> <span class="k">do</span>
-</span><span class='line'><span class="k">        </span><span class="p">{</span><span class="s2">&quot;coalesce(r.rngsubtype, 0)&quot;</span><span class="p">,</span>
-</span><span class='line'>         <span class="s2">&quot;LEFT JOIN pg_range AS r ON r.rngtypid = t.oid&quot;</span><span class="p">}</span>
-</span><span class='line'>      <span class="k">else</span>
-</span><span class='line'>        <span class="p">{</span><span class="s2">&quot;0&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">}</span>
-</span><span class='line'>      <span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="sd">&quot;&quot;&quot;</span>
-</span><span class='line'><span class="sd">    SELECT t.oid, t.typname, t.typsend, t.typreceive, t.typoutput, t.typinput,</span>
-</span><span class='line'><span class="sd">           t.typelem, #{rngsubtype}, ARRAY (</span>
-</span><span class='line'><span class="sd">      SELECT a.atttypid</span>
-</span><span class='line'><span class="sd">      FROM pg_attribute AS a</span>
-</span><span class='line'><span class="sd">      WHERE a.attrelid = t.typrelid AND a.attnum &gt; 0 AND NOT a.attisdropped</span>
-</span><span class='line'><span class="sd">      ORDER BY a.attnum</span>
-</span><span class='line'><span class="sd">    )</span>
-</span><span class='line'><span class="sd">    FROM pg_type AS t</span>
-</span><span class='line'><span class="sd">    #{join_range}</span>
-</span><span class='line'><span class="sd">    WHERE</span>
-</span><span class='line'><span class="sd">      t.typname::text = ANY ((#{sql_array(m.type)})::text[]) OR</span>
-</span><span class='line'><span class="sd">      t.typsend::text = ANY ((#{sql_array(m.send)})::text[]) OR</span>
-</span><span class='line'><span class="sd">      t.typreceive::text = ANY ((#{sql_array(m.receive)})::text[]) OR</span>
-</span><span class='line'><span class="sd">      t.typoutput::text = ANY ((#{sql_array(m.output)})::text[]) OR</span>
-</span><span class='line'><span class="sd">      t.typinput::text = ANY ((#{sql_array(m.input)})::text[])</span>
-</span><span class='line'><span class="sd">    &quot;&quot;&quot;</span>
-</span><span class='line'>  <span class="k">end</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>You can see that under the hood, we&rsquo;re querying Postgres and asking it for it&rsquo;s types, so we can do OID lookups and call the appropriate encoder/decoder methods. From here, we can match up our newly added types encoding/decoding methods.</p>
-
-<h1>Finding the source type &ndash; adding it to postgres senders</h1>
-
-<p>Find information about the geometrics category:</p>
-
-<p><code>SELECT * from pg_type where typcategory = 'G';</code></p>
-
-<p>We will see the point type has an oid of 600, which is using a send specification of <code>point_send</code>. Other notable send types for geometries: <code>point_send lseg_send path_send box_send poly_send line_send circle_send</code>.</p>
-
-<p>Thus, we&rsquo;ll update the send types in postgrex, located in the <code>binary.ex</code> file:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class='elixir'><span class='line'><span class="nv">@senders</span> <span class="err">~</span><span class="n">w</span><span class="p">(</span><span class="n">boolsend</span> <span class="n">bpcharsend</span> <span class="n">textsend</span> <span class="n">varcharsend</span> <span class="n">byteasend</span>
-</span><span class='line'>            <span class="n">int2send</span> <span class="n">int4send</span> <span class="n">int8send</span> <span class="n">float4send</span> <span class="n">float8send</span> <span class="n">numeric_send</span>
-</span><span class='line'>            <span class="n">uuid_send</span> <span class="n">date_send</span> <span class="n">time_send</span> <span class="n">timetz_send</span> <span class="n">timestamp_send</span>
-</span><span class='line'>            <span class="n">timestamptz_send</span> <span class="n">interval_send</span> <span class="n">enum_send</span> <span class="n">tidsend</span> <span class="n">unknownsend</span>
-</span><span class='line'>            <span class="n">inet_send</span> <span class="n">cidr_send</span> <span class="n">macaddr_send</span> <span class="n">point_send</span>
-</span><span class='line'>            <span class="p">)</span> <span class="o">++</span> <span class="nv">@oid_senders</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Boom, that gets us the oid to encode/decode off of!</p>
-
-<h1>Looking up postgres source code for data mapping</h1>
-
-<p>I hopped into the Postgres source code and looked up the struct type for point, <a href="https://github.com/postgres/postgres/blob/master/src/include/utils/geo_decls.h#L58-L62">found here</a>.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='c++'><span class='line'><span class="k">typedef</span> <span class="k">struct</span>
-</span><span class='line'><span class="p">{</span>
-</span><span class='line'>  <span class="kt">double</span>    <span class="n">x</span><span class="p">,</span>
-</span><span class='line'>        <span class="n">y</span><span class="p">;</span>
-</span><span class='line'><span class="p">}</span> <span class="n">Point</span><span class="p">;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Great, its just two floats, no big deal.</p>
-
-<h1>Adding the point struct</h1>
-
-<p>Let&rsquo;s craft our Postgrex stuct type in <code>builtins.ex</code> then!</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-</pre></td><td class='code'><pre><code class='c++'><span class='line'><span class="n">defmodule</span> <span class="n">Postgrex</span><span class="p">.</span><span class="n">Point</span> <span class="k">do</span>
-</span><span class='line'>  <span class="err">@</span><span class="n">moduledoc</span> <span class="s">&quot;&quot;&quot;</span>
-</span><span class='line'>  <span class="n">Struct</span> <span class="k">for</span> <span class="n">Postgres</span> <span class="n">point</span><span class="p">.</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="err">##</span> <span class="n">Fields</span>
-</span><span class='line'>    <span class="o">*</span> <span class="err">`</span><span class="n">x</span><span class="err">`</span>
-</span><span class='line'>    <span class="o">*</span> <span class="err">`</span><span class="n">y</span><span class="err">`</span>
-</span><span class='line'>  <span class="s">&quot;&quot;&quot;</span>
-</span><span class='line'>  <span class="n">require</span> <span class="n">Decimal</span>
-</span><span class='line'>  <span class="err">@</span><span class="n">type</span> <span class="n">t</span> <span class="o">::</span> <span class="o">%</span><span class="n">__MODULE__</span><span class="p">{</span><span class="nl">x:</span> <span class="kt">float</span><span class="p">,</span> <span class="nl">y:</span> <span class="kt">float</span><span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="n">defstruct</span> <span class="p">[</span>
-</span><span class='line'>    <span class="nl">x:</span> <span class="n">nil</span><span class="p">,</span>
-</span><span class='line'>    <span class="nl">y:</span> <span class="n">nil</span><span class="p">]</span>
-</span><span class='line'><span class="n">end</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h1>Adding the encode method</h1>
-
-<p>Now since we are sending PostgreSQL binary data, we need to take our data and map it to it&rsquo;s binary form, via an <code>encode</code> method.</p>
-
-<p>However, postgrex is going to do a type look up, based on the types that we used in that query above.</p>
-
-<p>We&rsquo;ll add the methods to encode, that does some pattern matching to decipher we are getting the correct sender value.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='c++'><span class='line'><span class="n">def</span> <span class="n">encode</span><span class="p">(</span><span class="o">%</span><span class="n">TypeInfo</span><span class="p">{</span><span class="nl">type:</span> <span class="s">&quot;point&quot;</span><span class="p">,</span> <span class="nl">send:</span> <span class="s">&quot;point_send&quot;</span><span class="p">},</span> <span class="o">%</span><span class="n">Postgrex</span><span class="p">.</span><span class="n">Point</span><span class="p">{}</span> <span class="o">=</span> <span class="n">point</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">),</span>
-</span><span class='line'>  <span class="k">do</span><span class="o">:</span> <span class="n">encode_point</span><span class="p">(</span><span class="n">point</span><span class="p">)</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>As you can see, we are encoding, when a <code>TypeInfo</code> tuple is passed with type <code>point</code> and <code>send</code> <code>point_send</code>! Great, we just pass that to this method to parse out the two floats passed in the binary object:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='c++'><span class='line'><span class="n">defp</span> <span class="n">encode_point</span><span class="p">(</span><span class="o">%</span><span class="n">Postgrex</span><span class="p">.</span><span class="n">Point</span><span class="p">{</span><span class="nl">x:</span> <span class="n">x</span><span class="p">,</span> <span class="nl">y:</span> <span class="n">y</span><span class="p">}),</span>
-</span><span class='line'>  <span class="k">do</span><span class="o">:</span> <span class="o">&lt;&lt;</span><span class="n">x</span><span class="o">::</span><span class="n">float64</span><span class="p">,</span> <span class="n">y</span><span class="o">::</span><span class="n">float64</span><span class="o">&gt;&gt;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>It just takes those two values, and serializes them down to their binary counterparts.</p>
-
-<p>That now handles the test we&rsquo;ve got to keep us honest:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='c++'><span class='line'><span class="n">test</span> <span class="s">&quot;encode point&quot;</span><span class="p">,</span> <span class="n">context</span> <span class="k">do</span>
-</span><span class='line'>  <span class="n">assert</span> <span class="p">[[</span><span class="o">%</span><span class="n">Postgrex</span><span class="p">.</span><span class="n">Point</span><span class="p">{</span><span class="nl">x:</span> <span class="o">-</span><span class="mi">97</span><span class="p">,</span> <span class="nl">y:</span> <span class="mi">100</span><span class="p">}]]</span> <span class="o">==</span> <span class="n">query</span><span class="p">(</span><span class="s">&quot;SELECT $1::point&quot;</span><span class="p">,</span> <span class="p">[</span><span class="o">%</span><span class="n">Postgrex</span><span class="p">.</span><span class="n">Point</span><span class="p">{</span><span class="nl">x:</span> <span class="o">-</span><span class="mi">97</span><span class="p">,</span> <span class="nl">y:</span> <span class="mi">100</span><span class="p">}])</span>
-</span><span class='line'><span class="n">end</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>This test as promised, takes a <code>Postgrex.Point</code> type, and encodes it to the binary form, and sends it off to Postgres. How beautiful.</p>
-
-<h1>Adding the decode method</h1>
-
-<p>Now, when we get binary values from Postgres, we need to map that to our <code>Point</code> type we&rsquo;ve created.</p>
-
-<p>Adding the functions to <code>decode</code> in <code>binary.ex</code>:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-</pre></td><td class='code'><pre><code class='c++'><span class='line'><span class="n">def</span> <span class="n">decode</span><span class="p">(</span><span class="o">%</span><span class="n">TypeInfo</span><span class="p">{</span><span class="nl">type:</span> <span class="s">&quot;point&quot;</span><span class="p">},</span> <span class="n">binary</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">),</span>
-</span><span class='line'>  <span class="k">do</span><span class="o">:</span> <span class="n">decode_point</span><span class="p">(</span><span class="n">binary</span><span class="p">)</span>
-</span><span class='line'>
-</span><span class='line'><span class="cp"># ..snip..</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">defp</span> <span class="n">decode_point</span><span class="p">(</span><span class="o">&lt;&lt;</span><span class="n">x</span><span class="o">::</span><span class="n">float64</span><span class="p">,</span> <span class="n">y</span><span class="o">::</span><span class="n">float64</span><span class="o">&gt;&gt;</span><span class="p">)</span> <span class="k">do</span>
-</span><span class='line'>  <span class="o">%</span><span class="n">Postgrex</span><span class="p">.</span><span class="n">Point</span><span class="p">{</span><span class="nl">x:</span> <span class="n">x</span><span class="p">,</span> <span class="nl">y:</span> <span class="n">y</span><span class="p">}</span>
-</span><span class='line'><span class="n">end</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>The real meat and potatoes is, receiving our binary parameter, mapping its individual segmets as two floats, sized 8 bytes, and then with the pattern matching mapping those to our <code>Postgrex.Point</code> struct. QED.</p>
-
-<p>And the test:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='c++'><span class='line'><span class="n">test</span> <span class="s">&quot;decode point&quot;</span><span class="p">,</span> <span class="n">context</span> <span class="k">do</span>
-</span><span class='line'>  <span class="n">assert</span> <span class="p">[[</span><span class="o">%</span><span class="n">Postgrex</span><span class="p">.</span><span class="n">Point</span><span class="p">{</span><span class="nl">x:</span> <span class="o">-</span><span class="mi">97</span><span class="p">,</span> <span class="nl">y:</span> <span class="mi">100</span><span class="p">}]]</span> <span class="o">==</span> <span class="n">query</span><span class="p">(</span><span class="s">&quot;SELECT point(-97, 100)::point&quot;</span><span class="p">,</span> <span class="p">[])</span>
-</span><span class='line'>  <span class="n">assert</span> <span class="p">[[</span><span class="o">%</span><span class="n">Postgrex</span><span class="p">.</span><span class="n">Point</span><span class="p">{</span><span class="nl">x:</span> <span class="o">-</span><span class="mf">97.5</span><span class="p">,</span> <span class="nl">y:</span> <span class="mf">100.1</span><span class="p">}]]</span> <span class="o">==</span> <span class="n">query</span><span class="p">(</span><span class="s">&quot;SELECT point(-97.5, 100.1)::point&quot;</span><span class="p">,</span> <span class="p">[])</span>
-</span><span class='line'><span class="n">end</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h1>Conclusion</h1>
-
-<p>Once I finally figured out what pieces were what, I was able to run and create the point type, its mappings, and its senders it required, easily mapping to the struct in Elixir.</p>
-
-<p>I plan to keep working on postgrex, to add first class support for Postgres geometric types.</p>
-
-<p>Cheers!</p>
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2015/12/04/the-scoreboard-project/">The Scoreboard Project</a></h1>
-    
-    
-      <p class="meta">
-        <span class="reading-time">less than a 1 minute read</span>
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2015-12-04T17:22:00-07:00" pubdate data-updated="true">Dec 4<span>th</span>, 2015</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Lately I&rsquo;ve been wanting to dig more into some technologies I&rsquo;ve been wanting to explore and gain more experience. Not only this, but I wanted to make sure my dev workflow was still improving, my tools were getting sharpened, and I was re-establishing the best practices as much as I could.</p>
-
-<p>Those specific technologies I wanted to dig into was:</p>
-
-<ul>
-<li>Building a CLI in Ruby, using <a href="https://github.com/erikhuda/thor">Thor</a></li>
-<li>A <a href="http://sinatrarb.com">Sinatra</a> Modular API</li>
-<li>Solifying <a href="https://github.com/jeremyevans/sequel">Sequel</a> Model usage and JSON serialization</li>
-<li>Building a dashboard using <a href="https://github.com/Shopify/dashing">Dashing</a></li>
-<li>Diving more into <a href="https://github.com/bbatsov/rubocop">Rubocop</a> for Ruby static code analysis</li>
-<li>Automated Code Review using <a href="http://codeclimate.com">CodeClimate</a></li>
-</ul>
-
-
-<p>I found a way to connect all the dots in what I&rsquo;m calling the scoreboard project. I chose these technologies because it would let me shine up my ruby/sql skills without a framework carrying me the way. (Although they mostly did anyway!)</p>
-
-<p>This blog post will go over the idea of making an API around scoreboards. There will be a simple CLI tool to gather scores on &lsquo;games&rsquo;. Those scores will be sent to the API, to store in Postgres. The dashboard project will then pull these values from postgres and display them in an easy to view manner.</p>
-
-<h2>This post</h2>
-
-<p>With this post, i&rsquo;ll go over the individual pieces of the project, the interesting tidbits of each one, and finally go over a short retrospective over the entire project.</p>
-
-<p>In entire time, the project took about a day and a half. It was fun, and I really enjoyed the experience over all.</p>
-
-<h2>The pieces</h2>
-
-<ul>
-<li><a href="https://github.com/jbavari/scoreboard-cli">Scoreboard CLI</a></li>
-<li><a href="https://github.com/jbavari/scoreboard-api">Scoreboard API</a></li>
-<li><a href="https://github.com/jbavari/scoreboard-dashboard">Scoreboard Dashboard</a></li>
-<li>Scoreboard Mobile App (coming soon)</li>
-</ul>
-
-
-<p>All of the projects are listed on my github profile. I&rsquo;ve been trying to keep most issues in the github repo&rsquo;s issue page for each respective project.</p>
-
-<p>All of the projects are checked by CodeClimate, and I&rsquo;ve been trying to keep up with rubocop&rsquo;s rules on these as I go.</p>
-
-<h2>Scoreboard CLI</h2>
-
-<p>The idea for the CLI was to prompt the user for a home team and visitor team, then collect data about getting a touch down for the home team, for example: <code>h:td</code>.</p>
-
-<p>It would keep prompting for more scoring plays until the user gives a SIGTERM or hits CTRL+D.</p>
-
-<p>First I started by reading up on Thor, which was an absolute pleasure to work with. You can download it via <code>gem install scoreboard</code>.</p>
-
-<p>To make it available via command line, I added this:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'>  <span class="n">spec</span><span class="o">.</span><span class="n">bindir</span>        <span class="o">=</span> <span class="s2">&quot;bin&quot;</span>
-</span><span class='line'>  <span class="n">spec</span><span class="o">.</span><span class="n">executables</span>   <span class="o">=</span> <span class="n">spec</span><span class="o">.</span><span class="n">files</span><span class="o">.</span><span class="n">grep</span><span class="p">(</span><span class="sr">%r{^bin/}</span><span class="p">)</span> <span class="p">{</span> <span class="o">|</span><span class="n">f</span><span class="o">|</span> <span class="no">File</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">f</span><span class="p">)</span> <span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Then in <code>bin/scoreboard</code> <a href="https://github.com/jbavari/scoreboard-cli/blob/master/bin/scoreboard">link</a>, we just require in our CLI and run it with the arguments:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="c1">#!/usr/bin/env ruby</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">require_relative</span> <span class="s2">&quot;../lib/scoreboard/cli&quot;</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">begin</span>
-</span><span class='line'>  <span class="n">cli</span> <span class="o">=</span> <span class="ss">Scoreboard</span><span class="p">:</span><span class="ss">:Cli</span><span class="o">.</span><span class="n">new</span>
-</span><span class='line'>  <span class="n">cli</span><span class="o">.</span><span class="n">start</span><span class="p">(</span><span class="no">ARGV</span><span class="p">)</span>
-</span><span class='line'><span class="k">rescue</span> <span class="o">=&gt;</span> <span class="n">e</span>
-</span><span class='line'>  <span class="k">raise</span> <span class="n">e</span> <span class="k">if</span> <span class="vg">$DEBUG</span>
-</span><span class='line'>  <span class="no">STDERR</span><span class="o">.</span><span class="n">puts</span> <span class="n">e</span><span class="o">.</span><span class="n">message</span>
-</span><span class='line'>  <span class="no">STDERR</span><span class="o">.</span><span class="n">puts</span> <span class="n">e</span><span class="o">.</span><span class="n">backtrace</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
-</span><span class='line'>  <span class="nb">exit</span> <span class="mi">1</span>
-</span><span class='line'><span class="k">end</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>A note on the SIGTERM exception handling</h3>
-
-<p>If you see in my <code>STDIN.each_line</code> loop where I read in scoring entries, <a href="https://github.com/jbavari/scoreboard-cli/blob/master/lib/scoreboard/cli.rb#L47">you will see</a> I rescue all Exception. This could be improved to find the exact SIGTERM exception is being thrown, but for simplicity, I left it catching the general exception.</p>
-
-<h2>Scoreboard API</h2>
-
-<p>The API has a few paths, based on the <code>/api/v1</code> namespace for requests.</p>
-
-<p>You can access its teams or the entire scoreboard, via <code>GET /api/v1/teams</code> or <code>GET /api/v1/scores</code>. You can see the core <a href="https://github.com/jbavari/scoreboard-api/blob/master/application.rb">Sinatra Application</a> on github.</p>
-
-<p>It was absolutely easy to set up the <a href="https://github.com/jbavari/scoreboard-api/tree/master/migrations">Sequel migrations</a> to define the team table and the scoreboard table in postgres.</p>
-
-<p>The main tying point was getting the Sequel models to serialize, which was solved in another blog post.</p>
-
-<h2>Scoreboard Dashboard</h2>
-
-<p>Dashing was really easy to get started, a project set up, and out the gate.</p>
-
-<p>First I had to include Sequel to get me my data, which I included an <code>Api</code> model to ease the SQL bridge for me.</p>
-
-<p>The main point here was the <code>scoreboard.rb</code> file which was scheduled to run every 5 seconds, gather data from some crafty queries, and send that data to the dashboard. Other than the HTML markup, this was the chunky part of it:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-<span class='line-number'>39</span>
-<span class='line-number'>40</span>
-<span class='line-number'>41</span>
-<span class='line-number'>42</span>
-<span class='line-number'>43</span>
-<span class='line-number'>44</span>
-<span class='line-number'>45</span>
-<span class='line-number'>46</span>
-<span class='line-number'>47</span>
-<span class='line-number'>48</span>
-<span class='line-number'>49</span>
-<span class='line-number'>50</span>
-<span class='line-number'>51</span>
-<span class='line-number'>52</span>
-<span class='line-number'>53</span>
-<span class='line-number'>54</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="nb">require</span> <span class="s1">&#39;sequel&#39;</span>
-</span><span class='line'>
-</span><span class='line'>
-</span><span class='line'><span class="no">DB</span> <span class="o">=</span> <span class="no">Sequel</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s1">&#39;postgres://localhost/scoreboard&#39;</span><span class="p">)</span>
-</span><span class='line'><span class="n">scoreboard</span> <span class="o">=</span> <span class="no">DB</span><span class="o">[</span><span class="ss">:scoreboard</span><span class="o">]</span>
-</span><span class='line'><span class="n">team</span> <span class="o">=</span> <span class="no">DB</span><span class="o">[</span><span class="ss">:team</span><span class="o">]</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">send_event</span><span class="p">(</span><span class="s1">&#39;games-played&#39;</span><span class="p">,</span> <span class="p">{</span> <span class="ss">value</span><span class="p">:</span> <span class="n">scoreboard</span><span class="o">.</span><span class="n">count</span> <span class="p">})</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">def</span> <span class="nf">teams_played</span>
-</span><span class='line'>  <span class="no">DB</span><span class="o">[&lt;&lt;-</span><span class="no">eos</span>
-</span><span class='line'><span class="sh">      select</span>
-</span><span class='line'><span class="sh">        sum(value)::int as value,</span>
-</span><span class='line'><span class="sh">        label</span>
-</span><span class='line'><span class="sh">      from (</span>
-</span><span class='line'><span class="sh">        select count(home_id) as value, name as label from team inner join scoreboard on team.id = scoreboard.home_id group by scoreboard.home_id, team.name</span>
-</span><span class='line'>
-</span><span class='line'><span class="sh">        UNION ALL</span>
-</span><span class='line'>
-</span><span class='line'><span class="sh">        select count(visitor_id) as value, name as label from team inner join scoreboard on team.id = scoreboard.visitor_id group by scoreboard.visitor_id, team.name</span>
-</span><span class='line'><span class="sh">      ) sub</span>
-</span><span class='line'><span class="sh">      group by value, label</span>
-</span><span class='line'><span class="sh">      order by value desc</span>
-</span><span class='line'><span class="no">    eos</span>
-</span><span class='line'>  <span class="o">]</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">def</span> <span class="nf">team_scoreboard</span>
-</span><span class='line'>  <span class="no">DB</span><span class="o">[&lt;&lt;-</span><span class="no">eos</span>
-</span><span class='line'><span class="sh">      select </span>
-</span><span class='line'><span class="sh">        s.id,</span>
-</span><span class='line'><span class="sh">        t.name as home_team, </span>
-</span><span class='line'><span class="sh">        t2.name as visitor_team, </span>
-</span><span class='line'><span class="sh">        home_score, </span>
-</span><span class='line'><span class="sh">        visitor_score </span>
-</span><span class='line'><span class="sh">      from team t </span>
-</span><span class='line'><span class="sh">      inner join scoreboard s on s.home_id = t.id </span>
-</span><span class='line'><span class="sh">      inner join team t2 on t2.id = s.visitor_id</span>
-</span><span class='line'><span class="sh">      limit 10;</span>
-</span><span class='line'><span class="no">    eos</span>
-</span><span class='line'>  <span class="o">]</span>
-</span><span class='line'><span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'><span class="no">SCHEDULER</span><span class="o">.</span><span class="n">every</span> <span class="s1">&#39;5s&#39;</span> <span class="k">do</span>
-</span><span class='line'>  <span class="n">teams</span> <span class="o">=</span> <span class="n">teams_played</span><span class="o">.</span><span class="n">map</span> <span class="k">do</span> <span class="o">|</span><span class="n">item</span><span class="o">|</span>
-</span><span class='line'>    <span class="p">{</span><span class="ss">:label</span> <span class="o">=&gt;</span> <span class="n">item</span><span class="o">[</span><span class="ss">:label</span><span class="o">]</span><span class="p">,</span> <span class="ss">:value</span> <span class="o">=&gt;</span> <span class="n">item</span><span class="o">[</span><span class="ss">:value</span><span class="o">]</span><span class="p">}</span>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'>  <span class="n">send_event</span><span class="p">(</span><span class="s1">&#39;games-played&#39;</span><span class="p">,</span> <span class="p">{</span> <span class="ss">value</span><span class="p">:</span> <span class="n">scoreboard</span><span class="o">.</span><span class="n">count</span> <span class="p">})</span>
-</span><span class='line'>  <span class="n">send_event</span><span class="p">(</span><span class="s1">&#39;teams&#39;</span><span class="p">,</span> <span class="p">{</span> <span class="ss">items</span><span class="p">:</span> <span class="n">teams</span> <span class="p">})</span>
-</span><span class='line'>  <span class="nb">puts</span> <span class="s2">&quot;Scoreboard: </span><span class="si">#{</span><span class="n">team_scoreboard</span><span class="o">.</span><span class="n">to_a</span><span class="si">}</span><span class="s2">&quot;</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="n">send_event</span><span class="p">(</span><span class="s1">&#39;scoreboard&#39;</span><span class="p">,</span> <span class="p">{</span> <span class="ss">items</span><span class="p">:</span> <span class="n">team_scoreboard</span><span class="o">.</span><span class="n">to_a</span> <span class="p">})</span>
-</span><span class='line'><span class="k">end</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h1>Retrospective</h1>
-
-<ul>
-<li>What went right</li>
-<li>What went wrong</li>
-<li>What could be improved</li>
-</ul>
-
-
-<h2>What went right</h2>
-
-<ul>
-<li>The CLI came together smoothly. Thor was easy to get running.</li>
-<li>Getting data to post to the API was a breeze</li>
-<li>Sinatra and Sequel were easy to hoist up a simple API to take POST data and serve GET requests as JSON</li>
-<li>Getting data into the dashboard was SUPER easy with Sequel, no need to do the ORM dance</li>
-<li>Dashing was easy to create my own scoreboard component, using the <code>data-</code> type DOM attributes</li>
-</ul>
-
-
-<h2>What went wrong</h2>
-
-<ul>
-<li>Had some issues handling SIGTERM in CLI</li>
-<li>CLI still doesnt validate input</li>
-<li>API for Sinatra was a little difficult to get JSON serialization off the bat</li>
-<li>Dashing is very &lsquo;opinionated&rsquo; and doesnt give you more room to fit into an existing app</li>
-<li>No tests were made</li>
-<li>Nothing is deployed to servers yet</li>
-</ul>
-
-
-<h2>What could be improved</h2>
-
-<ul>
-<li>Minitest suite for CLI, API, and the Dashboard</li>
-<li>Dashboard process tasks could be broken out to be more DRY</li>
-<li>CLI needs to check and validate input</li>
-<li>API needs to add in rollbar, new relic, or other metrics to help find errors</li>
-<li>Deploy all the things!</li>
-</ul>
-
-
-<h1>Future plans</h1>
-
-<p>The plan is to keep working on this project and continue improving tooling and getting other best practices in place. Finally, ship it to digital ocean and enjoy the conveniences they provide.</p>
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2015/12/04/using-json-serializers-in-sinatra/">Using JSON Serializers in Sinatra</a></h1>
-    
-    
-      <p class="meta">
-        <span class="reading-time">less than a 1 minute read</span>
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2015-12-04T11:17:00-07:00" pubdate data-updated="true">Dec 4<span>th</span>, 2015</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>I ran into a quick little issue with serializing some of my <a href="https://github.com/jeremyevans/sequel">Sequel</a> models.</p>
-
-<p>The <a href="http://sequel.jeremyevans.net/rdoc-plugins/classes/Sequel/Plugins/JsonSerializer.html">official JSON serializer docs</a> are great, I just wanted to shine more light on the issue.</p>
-
-<p>If you&rsquo;re using Sequel models, just throw in the quick line of <code>plugin :json_serializer</code>.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="c1"># Get our database connection</span>
-</span><span class='line'><span class="n">require_relative</span> <span class="s2">&quot;./db&quot;</span>
-</span><span class='line'><span class="k">module</span> <span class="nn">ScoreboardApi</span>
-</span><span class='line'>  <span class="k">class</span> <span class="nc">Team</span> <span class="o">&lt;</span> <span class="ss">Sequel</span><span class="p">:</span><span class="ss">:Model</span><span class="p">(</span><span class="ss">:team</span><span class="p">)</span>
-</span><span class='line'>    <span class="n">plugin</span> <span class="ss">:json_serializer</span>
-</span><span class='line'>    <span class="n">serialize_attributes</span> <span class="ss">:json</span><span class="p">,</span> <span class="ss">:name</span>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'><span class="k">end</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Then, you just use the Sinatra contrib gem to have it json serializer attach:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="c1"># Web framework</span>
-</span><span class='line'><span class="n">gem</span> <span class="s2">&quot;sinatra&quot;</span><span class="p">,</span> <span class="s2">&quot;1.4.6&quot;</span><span class="p">,</span> <span class="nb">require</span><span class="p">:</span> <span class="s2">&quot;sinatra/base&quot;</span>
-</span><span class='line'><span class="c1"># Sinatra addons - JSON, Namespace</span>
-</span><span class='line'><span class="n">gem</span> <span class="s2">&quot;sinatra-contrib&quot;</span><span class="p">,</span> <span class="s2">&quot;1.4.6&quot;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Set up your API routes and spit out JSON:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="nb">require</span> <span class="s2">&quot;bundler&quot;</span>
-</span><span class='line'><span class="nb">require</span> <span class="s2">&quot;sinatra/base&quot;</span>
-</span><span class='line'><span class="nb">require</span> <span class="s2">&quot;sinatra/json&quot;</span>
-</span><span class='line'><span class="nb">require</span> <span class="s2">&quot;sinatra/namespace&quot;</span>
-</span><span class='line'>
-</span><span class='line'><span class="nb">require</span> <span class="s2">&quot;./models/scoreboard&quot;</span>
-</span><span class='line'><span class="nb">require</span> <span class="s2">&quot;./models/team&quot;</span>
-</span><span class='line'>
-</span><span class='line'><span class="no">Bundler</span><span class="o">.</span><span class="n">require</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">module</span> <span class="nn">ScoreboardApi</span>
-</span><span class='line'>  <span class="k">class</span> <span class="nc">App</span> <span class="o">&lt;</span> <span class="ss">Sinatra</span><span class="p">:</span><span class="ss">:Application</span>
-</span><span class='line'>    <span class="n">register</span> <span class="ss">Sinatra</span><span class="p">:</span><span class="ss">:Namespace</span>
-</span><span class='line'>    <span class="n">configure</span> <span class="k">do</span>
-</span><span class='line'>      <span class="n">disable</span> <span class="ss">:method_override</span>
-</span><span class='line'>      <span class="n">disable</span> <span class="ss">:static</span>
-</span><span class='line'>
-</span><span class='line'>      <span class="n">set</span> <span class="ss">:sessions</span><span class="p">,</span>
-</span><span class='line'>          <span class="ss">:httponly</span>     <span class="o">=&gt;</span> <span class="kp">true</span><span class="p">,</span>
-</span><span class='line'>          <span class="ss">:secure</span>       <span class="o">=&gt;</span> <span class="n">production?</span><span class="p">,</span>
-</span><span class='line'>          <span class="ss">:expire_after</span> <span class="o">=&gt;</span> <span class="mi">31557600</span><span class="p">,</span> <span class="c1"># 1 year</span>
-</span><span class='line'>          <span class="ss">:secret</span>       <span class="o">=&gt;</span> <span class="no">ENV</span><span class="o">[</span><span class="s2">&quot;SESSION_SECRET&quot;</span><span class="o">]</span>
-</span><span class='line'>    <span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="n">use</span> <span class="ss">Rack</span><span class="p">:</span><span class="ss">:Deflater</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="n">namespace</span> <span class="s2">&quot;/api/v1&quot;</span> <span class="k">do</span>
-</span><span class='line'>      <span class="n">get</span> <span class="s2">&quot;/scores&quot;</span> <span class="k">do</span>
-</span><span class='line'>        <span class="n">json</span> <span class="ss">:scoreboard</span> <span class="o">=&gt;</span> <span class="no">Scoreboard</span><span class="o">.</span><span class="n">all</span>
-</span><span class='line'>      <span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'>      <span class="n">get</span> <span class="s2">&quot;/teams&quot;</span> <span class="k">do</span>
-</span><span class='line'>        <span class="n">json</span> <span class="ss">:teams</span> <span class="o">=&gt;</span> <span class="no">Team</span><span class="o">.</span><span class="n">all</span>
-</span><span class='line'>      <span class="k">end</span>
-</span><span class='line'>    <span class="k">end</span>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'><span class="k">end</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>That&#8221;s all folks!</p>
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2015/12/03/playing-with-safari-9-force-touch-api/">Playing With Safari 9 Force Touch API</a></h1>
-    
-    
-      <p class="meta">
-        <span class="reading-time">less than a 1 minute read</span>
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2015-12-03T10:46:00-07:00" pubdate data-updated="true">Dec 3<span>rd</span>, 2015</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>I just got the new Macbook Pro not too long ago and noticed they had this intimately named featured called Force Touch.</p>
-
-<p>Force touch, as it sounds, lets you touch things more <em>intimately</em>. The gist is this &ndash; there are sensors on the new touch pad that let you determine how hard the touch pad is touched, and has some API into that.</p>
-
-<p>I admit, the API is kinda just for fun since only Safari 9 and new Macbooks have the feature. Still, I wanted to play more with ES6 and create a little API wrapper to make it easier and let this feature name to be a little less creepy.</p>
-
-<p>After a little googling, I found an awesome <a href="http://www.joshuakehn.com/2015/10/22/using-new-force-touch-apis-in-javascript.html">blog post by Joshua Kehn</a> that detailed more about using Force touch. I wanted to make a quick wrapper around it to do some fun effects and animations.</p>
-
-<p>The idea is &ndash; we&rsquo;ll have an API called <code>TheForce</code> that we can attach handlers to for fun visual effects.</p>
-
-<p>Joshua&rsquo;s demo had a box that when tapped and applying pressure, padding would be increased. I took <a href="https://gist.github.com/joshkehn/3ed6b535408162fe94ae">his gist</a> and turned it into an ES6 module. (See the <a href="http://www.joshuakehn.com/2015/10/22/using-new-force-touch-apis-in-javascript.html#demo">demo</a>)</p>
-
-<h2>The API</h2>
-
-<p>I wrote it up last night in a quick hurry. The gist is this:</p>
-
-<ul>
-<li>Attach to a DOM element</li>
-<li>Apply a glow to the element based applied pressure to touchpad</li>
-</ul>
-
-
-<p>Code to attach a button named <code>you</code>, and trigger it automatically:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">var</span> <span class="nx">luke</span> <span class="o">=</span> <span class="nx">TheForce</span><span class="p">.</span><span class="nx">beWith</span><span class="p">(</span><span class="s1">&#39;you&#39;</span><span class="p">).</span><span class="nx">alter</span><span class="p">({</span><span class="s1">&#39;boxShadow&#39;</span><span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'><span class="c">&lt;!--</span> <span class="nx">luke</span><span class="p">.</span><span class="nx">alter</span><span class="p">(</span><span class="s1">&#39;boxShadow&#39;</span><span class="p">);</span> <span class="o">--&gt;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2015/11/27/respect-yourself/">Respect Yourself</a></h1>
-    
-    
-      <p class="meta">
-        <span class="reading-time">less than a 1 minute read</span>
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2015-11-27T21:58:00-07:00" pubdate data-updated="true">Nov 27<span>th</span>, 2015</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>I&rsquo;m writing this post as a memoir for myself, a retrospect of sorts. I read <a href="http://sethgodin.typepad.com/seths_blog/2015/11/unconscious-consumption.html">Seth Godins blog about Unconscious consumption</a> and that post inspired me to write this post.</p>
-
-<p>In the last 3 years, amazing events have unfolded. I helped create a start up, <a href="http://raisemore.com">RaiseMore</a>. I moved to Boulder, Colorado. I got a job at Ionic. I met a strong, amazing, beautiful woman who is my girlfriend.</p>
-
-<p>I trained jiu-jitsu 4-5 times a week, I kept working on my strength, and trying to inspire others to do the same. I was striving to always read self-help books, watching informational videos, TED talks, ignite talks, challenging and pushing myself, and helping others grow.</p>
-
-<p>All these new and exciting things kept happening to me. Many times before, I&rsquo;ve asked myself, &lsquo;how did I get so lucky?&rsquo;. Things just had a snowball effect and kept getting better and better!</p>
-
-<p>I&rsquo;d like to think what attracted all these amazing things into my life was from these advancements.</p>
-
-<p>However, something happened during these last 4 months that really threw me in a rut. I developed a poor attitude. I started thinking I was a victim. I no longer work for the company that I had looked up to for so long.</p>
-
-<p>As I sit here now and reflect on the last few months, I know I&rsquo;ve made my fair share of mistakes. I take full responsibility for that. And due to some of those mistakes, I&rsquo;m unemployed (and looking for opportunities!) and I know it&rsquo;s my own fault.</p>
-
-<p>I&rsquo;d like to stop and take a minute to deep dive and retrospect on what happened. I know, deep in my heart, that it all changed when <em>I stopped respecting myself and making my personal growth a priority</em>.</p>
-
-<p>I&rsquo;m realizing that while all these good things were occurring, one thing remained constant &ndash; <em>I put myself and my personal growth first</em>.</p>
-
-<p>I&rsquo;d like to deep dive into what really happened, and discover the why.</p>
-
-<h2>Deep diving</h2>
-
-<p>Questions to ask:</p>
-
-<ul>
-<li>What did you do right?</li>
-<li>What did you do wrong?</li>
-<li>What can you do better?</li>
-</ul>
-
-
-<h3>What did I do right?</h3>
-
-<p>In January, I was jumping head first into the Ionic CLI. I was familiar with Node.js, but wasn&rsquo;t nearly at the level I wanted to be at. So I jumped head first into blogs, training courses, books, and more.</p>
-
-<p>I learned a ton by failing forward, bouncing ideas off of others, and most importantly, <em>maintaining a healthy work life balance</em>.</p>
-
-<p>In March, I came up with the crazy idea to make the Ionic CLI easier to consume by almost any user by just point/clicking. In my free time after working on the Ionic CLI, I started cranking out <a href="http://lab.ionic.io">Ionic Lab</a> &ndash; that would do just that.</p>
-
-<p>It was so freeing to use my creative side and use my intuition, listening to myself as I craved to learn more about Node.js and <a href="http://electron.github.io">Electron</a>!</p>
-
-<p>After demoing Ionic Lab to the Ionic team, they were convinced this was a tool that could open the door to more developers and really improve the tooling. Thus, I was instructed to work on it full time. Such a joy!</p>
-
-<p>Then it hit, this thing had to ship. I had to really buckle down and work out the final kinks in integrating Cordova fully into Ionic Lab, which took me down rabbit holes into discovering more about Electron than I wanted to know, fixing stdio errors and things that occurred deep in Cordova library code.</p>
-
-<p>Once we shipped out Ionic Lab in July, I was told to focus on Ionic 2. The rest of the team had been heads down working on the codebase since March, I was the new guy, so I had to really step it up and put in the time to learn Angular 2, TypeScript, ES6, Webpack, and all the other new ground to cover.</p>
-
-<p>It was exciting once again to jump head first into learning and exploration. But something happened that I did not expect.. I became a cynic.</p>
-
-<h4>What did I do wrong?</h4>
-
-<p>I think it wasn&rsquo;t until after July that things started to slow down and my personal happiness started to decline. I started working more hours (60 hours was the minimum). I stayed up late working most every night. I slept less. I started working out less (I gained 10-20 lbs). I started putting myself <em>and my personal growth</em> last.</p>
-
-<p>I stopped calling my friends. I stopped reaching out to my support group as much. I wasn&rsquo;t maintaining my happy upbeat attitude I&rsquo;ve been told has been so inspiring.</p>
-
-<p>I started putting work first. I started accepting others views of myself. I stopped valuing my work, my time, and my efforts to put that towards a company that at the end of the day, only wanted more and more. We all know what this leads to, <em>burn out</em>.</p>
-
-<p>This all was boiling down to the AngularConnect conference, where we planned to unveil Ionic 2 to the European crowds. I was given a hefty task of learning all that was Ionic 2, adding cross platform functionality in Ionic 2, adjusting the Ionic CLI for v2, helping curate content for a workshop at the conference, as well as building the first Ionic v2 app, <a href="http://github.com/driftyco/ionic-conference-app">the Ionic conference app</a>.</p>
-
-<p>All this was going down and other life issues arise, as they do. My older (15y old) dog was getting worse by the day. My girlfriend was not happy that I was putting her second to work. My friends stopped calling me. My shoulder got injured. I lost confidence in my work because I was burning out.</p>
-
-<p>Then, a personal goal I had set didn&rsquo;t get delivered to a group of users I was really wanted to, the Windows Ionic CLI users.</p>
-
-<p>This hurt. Failure when placed heavy, can hurt. It hurt even more when I was putting work first, and myself last.</p>
-
-<p>Looking more hopefully at the situation..</p>
-
-<h4>What can I do better?</h4>
-
-<p>First off &ndash; be honest with myself. Tell others I need a helping hand when needed. Going forward, I will look out for myself better (we all know employers want employees that can look out for themselves).</p>
-
-<p>Don&rsquo;t accept others views of myself unless I first believe them!</p>
-
-<p>Most importantly, respecting myself. I should always take the time to have a 1 on 1 with myself and really get a sense of where I&rsquo;m at. If I need a break, use that vacation that we are so lucky to have!</p>
-
-<p>We tend to forget that if we dont build ourselves up, the world surely wont. (Unless you are lucky enough to have awesome friends that stick through it thick and thin). Burnout happens when you don&rsquo;t let your support structure help put out of the flame before you become a pile of ash.</p>
-
-<p>So please, take this time to evaluate yourself and your needs. Be honest with yourself. Focus on caring for yourself. Be compassionate to yourself. Let yourself make mistakes, but learn from them.</p>
-
-<p>Focus on the positive. Surround yourself with upbeat people, ditch the negativity, and remind yourself that your future is in your hands. Take it.</p>
-
-<p>Don&rsquo;t forget that the only difference between a victor and a victim, is their mindset.</p>
-
-<p>Remember, there is no luck, only the work you put in and the effect you see afterwards.</p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/3/">&larr; Older</a>
@@ -2164,23 +1610,23 @@ Figuring how to plug in rendering steps between state changes. <code>this.setSta
   <ul id="recent_posts">
     
       <li class="post">
-        <a href="/blog/2019/12/23/take-action-now/">Take Action Now</a>
+        <a href="/blog/2020/01/09/something-happened/">Something Happened</a>
       </li>
     
       <li class="post">
-        <a href="/blog/2019/11/10/continuous-deilvery-book-review/">Continuous Delivery - Book Review</a>
+        <a href="/blog/2020/01/04/2020-goals-and-systems/">2020 Goals and Systems</a>
       </li>
     
       <li class="post">
-        <a href="/blog/2019/10/08/clean-architecture-book-review/">Clean Architecture - Book Review</a>
+        <a href="/blog/2020/01/03/start-finishing-book-review/">Start Finishing - Book Review</a>
       </li>
     
       <li class="post">
-        <a href="/blog/2019/09/12/on-the-clock/">On the Clock</a>
+        <a href="/blog/2020/01/02/knowledge-consumption-routine/">Knowledge Consumption Routine</a>
       </li>
     
       <li class="post">
-        <a href="/blog/2019/02/23/the-victim-or-the-victor/">The Victim or the Victor</a>
+        <a href="/blog/2020/01/01/2019-retrospective/">2019 Retrospective</a>
       </li>
     
   </ul>
@@ -2225,7 +1671,7 @@ Figuring how to plug in rendering steps between state changes. <code>this.setSta
     </div>
   </div>
   <footer role="contentinfo"><p>
-  Copyright &copy; 2019 - Josh Bavari -
+  Copyright &copy; 2020 - Josh Bavari -
   <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
   <script src="//static.getclicky.com/js" type="text/javascript"></script>
   <script type="text/javascript">try{ clicky.init(100896582); }catch(e){}</script>

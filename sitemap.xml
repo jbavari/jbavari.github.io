@@ -245,6 +245,12 @@
         <lastmod>2019-09-12T22:31:55-06:00</lastmod>
     </url>
     <url>
+        <loc>
+            http://jbavari.github.io/blog/2015/12/03/correctly-using-es6-fat-arrows-and-event-handlers/
+        </loc>
+        <lastmod>2019-09-12T22:31:55-06:00</lastmod>
+    </url>
+    <url>
         <loc>http://jbavari.github.io/blog/2015/12/04/using-json-serializers-in-sinatra/</loc>
         <lastmod>2019-09-12T22:31:55-06:00</lastmod>
     </url>
@@ -318,15 +324,39 @@
     </url>
     <url>
         <loc>http://jbavari.github.io/blog/2019/10/08/clean-architecture-book-review/</loc>
-        <lastmod>2019-12-12T21:29:44-07:00</lastmod>
+        <lastmod>2020-01-03T21:55:57-07:00</lastmod>
     </url>
     <url>
         <loc>http://jbavari.github.io/blog/2019/11/10/continuous-deilvery-book-review/</loc>
-        <lastmod>2019-12-12T21:33:00-07:00</lastmod>
+        <lastmod>2020-01-03T21:55:52-07:00</lastmod>
     </url>
     <url>
         <loc>http://jbavari.github.io/blog/2019/12/23/take-action-now/</loc>
         <lastmod>2019-12-23T20:59:37-07:00</lastmod>
+    </url>
+    <url>
+        <loc>http://jbavari.github.io/blog/2019/12/29/why-i-read/</loc>
+        <lastmod>2020-01-06T07:49:14-07:00</lastmod>
+    </url>
+    <url>
+        <loc>http://jbavari.github.io/blog/2020/01/01/2019-retrospective/</loc>
+        <lastmod>2020-01-10T07:14:45-07:00</lastmod>
+    </url>
+    <url>
+        <loc>http://jbavari.github.io/blog/2020/01/02/knowledge-consumption-routine/</loc>
+        <lastmod>2020-01-10T07:14:12-07:00</lastmod>
+    </url>
+    <url>
+        <loc>http://jbavari.github.io/blog/2020/01/03/start-finishing-book-review/</loc>
+        <lastmod>2020-01-10T07:39:53-07:00</lastmod>
+    </url>
+    <url>
+        <loc>http://jbavari.github.io/blog/2020/01/04/2020-goals-and-systems/</loc>
+        <lastmod>2020-01-10T07:39:48-07:00</lastmod>
+    </url>
+    <url>
+        <loc>http://jbavari.github.io/blog/2020/01/09/something-happened/</loc>
+        <lastmod>2020-01-10T07:40:03-07:00</lastmod>
     </url>
     <url>
         <loc>http://jbavari.github.io/research/</loc>
@@ -334,7 +364,7 @@
     </url>
     <url>
         <loc>http://jbavari.github.io/</loc>
-        <lastmod>2019-12-23T20:59:37-07:00</lastmod>
+        <lastmod>2020-01-10T07:40:03-07:00</lastmod>
     </url>
     <url>
         <loc>http://jbavari.github.io/about/</loc>
@@ -350,7 +380,7 @@
     </url>
     <url>
         <loc>http://jbavari.github.io/blog/archives/</loc>
-        <lastmod>2019-12-23T20:59:37-07:00</lastmod>
+        <lastmod>2020-01-10T07:40:03-07:00</lastmod>
     </url>
     <url>
         <loc>http://jbavari.github.io/system/</loc>
@@ -358,7 +388,7 @@
     </url>
     <url>
         <loc>http://jbavari.github.io/knowledge/</loc>
-        <lastmod>2019-12-22T09:45:39-07:00</lastmod>
+        <lastmod>2020-01-09T21:09:42-07:00</lastmod>
     </url>
     <url>
         <loc>http://jbavari.github.io/registry/</loc>

@@ -1,0 +1,1631 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Josh Bavari's Thoughts</title>
+  <meta name="author" content="Josh Bavari">
+
+  
+  <meta name="description" content="Lately I&rsquo;ve had a small need to store an array of string values in a Postgres array instead of making foreign tables and dealing with the fun &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://jbavari.github.io/blog/page/8">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="Josh Bavari's Thoughts" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">Josh Bavari's Thoughts</a></h1>
+  
+    <h2>Thoughts on technology and philosophy</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:jbavari.github.io" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+  <li><a href="/about">About</a></li>
+  <li><a href="/speaking">Speaking</a></li>
+  <li><a href="/knowledge">Knowledge</a></li>
+  <li><a href="/about/resume">Resume</a></li>
+  <li><a href="/about/cv">C.V.</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div class="blog-index">
+  
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/01/14/making-rails-and-postgres-arrays-play-nice/">Making Rails and Postgres Arrays Play Nice</a></h1>
+    
+    
+      <p class="meta">
+        <span class="reading-time">less than a 1 minute read</span>
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-01-14T12:01:00-07:00" pubdate data-updated="true">Jan 14<span>th</span>, 2014</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Lately I&rsquo;ve had a small need to store an array of string values in a Postgres array instead of making foreign tables and dealing with the fun ActiveRecord fancies there are to play with.</p>
+
+<p>Digging into the topic, I was looking for some pre-existing knowledge on the topic. Turns out the people at <a href="http://blog.relatabase.com/rails-postgres-arrays">Relatabase</a> and <a href="https://coderwall.com/p/sud9ja">Stuart Liston at CoderWall</a> had some great knowledge to share on this.</p>
+
+<p>Being the simpleton that I am, I found a ton of knowledge on how to query them, how to add them to your models, but still lacked some basic knowledge of how to USE them. Maybe you&rsquo;re like me, and this will help.</p>
+
+<p>Adding to Stuart&rsquo;s code, lets assume we&rsquo;ve added the postgres column:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">AddTechToCompanies</span> <span class="o">&lt;</span> <span class="ss">ActiveRecord</span><span class="p">:</span><span class="ss">:Migration</span>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">change</span>
+</span><span class='line'>    <span class="n">add_column</span> <span class="ss">:companies</span><span class="p">,</span> <span class="ss">:technology_used</span><span class="p">,</span> <span class="ss">:string</span><span class="p">,</span> <span class="ss">array</span><span class="p">:</span> <span class="kp">true</span><span class="p">,</span> <span class="ss">default</span><span class="p">:</span> <span class="s1">&#39;{}&#39;</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Using <a href="http://guides.rubyonrails.org/active_record_querying.html#scopes">Ruby Scopes</a> and the proper Postgres querying syntax:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">Company</span> <span class="o">&lt;</span> <span class="ss">ActiveRecord</span><span class="p">:</span><span class="ss">:Base</span>
+</span><span class='line'>  <span class="n">scope</span> <span class="ss">:any_tech</span><span class="p">,</span> <span class="o">-&gt;</span> <span class="p">(</span><span class="n">tech</span><span class="p">){</span><span class="n">where</span><span class="p">(</span><span class="s1">&#39;? = ANY(technology_used)&#39;</span><span class="p">,</span> <span class="n">tech</span><span class="p">)}</span>
+</span><span class='line'>  <span class="n">scope</span> <span class="ss">:all_tech</span><span class="p">,</span> <span class="o">-&gt;</span> <span class="p">(</span><span class="n">tech</span><span class="p">){</span><span class="n">where</span><span class="p">(</span><span class="s1">&#39;? = ALL(technology_used)&#39;</span><span class="p">,</span> <span class="n">tech</span><span class="p">)}</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Simple enough and easy to read. Lets tackle the simple task of adding a company with a few properties: Name, website, and technology_used.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="c1">#..snip..</span>
+</span><span class='line'><span class="n">company</span> <span class="o">=</span> <span class="no">Company</span><span class="o">.</span><span class="n">new</span>
+</span><span class='line'><span class="n">company</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;RaiseMore&quot;</span>
+</span><span class='line'><span class="n">company</span><span class="o">.</span><span class="n">website_url</span> <span class="o">=</span> <span class="s2">&quot;http://www.raisemore.com&quot;</span>
+</span><span class='line'><span class="n">company</span><span class="o">.</span><span class="n">technology_used</span> <span class="o">=</span> <span class="o">[</span><span class="s1">&#39;Ruby&#39;</span><span class="p">,</span> <span class="s1">&#39;Rails&#39;</span><span class="p">,</span> <span class="s1">&#39;Sinatra&#39;</span><span class="p">,</span> <span class="s1">&#39;JavaScript&#39;</span><span class="p">,</span> <span class="s1">&#39;Redis&#39;</span><span class="p">,</span> <span class="s1">&#39;PhoneGap&#39;</span><span class="p">,</span> <span class="s1">&#39;Sidekiq&#39;</span><span class="o">]</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">company</span><span class="o">.</span><span class="n">save!</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>This will add our basic info, as well as get us our data back by doing this:</p>
+
+<figure class='code'><figcaption><span>Interactive Console Output</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">rails_company</span> <span class="o">=</span> <span class="no">Company</span><span class="o">.</span><span class="n">any_tech</span><span class="p">(</span><span class="s1">&#39;Rails&#39;</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="no">Company</span> <span class="no">Load</span> <span class="p">(</span><span class="mi">2</span><span class="o">.</span><span class="mi">6</span><span class="n">ms</span><span class="p">)</span>  <span class="no">SELECT</span> <span class="s2">&quot;companies&quot;</span><span class="o">.</span><span class="n">*</span> <span class="no">FROM</span> <span class="s2">&quot;companies&quot;</span> <span class="no">WHERE</span> <span class="p">(</span><span class="s1">&#39;Rails&#39;</span> <span class="o">=</span> <span class="no">ANY</span><span class="p">(</span><span class="n">technology_used</span><span class="p">))</span>
+</span><span class='line'> <span class="o">=&gt;</span> <span class="c1">#&lt;ActiveRecord::Relation [#&lt;Company id: 1, name: &quot;RaiseMore&quot;, founded: &quot;2011&quot;, website_url: &quot;http://www.raisemore.com&quot;, logo_url: &quot;http://res.cloudinary.com/hfjjoialf/image/upload/v1...&quot;, description: &quot;We are an event fundraising platform focused on hel...&quot;, company_type: &quot;Start up&quot;, market: &quot;Charity Fundraising&quot;, technology_used: [&quot;Rails&quot;, &quot;Postgres&quot;, &quot;Sinatra&quot;, &quot;PhoneGap&quot;, &quot;JavaScript&quot;, &quot;HTML5&quot;, &quot;Redis&quot;], interns_needed: true, twitter_id: &quot;@raise_more&quot;, created_at: &quot;2014-01-13 21:49:39&quot;, updated_at: &quot;2014-01-13 21:49:39&quot;&gt;]&gt; </span>
+</span><span class='line'>
+</span><span class='line'><span class="n">rails_company</span><span class="o">.</span><span class="n">technology_used</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">=&gt;</span> <span class="o">[</span><span class="s2">&quot;Rails&quot;</span><span class="p">,</span> <span class="s2">&quot;Postgres&quot;</span><span class="p">,</span> <span class="s2">&quot;Sinatra&quot;</span><span class="p">,</span> <span class="s2">&quot;PhoneGap&quot;</span><span class="p">,</span> <span class="s2">&quot;JavaScript&quot;</span><span class="p">,</span> <span class="s2">&quot;HTML5&quot;</span><span class="p">,</span> <span class="s2">&quot;Redis&quot;</span><span class="o">]</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Cool, so saving the array data is easy. What about updating? As <a href="http://blog.relatabase.com/rails-postgres-arrays">the relatabase post points out</a>,</p>
+
+<p><code>One huge caveat of this approach is that rails doesn’t clone the array when saving the original for dirty checking, so any in-place modification to the array won’t register that it’s changed.</code></p>
+
+<p>This leaves us with these options:</p>
+
+<ul>
+<li>set the dirty flag ourselves: <code>rails_company.technology_used_will_change!</code></li>
+<li>update using update_attributes: <code>rails_company.update_attributes(:technology_used =&gt; ['Rails', 'Redis', 'Go', 'Erlang'] )</code></li>
+</ul>
+
+
+<h2>Overall results</h2>
+
+<p>The way Rails handles arrays is not as complete as a like, but hey, we are skipping a step by getting around foreign key tables. It&rsquo;s not like you should expect much. I&rsquo;d say they are allowed for small use projects, but if you really need to do some searching or have referential integrity, stick with foreign key tables.</p>
+
+<p>Also, check out the following resources:</p>
+
+<p><a href="http://adamsanderson.github.io/railsconf_2013/?full#1">Postgres &ndash; The Best Tool You&rsquo;re Already Using</a></p>
+
+<p><a href="http://reefpoints.dockyard.com/ruby/2012/09/18/rails-4-sneak-peek-postgresql-array-support.html">Rails 4.0 Sneak Peek: PostgreSQL array support</a></p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/12/17/dont-be-a-grunt/">Dont Be a Grunt</a></h1>
+    
+    
+      <p class="meta">
+        <span class="reading-time">less than a 1 minute read</span>
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-12-17T10:18:00-07:00" pubdate data-updated="true">Dec 17<span>th</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>I&rsquo;ve posted some slides I presented at the <a href="http://okcjs.com">OKC Javascript User Group</a> over Grunt.js titled <a href="http://jbavari.github.io/Dont-Be-a-Grunt-Use-Grunt-Slides/">Dont be a grunt, use grunt</a>.</p>
+
+<p>I encourage any and all to take any ideas and information from the slides. I&rsquo;m hoping they provide value to anyone who may want to learn and use Grunt.</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/12/04/automating-local-ip-lookup-with-grunt-and-node/">Automating Local IP Lookup With Grunt and Node</a></h1>
+    
+    
+      <p class="meta">
+        <span class="reading-time">less than a 1 minute read</span>
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-12-04T15:18:00-07:00" pubdate data-updated="true">Dec 4<span>th</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>In the last few write-ups I&rsquo;ve done lately (see <a href="/blog/2013/12/02/automating-underlying-mobile-infrastructure-with-grunt">the servers post</a> and the <a href="/blog/2013/11/30/automating-phonegap-builds-with-grunt">phonegap builds post</a>), I&rsquo;ve been requiring the user to pass in the IP or the host in the command line. That works and all, but I usually have to go look up that ip using the good ol &lsquo;ifconfig&rsquo; command.</p>
+
+<p>Since I&rsquo;m obsesed with automation, I&rsquo;d rather be lazy and just have the IP Address look up be automatic.</p>
+
+<h2>Why am I writing this?</h2>
+
+<p>I work in a dozen of different places. At any given time I may be at home, work, a coffee shop, etc. Most times my ip address will be different. I really just want to boot the servers up to my current IP and have the mobile app point at that IP. (The actual device can&rsquo;t understand localhost or a local 0.0.0.0 IP address over wifi)</p>
+
+<p>Have you guessed it yet? I want to automatically set that ip address / hostname to my local IP without having to go look it up every time.</p>
+
+<p>I found this post on <a href="http://stackoverflow.com/questions/3653065/get-local-ip-address-in-node-js">stackoverflow</a> that pointed me at this <a href="http://nodejs.org/api/os.html#os_os_networkinterfaces">Node.js documentation</a> to look up the network interfaces. This lets us dig deeper with Grunt to get the IP Address, especially since grunt sits on Node.js.</p>
+
+<h3>Simple and (too) easy</h3>
+
+<p>There&rsquo;s a Node.js call that puts all of the config settings into nice JSON for you to work with.</p>
+
+<figure class='code'><figcaption><span>Node.js command for getting network interfaces</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="c1">//Gets a JSON much like running &#39;ifconfig&#39;</span>
+</span><span class='line'><span class="kd">var</span> <span class="nx">ifaces</span> <span class="o">=</span> <span class="nx">os</span><span class="p">.</span><span class="nx">networkInterfaces</span><span class="p">();</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The next key is to go through all the interfaces, and get the current local IP from the device from ethernet or wifi.</p>
+
+<p>My grunt config looks something like this:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">module</span><span class="p">.</span><span class="nx">exports</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">grunt</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="kd">var</span> <span class="nx">os</span><span class="o">=</span><span class="nx">require</span><span class="p">(</span><span class="s1">&#39;os&#39;</span><span class="p">);</span>
+</span><span class='line'>  <span class="kd">var</span> <span class="nx">ifaces</span><span class="o">=</span><span class="nx">os</span><span class="p">.</span><span class="nx">networkInterfaces</span><span class="p">();</span>
+</span><span class='line'>  <span class="kd">var</span> <span class="nx">lookupIpAddress</span> <span class="o">=</span> <span class="kc">null</span><span class="p">;</span>
+</span><span class='line'>  <span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">dev</span> <span class="k">in</span> <span class="nx">ifaces</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>      <span class="k">if</span><span class="p">(</span><span class="nx">dev</span> <span class="o">!=</span> <span class="s2">&quot;en1&quot;</span> <span class="o">&amp;&amp;</span> <span class="nx">dev</span> <span class="o">!=</span> <span class="s2">&quot;en0&quot;</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>          <span class="k">continue</span><span class="p">;</span>
+</span><span class='line'>      <span class="p">}</span>
+</span><span class='line'>      <span class="nx">ifaces</span><span class="p">[</span><span class="nx">dev</span><span class="p">].</span><span class="nx">forEach</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">details</span><span class="p">){</span>
+</span><span class='line'>        <span class="k">if</span> <span class="p">(</span><span class="nx">details</span><span class="p">.</span><span class="nx">family</span><span class="o">==</span><span class="s1">&#39;IPv4&#39;</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>          <span class="nx">lookupIpAddress</span> <span class="o">=</span> <span class="nx">details</span><span class="p">.</span><span class="nx">address</span><span class="p">;</span>
+</span><span class='line'>          <span class="k">break</span><span class="p">;</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>      <span class="p">});</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="c1">//If an IP Address is passed</span>
+</span><span class='line'>  <span class="c1">//we&#39;re going to use the ip/host from the param</span>
+</span><span class='line'>  <span class="c1">//passed over the command line </span>
+</span><span class='line'>  <span class="c1">//over the ip addressed that was looked up</span>
+</span><span class='line'>  <span class="kd">var</span> <span class="nx">ipAddress</span> <span class="o">=</span> <span class="nx">grunt</span><span class="p">.</span><span class="nx">option</span><span class="p">(</span><span class="s1">&#39;host&#39;</span><span class="p">)</span> <span class="o">||</span> <span class="nx">lookupIpAddress</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nx">grunt</span><span class="p">.</span><span class="nx">initConfig</span><span class="p">({</span>
+</span><span class='line'>      <span class="nx">bgShell</span><span class="o">:</span> <span class="p">{</span>
+</span><span class='line'>          <span class="nx">weinre</span><span class="o">:</span> <span class="p">{</span>
+</span><span class='line'>              <span class="nx">cmd</span><span class="o">:</span> <span class="s1">&#39;weinre --httpPort 8080 --boundHost=&#39;</span> <span class="o">+</span> <span class="nx">ipAddress</span><span class="p">,</span>
+</span><span class='line'>              <span class="nx">bg</span><span class="o">:</span> <span class="kc">false</span>
+</span><span class='line'>          <span class="p">},</span>
+</span><span class='line'>          <span class="nx">rails</span><span class="o">:</span> <span class="p">{</span>
+</span><span class='line'>              <span class="nx">cmd</span><span class="o">:</span> <span class="s1">&#39;cd ../raisemore_web &amp;&amp; rails s -p 3000 -b &#39;</span> <span class="o">+</span> <span class="nx">ipAddress</span>
+</span><span class='line'>          <span class="p">}</span>
+</span><span class='line'>      <span class="p">}</span>
+</span><span class='line'>  <span class="p">});</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="c1">//Load in the preprocess tasks</span>
+</span><span class='line'>  <span class="nx">grunt</span><span class="p">.</span><span class="nx">loadTasks</span><span class="p">(</span><span class="s1">&#39;preprocess&#39;</span><span class="p">);</span>
+</span><span class='line'>  <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;load-grunt-tasks&#39;</span><span class="p">)(</span><span class="nx">grunt</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="c1">//Tasks to have both servers at local ip and app at local ip</span>
+</span><span class='line'>  <span class="nx">grunt</span><span class="p">.</span><span class="nx">registerTask</span><span class="p">(</span><span class="s1">&#39;servers&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;env:dev&#39;</span><span class="p">,</span> <span class="s1">&#39;preprocess:dev&#39;</span><span class="p">,</span> <span class="s1">&#39;bgShell:weinre&#39;</span><span class="p">,</span> <span class="s1">&#39;bgShell:rails&#39;</span><span class="p">]);</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="c1">//Task to set up app files pointing at stage ip</span>
+</span><span class='line'>  <span class="c1">//and setting up weinre at current local ip</span>
+</span><span class='line'>  <span class="nx">grunt</span><span class="p">.</span><span class="nx">registerTask</span><span class="p">(</span><span class="s1">&#39;debug&#39;</span><span class="p">,</span> <span class="p">[</span> <span class="s1">&#39;env:stage&#39;</span><span class="p">,</span> <span class="s1">&#39;preprocess:stage&#39;</span><span class="p">,</span> <span class="s1">&#39;bgShell:weinre&#39;</span><span class="p">]);</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Now we can just do &lsquo;grunt servers&rsquo; to have both servers up at my current local ip or &lsquo;grunt debug&rsquo; to get app accessing the stage server and having weinre run locally to debug the app.</p>
+
+<p>Not much to it &ndash; call networkInterfaces(), go through JSON, get ipAddress &ndash; assign it to the option unless one was passed in. You&rsquo;re done.</p>
+
+<p>Cheers.</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/12/03/automating-jasmine-tests-with-grunt-karma/">Automating Jasmine Tests With Grunt Karma</a></h1>
+    
+    
+      <p class="meta">
+        <span class="reading-time">less than a 1 minute read</span>
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-12-03T09:22:00-07:00" pubdate data-updated="true">Dec 3<span>rd</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>I find myself lately in falling in love unit testing in Javascript with the <a href="http://pivotal.github.io/jasmine/">Jasmine</a> framework. It&rsquo;s really upped my trust levels that I&rsquo;ve been writing lately.</p>
+
+<p>I don&rsquo;t want to go in depth about jasmine and how to use it, but what I do want to do is discuss a little bit of how to automate some of the precious tests you may already have.</p>
+
+<h2>Why I wanted to start automating these tests</h2>
+
+<p>I had a great set of tests created. Since most of the tests were in javascript, I needed a browser of some sort to act as the test runner.</p>
+
+<p>My initial options for work flow after writing tests:</p>
+
+<ul>
+<li>Have a browser (chrome/firefox) pointed at the local SpecRunner.html and manually refresh after making code changes</li>
+<li>Manually execute <a href="https://github.com/ariya/phantomjs/">phantomJS</a> to get the results from the SpecRunner.html file</li>
+<li>Have a grunt task that would watch the code files and on change open a browser to execute the code changes</li>
+</ul>
+
+
+<h3>Whats wrong with the prior steps?</h3>
+
+<p>It&rsquo;s manual. You have to take control and do it. That means, another step in the process. I&rsquo;m obsessed with automation which means I want to automate this.</p>
+
+<h2>Do you believe in Karma?</h2>
+
+<p>I did a quick google search for a Grunt plugin for automating jasmine tests and stumbled across <a href="https://github.com/karma-runner/grunt-karma">Grunt Karma</a> . I bet you&rsquo;re wonder what karma is? <a href="https://github.com/karma-runner/karma">Karma</a> is a node.js tool that opens multiple browsers and executes the tests you specify. SA-WEET.</p>
+
+<p>Also to be noted, Karma works with other testing frameworks as well, so you aren&rsquo;t stuck with just Jasmine.</p>
+
+<h3>AUTOMATE ME</h3>
+
+<p>Getting started is easy, first running the &lsquo;npm install -g karma&rsquo; command to get karma installed, then running &lsquo;karma init&rsquo; to set up a config. In the config interactive set up,  you specify what testing framework to use, whether or not to use Require.js, what browsers to test with (multiple at a time is an option), what files to test, any files to ignore, and whether or not you want automatically watch and run tests after they change.</p>
+
+<p>Once you&rsquo;re done, add the grunt config settings for karma as such:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">karma</span><span class="o">:</span> <span class="p">{</span>
+</span><span class='line'>  <span class="nx">unit</span><span class="o">:</span> <span class="p">{</span>
+</span><span class='line'>    <span class="nx">configFile</span><span class="o">:</span> <span class="s1">&#39;karma.conf.js&#39;</span><span class="p">,</span>
+</span><span class='line'>    <span class="nx">autoWatch</span><span class="o">:</span> <span class="kc">true</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>If you got it right, fire it off with &lsquo;grunt karma&rsquo; &ndash; it should automatically start popping up browsers and giving you test statistics.</p>
+
+<h2>What I would like to do with these test results</h2>
+
+<p>On any code changes or check-ins, I&rsquo;d like to automatically run the unit tests and update our developer dashboard statistics (we use <a href="http://shopify.github.io/dashing/">Dashing</a> ) so we can have live stats of how our code is doing.</p>
+
+<p>The next step in this process is to have Jenkins fire this puppy off when it needs. Perhaps even fire off a build to TestFlight to get the app right into the hands of our tests after all test have verified!</p>
+
+<p>Cheers!</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/12/02/automating-underlying-mobile-infrastructure-with-grunt/">Automating Underlying Mobile Infrastructure With Grunt</a></h1>
+    
+    
+      <p class="meta">
+        <span class="reading-time">less than a 1 minute read</span>
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-12-02T19:15:00-07:00" pubdate data-updated="true">Dec 2<span>nd</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>I&rsquo;m obsessed with automating some of the tasks that I find myself repetitively doing. I don&rsquo;t know about you, but I hate doing the same thing over and over &ndash; it&rsquo;s boring and pointless</p>
+
+<p>I posted a little while ago regarding automation of phonegap build and deployments, see that <a href="/blog/2013/11/30/automating-phonegap-builds-with-grunt/">here</a>.</p>
+
+<h2>Why am I bothering with this?</h2>
+
+<p>Our mobile app is the core of what we do. As you may already well know, most mobile apps require an API server serving the application data. In this post, I&rsquo;d like to address automating the underlying infrastructure that supports the mobile app.</p>
+
+<h3>It&rsquo;s a two-fold win</h3>
+
+<p>The main reason is to help get the server stack up without doing all of the repetitive tasks. Getting the mobile infrastructure up can be a slight annoyance, especially when your task is to code.</p>
+
+<p>We have a designer that works on the mobile app styles, and he shouldn&rsquo;t need to know or care about the requirements of the app just to get to work.</p>
+
+<p>The second reason that I&rsquo;d want to automate the server stack is due to my frequently using <a href="http://people.apache.org/~pmuellr/weinre/docs/latest/">Weinre</a>. I use it a lot to debug either the iOS app or the Android app. Another thing to automate would be to get the weinre server up and have the script for it injected into my source references without having to manually do it.</p>
+
+<h3>What I&rsquo;d prefer we do..</h3>
+
+<p>I&rsquo;d like to just type simple commands&hellip; Something I can type to get my local dev servers up, or our designer can type that will get the whole stack and emulator running.</p>
+
+<p>For our designer, I&rsquo;d want &lsquo;grunt emulate&rsquo;. For myself, I&rsquo;d want &lsquo;grunt emulate &mdash;weinre=true &mdash;host=192.168.1.100&rsquo; &ndash; either of those commands would do the following:</p>
+
+<ul>
+<li>Boot up Rails server at a specified IP</li>
+<li>Boot up the weinre server at a specified IP (optionally)</li>
+<li>Preprocess the index.html file to have the weinre javascript source reference</li>
+<li>Adjust the app settings to be at the specified IP</li>
+<li>Execute the xcode build command for the iOS project</li>
+<li>Open the built app on the iOS Simulator</li>
+</ul>
+
+
+<h3>How to get there</h3>
+
+<p>To get some of the servers up and running, we need a grunt task that would invoke those processes and would continue running in the background while the other tasks continue running. For this, we&rsquo;ll need another Grunt plugin, called <a href="https://npmjs.org/package/grunt-bg-shell">Grunt bgShell</a></p>
+
+<p>First we&rsquo;ll define the background shell tasks in our grunt config file:</p>
+
+<figure class='code'><figcaption><span>Grunt background shell configuration</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">bgShell</span><span class="o">:</span> <span class="p">{</span>
+</span><span class='line'>  <span class="nx">weinre</span><span class="o">:</span> <span class="p">{</span>
+</span><span class='line'>      <span class="nx">cmd</span><span class="o">:</span> <span class="s1">&#39;weinre --httpPort 8080 --boundHost=&#39;</span> <span class="o">+</span> <span class="nx">ipAddress</span><span class="p">,</span>
+</span><span class='line'>      <span class="nx">bg</span><span class="o">:</span> <span class="kc">true</span>
+</span><span class='line'>  <span class="p">},</span>
+</span><span class='line'>  <span class="nx">rails</span><span class="o">:</span> <span class="p">{</span>
+</span><span class='line'>      <span class="nx">cmd</span><span class="o">:</span> <span class="s1">&#39;cd ../raisemore_web &amp;&amp; bundle install &amp;&amp; rails s -p 3000 -b &#39;</span> <span class="o">+</span> <span class="nx">ipAddress</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>That covers the servers. Now, for the xcode build and ios-simulator, we&rsquo;ll use the standard <a href="https://github.com/sindresorhus/grunt-shell">grunt shell</a> plugin to keep running in sync. To invoke the iOS simulator, we&rsquo;ll use the Node.js package from Phonegap called <a href="https://github.com/phonegap/ios-sim">ios-sim</a></p>
+
+<p>Before we can use ios-sim, we must invoke the npm installer for it, passing the -g flag for it to be globally installed.</p>
+
+<figure class='code'><figcaption><span>Installing ios-sim</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'>sudo npm install ios-sim -g
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Now let&rsquo;s configure the grunt shell tasks for xcode build and iphone simulation:</p>
+
+<figure class='code'><figcaption><span>Grunt shell configuration for xcode build and ios-sim</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">shell</span><span class="o">:</span> <span class="p">{</span>
+</span><span class='line'>  <span class="nx">xcodebuild</span><span class="o">:</span> <span class="p">{</span>
+</span><span class='line'>      <span class="nx">options</span><span class="o">:</span> <span class="p">{</span>
+</span><span class='line'>        <span class="nx">stdout</span><span class="o">:</span> <span class="kc">true</span>
+</span><span class='line'>      <span class="p">},</span>
+</span><span class='line'>      <span class="nx">command</span><span class="o">:</span> <span class="p">[</span>
+</span><span class='line'>          <span class="s1">&#39;cd ./ios&#39;</span><span class="p">,</span>
+</span><span class='line'>          <span class="s1">&#39;xcodebuild -project RaiseMore.xcodeproj -sdk iphonesimulator7.0 -scheme RaiseMore -configuration Debug install DSTROOT=/tmp/RaiseMore&#39;</span> <span class="p">].</span><span class="nx">join</span><span class="p">(</span><span class="s2">&quot;&amp;&amp;&quot;</span><span class="p">)</span>
+</span><span class='line'>  <span class="p">},</span>
+</span><span class='line'>  <span class="nx">iphonesimulator</span><span class="o">:</span> <span class="p">{</span>
+</span><span class='line'>      <span class="nx">options</span><span class="o">:</span> <span class="p">{</span>
+</span><span class='line'>          <span class="nx">stdout</span><span class="o">:</span> <span class="kc">true</span>
+</span><span class='line'>      <span class="p">},</span>
+</span><span class='line'>      <span class="nx">command</span><span class="o">:</span> <span class="p">[</span>
+</span><span class='line'>          <span class="s1">&#39;ios-sim launch /tmp/RaiseMore/Applications/RaiseMore.app --sdk 5.0&#39;</span>
+</span><span class='line'>      <span class="p">].</span><span class="nx">join</span><span class="p">(</span><span class="s2">&quot;&amp;&amp;&quot;</span><span class="p">)</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>That covers the configuration. Now we just need to have a grunt task that will handle all the preprocessing, start the servers, and then start the build process, and finally run the simulator with the newly built app.</p>
+
+<p>The preprocessing steps were covered in my previous post <a href="/blog/2013/11/30/automating-phonegap-builds-with-grunt/">here</a> and I&rsquo;ll leave the preprocessing configuration in that post.</p>
+
+<p>All that is left now is to define the grunt tasks, as such:</p>
+
+<figure class='code'><figcaption><span>Grunt task definition</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="c1">//Main task for our designer</span>
+</span><span class='line'><span class="nx">grunt</span><span class="p">.</span><span class="nx">registerTask</span><span class="p">(</span><span class="s1">&#39;emulator&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;env:dev&#39;</span><span class="p">,</span> <span class="s1">&#39;preprocess:dev&#39;</span><span class="p">,</span> <span class="s1">&#39;bgShell:weinre&#39;</span><span class="p">,</span> <span class="s1">&#39;bgShell:rails&#39;</span><span class="p">,</span> <span class="s1">&#39;shell:xcodebuild&#39;</span><span class="p">,</span> <span class="s1">&#39;shell:iphonesimulator&#39;</span><span class="p">]);</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">//Main task I&#39;ll probably use, via &#39;grunt servers --weinre=true --host=192.168.1.100&#39;</span>
+</span><span class='line'><span class="nx">grunt</span><span class="p">.</span><span class="nx">registerTask</span><span class="p">(</span><span class="s1">&#39;servers&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;bgShell:weinre&#39;</span><span class="p">,</span> <span class="s1">&#39;bgShell:rails&#39;</span><span class="p">])</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Using the task</h3>
+
+<p>To just boot up the servers, do this:</p>
+
+<figure class='code'><figcaption><span>Invoking the grunt server task</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'>grunt servers
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>If you want the servers and the simulator, do this:</p>
+
+<figure class='code'><figcaption><span>Invoking the grunt emulator task</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'>grunt emulator
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>I know these methods aren&rsquo;t perfect, as there are a few areas I&rsquo;d like to improve on. I&rsquo;d like to have bgShell track the processes to kill them if the task is stopped, or instead to have them ignored if they are already running.</p>
+
+<p>I guess that work will have to be addressed later. Cheers.</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/11/30/automating-phonegap-builds-with-grunt/">Automating Phonegap Builds With Grunt</a></h1>
+    
+    
+      <p class="meta">
+        <span class="reading-time">less than a 1 minute read</span>
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-11-30T21:36:00-07:00" pubdate data-updated="true">Nov 30<span>th</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>One big thorn in my side lately has been getting our Phonegap/Cordova builds out to our team in a timely manner or just getting our mobile app environment set up. Currently our process involves changing a few files up, running some command line prompts, and then hitting a few different IDE&rsquo;s to crank out builds to manually upload to Testflight (www.testflightapp.com).</p>
+
+<h3>What usually happens</h3>
+
+<p>&ldquo;Hey can we please get a new build out to test with?&rdquo; &ndash; DataChomp<br/>
+&ldquo;Yea, give me a few minutes to get the build out.&rdquo; &ndash; DevDweeb<br/>
+&ldquo;Ok, lemme know when&rdquo; &ndash; DataChomp<br/>
+&mdash;30 minutes later&mdash;<br/>
+&ldquo;Hows that build coming?&rdquo; &ndash; DataChomp<br/>
+&ldquo;Oh man.. not sure.. something messed up along the way. It&rsquo;ll be a bit more&rdquo; &ndash; DevDweeb<br/>
+&mdash;waits a bit more&mdash;-<br/>
+&ldquo;Nevermind. I figured it out.&rdquo; &ndash; DataChomp<br/>
+&ldquo;Ok whew, cuz it will be a bit more&rdquo; &ndash; DevDweeb</p>
+
+<h3>What I wish would happen</h3>
+
+<p>&ldquo;Hey can we please get a new build out to test with?&rdquo; &ndash; DataChomp<br/>
+&ldquo;That was done an hour ago, sir&rdquo; &ndash; Jenkins</p>
+
+<h3>What is the prob, bob</h3>
+
+<p>It&rsquo;s the process. Here&rsquo;s what a human would typically go through for the project:</p>
+
+<p>1) Point the build at the correct API end point (localhost/stage/production)<br/>
+2) Ensure the HTML has the script for weinre remote debugging (may need to be commented out if not needed)<br/>
+3) Open XCode &ndash; build the ios project<br/>
+4) Take the build from the project &ndash; upload to Testflight<br/>
+5) Open Eclipse &ndash; build the android project<br/>
+6) Take the build from the android project &ndash; upload to Testflight</p>
+
+<p>That is a predictable set of steps for a human, but as we all know, humans are prone to make errors. I know I do.</p>
+
+<p>The answer, then, is I didn&rsquo;t know how bad ass Grunt was and has so many plugins to assist with automation as I do now.</p>
+
+<p>Luckily for me, I found a great post from Jim at imgur, from his post here: <a href="http://imgur.com/blog/2013/07/16/tech-tuesday-using-grunt-to-simplify-deployment-processes/">http://imgur.com/blog/2013/07/16/tech-tuesday-using-grunt-to-simplify-deployment-processes/</a></p>
+
+<p>I&rsquo;m going to dive in to some ways I&rsquo;ve put together some grunt tasks to accomplish the above tasks.</p>
+
+<h2>Introducing Grunt Task Runner</h2>
+
+<p>Grunt is a javascript task runner. Learn more at <a href="http://gruntjs.com/">http://gruntjs.com/</a></p>
+
+<p>The reason I like using it &ndash; the config for grunt is in javascript, grunt is lightweight, grunt has very little requirements, and you can get started with a ton of plug-ins available.</p>
+
+<p>I plan on looking at Jenkins to integrate some of these tasks on check-ins for auto or nightly builds. See this post for an idea: <a href="http://sideroad.secret.jp/articles/grunt-on-jenkins/">http://sideroad.secret.jp/articles/grunt-on-jenkins/</a></p>
+
+<h3>A few plug-ins I&rsquo;m using so far:</h3>
+
+<p>Grunt Shell &ndash; <a href="https://github.com/sindresorhus/grunt-shell">https://github.com/sindresorhus/grunt-shell</a>
+This plugin gives you some shell commands to easily fire off shell commands such as xcodebuild, or even fire up a weinre server.</p>
+
+<p>Grunt preprocess &ndash; <a href="https://github.com/jsoverson/grunt-preprocess">https://github.com/jsoverson/grunt-preprocess</a>
+Great tool to combine template files with environment settings to preprocess HTML/Javascript files to drop in IPs or other settings you specify</p>
+
+<p>Grunt env &ndash; <a href="https://github.com/jsoverson/grunt-env">https://github.com/jsoverson/grunt-env</a>
+Grunt tasks to automate environment configuration for future tasks.</p>
+
+<h2>Removing the human element for app settings</h2>
+
+<p>The human must first place the proper host or ip address in place based on where the build may desire to be pointed at as well as whether or not they want Weinre remote debugging (Read about weinre here: <a href="http://people.apache.org/~pmuellr/weinre/docs/latest/">http://people.apache.org/~pmuellr/weinre/docs/latest/</a>).</p>
+
+<p>The host/ip address is stored in the appsettings.js file and the weinre remote debugging IP is stored in the index.html page.</p>
+
+<p>First I specified the files that would be preprocessed in the grunt config file. In this case, I specified both appsettings.js and index.html located in a template directory being processed to another location relative from the gruntfile.</p>
+
+<figure class='code'><figcaption><span>Grunt preprocess settings</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">preprocess</span><span class="o">:</span> <span class="p">{</span>
+</span><span class='line'>  <span class="nx">dev</span><span class="o">:</span> <span class="p">{</span>
+</span><span class='line'>    <span class="nx">files</span> <span class="o">:</span> <span class="p">{</span>
+</span><span class='line'>      <span class="s1">&#39;./appsettings.js&#39;</span><span class="o">:</span> <span class="s1">&#39;../tmpl/appsettings.js&#39;</span><span class="p">,</span>
+</span><span class='line'>      <span class="s1">&#39;../index.html&#39;</span><span class="o">:</span> <span class="s1">&#39;../tmpl/index.html&#39;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>  <span class="p">},</span>
+</span><span class='line'>  <span class="nx">prod</span><span class="o">:</span> <span class="p">{</span>
+</span><span class='line'>    <span class="nx">files</span><span class="o">:</span> <span class="p">{</span>
+</span><span class='line'>      <span class="s1">&#39;./appsettings.js&#39;</span><span class="o">:</span> <span class="s1">&#39;../tmpl/appsettings.js&#39;</span><span class="p">,</span>
+</span><span class='line'>      <span class="s1">&#39;../index.html&#39;</span><span class="o">:</span> <span class="s1">&#39;../tmpl/index.html&#39;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>  <span class="p">},</span>
+</span><span class='line'>  <span class="nx">stage</span><span class="o">:</span> <span class="p">{</span>
+</span><span class='line'>    <span class="nx">files</span> <span class="o">:</span> <span class="p">{</span>
+</span><span class='line'>      <span class="s1">&#39;./appsettings.js&#39;</span><span class="o">:</span> <span class="s1">&#39;../tmpl/appsettings.js&#39;</span><span class="p">,</span>
+</span><span class='line'>      <span class="s1">&#39;../index.html&#39;</span><span class="o">:</span> <span class="s1">&#39;../tmpl/index.html&#39;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Then I specified the ENV settings in the grunt config:</p>
+
+<figure class='code'><figcaption><span>Grunt env settings</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">env</span><span class="o">:</span> <span class="p">{</span>
+</span><span class='line'>  <span class="nx">dev</span><span class="o">:</span> <span class="p">{</span>
+</span><span class='line'>      <span class="nx">NODE_ENV</span><span class="o">:</span> <span class="s1">&#39;DEVELOPMENT&#39;</span><span class="p">,</span>
+</span><span class='line'>      <span class="nx">IP_ADDRESS</span><span class="o">:</span> <span class="nx">ipAddress</span>
+</span><span class='line'>  <span class="p">},</span>
+</span><span class='line'>  <span class="nx">prod</span> <span class="o">:</span> <span class="p">{</span>
+</span><span class='line'>      <span class="nx">NODE_ENV</span><span class="o">:</span> <span class="s1">&#39;PRODUCTION&#39;</span>
+</span><span class='line'>  <span class="p">},</span>
+</span><span class='line'>  <span class="nx">stage</span><span class="o">:</span> <span class="p">{</span>
+</span><span class='line'>    <span class="nx">NODE_ENV</span><span class="o">:</span> <span class="s1">&#39;STAGE&#39;</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>You&rsquo;ll notice above, I assigned an ENV variable IP_ADDRESS to a variable ipAddress, which I&rsquo;ve specified for Grunt as an option that is passed in via command line. That looked something like this snip:</p>
+
+<figure class='code'><figcaption><span>Grunt option for command line parameters</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">module</span><span class="p">.</span><span class="nx">exports</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">grunt</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>  <span class="kd">var</span> <span class="nx">ipAddress</span> <span class="o">=</span> <span class="nx">grunt</span><span class="p">.</span><span class="nx">option</span><span class="p">(</span><span class="s1">&#39;host&#39;</span><span class="p">)</span> <span class="o">||</span> <span class="s1">&#39;localhost&#39;</span><span class="p">;</span>
+</span><span class='line'>  <span class="c1">// Project configuration.</span>
+</span><span class='line'>  <span class="nx">grunt</span><span class="p">.</span><span class="nx">initConfig</span><span class="p">({</span>
+</span><span class='line'>    <span class="nx">preprocess</span><span class="o">:</span> <span class="p">{</span>
+</span><span class='line'>      <span class="nx">dev</span><span class="o">:</span> <span class="p">{</span>
+</span><span class='line'>        <span class="nx">files</span> <span class="o">:</span> <span class="p">{</span>
+</span><span class='line'>          <span class="s1">&#39;./appsettings.js&#39;</span><span class="o">:</span> <span class="s1">&#39;../tmpl/appsettings.js&#39;</span><span class="p">,</span>
+</span><span class='line'>          <span class="s1">&#39;../index.html&#39;</span><span class="o">:</span> <span class="s1">&#39;../tmpl/index.html&#39;</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>      <span class="p">}</span>
+</span><span class='line'>    <span class="p">},</span>
+</span><span class='line'>    <span class="nx">env</span><span class="o">:</span> <span class="p">{</span>
+</span><span class='line'>      <span class="nx">dev</span><span class="o">:</span> <span class="p">{</span>
+</span><span class='line'>        <span class="nx">NODE_ENV</span><span class="o">:</span> <span class="s1">&#39;Development&#39;</span><span class="p">,</span>
+</span><span class='line'>        <span class="nx">IP_ADDRESS</span><span class="o">:</span> <span class="nx">ipAddress</span>
+</span><span class='line'>      <span class="p">}</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>  <span class="p">});</span>
+</span><span class='line'><span class="p">};</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Using the command line to specify the host, you&rsquo;d invoke the following grunt command to set up a local dev environment with the server at the specified IP Address:</p>
+
+<figure class='code'><figcaption><span>Passing host/ip address to the grunt tasks</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>grunt preprocess:dev --host<span class="o">=</span>192.168.1.100
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Now I need to specify some templates to make use of the ENV variables set up. The grunt preprocess plugin documentation is great, so head there for more info. Here is how I applied it to the two files, appsettings.js and index.html</p>
+
+<figure class='code'><figcaption><span>AppSettings.js</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">AppSettings</span> <span class="o">=</span> <span class="p">{</span>
+</span><span class='line'>  <span class="c1">// @if NODE_ENV == &#39;DEVELOPMENT&#39;</span>
+</span><span class='line'>  <span class="nx">basePath</span><span class="o">:</span> <span class="s2">&quot;http:///* @echo IP_ADDRESS */:3000/&quot;</span><span class="p">,</span>
+</span><span class='line'>  <span class="nx">uploadBasePath</span><span class="o">:</span> <span class="s2">&quot;http:///* @echo IP_ADDRESS */:3000/&quot;</span><span class="p">,</span>
+</span><span class='line'>  <span class="nx">uploadURI</span><span class="o">:</span> <span class="s2">&quot;https://media.address.com&quot;</span><span class="p">,</span>
+</span><span class='line'>  <span class="nx">debug</span><span class="o">:</span> <span class="kc">true</span>
+</span><span class='line'>  <span class="c1">// @endif</span>
+</span><span class='line'>  <span class="c1">// @if NODE_ENV == &#39;STAGE&#39;</span>
+</span><span class='line'>  <span class="nx">basePath</span><span class="o">:</span> <span class="s2">&quot;http://stage.server.com/&quot;</span><span class="p">,</span>
+</span><span class='line'>  <span class="nx">uploadBasePath</span><span class="o">:</span> <span class="s2">&quot;http://stage.server.com/&quot;</span>
+</span><span class='line'>  <span class="c1">// @endif</span>
+</span><span class='line'>  <span class="c1">// @if NODE_ENV == &#39;PRODUCTION&#39;</span>
+</span><span class='line'>  <span class="nx">basePath</span><span class="o">:</span> <span class="s2">&quot;http://prod.server.com/&quot;</span><span class="p">,</span>
+</span><span class='line'>  <span class="nx">uploadBasePath</span><span class="o">:</span> <span class="s2">&quot;http://prod.server.com/&quot;</span>
+</span><span class='line'>  <span class="c1">// @endif  </span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>And the template for index.html:</p>
+
+<figure class='code'><figcaption><span>index.html</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'>.... snip ....
+</span><span class='line'><span class="c">&lt;!-- @if NODE_ENV=&#39;DEVELOPMENT&#39; || NODE_ENV=&#39;STAGE&#39; --&gt;</span>
+</span><span class='line'><span class="nt">&lt;script </span><span class="na">src=</span><span class="s">&quot;http://&lt;!-- @echo IP_ADDRESS --&gt;:8080/target/target-script-min.js&quot;</span><span class="nt">&gt;&lt;/script&gt;</span>
+</span><span class='line'><span class="c">&lt;!-- @endif --&gt;</span>
+</span><span class='line'>.... snip ....
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>Removing the human element from app uploads</h2>
+
+<p>Another tool that changed the game up for me was the Nomad-cli &ndash; a set of tools to build and upload to testflight, amazon, or your FTP choice &ndash; found at <a href="http://nomad-cli.com/">http://nomad-cli.com/</a></p>
+
+<p>This gives us a ruby gem we can use to fire off to handle all of our iOS tasks for building and pushing to test flight. The tool I mainly use is called Shenzhen.</p>
+
+<p>A few things are needed. First, we had to create a Gemfile in a subdirectory that used the nomad cli gem:</p>
+
+<figure class='code'><figcaption><span>Gemfile for nomad</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">source</span> <span class="s1">&#39;https://rubygems.org&#39;</span>
+</span><span class='line'><span class="n">gem</span> <span class="s1">&#39;nomad-cli&#39;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Using the grunt shell task, I needed to ensure whoever ran this task got the nomad-cli gem first, fired off the command to build and distribute to testflight via shenzhen. It looked like this</p>
+
+<figure class='code'><figcaption><span>Grunt shell command for xcode build</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">shell</span><span class="o">:</span> <span class="p">{</span>
+</span><span class='line'>  <span class="nx">testflight</span><span class="o">:</span> <span class="p">{</span>
+</span><span class='line'>    <span class="nx">options</span><span class="o">:</span> <span class="p">{</span>
+</span><span class='line'>      <span class="nx">stdout</span><span class="o">:</span> <span class="kc">true</span>
+</span><span class='line'>    <span class="p">},</span>
+</span><span class='line'>    <span class="nx">command</span><span class="o">:</span> <span class="p">[</span>
+</span><span class='line'>      <span class="s1">&#39;cd ../../&#39;</span><span class="p">,</span>
+</span><span class='line'>      <span class="s1">&#39;bundle install&#39;</span><span class="p">,</span>
+</span><span class='line'>      <span class="s1">&#39;cd ./ios&#39;</span><span class="p">,</span>
+</span><span class='line'>      <span class="s1">&#39;ipa build -p RaiseMore.xcodeproj -c Debug -s RaiseMore&#39;</span><span class="p">,</span>
+</span><span class='line'>      <span class="s1">&#39;ipa distribute -a &lt;%= testflight_settings.raisemore.apiKey %&gt; -T &lt;%= testflight_settings.raisemore.teamToken -m &quot;&#39;</span> <span class="o">+</span> <span class="nx">uploadMessage</span> <span class="o">+</span> <span class="s1">&#39;&quot;&#39;</span>
+</span><span class='line'>      <span class="s1">&#39;cd ../android&#39;</span><span class="p">,</span>
+</span><span class='line'>      <span class="s1">&#39;ant debug&#39;</span><span class="p">,</span>
+</span><span class='line'>      <span class="s1">&#39;cd bin&#39;</span><span class="p">,</span>
+</span><span class='line'>      <span class="s2">&quot;curl http://testflightapp.com/api/builds.json &quot;</span> <span class="o">+</span>
+</span><span class='line'>      <span class="s2">&quot;-F file=@MainActivity-debug.apk &quot;</span> <span class="o">+</span>
+</span><span class='line'>      <span class="s2">&quot;-F api_token=&#39;&lt;%= testflight_settings.raisemore.apiToken %&gt;&#39; &quot;</span> <span class="o">+</span>
+</span><span class='line'>      <span class="s2">&quot;-F team_token=&#39;&lt;%= testflight_settings.raisemore.teamToken %&gt;&#39; &quot;</span> <span class="o">+</span>
+</span><span class='line'>      <span class="s2">&quot;-F notes=&#39;Some notes for automated upload&#39; &quot;</span> <span class="o">+</span>
+</span><span class='line'>      <span class="s2">&quot;-F notify=False &quot;</span> <span class="o">+</span>
+</span><span class='line'>      <span class="s2">&quot;-F distribution_lists=&#39;Testers&#39;&quot;</span>
+</span><span class='line'>    <span class="p">].</span><span class="nx">join</span><span class="p">(</span><span class="s2">&quot;&amp;&amp;&quot;</span><span class="p">)</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>As you can see, there are quite a bit of commands contained in that grunt shell task. Let&rsquo;s step through the steps, just to be clear.</p>
+
+<ol>
+<li>CD to the IOS folder</li>
+<li>Call the nomad CLI tool to build iOS app</li>
+<li>Call the nomad CLI tool to upload to test flight</li>
+<li>CD to the Android folder</li>
+<li>Call the ant script to build the app</li>
+<li>Curl to upload the file to Test Flight</li>
+</ol>
+
+
+<p>Perhaps you&rsquo;re wondering how I got the testflight_settings, I specified those as follows:</p>
+
+<figure class='code'><figcaption><span>Grunt testflight_settings</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">grunt</span><span class="p">.</span><span class="nx">initConfig</span><span class="p">({</span>
+</span><span class='line'>  <span class="nx">testflight_settings</span><span class="o">:</span> <span class="p">{</span>
+</span><span class='line'>    <span class="nx">raisemore</span><span class="o">:</span> <span class="p">{</span>
+</span><span class='line'>      <span class="nx">apiToken</span><span class="o">:</span> <span class="s1">&#39;some_api_token_here&#39;</span><span class="p">,</span>
+</span><span class='line'>      <span class="nx">teamToken</span><span class="o">:</span> <span class="s1">&#39;some_team_token_here&#39;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>Putting the pieces together</h2>
+
+<p>Lets see that Grunt config file now&hellip;</p>
+
+<figure class='code'><figcaption><span>Grunt config</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+<span class='line-number'>67</span>
+<span class='line-number'>68</span>
+<span class='line-number'>69</span>
+<span class='line-number'>70</span>
+<span class='line-number'>71</span>
+<span class='line-number'>72</span>
+<span class='line-number'>73</span>
+<span class='line-number'>74</span>
+<span class='line-number'>75</span>
+<span class='line-number'>76</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">module</span><span class="p">.</span><span class="nx">exports</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">grunt</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="c1">//Options and variables</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="kd">var</span> <span class="nx">ipAddress</span> <span class="o">=</span> <span class="nx">grunt</span><span class="p">.</span><span class="nx">option</span><span class="p">(</span><span class="s1">&#39;host&#39;</span><span class="p">)</span> <span class="o">||</span> <span class="s1">&#39;localhost&#39;</span><span class="p">;</span>
+</span><span class='line'>  <span class="kd">var</span> <span class="nx">preprocess_files</span> <span class="o">=</span> <span class="p">{</span>
+</span><span class='line'>    <span class="s1">&#39;./appsettings.js&#39;</span><span class="o">:</span> <span class="s1">&#39;../tmpl/appsettings.js&#39;</span><span class="p">,</span>
+</span><span class='line'>    <span class="s1">&#39;../index.html&#39;</span><span class="o">:</span> <span class="s1">&#39;../tmpl/index.html&#39;</span>
+</span><span class='line'>  <span class="p">};</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="c1">// Grunt Plug in configuration.</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nx">grunt</span><span class="p">.</span><span class="nx">initConfig</span><span class="p">({</span>
+</span><span class='line'>    <span class="nx">testflight_settings</span><span class="o">:</span> <span class="p">{</span>
+</span><span class='line'>      <span class="nx">raisemore</span><span class="o">:</span> <span class="p">{</span>
+</span><span class='line'>        <span class="nx">apiToken</span><span class="o">:</span> <span class="s1">&#39;apitoken&#39;</span><span class="p">,</span>
+</span><span class='line'>        <span class="nx">teamToken</span><span class="o">:</span> <span class="s1">&#39;teamtoken&#39;</span>
+</span><span class='line'>      <span class="p">}</span>
+</span><span class='line'>    <span class="p">},</span>
+</span><span class='line'>    <span class="nx">preprocess</span><span class="o">:</span> <span class="p">{</span>
+</span><span class='line'>      <span class="nx">dev</span><span class="o">:</span> <span class="p">{</span>
+</span><span class='line'>        <span class="nx">files</span><span class="o">:</span> <span class="nx">preprocess_files</span>
+</span><span class='line'>      <span class="p">},</span>
+</span><span class='line'>      <span class="nx">stage</span><span class="o">:</span> <span class="p">{</span>
+</span><span class='line'>        <span class="nx">files</span><span class="o">:</span> <span class="nx">preprocess_files</span>
+</span><span class='line'>      <span class="p">},</span>
+</span><span class='line'>      <span class="nx">prod</span><span class="o">:</span> <span class="p">{</span>
+</span><span class='line'>        <span class="nx">files</span><span class="o">:</span> <span class="nx">preprocess_files</span>
+</span><span class='line'>      <span class="p">}</span>
+</span><span class='line'>    <span class="p">},</span>
+</span><span class='line'>    <span class="nx">env</span><span class="o">:</span> <span class="p">{</span>
+</span><span class='line'>      <span class="nx">dev</span><span class="o">:</span> <span class="p">{</span>
+</span><span class='line'>        <span class="nx">NODE_ENV</span><span class="o">:</span> <span class="s1">&#39;Development&#39;</span><span class="p">,</span>
+</span><span class='line'>        <span class="nx">IP_ADDRESS</span><span class="o">:</span> <span class="nx">ipAddress</span>
+</span><span class='line'>      <span class="p">},</span>
+</span><span class='line'>      <span class="nx">stage</span><span class="o">:</span> <span class="p">{</span>
+</span><span class='line'>        <span class="nx">NODE_ENV</span><span class="o">:</span> <span class="s1">&#39;Staging&#39;</span><span class="p">,</span>
+</span><span class='line'>        <span class="nx">IP_ADDRESS</span><span class="o">:</span> <span class="nx">ipAddress</span>
+</span><span class='line'>      <span class="p">},</span>
+</span><span class='line'>      <span class="nx">prod</span><span class="o">:</span> <span class="p">{</span>
+</span><span class='line'>        <span class="nx">NODE_ENV</span><span class="o">:</span> <span class="s1">&#39;Production&#39;</span>
+</span><span class='line'>      <span class="p">}</span>
+</span><span class='line'>    <span class="p">},</span>
+</span><span class='line'>    <span class="nx">shell</span><span class="o">:</span> <span class="p">{</span>
+</span><span class='line'>      <span class="nx">testflight</span><span class="o">:</span> <span class="p">{</span>
+</span><span class='line'>        <span class="nx">options</span><span class="o">:</span> <span class="p">{</span>
+</span><span class='line'>          <span class="nx">stdout</span><span class="o">:</span> <span class="kc">true</span>
+</span><span class='line'>        <span class="p">},</span>
+</span><span class='line'>        <span class="nx">command</span><span class="o">:</span> <span class="p">[</span>
+</span><span class='line'>          <span class="s1">&#39;cd ../../&#39;</span><span class="p">,</span>
+</span><span class='line'>          <span class="s1">&#39;bundle install&#39;</span><span class="p">,</span>
+</span><span class='line'>          <span class="s1">&#39;cd ./ios&#39;</span><span class="p">,</span>
+</span><span class='line'>          <span class="s1">&#39;ipa build -p RaiseMore.xcodeproj -c Debug -s RaiseMore&#39;</span><span class="p">,</span>
+</span><span class='line'>          <span class="s1">&#39;ipa distribute -a &lt;%= testflight_settings.raisemore.apiKey %&gt; -T &lt;%= testflight_settings.raisemore.teamToken -m &quot;&#39;</span> <span class="o">+</span> <span class="nx">uploadMessage</span> <span class="o">+</span> <span class="s1">&#39;&quot;&#39;</span>
+</span><span class='line'>          <span class="s1">&#39;cd ../android&#39;</span><span class="p">,</span>
+</span><span class='line'>          <span class="s1">&#39;ant debug&#39;</span><span class="p">,</span>
+</span><span class='line'>          <span class="s1">&#39;cd bin&#39;</span><span class="p">,</span>
+</span><span class='line'>          <span class="s2">&quot;curl http://testflightapp.com/api/builds.json &quot;</span> <span class="o">+</span>
+</span><span class='line'>          <span class="s2">&quot;-F file=@MainActivity-debug.apk &quot;</span> <span class="o">+</span>
+</span><span class='line'>          <span class="s2">&quot;-F api_token=&#39;&lt;%= testflight_settings.raisemore.apiToken %&gt;&#39; &quot;</span> <span class="o">+</span>
+</span><span class='line'>          <span class="s2">&quot;-F team_token=&#39;&lt;%= testflight_settings.raisemore.teamToken %&gt;&#39; &quot;</span> <span class="o">+</span>
+</span><span class='line'>          <span class="s2">&quot;-F notes=&#39;Some notes for automated upload&#39; &quot;</span> <span class="o">+</span>
+</span><span class='line'>          <span class="s2">&quot;-F notify=False &quot;</span> <span class="o">+</span>
+</span><span class='line'>          <span class="s2">&quot;-F distribution_lists=&#39;Testers&#39;&quot;</span>
+</span><span class='line'>        <span class="p">].</span><span class="nx">join</span><span class="p">(</span><span class="s2">&quot;&amp;&amp;&quot;</span><span class="p">)</span>
+</span><span class='line'>      <span class="p">}</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>  <span class="p">});</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="c1">//Now grunt tasks</span>
+</span><span class='line'>  <span class="nx">grunt</span><span class="p">.</span><span class="nx">registerTask</span><span class="p">(</span><span class="s1">&#39;dev&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;env:dev&#39;</span><span class="p">,</span> <span class="s1">&#39;preprocess:dev&#39;</span><span class="p">]);</span>
+</span><span class='line'>  <span class="nx">grunt</span><span class="p">.</span><span class="nx">registerTask</span><span class="p">(</span><span class="s1">&#39;stage&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;env:stage&#39;</span><span class="p">,</span> <span class="s1">&#39;preprocess:stage&#39;</span><span class="p">]);</span>
+</span><span class='line'>  <span class="nx">grunt</span><span class="p">.</span><span class="nx">registerTask</span><span class="p">(</span><span class="s1">&#39;prod&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;env:prod&#39;</span><span class="p">,</span> <span class="s1">&#39;preprocess:prod&#39;</span><span class="p">]);</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nx">grunt</span><span class="p">.</span><span class="nx">registerTask</span><span class="p">(</span><span class="s1">&#39;testflight&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;env:stage&#39;</span><span class="p">,</span> <span class="s1">&#39;preprocess:stage&#39;</span><span class="p">,</span> <span class="s1">&#39;shell:testflight&#39;</span><span class="p">]);</span>
+</span><span class='line'><span class="p">};</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>So say then, our designer wants to try his design changes out with data from stage. He doesn&rsquo;t know what files to go touch, and most likely it gets confusing for him. Now with automation, he just types &lsquo;grunt stage&rsquo;.</p>
+
+<p>Or say, now someone needs to get a build out on test flight for some testers. Simply type &lsquo;grunt testflight&rsquo;. 1 step is easier and way more predictable than the handful of steps one must jump through.</p>
+
+<p>Although I&rsquo;m sure there are better ways to do this, I&rsquo;d love to hear about them. After fighting through tasks such as the grunt testflight plugin, and some vague issues there, the rather clear shell commands provide enough value for myself and my team to automate builds and even have these tasks integrated with any CL like Jenkins.</p>
+
+<p>I hope you can walk away with a few ideas and become more productive. Cheers!</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/10/26/rev-up-your-rails-engine-for-static-assets/">Rev Up Your Rails Engine for Static Assets</a></h1>
+    
+    
+      <p class="meta">
+        <span class="reading-time">less than a 1 minute read</span>
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-10-26T19:32:00-06:00" pubdate data-updated="true">Oct 26<span>th</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Lately we&rsquo;ve had the desire to move some of our rails services / middleware from our main web project to Rails Engines as gems to help us scale out and reuse that functionality across servers and sites.</p>
+
+<p>Haven&rsquo;t heard of Rails Engines? Rails engines are essentially miniture rails applications that provide funtionality to its host application &ndash; you could think of engines of what used to be Rails plugins in Rails 2 and upgraded in Rails 3.2. <a href="http://guides.rubyonrails.org/engines.html" title="Rails Guides - Getting Started with Engines">RailsGuides</a> is a great place to start, <a href="http://railscasts.com/episodes/277-mountable-engines" title="RailsCasts - Mountable Engines">RailsCasts</a> has a nice walk through. I want to focus on showing some tips, tricks, and pitfuls I&rsquo;ve encountered to help you be more successful.</p>
+
+<h1>Why I started using Rails Engines</h1>
+
+<p>For our needs, we had to display a mobile version of our application on our main website webserver. All of the code for the mobile application was hosted in another git repository (Note: I love the <a href="https://github.com/schacon/ruby-git" title="Ruby Git Gem">Git Gem</a>) and had different themes that needed to be applied. The big question was, how do we have this hosted on different web nodes and control our changes from the mobile repository?</p>
+
+<p>There are so many different ways to approach this problem, the method I chose was to try out a Rails Engine. The main reasons this was attractive was:</p>
+
+<ol>
+<li>A set of controllers to handle the requests for only the mobile application</li>
+<li>Not bombarding our web server&rsquo;s public folder with all of the mobile html/images/javascript/css</li>
+<li>Being able to configure the mobile gem based on any environment it may be in</li>
+<li>Being able to precompile our assets with the rails asset pipeline</li>
+<li>Handle updating the mobile app by just bundle updating the Gem</li>
+</ol>
+
+
+<h2>Rails Engines &ndash; Full vs Mountable</h2>
+
+<p>There are two types of Rails Engines available, a full engine and a mountable engine (see this <a href="http://stackoverflow.com/questions/6118905/rails-3-1-engine-vs-mountable-app" title="Stackoverflow Article on Full Engine vs Mountable Engine">StackOverflow</a> article or <a href="http://www.astjohn.ca/2011/08/06/rails-31-engines-mountable-or-full-part-1" title="Rails 3.1 Engines – Mountable or Full? – Part 1">Adam St Johns Blog</a> for more wisdom). The difference lies in how they handle requests. The full engine sets up routes and controllers as if they were part of the hosting app, whereas the mounted engine is mounted in the hosting app and handles its own routing.</p>
+
+<p>Getting started is easy. For a full engine where all requests are handled as part of hosting app, do this:</p>
+
+<pre><code>rails plugin new NameOfEngine --full
+</code></pre>
+
+<p>For a mountable engine, where we namespace our requests, do this:</p>
+
+<pre><code>rails plugin new NameOfMountableEngine --mountable
+</code></pre>
+
+<p>Let&rsquo;s take a look at how a full engine gets requests routed. For a full engine, we&rsquo;d have something like this in our Hosting application routing file for everything in our mobile engine.</p>
+
+<pre><code>Rails.application.routes.draw do
+    namespace "mobile" do 
+        match "/app" =&gt; "mobile#app", :via =&gt; :get
+        match "/modules" =&gt; "mobile#modules", :via =&gt; :get
+        match "/start" =&gt; "mobile#start", :via =&gt; :get
+        match "/tutorials" =&gt; "mobile#tutorials", :via =&gt; :gets
+        match "/" =&gt; "mobile#generic", :via =&gt; :get
+        # Any many more /mobile routes..
+    end
+
+    # Other hosting application routing goes here, and mixes in with our mobile routes.
+end
+</code></pre>
+
+<p>Taken straight from <a href="https://github.com/rails/rails/blob/master/railties/lib/rails/engine.rb" title="Rails / Engine.rb Line 197">Rails Engine Code Comments</a> &ndash;</p>
+
+<blockquote><p>&hellip; sometimes you want to isolate your engine from the application, especially if your engine has its own router. To do that, you simply need to call +isolate_namespace+. This method requires you to pass a module where all your controllers, helpers and models should be nested to.</p></blockquote>
+
+<p>Great, so now we dont&#8217; have to uglify our routing file AND we get routing and code reusablity across servers for a mounted engine, that means we have our own routing.rb file in our engine:</p>
+
+<pre><code>MobileEngine::Engine.routes.draw do
+    match "/app" =&gt; "mobile#app", :via =&gt; :get
+    match "/" =&gt; "mobile#generic", :via =&gt; :get
+end
+</code></pre>
+
+<p>We specify the isolate_namespace in our engine file:</p>
+
+<pre><code>module MobileEngine
+    class Engine &lt; ::Rails::Engine
+        isolate_namespace MobileEngine
+    end
+end
+</code></pre>
+
+<p>Finally we mount our engine in the hosting app:</p>
+
+<pre><code>Rails.application.routes.draw do
+    mount MobileEngine::Engine =&gt; "/mobile"
+
+    #Other hosted application routing
+end
+</code></pre>
+
+<p>The main difference between full and mounted is found in your <NameOfEngineDirectory>/lib/name_of_engine/engine.rb file:</p>
+
+<p>Full:</p>
+
+<pre><code>module FullEngine
+    class Engine &lt; ::Rails::Engine
+    end
+end
+</code></pre>
+
+<p>Mounted:</p>
+
+<pre><code>module MountedEngine
+    class Engine &lt; ::Rails::Engine
+        isolate_namespace MobileEngine
+    end
+end
+</code></pre>
+
+<p>Awesome, so now no matter what, any hosted rails application that uses our mounted engine gets all of its routes namespaced by whatever we choose, in this case, /mobile. Awesome.</p>
+
+<h2>Engines and routing / matching controllers and views</h2>
+
+<p>Quick reminder on Rails routing:</p>
+
+<blockquote><p>Rails routes are matched in the order they are specified, so if you have a resources :photos above a get &lsquo;photos/poll&rsquo; the show action&rsquo;s route for the resources line will be matched before the get line. To fix this, move the get line above the resources line so that it is matched first.</p></blockquote>
+
+<p>One thing to note is the way you namespace your engine which is done with using your engine name in your file structure, both in your controllers and engines, such as this structure:</p>
+
+<pre><code>/mobile_engine
+    /app
+        /assets
+        /controllers
+            /mobile_engine
+                application_controller.rb
+                mobile_controller.rb
+        /helpers
+            /mobile_engine
+        /mailers
+            /mobile_engine
+        /models
+            /mobile_engine
+        /views
+            /layouts
+                application.html.erb
+            /mobile_engine
+                /mobile
+                    app.html.erb
+</code></pre>
+
+<p>So for our mobile_controller.rb, we simply have this:</p>
+
+<pre><code># Note the use of Engine.root for finding its path
+require File.join(MobileEngine::Engine.root, 'lib', 'mobile_engine', 'file_we_need') 
+module MobileEngine
+    class MobileController &lt; ApplicationController
+        before_filter :adjust_format_for_iphone
+        layout false
+
+        def app
+
+            # Code
+
+        end
+    end
+end
+</code></pre>
+
+<p>Let&rsquo;s look at the full request cycle for mounted engines for &ldquo;/mobile/app&rdquo;:</p>
+
+<ul>
+<li>A request for &ldquo;/mobile/app&rdquo; goes through our hosting application, no routes are found for &ldquo;/mobile/app&rdquo; for the hosting application routing file, so it looks at the engine.</li>
+<li>The engine has a route, so it then begins looking in the hosting application for the mobile controller</li>
+<li>If the hosting application has no mobile controller, it then begins looking at it&rsquo;s included engines for a mobile controller</li>
+<li>The engine has a controller, so it uses that controller&rsquo;s action and goes to render the view.</li>
+<li>The hosting application begins looking for a view in the hosting application for &ldquo;views/mobile/app&rdquo;</li>
+<li>If the hosting application did not have a view, it then looks for the view in the engine &ldquo;views/mobile_engine/mobile/app&rdquo;</li>
+</ul>
+
+
+<p>Why is this important? I had an issue where I still had a view in my hosting application that was being used over my engine views &ndash; so always note that the hosting application trumps its engines controllers and views. Full overriding capabilities is always the control of the hosting application.</p>
+
+<h2>Public folder mashing &amp; configuration</h2>
+
+<p>The second point in choosing an engine is leaving all of our mobile assets in our mobile engine gem&rsquo;s public folder so we don&rsquo;t have to worry about getting those assets copy/pasted between projects that may want the mobile code. Just plunk your JS/CSS/HTML in your public folders as you normally would and make this modification in your engine.rb file in your engine gem:</p>
+
+<pre><code>module MobileEngine
+  class Engine &lt; ::Rails::Engine
+    isolate_namespace MobileEngine
+
+    # Add any configuration settings to your Engine here
+
+    config.mobile_app_name = "mobile_raisemore"
+    config.mobile_app_containing_directory = File.join(root, "vendor").to_s
+    config.mobile_app_path = File.join(root, "vendor", "mobile_raisemore").to_s
+    config.mobile_theme_path = File.join(root, "public", "mobilethemes").to_s
+    config.mobile_repo_url = "git@bitbucket.org:raisemore/mobile_raisemore.git"
+    config.local_asset_js_path = File.join(root, "vendor", "assets", "javascripts", "mobile").to_s
+    config.local_asset_css_path = File.join(root, "vendor", "assets", "stylesheets", "mobile").to_s
+    config.local_public_mobile_path = File.join(root, "public", "mobile").to_s
+
+    # Initializer to combine this engines static assets with the static assets of the hosting site.
+    initializer "static assets" do |app|
+        app.middleware.insert_before(::ActionDispatch::Static, ::ActionDispatch::Static, "#{root}/public")
+    end
+  end
+end
+</code></pre>
+
+<p>Then in our hosting application, we can use those configuration settings via an initializer:</p>
+
+<pre><code>MobileEngine::Engine.config.mobile_app_name = "RaiseMore"
+</code></pre>
+
+<p>Great, we&rsquo;ve isolated our namespace to leave all requests for mobile_engine, as well as setting up some configuration settings for what the mobile code may depend on, as well as merged our engine&rsquo;s public folder with the hosting site application.</p>
+
+<p>One thing to note, when using an Engine, it sets up several helpers for you to use. One of which I use there is root, which is the root path of the engine, not the root path of the hosting application. To get the root path of the application, you can use main_app, like this:</p>
+
+<pre><code>&lt;%= link_to "Home", main_app.root_path %&gt;
+</code></pre>
+
+<h2>Precompiling any assets</h2>
+
+<p>No difference here, place your assets in your normal locations. Works just like the <a href="http://guides.rubyonrails.org/index.html" title="Rails Asset Pipeline">Rails Asset Pipelines Guide</a>, and documented nicely for gems by <a href="http://rakeroutes.com/blog/write-a-gem-for-the-rails-asset-pipeline/" title="Write a Gem To Serve Static Assets On The Rails Asset Pipeline">Stephen Balls Blog</a>, but essentially still the same.</p>
+
+<p>My file structure for assets looks like this:</p>
+
+<pre><code>/mobile_engine
+    /vendor
+        /assets
+            /images
+            /javascripts
+                /mobile
+                    jquery.js
+                    angular.js
+                    ...many more...
+                mobile.js
+            /stylesheets
+</code></pre>
+
+<p>Mobile.js is nothing special, and looks like this:</p>
+
+<pre><code>//= require ./mobile/
+</code></pre>
+
+<p>This will package up all javascript files in the /assets/javascripts/mobile folder to be combined and accessed by the hosting application, just run the assets precompile:</p>
+
+<pre><code>rake assets:precompile
+</code></pre>
+
+<p>Now access them as usual</p>
+
+<pre><code>http://hostingapp.com/assets/mobile.js
+</code></pre>
+
+<h1>The big picture</h1>
+
+<p>All in all, I&rsquo;ve really enjoyed learning about Rails Engines and I can already see several uses for them:</p>
+
+<ul>
+<li>Pulling all of our API calls to an engine so we can place that engine on any web nodes and keep API functionality in one place</li>
+<li>Put together an error handling gem to handle incoming error requests to record and a page to see errors</li>
+<li>Database models / access methods to be used by other projects</li>
+</ul>
+
+
+<p>I hope I&rsquo;ve shed some light on Rails Engines and given a few tips/tricks that I&rsquo;ve found along the way.</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  <div class="pagination">
+    
+    <a href="/blog/archives">Blog Archives</a>
+    
+    <a class="next" href="/blog/page/7/">Newer &rarr;</a>
+    
+  </div>
+</div>
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2020/01/09/something-happened/">Something Happened</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2020/01/04/2020-goals-and-systems/">2020 Goals and Systems</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2020/01/03/start-finishing-book-review/">Start Finishing - Book Review</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2020/01/02/knowledge-consumption-routine/">Knowledge Consumption Routine</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2020/01/01/2019-retrospective/">2019 Retrospective</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating&#8230;</li>
+  </ul>
+  
+  <a href="https://github.com/jbavari">@jbavari</a> on GitHub
+  
+  <script type="text/javascript">
+    $(document).ready(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'jbavari',
+            count: 0,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+
+
+
+  
+</aside>
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2020 - Josh Bavari -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+  <script src="//static.getclicky.com/js" type="text/javascript"></script>
+  <script type="text/javascript">try{ clicky.init(100896582); }catch(e){}</script>
+  <noscript><p><img alt="Clicky" width="1" height="1" src="//in.getclicky.com/100896582ns.gif" /></p></noscript>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'joshbavari';
+      
+        
+        var disqus_script = 'count.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

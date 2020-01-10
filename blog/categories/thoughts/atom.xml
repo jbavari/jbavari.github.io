@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: thoughts | Josh Bavari's Thoughts]]></title>
+  <link href="http://jbavari.github.io/blog/categories/thoughts/atom.xml" rel="self"/>
+  <link href="http://jbavari.github.io/"/>
+  <updated>2020-01-10T07:41:03-07:00</updated>
+  <id>http://jbavari.github.io/</id>
+  <author>
+    <name><![CDATA[Josh Bavari]]></name>
+    <email><![CDATA[jbavari@gmail.com]]></email>
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Something happened]]></title>
+    <link href="http://jbavari.github.io/blog/2020/01/09/something-happened/"/>
+    <updated>2020-01-09T20:52:00-07:00</updated>
+    <id>http://jbavari.github.io/blog/2020/01/09/something-happened</id>
+    <content type="html"><![CDATA[<p>During high school and college I was a morning person. I loved getting up early in the mornings to read, play some video games, or any other topic that kept me in the &lsquo;flow&rsquo;.</p>
+
+<p>Now I&rsquo;m a night owl. I focus the best around 8pm. I don&rsquo;t know why, my brain just decides to turn on. I&rsquo;ll get about an hour and a half of pure focus, then it&rsquo;s time to wind down around 9:30 PM.</p>
+
+<p>I prefer to be an early bird. As much as I try to force it, it&rsquo;s just not the same level of focus as I get at night. As much as I want to change, I must accept that I&rsquo;m a night owl now.</p>
+
+<p>Although I cannot change or understand the why, all that matters now is that I&rsquo;m aware of this change. Something happened. Accept it. That&rsquo;s the important part.</p>
+]]></content>
+  </entry>
+  
+</feed>

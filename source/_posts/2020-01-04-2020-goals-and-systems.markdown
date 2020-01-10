@@ -6,7 +6,7 @@ comments: true
 categories: planning
 ---
 
-After doing a [2019 in review](/posts/2019-in-review.html), I wanted to set up some new routines for some extra discipline in my life for 2020.
+After doing a [2019 in review](/blog/2020/01/01/2019-retrospective/), I wanted to set up some new routines for some extra discipline in my life for 2020.
 
 Some systems that I want to set up:
 

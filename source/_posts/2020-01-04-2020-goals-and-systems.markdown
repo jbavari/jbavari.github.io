@@ -11,6 +11,7 @@ After doing a [2019 in review](/posts/2019-in-review.html), I wanted to set up s
 Some systems that I want to set up:
 
 * Reading more.
+* Writing more.
 * Practicing mindfulness to achieve happiness.
 * Practicing [clear and present](https://blog.davidtate.org/clear-and-present-leadership/) leadership everyday I can (which is everyday).
 * Spending time with friends and loved ones.
@@ -24,6 +25,8 @@ Now, those are my systems. Based on those systems, I'd like to achieve some goal
 
 * Have listened (audible) to 40 books this year.
 * Have read (physical or kindle) 40 books this year.
+* Have finished writing a book draft for my first book.
+* Writing at least 2 blog posts a month.
 * Have been present and aware as much as I could physically and mentally.
 * Practicing leadership with people I mentor or in the community.
 * Camped 10 different sites with friends and family.

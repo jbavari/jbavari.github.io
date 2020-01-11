@@ -961,6 +961,51 @@
       
   <header>
     
+      <h1 class="entry-title"><a href="/blog/2015/12/03/correctly-using-es6-fat-arrows-and-event-handlers/">Correctly Using ES6 Fat Arrows and Event Handlers</a></h1>
+    
+    
+      <p class="meta">
+        <span class="reading-time">less than a 1 minute read</span>
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-12-03T12:13:00-07:00" pubdate data-updated="true">Dec 3<span>rd</span>, 2015</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Compatability table:
+<a href="http://kangax.github.io/compat-table/es6">http://kangax.github.io/compat-table/es6</a></p>
+
+<p>Private properties &ndash; Symbol:
+<a href="http://blog.keithcirkel.co.uk/metaprogramming-in-es6-symbols/">http://blog.keithcirkel.co.uk/metaprogramming-in-es6-symbols/</a>
+<a href="https://curiosity-driven.org/private-properties-in-javascript">https://curiosity-driven.org/private-properties-in-javascript</a></p>
+
+<p>Babel installation and such:
+<a href="http://babeljs.io/docs/plugins/preset-es2015/#installation">http://babeljs.io/docs/plugins/preset-es2015/#installation</a></p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
       <h1 class="entry-title"><a href="/blog/2015/12/03/playing-with-safari-9-force-touch-api/">Playing With Safari 9 Force Touch API</a></h1>
     
     
@@ -1686,184 +1731,6 @@
 <p>When the schedule component&rsquo;s variable for <code>searchQuery</code> is updated, this method will be auto-magically re-evaluated, which causes the list to update.</p>
 
 <p>Hope this helps you understand Angular 2 and ng-models better! Enjoy!</p>
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2015/10/20/windows-and-webpack-with-typescript-and-babel/">Windows and Webpack With TypeScript and Babel</a></h1>
-    
-    
-      <p class="meta">
-        <span class="reading-time">less than a 1 minute read</span>
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2015-10-20T21:46:00-06:00" pubdate data-updated="true">Oct 20<span>th</span>, 2015</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>I&rsquo;ve recently been diving into the land of <a href="https://webpack.github.io">Webpack</a> to handle all the heavy lifting of using <a href="https://babeljs.io">Babel</a> to compile my <a href="www.typescriptlang.org">TypeScript</a> and <a href="http://es6-features.org">ES6</a> into ES5 JavaScript to be used in <a href="http://ionic.io/2">Ionic 2</a>.</p>
-
-<p>The current set up I&rsquo;m working with involves having Webpack use the <a href="https://github.com/s-panferov/awesome-typescript-loader">awesome-typescript-loader</a> to load up TypeScript and compile the TypeScript files, as well as load up Babel and compile the ES6 JavaScript using Babel.</p>
-
-<h2>The set up</h2>
-
-<p>The file structure looks like this:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>./
-</span><span class='line'>  ./www
-</span><span class='line'>    ./app
-</span><span class='line'>      ./components
-</span><span class='line'>        ./datepipe.js
-</span><span class='line'>        ./app.ts</span></code></pre></td></tr></table></div></figure>
-
-
-<p>This worked great on my Mac. However, one thing I ran into on my Windows machine was this particular error:</p>
-
-<p><code>Cannot find module "./www/app/app.js"</code></p>
-
-<p>Take a look at the <a href="https://github.com/driftyco/ionic-conference-app/blob/master/webpack.config.js">webpack.config.js</a> in the <a href="https://github.com/driftyco/ionic-conference-app/">ionic-conference-app</a>, with a portion of it below:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="cm">/* snipped */</span>
-</span><span class='line'>  <span class="nx">module</span><span class="o">:</span> <span class="p">{</span>
-</span><span class='line'>    <span class="nx">loaders</span><span class="o">:</span> <span class="p">[</span>
-</span><span class='line'>      <span class="p">{</span>
-</span><span class='line'>        <span class="nx">test</span><span class="o">:</span> <span class="sr">/\.js$/</span><span class="p">,</span>
-</span><span class='line'>        <span class="nx">loader</span><span class="o">:</span> <span class="s2">&quot;awesome-typescript-loader?doTypeCheck=false&amp;useBabel=true&amp;useWebpackText=true&quot;</span><span class="p">,</span>
-</span><span class='line'>        <span class="nx">include</span><span class="o">:</span> <span class="sr">/www\/app\//</span><span class="p">,</span>
-</span><span class='line'>        <span class="nx">exclude</span><span class="o">:</span> <span class="sr">/node_modules/</span>
-</span><span class='line'>      <span class="p">},</span>
-</span><span class='line'>      <span class="p">{</span>
-</span><span class='line'>        <span class="nx">test</span><span class="o">:</span> <span class="sr">/\.ts$/</span><span class="p">,</span>
-</span><span class='line'>        <span class="nx">loader</span><span class="o">:</span> <span class="s2">&quot;awesome-typescript-loader&quot;</span><span class="p">,</span>
-</span><span class='line'>        <span class="nx">include</span><span class="o">:</span> <span class="sr">/www\/app\//</span><span class="p">,</span>
-</span><span class='line'>        <span class="nx">exclude</span><span class="o">:</span> <span class="sr">/node_modules/</span>
-</span><span class='line'>       <span class="p">}</span>
-</span><span class='line'>    <span class="p">]</span>
-</span><span class='line'>  <span class="p">},</span>
-</span><span class='line'><span class="cm">/* snipped */</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Webpack uses loaders to take the files and add them to the final build output. It knows where to get these files from the webpack config module loaders array, where each loader specifies the <code>include</code> paths, as per the <a href="https://webpack.github.io/docs/configuration.html#module-loaders">webpack docs</a>:</p>
-
-<blockquote><p>include: A condition that must be met</p>
-
-<p>A condition may be a RegExp, a string containing the absolute path, a function(absPath): bool, or an array of one of these combined with “and”.</p></blockquote>
-
-<p>Take note of the include line we had at first: <code>include: /www\/app\//,</code>, line 7 and 13 in the pasted snipped above.</p>
-
-<p>Sure this will work in a Unix based runtime. If you&rsquo;re running on a Windows machine, these paths may be a problem. As it doesn&rsquo;t understand the <code>/</code>. This tip came from Edward McLeod-Jones, who pointed out <a href="https://github.com/RisingStack/react-way-getting-started/issues/8#issue-94592829">this issue</a>.</p>
-
-<p>You might want to try to make RegEx fun, by doing this:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="nx">include</span><span class="o">:</span> <span class="sr">/www(\/|\\)app(\/|\\)/</span><span class="p">,</span>  <span class="c1">// &lt;--- Change the regex to support either type of folder separator`</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>However, since we&rsquo;re doing Node.js, it provides APIs to help us out with cross-platform changes like this with the <code>path</code> module.</p>
-
-<p>Do this instead:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">var</span> <span class="nx">path</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;path&#39;</span><span class="p">);</span>
-</span><span class='line'><span class="kd">var</span> <span class="nx">wwwPath</span> <span class="o">=</span> <span class="nx">path</span><span class="p">.</span><span class="nx">resolve</span><span class="p">(</span><span class="nx">__dirname</span><span class="p">,</span> <span class="s1">&#39;www&#39;</span><span class="p">);</span>
-</span><span class='line'><span class="kd">var</span> <span class="nx">outputPath</span> <span class="o">=</span> <span class="nx">path</span><span class="p">.</span><span class="nx">join</span><span class="p">(</span><span class="nx">wwwPath</span><span class="p">,</span> <span class="s1">&#39;build&#39;</span><span class="p">,</span> <span class="s1">&#39;js&#39;</span><span class="p">);</span>
-</span><span class='line'><span class="kd">var</span> <span class="nx">appPath</span> <span class="o">=</span> <span class="nx">path</span><span class="p">.</span><span class="nx">join</span><span class="p">(</span><span class="nx">wwwPath</span><span class="p">,</span> <span class="s1">&#39;app&#39;</span><span class="p">);</span>
-</span><span class='line'><span class="kd">var</span> <span class="nx">appJsPath</span> <span class="o">=</span> <span class="nx">path</span><span class="p">.</span><span class="nx">join</span><span class="p">(</span><span class="nx">appPath</span><span class="p">,</span> <span class="s1">&#39;app.js&#39;</span><span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'><span class="cm">/* snip */</span>
-</span><span class='line'>  <span class="nx">module</span><span class="o">:</span> <span class="p">{</span>
-</span><span class='line'>    <span class="nx">loaders</span><span class="o">:</span> <span class="p">[</span>
-</span><span class='line'>      <span class="p">{</span>
-</span><span class='line'>        <span class="nx">test</span><span class="o">:</span> <span class="sr">/\.js$/</span><span class="p">,</span>
-</span><span class='line'>        <span class="nx">loader</span><span class="o">:</span> <span class="s2">&quot;awesome-typescript-loader?doTypeCheck=false&amp;useBabel=true&amp;useWebpackText=true&quot;</span><span class="p">,</span>
-</span><span class='line'>        <span class="nx">include</span><span class="o">:</span> <span class="p">[</span><span class="nx">wwwPath</span><span class="p">],</span>
-</span><span class='line'>        <span class="c1">// include: /www(\/|\\)app(\/|\\)/,</span>
-</span><span class='line'>        <span class="nx">exclude</span><span class="o">:</span> <span class="sr">/node_modules/</span>
-</span><span class='line'>      <span class="p">},</span>
-</span><span class='line'>      <span class="p">{</span>
-</span><span class='line'>        <span class="nx">test</span><span class="o">:</span> <span class="sr">/\.ts$/</span><span class="p">,</span>
-</span><span class='line'>        <span class="nx">loader</span><span class="o">:</span> <span class="s2">&quot;awesome-typescript-loader&quot;</span><span class="p">,</span>
-</span><span class='line'>        <span class="c1">// include: /www(\/|\\)app(\/|\\)/,</span>
-</span><span class='line'>        <span class="nx">include</span><span class="o">:</span> <span class="p">[</span><span class="nx">wwwPath</span><span class="p">],</span>
-</span><span class='line'>        <span class="nx">exclude</span><span class="o">:</span> <span class="sr">/node_modules/</span>
-</span><span class='line'>       <span class="p">}</span>
-</span><span class='line'>    <span class="p">]</span>
-</span><span class='line'>  <span class="p">},</span>
-</span><span class='line'><span class="cm">/* snip */</span>
-</span></code></pre></td></tr></table></div></figure>
-
 </div>
   
   

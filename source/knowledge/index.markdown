@@ -13,6 +13,7 @@ I love reading and learning. I'm putting this page together to keep track of all
 
 ### Currently reading in progress
 
+* [The Happiness Hypothesis](https://www.audible.com/pd/The-Happiness-Hypothesis-Audiobook/B07D5HTRPZ?pf_rd_p=6a5ce8e4-798e-4a64-8bc5-71dcf66d673f&pf_rd_r=G4CP7FHWQ0KRZ84MV5BD&ref=a_lib_c4_libItem_B07D5HTRPZ)
 * [Black Box Thinking](https://www.amazon.com/Black-Box-Thinking-People-Mistakes-But/dp/1591848229/ref=tmm_hrd_swatch_0?_encoding=UTF8&qid=1578168067&sr=8-1)
 * [Mindset: The Psychology of Success](https://www.amazon.com/gp/product/B000FCKPHG/ref=ppx_yo_dt_b_d_asin_title_o00?ie=UTF8&psc=1)
 

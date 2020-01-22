@@ -13,7 +13,6 @@ I love reading and learning. I'm putting this page together to keep track of all
 
 ### Currently reading in progress
 
-* [Range: Why Generalists Triumph in a Specialized World](https://www.audible.com/pd/Range-Audiobook/1984888439?pf_rd_p=6a5ce8e4-798e-4a64-8bc5-71dcf66d673f&pf_rd_r=EN6164HY8BJHK5JN05BZ&ref=a_lib_c4_libItem_1984888439)
 * [Black Box Thinking](https://www.amazon.com/Black-Box-Thinking-People-Mistakes-But/dp/1591848229/ref=tmm_hrd_swatch_0?_encoding=UTF8&qid=1578168067&sr=8-1)
 * [Mindset: The Psychology of Success](https://www.amazon.com/gp/product/B000FCKPHG/ref=ppx_yo_dt_b_d_asin_title_o00?ie=UTF8&psc=1)
 
@@ -21,6 +20,7 @@ I love reading and learning. I'm putting this page together to keep track of all
 
 ### Business
 
+* [Range: Why Generalists Triumph in a Specialized World](https://www.audible.com/pd/Range-Audiobook/1984888439?pf_rd_p=6a5ce8e4-798e-4a64-8bc5-71dcf66d673f&pf_rd_r=EN6164HY8BJHK5JN05BZ&ref=a_lib_c4_libItem_1984888439)
 * [What you do is who you are](https://www.audible.com/pd/What-You-Do-Is-Who-You-Are-Audiobook/0062967584)
 
 ### Philosophy

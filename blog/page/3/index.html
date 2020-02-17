@@ -9,7 +9,7 @@
   <meta name="author" content="Josh Bavari">
 
   
-  <meta name="description" content="I just wanted to share a quick little tidbit on how to install older brew versions. I was having some issues with an older version of Elixir failing &hellip;">
+  <meta name="description" content="As a developer, you should be focused on spending some of your own time learning and staying up to date with technology that is always moving. I &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -70,6 +70,668 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/12/15/scoreboard-forms-in-react-and-angular-2/">Scoreboard Forms in React and Angular 2</a></h1>
+    
+    
+      <p class="meta">
+        <span class="reading-time">less than a 1 minute read</span>
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-12-15T23:01:00-07:00" pubdate data-updated="true">Dec 15<span>th</span>, 2015</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>As a developer, you should be focused on spending some of your own time learning and staying up to date with technology that is always moving.</p>
+
+<p>I wanted to find a reason to hop into some of the &lsquo;newer&rsquo; front-end frameworks, React and Angular 2, as well as some of the module bundlers <a href="http://browserify.org/">browserify</a> and <a href="https://webpack.github.io/">webpack</a>.</p>
+
+<p>I had the opportunity to try out Angular 2 while it was still in alpha. With the recent announcement of Angular 2 going out in Beta, I wanted to build a Scoreboard form that went along with my Scoreboard project to evaluate the two frameworks.</p>
+
+<p>This post will aim to build a simple scoreboard form in both frameworks, so you can see the same DOM interactions and the code it takes to form them.</p>
+
+<p>Please also note, I&rsquo;m still very much learning, and some code may not be &lsquo;ideal&rsquo;.</p>
+
+<p>We&rsquo;ll cover:</p>
+
+<ul>
+<li>The scoreboard form idea</li>
+<li>Learning the ideas behind the frameworks</li>
+<li>The bundling systems</li>
+<li>Angular 2 implementation (TypeScript)</li>
+<li>React implementation (ES6)</li>
+<li>The differences between the two</li>
+<li>Pros and Cons of each (in my eyes)</li>
+</ul>
+
+
+<p>All of the source code is available on my Github profile in the <a href="https://github.com/jbavari/scoreboard-form">scoreboard-form</a> repository.</p>
+
+<h1>The Scoreboard Form</h1>
+
+<p>A scoreboard is simple &ndash; you&rsquo;ll enter the two team names, then specify a touchdown or field goal for either team.</p>
+
+<p>That means we will need a few components: a scoreboard and a team.</p>
+
+<p>The idea will be to build these components in React and Angular2, having them use similar templates to render to the equivalent DOM structures.</p>
+
+<h2>Learning the ideas behind the frameworks</h2>
+
+<p>Both frameworks aim to contain all of the functionality and display into a component.</p>
+
+<p>The idea will be to build a team component, that displays teams, and a scoreboard component, that will display both of those teams and have a submit method to post that data to our scoreboard API server.</p>
+
+<p>The main difference we will see between the two frameworks is adapting to <a href="http://es6-features.org/">ES6</a> or <a href="http://www.typescriptlang.org/">TypeScript</a>.</p>
+
+<p>In either framework, we will create a class for the component in ES6/TypeScript, and then connect the template to it, and finally attach it in the DOM.</p>
+
+<h1>The bundling systems</h1>
+
+<p>We will use Browserify to pack up React into a single module, while using webpack to bundle up Angular 2 into a single bundle.</p>
+
+<p>What is bundling you say? It&rsquo;s taking all the source for our components and bundling them up with the framework code to have one JavaScript file to load the entire bundle. That way, we only need one JavaScript file instead of a whole load of <code>&lt;script&gt;</code> tags.</p>
+
+<h1>Angular 2 implementation</h1>
+
+<p>Angular 2 is built in TypeScript, which is a superset of JavaScript that allows types to have a &lsquo;stronger type&rsquo; to work with. We will build our component in TypeScript, and transpile it down to ES5 JavaScript.</p>
+
+<h2>Building the Team component</h2>
+
+<p>In Angular 2, we need to use a decorator (<a href="https://www.sitepen.com/blog/2015/10/20/typescript-decorators/">see this blog post about TypeScript decorators</a>) to specify a Team as a component that will render.</p>
+
+<p>We will import the Decorator, <code>Component</code>, and then apply it to our class. The <code>Component</code> decorator specifies which DOM element it will attach to (in this case, <code>team</code>), any inputs our control may have, what template it will use (specified as the <code>template</code> key), and what other directives will be used to parse our template.</p>
+
+<p>Then, we have our class that defines the component itself with a name and score, methods to increase score (<code>touchdown</code> and <code>fieldGoal</code>), a <code>toJson</code> method, and finally callbacks to update itself from the parent component.</p>
+
+<p>The team component:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>import {Component, EventEmitter, Output} from 'angular2/core';
+</span><span class='line'>import {NgFor, NgIf, NgModel} from 'angular2/common';
+</span><span class='line'>
+</span><span class='line'>@Component({
+</span><span class='line'>  directives: [NgFor, NgIf, NgModel],
+</span><span class='line'>  selector: 'team',
+</span><span class='line'>  template: `
+</span><span class='line'>    &lt;div *ngIf="name == ''"&gt;
+</span><span class='line'>      &lt;h3&gt;No team set&lt;/h3&gt;
+</span><span class='line'>      &lt;input type="text" [(ngModel)]="nameInput" placeholder="Enter a name"/&gt;
+</span><span class='line'>      &lt;button type="submit" (click)="setName()"&gt;Set name&lt;/button&gt;
+</span><span class='line'>    &lt;/div&gt;
+</span><span class='line'>    &lt;div *ngIf="name != ''"&gt;
+</span><span class='line'>      &lt;h3&gt;&lt;/h3&gt;
+</span><span class='line'>      &lt;button (click)="touchdown($event)"&gt;Touchdown&lt;/button&gt;
+</span><span class='line'>      &lt;button (click)="fieldGoal($event)"&gt;Field Goal&lt;/button&gt;
+</span><span class='line'>      &lt;h4&gt;Score: &lt;/h4&gt;
+</span><span class='line'>    &lt;/div&gt;
+</span><span class='line'>    `
+</span><span class='line'>    }
+</span><span class='line'>})
+</span><span class='line'>export class Team {
+</span><span class='line'>  @Output() updateTeam = new EventEmitter&lt;Team&gt;();
+</span><span class='line'>  constructor() {
+</span><span class='line'>    this.nameInput = '';
+</span><span class='line'>    this.name = '';
+</span><span class='line'>    this.score = 0;
+</span><span class='line'>  }
+</span><span class='line'>
+</span><span class='line'>  fieldGoal(e) {
+</span><span class='line'>    e.preventDefault();
+</span><span class='line'>    this.score += 3;
+</span><span class='line'>  }
+</span><span class='line'>
+</span><span class='line'>  touchdown(e) {
+</span><span class='line'>    e.preventDefault();
+</span><span class='line'>    this.score += 7;
+</span><span class='line'>  }
+</span><span class='line'>
+</span><span class='line'>  setName(nameInput) {
+</span><span class='line'>    this.name = this.nameInput;
+</span><span class='line'>    this.nameInput = '';
+</span><span class='line'>    if(this.updateTeam) {
+</span><span class='line'>      this.updateTeam.next(this);
+</span><span class='line'>    }
+</span><span class='line'>  }
+</span><span class='line'>
+</span><span class='line'>  toJson() {
+</span><span class='line'>    return { name: this.name, score: this.score };
+</span><span class='line'>  }
+</span><span class='line'>}
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>Defining the scoreboard component</h2>
+
+<p>Now we need to displays these teams in a side by side manner, a callback to update information from the team component, and a method to submit the scores to the API.</p>
+
+<p>We&rsquo;ll define the component as follows:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>import {Component} from 'angular2/core';
+</span><span class='line'>import {Team} from '../team/team';
+</span><span class='line'>
+</span><span class='line'>@Component({
+</span><span class='line'>  directives: [Team],
+</span><span class='line'>  selector: 'scoreboard',
+</span><span class='line'>  template: `
+</span><span class='line'>    &lt;form (ngSubmit)="submitScore()"&gt;
+</span><span class='line'>      &lt;div class="row"&gt;
+</span><span class='line'>        &lt;div class="col-md-6"&gt;
+</span><span class='line'>          &lt;h2&gt;Home Team&lt;/h2&gt;
+</span><span class='line'>          &lt;team (updateTeam)="updateHomeTeam($event)" home="true"&gt;&lt;/team&gt;
+</span><span class='line'>        &lt;/div&gt;
+</span><span class='line'>        &lt;div class="col-md-6"&gt;
+</span><span class='line'>          &lt;h2&gt;Visitor Team&lt;/h2&gt;
+</span><span class='line'>          &lt;team (updateTeam)="updateVisitorTeam($event)"&gt;&lt;/team&gt;
+</span><span class='line'>        &lt;/div&gt;
+</span><span class='line'>      &lt;/div&gt;
+</span><span class='line'>      &lt;div class="row"&gt;
+</span><span class='line'>        &lt;button type="submit"&gt;Submit&lt;/button&gt;
+</span><span class='line'>      &lt;/div&gt;
+</span><span class='line'>      &lt;div *ngIf="submitted"&gt;
+</span><span class='line'>        JSON payload: 
+</span><span class='line'>      &lt;/div&gt;
+</span><span class='line'>    &lt;/form&gt;  
+</span><span class='line'>  `
+</span><span class='line'>})
+</span><span class='line'>export class Scoreboard {
+</span><span class='line'>  homeTeam: Team = new Team();
+</span><span class='line'>  visitorTeam: Team = new Team();
+</span><span class='line'>  submitted: boolean = false;
+</span><span class='line'>  jsonPayload: string = null;
+</span><span class='line'>
+</span><span class='line'>  constuctor() {
+</span><span class='line'>  }
+</span><span class='line'>
+</span><span class='line'>  submitScore() {
+</span><span class='line'>    this.submitted = true;
+</span><span class='line'>    this.jsonPayload = JSON.stringify({ homeTeam: this.homeTeam.toJson(), visitorTeam: this.visitorTeam.toJson()});
+</span><span class='line'>  }
+</span><span class='line'>
+</span><span class='line'>  updateHomeTeam(team: Team) {
+</span><span class='line'>    this.homeTeam = team;
+</span><span class='line'>  }
+</span><span class='line'>
+</span><span class='line'>  updateVisitorTeam(team: Team) {
+</span><span class='line'>    this.visitorTeam = team;
+</span><span class='line'>  }
+</span><span class='line'>}
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>Pros and Cons</h2>
+
+<h3>Pros</h3>
+
+<h3>Cons</h3>
+
+<ul>
+<li>Angular 2 &ndash; docs are all over the place.</li>
+<li>Main blogs that are linked from docs site are using old kabob style (e.g. <code>*ng-if</code> instead of <code>*ngIf</code>).</li>
+<li>Webpack configuration &ndash; I didn&rsquo;t include zone.js in my entries, and I could not get any DOM updates coming from my components changing.</li>
+<li>When to use two-way bindings, and one-way bindings was good enough.</li>
+<li>No &lsquo;why&rsquo; to what im doing &ndash; it aims to just follow the same &lsquo;idea&rsquo; as Angular.js.</li>
+<li>Plunkers aren&rsquo;t up to date.</li>
+</ul>
+
+
+<h1>React implementation (ES6)</h1>
+
+<p>Now that we have the basic idea of the team and scoreboard, you&rsquo;ll see React is very similiar. Instead of having a decorator specify the template and DOM elements to attach to, we&rsquo;ll specify a class that extends <code>React.Component</code>, a method that will render the markup, and finally, some bootstrap code to attach our class to a DOM element.</p>
+
+<h2>Defining the team component</h2>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>import React from 'react';
+</span><span class='line'>
+</span><span class='line'>export default class Team extends React.Component {
+</span><span class='line'>  constructor(props) {
+</span><span class='line'>    super(props);
+</span><span class='line'>    this.props = props;
+</span><span class='line'>    this.name = props.name;
+</span><span class='line'>    this.score = props.score || 0;
+</span><span class='line'>    this.setName = this.setName.bind(this);
+</span><span class='line'>    // this.state = {name: this.name, score: this.score};
+</span><span class='line'>    this.touchdown = this.touchdown.bind(this);
+</span><span class='line'>    this.fieldGoal = this.fieldGoal.bind(this);
+</span><span class='line'>  }
+</span><span class='line'>
+</span><span class='line'>  fieldGoal(e) {
+</span><span class='line'>    e.preventDefault();
+</span><span class='line'>    this.score += 3;
+</span><span class='line'>    this.setState(this);
+</span><span class='line'>  }
+</span><span class='line'>
+</span><span class='line'>  touchdown(e) {
+</span><span class='line'>    e.preventDefault();
+</span><span class='line'>    this.score += 7;
+</span><span class='line'>    this.setState(this);
+</span><span class='line'>  }
+</span><span class='line'>
+</span><span class='line'>  setName(e) {
+</span><span class='line'>    e.preventDefault();
+</span><span class='line'>    this.name = this.refs.teamName.value;
+</span><span class='line'>    this.setState(this);
+</span><span class='line'>    this.props.update(this);
+</span><span class='line'>  }
+</span><span class='line'>
+</span><span class='line'>  toJson() {
+</span><span class='line'>    return { name: this.name, score: this.score };
+</span><span class='line'>  }
+</span><span class='line'>
+</span><span class='line'>  render() {
+</span><span class='line'>    if (!this.name) {
+</span><span class='line'>      return (
+</span><span class='line'>        &lt;div&gt;
+</span><span class='line'>          &lt;h3&gt;No team set&lt;/h3&gt;
+</span><span class='line'>          &lt;input type="text" ref="teamName" placeholder="Enter a name.." value={this.props.name}/&gt;
+</span><span class='line'>          &lt;button onClick={this.setName}&gt;Set Name&lt;/button&gt;
+</span><span class='line'>        &lt;/div&gt;
+</span><span class='line'>      );
+</span><span class='line'>    } else {
+</span><span class='line'>      return (
+</span><span class='line'>        &lt;div&gt;
+</span><span class='line'>          &lt;h3&gt;{this.name}&lt;/h3&gt;
+</span><span class='line'>          &lt;button onClick={this.touchdown}&gt;Touch Down&lt;/button&gt;
+</span><span class='line'>          &lt;button onClick={this.fieldGoal}&gt;Field Goal&lt;/button&gt;
+</span><span class='line'>          &lt;h4&gt;Score: {this.score}&lt;/h4&gt;
+</span><span class='line'>        &lt;/div&gt;
+</span><span class='line'>      );
+</span><span class='line'>    }
+</span><span class='line'>  }
+</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>Defining the Scoreboard component</h2>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>import Team from './team.jsx';
+</span><span class='line'>import React from 'react';
+</span><span class='line'>
+</span><span class='line'>export default class Scoreboard extends React.Component {
+</span><span class='line'>  constructor(props) {
+</span><span class='line'>    super(props);
+</span><span class='line'>    this.homeTeam = {};
+</span><span class='line'>    this.visitorTeam = {};
+</span><span class='line'>    this.url = this.props.url;
+</span><span class='line'>    this.submit = this.submit.bind(this);
+</span><span class='line'>    this.updateTeam = this.updateTeam.bind(this);
+</span><span class='line'>    this.submitted = false;
+</span><span class='line'>    this.jsonPayload = null;
+</span><span class='line'>  }
+</span><span class='line'>
+</span><span class='line'>  submit(event) {
+</span><span class='line'>    event.preventDefault();
+</span><span class='line'>    this.submitted = true;
+</span><span class='line'>    this.setState(this);
+</span><span class='line'>    this.jsonPayload = JSON.stringify({ homeTeam: this.homeTeam.toJson(), visitorTeam: this.visitorTeam.toJson()});
+</span><span class='line'>  }
+</span><span class='line'>
+</span><span class='line'>  updateTeam(team) {
+</span><span class='line'>    if (team.props.home) {
+</span><span class='line'>      this.homeTeam = team;
+</span><span class='line'>    } else {
+</span><span class='line'>      this.visitorTeam = team;
+</span><span class='line'>    }
+</span><span class='line'>  }
+</span><span class='line'>
+</span><span class='line'>  render() {
+</span><span class='line'>    var jsonInformation = this.submitted ? (&lt;div&gt;JSON payload: {this.jsonPayload}&lt;/div&gt;) : null;
+</span><span class='line'>    return (
+</span><span class='line'>      &lt;form onSubmit={this.submit}&gt;
+</span><span class='line'>        &lt;div className="row"&gt;
+</span><span class='line'>          &lt;div className="col-md-6"&gt;
+</span><span class='line'>            &lt;h2&gt;Home Team&lt;/h2&gt;
+</span><span class='line'>            &lt;Team home="true" update={this.updateTeam}&gt;&lt;/Team&gt;
+</span><span class='line'>          &lt;/div&gt;
+</span><span class='line'>          &lt;div className="col-md-6"&gt;
+</span><span class='line'>            &lt;h2&gt;Visitor Team&lt;/h2&gt;
+</span><span class='line'>            &lt;Team update={this.updateTeam}&gt;&lt;/Team&gt;
+</span><span class='line'>          &lt;/div&gt;
+</span><span class='line'>        &lt;/div&gt;
+</span><span class='line'>        &lt;div className="row"&gt;
+</span><span class='line'>          &lt;button type="submit"&gt;Submit&lt;/button&gt;
+</span><span class='line'>        &lt;/div&gt;
+</span><span class='line'>        {jsonInformation}
+</span><span class='line'>      &lt;/form&gt;
+</span><span class='line'>    )
+</span><span class='line'>  }
+</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Now you&rsquo;ll see, theres no way we tell React to attach to a DOM node to attach our components to the browser DOM.</p>
+
+<p>This happens by the bootstrapping code:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>import React from 'react';
+</span><span class='line'>import ReactDOM from 'react-dom';
+</span><span class='line'>import Scoreboard from '../component/scoreboard.jsx';
+</span><span class='line'>
+</span><span class='line'>window.app = (function() {
+</span><span class='line'>  return ReactDOM.render(&lt;Scoreboard/&gt;, document.getElementById('react-scoreboard'));
+</span><span class='line'>})();</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Now, React knows to use our <code>Scoreboard</code> component (the one that was imported) to attach it to the <code>react-scoreboard</code> DOM element with an id of <code>react-scoreboard</code>. Internally for the Scoreboard, it specifies it&rsquo;s render method:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>import Team from './team.jsx';
+</span><span class='line'>// .. snipped code ..
+</span><span class='line'>render() {
+</span><span class='line'>  var jsonInformation = this.submitted ? (&lt;div&gt;JSON payload: {this.jsonPayload}&lt;/div&gt;) : null;
+</span><span class='line'>  return (
+</span><span class='line'>    &lt;form onSubmit={this.submit}&gt;
+</span><span class='line'>      &lt;div className="row"&gt;
+</span><span class='line'>        &lt;div className="col-md-6"&gt;
+</span><span class='line'>          &lt;h2&gt;Home Team&lt;/h2&gt;
+</span><span class='line'>          &lt;Team home="true" update={this.updateTeam}&gt;&lt;/Team&gt;
+</span><span class='line'>        &lt;/div&gt;
+</span><span class='line'>        &lt;div className="col-md-6"&gt;
+</span><span class='line'>          &lt;h2&gt;Visitor Team&lt;/h2&gt;
+</span><span class='line'>          &lt;Team update={this.updateTeam}&gt;&lt;/Team&gt;
+</span><span class='line'>        &lt;/div&gt;
+</span><span class='line'>      &lt;/div&gt;
+</span><span class='line'>      &lt;div className="row"&gt;
+</span><span class='line'>        &lt;button type="submit"&gt;Submit&lt;/button&gt;
+</span><span class='line'>      &lt;/div&gt;
+</span><span class='line'>      {jsonInformation}
+</span><span class='line'>    &lt;/form&gt;
+</span><span class='line'>  )
+</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>Pros and Cons</h2>
+
+<h3>Pros</h3>
+
+<p><a href="https://chrome.google.com/webstore/detail/react-developer-tools/fmkadmapgofadopljbjfkapdkoienihi?hl=en">React Dev tools</a> &ndash; inspect react components, super handy.
+Dev docs talk about how to think in react &ndash; giving the why before the what, really helped understand the concepts.</p>
+
+<h3>Cons</h3>
+
+<p>Dev tooling is not straight forward &ndash; you have to decide yourself.
+Figuring how to plug in rendering steps between state changes. <code>this.setState({})</code> with some state information.</p>
+
+<h1>Differences between the two</h1>
+
+<p>The main difference I can see if how Angular 2 specifies its <code>selector</code> to find out how it attaches to a DOM element you specify.</p>
+
+<p>React just follows using JSX to specify the component, which you can pass in properties.</p>
+
+<p>Angular 2 takes the approach of keeping state and doing stateful checks from its Virtual DOM diff&#8217;ing. However, the templating directives you can use, like <code>*ngIf</code> requires handling a template of some sort, where as React, you can just use JavaScript conditionals to render your DOM.</p>
+
+<h1>Conclusions</h1>
+
+<p>I really like the approach React takes. I also feel like it is a year early to the Virtual DOM party, and Angular 2 is really trying to keep up.</p>
+
+<p>As far as intuition and ease of development goes, React was definitely easier. Even with my previous Angular 2 knowledge, it still took me longer to get up and going.</p>
+
+<p>To give Angular 2 a fair shot, it is still in Beta. However, if I were to start a project today, it would be in React, due to the huge community that is building, the tooling available, and being backed by Facebook, one of the utmost leaders in User inface design and performance.</p>
+
+<p>I hope this short write up helps! If you have any questions, please drop a comment and we&rsquo;ll clear things up!</p>
+
+<p>As a reminder, <a href="https://github.com/jbavari/scoreboard-form">here is all of the code</a> is available on Github, feel free to open an issue.</p>
+
+<p>Cheers!</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -961,51 +1623,6 @@
       
   <header>
     
-      <h1 class="entry-title"><a href="/blog/2015/12/03/correctly-using-es6-fat-arrows-and-event-handlers/">Correctly Using ES6 Fat Arrows and Event Handlers</a></h1>
-    
-    
-      <p class="meta">
-        <span class="reading-time">less than a 1 minute read</span>
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2015-12-03T12:13:00-07:00" pubdate data-updated="true">Dec 3<span>rd</span>, 2015</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Compatability table:
-<a href="http://kangax.github.io/compat-table/es6">http://kangax.github.io/compat-table/es6</a></p>
-
-<p>Private properties &ndash; Symbol:
-<a href="http://blog.keithcirkel.co.uk/metaprogramming-in-es6-symbols/">http://blog.keithcirkel.co.uk/metaprogramming-in-es6-symbols/</a>
-<a href="https://curiosity-driven.org/private-properties-in-javascript">https://curiosity-driven.org/private-properties-in-javascript</a></p>
-
-<p>Babel installation and such:
-<a href="http://babeljs.io/docs/plugins/preset-es2015/#installation">http://babeljs.io/docs/plugins/preset-es2015/#installation</a></p>
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
       <h1 class="entry-title"><a href="/blog/2015/12/03/playing-with-safari-9-force-touch-api/">Playing With Safari 9 Force Touch API</a></h1>
     
     
@@ -1755,6 +2372,10 @@
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2020/02/01/mindset-book-review/">Mindset - Book Review</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2020/01/09/something-happened/">Something Happened</a>
       </li>
     
@@ -1768,10 +2389,6 @@
     
       <li class="post">
         <a href="/blog/2020/01/02/knowledge-consumption-routine/">Knowledge Consumption Routine</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2020/01/01/2019-retrospective/">2019 Retrospective</a>
       </li>
     
   </ul>
